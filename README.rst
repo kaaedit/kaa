@@ -23,9 +23,9 @@ Requirements
 Installation
 ============
 
-1. Get source from ::
+1. Get source from github ::
 
-   $ git clone
+   $ git clone git@github.com:atsuoishimoto/kaa.git
 
 2. Install kaa ::
    

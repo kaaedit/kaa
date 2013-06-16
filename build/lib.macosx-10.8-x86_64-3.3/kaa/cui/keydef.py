@@ -286,9 +286,7 @@ def init():
             KEYNAME_TO_CODE[CAPNAME_TO_KEY[name]] = i
             CAPNAME_TO_CODE[name] = i
 
-    # register common? sequence
     reg_code = KAA_KEYCODE_FROM
-
     # register ESC + seq
     for name, keycode in CAPNAME_TO_CODE.items():
         seq = curses.tigetstr(name)

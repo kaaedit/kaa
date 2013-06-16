@@ -3,6 +3,7 @@ from kaa.keyboard import *
 # application commands
 app_keys = {
     (alt, '/'): 'app.mainmenu',
+    f1: 'app.mainmenu',
 }
 
 # default cursor commands
