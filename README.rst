@@ -5,7 +5,7 @@ Kaa - console text editor
 Kaa is a small and easy text editor for console environment.
 
 .. DANGER::
-   Kaa is still in the very early stage of development. Don't use kaa for other purpose than evaluation.
+   Kaa is still in the very early stage of the development. Don't use kaa for other purpose than evaluation.
 
 .. contents::
 
@@ -14,7 +14,7 @@ Requirements
 
 * Python 3.3 or later
 
-* Headers and librares for ncurses. Consult documentation of your platform for detail. With Debian/Ubuntu, you can install ncurses library with ::
+* Headers and libraries for ncurses. Consult documentation of your platform for details. For Debian/Ubuntu, you can install ncurses library by ::
 
   $ sudo apt-get install libncurses-dev
 
@@ -47,9 +47,9 @@ Using kaa is intuitive. Typing alphabet keys will update file as you expected. F
 Using menu
 -----------
 
-To display menu, type F1 key. Each items in the menu has one underlined character. Typing the underlined character extecutes the menu item. 
+To display menu, type F1 key or alt+/ (type slash key with alt key). Each items in the menu has one underlined character. The menu item is execused by typing the underlined key.
 
-To hide menu, type escape key.
+Typing escape key hides menu.
 
 File menu
 ++++++++++
@@ -130,6 +130,9 @@ Switch file
 Key bindings
 ------------
 
+F1, alt+/
+   Show menu
+
 Arrow keys
    Move cursor.
 
@@ -149,7 +152,7 @@ Control+z
    Undo last change.
 
 Control+r
-   Redo last undoi.
+   Redo last undo.
 
 F6
    Toggle macro recording on/off.
