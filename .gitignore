@@ -1,0 +1,11 @@
+*.pyc
+*~
+*.swp
+~*
+.DS_Store
+*.so
+*.o
+*.egg-info
+\#*\#
+.idea
+build
