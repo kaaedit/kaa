@@ -17,42 +17,53 @@ class Token:
         """Called when token started. Yield (pos, posto, tokenid)
         until exhausted"""
 
-    def resume_pos(self, doc, pos):
+    def get_tokenids(self, highlighter, tokenizer):
+        return tuple(self.tokenids.keys())
+
+    def resume_pos(self, highlighter, tokenizer, doc, pos):
         # Returns top of current keyword
         if 0 < pos < len(doc.styles):
-            p = doc.styles.rfindint(tuple(self.tokenids.keys()), 0, pos, comp_ne=True)
+            p = doc.styles.rfindint(
+                self.get_tokenids(highlighter, tokenizer),
+                0, pos, comp_ne=True)
             if p != -1:
                 return p+1
         return 0
 
     def assign_tokenid(self, tokenizer, stylename):
-        tokenid = tokenizer.assign_tokenid(self)
+        tokenid = tokenizer.register_tokenid(self)
         self.tokenids[tokenid] = stylename
         return tokenid
 
     def get_stylename(self, tokenid):
-        return self.stylename
+        return self.tokenids[tokenid]
 
-class Keywords(Token):
-    """Keyword tokens:
-        ex) KeyWords('keyword', 'kwdstyle', keywords=['def', 'class', 'return'])
-    """
 
-    def __init__(self, name, stylename, keywords):
+class SingleToken(Token):
+    def __init__(self, name, stylename, tokens):
         super().__init__(name, stylename)
-        self.keywords = keywords
+        self.tokens = tokens
+
+    def re_start(self):
+        return r'({})'.format('|'.join(self.tokens))
 
     def prepare(self, tokenizer):
         super().prepare(tokenizer)
 
-        self.keywordtoken = self.assign_tokenid(tokenizer, self.stylename)
-
-    def re_start(self):
-        return r'\b({})\b'.format('|'.join(self.keywords))
+        self.tokenid = self.assign_tokenid(tokenizer, self.stylename)
 
     def on_start(self, tokenizer, doc, pos, match):
-        yield (match.start(), match.end(), self.keywordtoken)
+        yield (match.start(), match.end(), self.tokenid)
         return match.end(), None, False
+
+
+class Keywords(SingleToken):
+    """Keyword tokens:
+        ex) KeyWords('keyword', 'kwdstyle', keywords=['def', 'class', 'return'])
+    """
+
+    def re_start(self):
+        return r'\b({})\b'.format('|'.join(gre.escape(k) for k in self.tokens))
 
 
 class Span(Token):
@@ -63,7 +74,7 @@ class Span(Token):
         self.escape = escape
         if escape:
             end = '({}.)|({})'.format(gre.escape(escape), end)
-        self.end = gre.compile(end, gre.X+gre.M)
+        self.end = gre.compile(end, gre.X+gre.M+gre.S)
 
     def prepare(self, tokenizer):
         super().prepare(tokenizer)
@@ -91,6 +102,50 @@ class Span(Token):
         else:
             yield (match.end(), doc.endpos(), self.span_mid)
             return doc.endpos(), None, False
+
+class SubTokenizer(Token):
+    def __init__(self, name, start, tokenizer):
+        super().__init__(name, '')
+        self.start = start
+
+        self.subtokenizer = tokenizer
+
+    def prepare(self, tokenizer):
+        super().prepare(tokenizer)
+
+        self.sub_tokens = {}
+        self.tokenizer = tokenizer
+        self.subtokenizer.prepare(self)
+
+    def register_tokenid(self, tokenizer, token):
+        ret = self.tokenizer.highlighter.register_tokenid(self.tokenizer, self)
+        self.sub_tokens[ret] = token
+        return ret
+
+    def re_start(self):
+        return self.start
+
+    def on_start(self, tokenizer, doc, pos, match):
+        """Don't use on_start! iter_subtokenizers()"""
+
+        pos, tok = yield from self.subtokenizer.start(doc, pos)
+        return pos, None, False
+
+    def resume_pos(self, highlighter, tokenizer, doc, pos):
+        # Returns top of current keyword
+        if 0 < pos < len(doc.styles):
+            p = doc.styles.rfindint(tuple(self.sub_tokens.keys()), 0, pos, comp_ne=True)
+            if p > 0:
+                return highlighter.get_resume_pos(doc, p)
+        return 0
+
+    def get_stylename(self, tokenid):
+        token = self.sub_tokens[tokenid]
+        if token:
+            return token.get_stylename(tokenid)
+        else:
+            return 'default'
+
 
 class SubSection(Token):
     def __init__(self, name, stylename, start, tokenizer):
@@ -130,31 +185,22 @@ class EndSection(Token):
         return match.end(), None, True
 
 
-# class Element(Token):
-#     def prepare(self, tokenizer):
-#         """Called to setup tokenizer"""
-#         self.tokenids = {}
-#
-#     def prepare(self, tokenizer):
-#         super().prepare(tokenizer)
-#
-#         self.element = self.assign_tokenid(tokenizer, self.stylename)
-#
-#     def get_tokenid(self):
-#         return self.element
-
 class Tokenizer:
     re_starts = None
-    def __init__(self, tokens):
+    def __init__(self, tokens, terminates=None):
 
         self.groupnames = {}
         self.tokens = tokens
+        self.terminates = terminates
 
     def prepare(self, highlighter):
         self.highlighter = highlighter
+        self.nulltoken = self.register_tokenid(None)
 
         starts = []
         for i, token in enumerate(self.tokens):
+            if not token:
+                continue
             token.prepare(self)
             start = token.re_start()
             if start:
@@ -162,11 +208,15 @@ class Tokenizer:
                 self.groupnames[name] = token
                 starts.append(r'(?P<{}>{})'.format(name, start))
 
+        if self.terminates:
+            starts.insert(0, r'(?P<{}>{})'.format('TERMINATE', self.terminates))
+            self.groupnames['TERMINATE'] = None
+
         if starts:
             self.re_starts = gre.compile('|'.join(starts), gre.M+gre.X)
 
-    def assign_tokenid(self, obj):
-        return self.highlighter.assign_tokenid(self, obj)
+    def register_tokenid(self, obj):
+        return self.highlighter.register_tokenid(self, obj)
 
     def start(self, doc, pos):
         if self.re_starts:
@@ -177,8 +227,11 @@ class Tokenizer:
 
                 f, t = m.span()
                 if f != pos:
-                    yield (pos, f, 0)
+                    yield (pos, f, self.nulltoken)
                     pos = f
+
+                if m.lastgroup == 'TERMINATE':
+                    return f, None
 
                 token = self.groupnames[m.lastgroup]
 
@@ -191,7 +244,7 @@ class Tokenizer:
                     return pos, childtokenizer
 
         if pos != doc.endpos():
-            yield (pos, doc.endpos(), 0)
+            yield (pos, doc.endpos(), self.nulltoken)
             pos = doc.endpos()
 
         return pos, None
@@ -199,7 +252,7 @@ class Tokenizer:
 
 class Section:
     parent = None
-
+    end = None
     def __init__(self, pos, tokenizer):
         self.start = pos
         self.children = []
@@ -218,12 +271,20 @@ class Section:
         child.parent = self
 
     def get_section(self, pos):
-        for sec in reversed(list(self.walk())):
+        secs = list(self.walk())
+        for sec in reversed(secs):
             if sec.start <= pos:
-                return sec
+                if sec.end is None or pos < sec.end:
+                    return sec
+        return secs[0]
 
     def delete_after(self, pos):
+        for n, c in enumerate(self.children):
+            if pos < c.start:
+                del self.children[n:]
+                break
         section = self.get_section(pos)
+
         while section.parent:
             idx = section.parent.children.index(section)
             del section.parent.children[idx+1:]
@@ -245,8 +306,7 @@ class Highlighter:
     def close(self):
         self._highlighter = self.section = self.tokenizer = None
 
-    def assign_tokenid(self, tokenizer, token):
-
+    def register_tokenid(self, tokenizer, token):
         tokenid = self.max_tokenid
         self.max_tokenid += 1
 
@@ -291,6 +351,7 @@ class Highlighter:
             self.section.delete_after(pos)
             section = self.section.get_section(pos)
 
+        section.end = None
         while section:
             pos, childtokenizer = yield from section.tokenizer.start(doc, pos)
             if childtokenizer:
@@ -298,6 +359,7 @@ class Highlighter:
                 section.add(childsection)
                 section = childsection
             else:
+                section.end = pos
                 section = section.parent
 
     def get_resume_pos(self, doc, pos):
@@ -316,11 +378,17 @@ class Highlighter:
 
         pair = self.tokenids.get(style)
         if not pair:
-            # this style is not set by tokenizer
+            # Invalid. this style is not set by tokenizer.
             return 0
 
         tokenizer, token = self.tokenids.get(style)
-        return token.resume_pos(doc, pos)
+        if not token:
+            p = doc.styles.rfindint([style], 0, pos, comp_ne=True)
+            if p != -1:
+                return p+1
+            return 0
+
+        return token.resume_pos(self, tokenizer, doc, pos)
 
     def updated(self, doc, pos, inslen, dellen):
         self.updatepos = self.get_resume_pos(doc, pos)

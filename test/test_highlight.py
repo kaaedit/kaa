@@ -11,12 +11,12 @@ class TestKeyword(kaa_testutils._TestDocBase):
         hl = highlight.Highlighter(tokenizers=[tokenizer])
 
         assert [
-            (0, 2, kwds.keywordtoken),
-            (2, 3, 0),
-            (3, 8, kwds.keywordtoken),
-            (8, 9, 0),
-            (9, 12, kwds.keywordtoken),
-            (12, 13, 0)
+            (0, 2, kwds.tokenid),
+            (2, 3, hl.tokenizers[0].nulltoken),
+            (3, 8, kwds.tokenid),
+            (8, 9, hl.tokenizers[0].nulltoken),
+            (9, 12, kwds.tokenid),
+            (12, 13, hl.tokenizers[0].nulltoken)
         ] == list((f, t, style) for f, t, style in hl.highlight(doc, 0))
 
     def test_keyword_resume(self):
@@ -25,9 +25,9 @@ class TestKeyword(kaa_testutils._TestDocBase):
         hl = highlight.Highlighter(tokenizers=[tokenizer])
 
         doc = self._getdoc('   while')
-        doc.styles.setints(3, 8, kwds.keywordtoken)
+        doc.styles.setints(3, 8, kwds.tokenid)
 
-        assert 3 == kwds.resume_pos(doc, 5)
+        assert 3 == kwds.resume_pos(hl, tokenizer, doc, 5)
 
     def test_span(self):
         span = highlight.Span('str', 'style', '"""', '"""')
@@ -37,11 +37,11 @@ class TestKeyword(kaa_testutils._TestDocBase):
         doc = self._getdoc(' """ """ ')
         ret = list((f, t, style) for f, t, style in hl.highlight(doc, 0))
         assert [
-            (0, 1, 0),
+            (0, 1, hl.tokenizers[0].nulltoken),
             (1, 4, span.span_start),
             (4, 5, span.span_mid),
             (5, 8, span.span_end),
-            (8, 9, 0),] == ret
+            (8, 9, hl.tokenizers[0].nulltoken),] == ret
 
         span = highlight.Span('str', 'style', '"', '"')
         tokenizer = highlight.Tokenizer([span])
@@ -53,7 +53,7 @@ class TestKeyword(kaa_testutils._TestDocBase):
         assert [
             (0, 1, span.span_start),
             (1, 2, span.span_end),
-            (2, 3, 0),
+            (2, 3, hl.tokenizers[0].nulltoken),
             (3, 4, span.span_start),
             (4, 5, span.span_end),] == ret
 
@@ -78,8 +78,8 @@ class TestKeyword(kaa_testutils._TestDocBase):
         doc = self._getdoc(r'"\"abcdefg')
         ret = list((f, t, style) for f, t, style in hl.highlight(doc, 0))
         assert [
-            (0, 1, 1),
-            (1, 10, 2),] == ret
+            (0, 1, kwds.span_start),
+            (1, 10, kwds.span_mid),] == ret
 
     def test_span_resume(self):
         span = highlight.Span('str', 'style', '"', '"', None)
@@ -89,7 +89,7 @@ class TestKeyword(kaa_testutils._TestDocBase):
         doc = self._getdoc(r'   "TEXT"')
         doc.styles.setints(3, 9, span.span_start)
 
-        assert 3 == span.resume_pos(doc, 5)
+        assert 3 == span.resume_pos(hl, tokenizer, doc, 5)
 
     def test_subsection(self):
 
@@ -104,10 +104,10 @@ class TestKeyword(kaa_testutils._TestDocBase):
         doc = self._getdoc(r'   (abcdefg   ')
         ret = list((f, t, style) for f, t, style in hl.highlight(doc, 0))
         assert [
-            (0, 3, 0),
+            (0, 3, hl.tokenizers[0].nulltoken),
             (3, 4, brace.section_start),
-            (4, 11, kwd.keywordtoken),
-            (11, 14, 0)] == ret
+            (4, 11, kwd.tokenid),
+            (11, 14, hl.tokenizers[1].nulltoken)] == ret
 
     def test_subsection_resume(self):
         sub = highlight.Tokenizer([])
@@ -119,7 +119,7 @@ class TestKeyword(kaa_testutils._TestDocBase):
         doc = self._getdoc(r'   (')
         doc.styles.setints(3, 4, brace.section_start)
 
-        assert 3 == brace.resume_pos(doc, 3)
+        assert 3 == brace.resume_pos(hl, tokenizer, doc, 3)
 
     def test_endsection(self):
         end = highlight.EndSection('sub', 'style', r'\)')
@@ -129,7 +129,7 @@ class TestKeyword(kaa_testutils._TestDocBase):
         doc = self._getdoc(r'   )')
         doc.styles.setints(3, 4, end.section_end)
 
-        assert 3 == end.resume_pos(doc, 3)
+        assert 3 == end.resume_pos(hl, tokenizer, doc, 3)
 
     def test_endsection_resume(self):
         end = highlight.EndSection('sub', 'style', r'\)')
@@ -139,7 +139,27 @@ class TestKeyword(kaa_testutils._TestDocBase):
         doc = self._getdoc(r'   )')
         doc.styles.setints(3, 4, end.section_end)
 
-        assert 3 == end.resume_pos(doc, 3)
+        assert 3 == end.resume_pos(hl, tokenizer, doc, 3)
+
+    def test_subtokenizer(self):
+        kwds = highlight.Keywords('keywords', 'keyword', ['a', 'b'])
+        tokenizer1 = highlight.Tokenizer([kwds])
+        sub1 = highlight.SubTokenizer('sub', 'a', tokenizer1)
+        tokenizer = highlight.Tokenizer([sub1])
+        hl = highlight.Highlighter(tokenizers=[tokenizer])
+
+        doc = self._getdoc(r'a b c a b c')
+        ret = list((f, t, style) for f, t, style in hl.highlight(doc, 0))
+        assert [
+            (0, 1, kwds.tokenid),
+            (1, 2, tokenizer1.nulltoken),
+            (2, 3, kwds.tokenid),
+            (3, 6, tokenizer1.nulltoken),
+            (6, 7, kwds.tokenid),
+            (7, 8, tokenizer1.nulltoken),
+            (8, 9, kwds.tokenid),
+            (9, 11, tokenizer1.nulltoken),
+        ] == ret
 
 class TestSection:
     def test_walk(self):
@@ -253,13 +273,13 @@ class TestHighlight(kaa_testutils._TestDocBase):
 
         tokens = list(hl.highlight(doc, 0))
         assert [
-            (0, 3, 0),
+            (0, 3, hl.tokenizers[0].nulltoken),
             (3, 11, scriptelem.section_start),
-            (11, 13, kwds.keywordtoken),
-            (13, 14, 0),
-            (14, 19, kwds.keywordtoken),
+            (11, 13, kwds.tokenid),
+            (13, 14, hl.tokenizers[1].nulltoken),
+            (14, 19, kwds.tokenid),
             (19, 28, endsection.section_end),
-            (28, 36, 0),
+            (28, 36, hl.tokenizers[0].nulltoken),
             (36, 40, elem.span_start),
             (40, 49, elem.span_mid),
             (49, 52, elem.span_end),
@@ -269,11 +289,22 @@ class TestHighlight(kaa_testutils._TestDocBase):
         hl, kwds, lit, endsection, elem, scriptelem = self.get_highliter()
         doc = self.get_doc()
         list(hl.highlight(doc, 0))
-        doc.styles.setints(14, 19, kwds.keywordtoken)
+        doc.styles.setints(14, 19, kwds.tokenid)
 
         assert 0 == hl.get_resume_pos(doc, 0)
         assert 0 == hl.get_resume_pos(doc, 1)
         assert 14 == hl.get_resume_pos(doc, 16)
+        assert 19 == hl.get_resume_pos(doc, 28)
+        assert 19 == hl.get_resume_pos(doc, 29)
+
+        tokens = list(hl.highlight(doc, 19))
+        assert [
+            (19, 28, endsection.section_end),
+            (28, 36, hl.tokenizers[0].nulltoken),
+            (36, 40, elem.span_start),
+            (40, 49, elem.span_mid),
+            (49, 52, elem.span_end),
+        ] == tokens
 
     def test_update(self):
 
@@ -282,16 +313,16 @@ class TestHighlight(kaa_testutils._TestDocBase):
         doc.mode.highlight = hl
         doc.mode.highlight.update_style(doc)
 
-        assert ([0]*3 + [scriptelem.section_start]*8 + [kwds.keywordtoken]*2 +
-                [0] + [kwds.keywordtoken]*5 + [endsection.section_end]*9 +
-                [0]*8 + [elem.span_start]*4 + [elem.span_mid]*9 +
+        assert ([hl.tokenizers[0].nulltoken]*3 + [scriptelem.section_start]*8 + [kwds.tokenid]*2 +
+                [hl.tokenizers[1].nulltoken] + [kwds.tokenid]*5 + [endsection.section_end]*9 +
+                [hl.tokenizers[0].nulltoken]*8 + [elem.span_start]*4 + [elem.span_mid]*9 +
                 [elem.span_end]*3)  == doc.styles.getints(0, len(doc.styles))
 
         doc.replace(16, 17, 'x') # while -> whxle
         doc.mode.highlight.update_style(doc)
 
-        assert ([0]*3 + [scriptelem.section_start]*8 + [kwds.keywordtoken]*2 +
-                [0] + [0]*5 + [endsection.section_end]*9 +
-                [0]*8 + [elem.span_start]*4 + [elem.span_mid]*9 +
+        assert ([hl.tokenizers[0].nulltoken]*3 + [scriptelem.section_start]*8 + [kwds.tokenid]*2 +
+                [hl.tokenizers[1].nulltoken] + [hl.tokenizers[1].nulltoken]*5 + [endsection.section_end]*9 +
+                [hl.tokenizers[0].nulltoken]*8 + [elem.span_start]*4 + [elem.span_mid]*9 +
                 [elem.span_end]*3)  == doc.styles.getints(0, len(doc.styles))
 

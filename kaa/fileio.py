@@ -66,8 +66,10 @@ class TextInfo:
 
 filetypes = [
     'kaa.filetype.python',
+    'kaa.filetype.html',
+    'kaa.filetype.javascript',
+    'kaa.filetype.css',
 ]
-
 
 def select_mode(filename):
     ext = os.path.splitext(filename)[1].lower()

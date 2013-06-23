@@ -293,8 +293,8 @@ data_stack_grow(SRE_STATE* state, Py_ssize_t size)
     ((Py_UCS4*)buf)[index])
 #define SRE_CHARGET(state, p, index) \
      ((Py_UCS4)state->string->buf[ \
-      (Py_ssize_t)p+index + \
-      (((Py_ssize_t)p+index) < state->string->gap ? 0 : state->string->gapsize)])
+      (Py_ssize_t)p+index-1 + \
+      (((Py_ssize_t)p+index-1) < state->string->gap ? 0 : state->string->gapsize)])
 
 #define SRE_AT sre_uat
 #define SRE_COUNT sre_ucount
@@ -1672,7 +1672,7 @@ getgappedbuf(PyObject* string, Py_ssize_t* p_length,
         *p_length = obj->numelems;
         *p_charsize = 1;
         *p_logical_charsize = 4;
-        return 0;
+        return (void*)1;   // gappedbuf index starts from 1.
     }
     PyErr_SetString(PyExc_TypeError, "expected gappedbuffer");
     return (void*)-1;

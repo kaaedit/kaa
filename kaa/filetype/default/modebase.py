@@ -63,10 +63,13 @@ class ModeBase:
     def _build_style_map(self):
         for tokenid in self.highlight.tokenids:
             token = self.highlight.get_token(tokenid)
-            stylename = token.get_stylename(tokenid)
-            style = self.theme.get_style(stylename)
+            if token:
+                stylename = token.get_stylename(tokenid)
+                style = self.theme.get_style(stylename)
 
-            self.stylemap[tokenid] = style
+                self.stylemap[tokenid] = style
+            else:
+                self.stylemap[tokenid] = self.theme.get_style('default')
 
     def on_set_document(self, document):
         self.document = document

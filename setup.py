@@ -32,7 +32,7 @@ setup(
             "Development Status :: 2 - Pre-Alpha",
             "Topic :: Text Editors",
             "Environment :: Console :: Curses",
-            "License :: OSI Approved :: BSD License", ],
+            "License :: OSI Approved :: MIT License", ],
 
     install_requires=['curses_ex'],
     packages=find_packages(),

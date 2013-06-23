@@ -38,3 +38,9 @@ class TestGappedBuf:
 
         assert ''.join(m.group() for m in RE_SPLITWORD.finditer(buf, 0)) == '0123 abc あいうえお'
 
+    def test_group(self):
+        buf = _gappedbuf.GappedBuffer()
+        buf.insert(0, 'a')
+        regex = gappedbuf.re.compile(r'(a)')
+        assert regex.search(buf, 0).group(1) == 'a'
+
