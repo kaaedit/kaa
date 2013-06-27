@@ -44,6 +44,8 @@ class DialogMode(modebase.ModeBase):
         self.tokenizers = []
 
     def on_add_window(self, wnd):
+        super().on_add_window(wnd)
+
         wnd.screen.build_entire_rows = True
 
     def calc_height(self, wnd):

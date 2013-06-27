@@ -31,6 +31,12 @@ class Macro:
         else:
             self.commands[-1] += s
 
+    def record_repeatcount(self, n):
+        if not self.commands or not isinstance(self.commands[-1], (int, type(None))):
+            self.commands.append(n)
+        else:
+            self.commands[-1] = n
+
     def run(self, wnd):
         if self.recording:
             return
@@ -39,6 +45,8 @@ class Macro:
         for cmd in self.commands:
             if isinstance(cmd, str):
                 wnd.document.mode.edit_commands.put_string(wnd, cmd)
+            elif isinstance(cmd, (int, type(None))):
+                wnd.editmode.set_repeat(cmd)
             else:
                 commandid, args, kwargs = cmd
                 if callable(commandid):

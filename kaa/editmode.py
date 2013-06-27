@@ -1,0 +1,120 @@
+import kaa
+import string
+
+class EditMode:
+    pending_str = ''
+    repeat = None
+    repeat_str = ''
+
+    def __init__(self):
+        self.pending_keys = []
+
+    def flush_pending_str(self, wnd):
+        if self.pending_str:
+            pending = self.pending_str
+            self.pending_str = ''
+            wnd.document.mode.on_str(wnd, pending)
+            if not wnd.closed:
+                wnd.update_window()
+            return True
+
+    def on_keyevent(self, wnd, event):
+        if event.key == '\x1b' and event.no_trailing_char:
+            return self.on_esc_pressed(wnd, event)
+        else:
+            return self.on_key_pressed(wnd, event)
+
+    def _get_keybinds(self, wnd):
+        return [wnd.document.mode.keybind]
+
+    def _get_command(self, wnd, event):
+        self.pending_keys.append(event.key)
+        candidates = [(keys, command)
+                        for keybind in self._get_keybinds(wnd)
+                            for keys, command
+                                in keybind.get_candidates(self.pending_keys)]
+
+        match = [command for keys, command in candidates
+                    if len(keys) == len(self.pending_keys)]
+        s = None
+        if not candidates:
+            if len(self.pending_keys) == 1:
+                if isinstance(event.key, str):
+                    s = event.key
+
+        return s, (match[0] if match else None), candidates
+
+    def _on_str(self, wnd, s):
+        self.pending_str += s
+
+    def on_key_pressed(self, wnd, event):
+        s, commands, candidate = self._get_command(wnd, event)
+        try:
+            if s:
+                self._on_str(wnd, s)
+
+            elif commands:
+                self.flush_pending_str(wnd)
+                wnd.document.mode.on_commands(wnd, commands)
+        finally:
+            if s or commands or not candidate:
+                self.pending_keys = []
+
+    def on_esc_pressed(self, wnd, event):
+        self.pending_keys = []
+        self.clear_repeat()
+
+        if not wnd.closed:
+            self.flush_pending_str(wnd)
+
+        if not wnd.closed:
+            wnd.document.mode.on_esc_pressed(wnd, event)
+
+    def clear_repeat(self):
+        self.repeat = None
+        self.repeat_str = ''
+        if kaa.app.macro.is_recording():
+            kaa.app.macro.record_repeatcount(None)
+
+    def add_repeat_char(self, wnd, c):
+        self.repeat_str += c
+        try:
+            self.set_repeat(int(self.repeat_str))
+            if kaa.app.macro.is_recording():
+                kaa.app.macro.record_repeatcount(self.repeat)
+        except ValueError:
+            self.init_repeat()
+
+    def has_repeat(self):
+        return self.repeat is not None
+
+    def get_repeat(self):
+        return self.repeat
+
+    def set_repeat(self, n):
+        self.repeat = n
+
+class NormalMode(EditMode):
+    def on_key_pressed(self, wnd, event):
+        # check if key is repeat count
+        if not self.pending_keys:
+            if isinstance(event.key, str) and (event.key in string.digits):
+                self.add_repeat_char(wnd, event.key)
+                return
+
+        super().on_key_pressed(wnd, event)
+
+    def _get_keybinds(self, wnd):
+        return [wnd.document.mode.keybind_vi_normalmode, wnd.document.mode.keybind]
+
+    def flush_pending_str(self, wnd):
+        self.pending_str = ''
+
+class VisualMode(NormalMode):
+    def _get_keybinds(self, wnd):
+        return [wnd.document.mode.keybind_vi_visualmode]
+
+class VisualLinewiseMode(NormalMode):
+    def _get_keybinds(self, wnd):
+        return [wnd.document.mode.keybind_vi_visuallinewisemode]
+

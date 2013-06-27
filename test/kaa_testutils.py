@@ -1,12 +1,15 @@
 from unittest.mock import patch
 
-from kaa import screen, document, cursor, context
+from kaa import screen, document, cursor, context, editmode
 from kaa.filetype.default import defaultmode
 
 class _DmyWnd(context.Context):
     def __init__(self, scrn):
         self.screen = scrn
         self.cursor = cursor.Cursor(self)
+
+    def set_editmode(self, editmode):
+        self.editmode = editmode
 
     def get_context_parent(self):
         return None

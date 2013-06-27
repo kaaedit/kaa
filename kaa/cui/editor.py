@@ -10,14 +10,13 @@ class TextEditorWindow(Window):
 
     splitter = None
     document = None
-    keydispatcher = None
     statusbar = None
+    editmode = None
 
     def _oninit(self):
         super()._oninit()
         self._cwnd.leaveok(0)
         self._cwnd.scrollok(0)
-
 
         self.screen = screen.Screen()
         self.screen.setsize(*self.getsize())
@@ -31,7 +30,7 @@ class TextEditorWindow(Window):
             self.document.del_window(self)
         self.screen.close()
         self.document = self.screen = self.cursor = None
-        self.splitter = self.keydispatcher = None
+        self.splitter = None
         self.statusbar = None
 
         super().destroy()
@@ -45,13 +44,13 @@ class TextEditorWindow(Window):
         self.document = doc
         self.screen.set_document(doc)
         self.document.add_window(self)
-        self.pending_str = ''
-
-        self.keydispatcher = self.document.mode.create_keydispatcher()
 
         self._drawn_rows = {}
         self.draw_screen()
         self.refresh()
+
+    def set_editmode(self, mode):
+        self.editmode = mode
 
     def dup(self):
         ret = self.__class__(parent=self.parent)
@@ -75,33 +74,8 @@ class TextEditorWindow(Window):
         self.cursor = cursor
 
     def _flush_pending_str(self):
-        if self.pending_str:
-            pending = self.pending_str
-            self.pending_str = ''
-            self.document.mode.on_str(self, pending)
-            if not self.closed:
-                self.update_window()
-            return True
-
-    def on_keyevent(self, event):
-        s, commands, candidate = self.keydispatcher.on_key(
-                                    event.key, self.document.mode.keybind)
-        try:
-            if s:
-                self.pending_str += s
-            elif commands:
-                self._flush_pending_str()
-                self.document.mode.on_commands(self, commands)
-        finally:
-            if s or commands or not candidate:
-                if not self.closed:
-                    self.keydispatcher.reset_keys()
-
-        return
-
-    def on_esc_pressed(self, event):
-        self._flush_pending_str()
-        self.document.mode.on_esc_pressed(self, event)
+        if self.editmode:
+            return self.editmode.flush_pending_str(self)
 
     def _update_activeframe(self):
         frame = self.get_label('frame')
@@ -309,8 +283,8 @@ class TextEditorWindow(Window):
 
     def on_idle(self):
         if not self.closed:
-            if self.pending_str:
-                return self._flush_pending_str()
+            if self._flush_pending_str():
+                return True
 
             return self.update_status()
 

@@ -4,6 +4,7 @@ import collections
 from kaa import LOG
 from kaa.cui import keydef
 import kaa.context
+from kaa import editmode
 
 class Window(kaa.context.Context):
     """Base class to wrapper of curses.window object
@@ -16,6 +17,7 @@ class Window(kaa.context.Context):
 
     WAITINPUTFOR = 1000 # wait 1000ms for input
     closed = False
+    editmode = None
     def __init__(self, parent, wnd=None, pos=None):
         """Wrap window object wnd. Create new window if wnd was omitted."""
 
@@ -212,9 +214,15 @@ class Window(kaa.context.Context):
     def on_killfocus(self):
         pass
 
-    def on_keyevent(self, event):
-        return False
-
-    def on_esc_pressed(self, event):
-        pass
-
+    # def on_keyevent(self, event):
+    #     if event.key == '\x1b' and event.no_trailing_char:
+    #         return self.on_esc_pressed(event)
+    #     else:
+    #         return self.on_key_pressed(event)
+    #
+    # def on_key_pressed(self, event):
+    #     return False
+    #
+    # def on_esc_pressed(self, event):
+    #     pass
+    #

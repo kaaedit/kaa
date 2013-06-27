@@ -2,7 +2,7 @@ import itertools, unicodedata
 
 import gappedbuf.re
 import kaa
-from kaa import keyboard, keydispatcher, LOG
+from kaa import keyboard, editmode, LOG
 from kaa import highlight
 
 
@@ -37,9 +37,15 @@ class ModeBase:
         self.commands = {}
         self.is_availables = {}
         self.keybind = keyboard.KeyBind()
+        self.keybind_vi_normalmode = keyboard.KeyBind()
+        self.keybind_vi_visualmode = keyboard.KeyBind()
+        self.keybind_vi_visuallinewisemode = keyboard.KeyBind()
+
         self.theme = None
 
         self.init_keybind()
+        self.init_vikeybind()
+
         self.init_commands()
         self.init_theme()
         kaa.app.translate_theme(self.theme)
@@ -51,7 +57,9 @@ class ModeBase:
     def close(self):
         self.document = None
         self.closed = True
+
         self.keybind.clear()
+
         self.theme = None
         self.commands = None
         self.is_availables = None
@@ -81,9 +89,12 @@ class ModeBase:
         pass
 
     def on_add_window(self, wnd):
-        pass
+        self.mode_insert(wnd)
 
     def init_keybind(self):
+        pass
+
+    def init_vikeybind(self):
         pass
 
     def init_commands(self):
@@ -98,9 +109,6 @@ class ModeBase:
     def register_command(self, cmds):
         self.commands.update(cmds.get_commands())
         self.is_availables.update(cmds.get_commands_is_enable())
-
-    def create_keydispatcher(self):
-        return keydispatcher.KeyDispatcher()
 
     def get_command(self, commandid):
         is_available = self.is_availables.get(commandid, None)
@@ -135,21 +143,22 @@ class ModeBase:
             self.highlight.update_style(self.document, batch=50)
 
     def on_commands(self, wnd, commandids):
-        if callable(commandids):
-            commandids(wnd)
-            if kaa.app.macro.is_recording():
-                kaa.app.macro.record(commandsids)
-            return
-
-        for commandid in commandids:
-            is_available, command = self.get_command(commandid)
-            if not command:
-                LOG.warn('command {!r} is not registered.'.format(commandid))
+        try:
+            if callable(commandids):
+                commandids(wnd)
                 return
 
-            command(wnd)
-            if kaa.app.macro.is_recording():
-                kaa.app.macro.record(command)
+            for commandid in commandids:
+                is_available, command = self.get_command(commandid)
+                if not command:
+                    LOG.warn('command {!r} is not registered.'.format(commandid))
+                    return
+
+                command(wnd)
+                if kaa.app.macro.is_recording():
+                    kaa.app.macro.record(command)
+        finally:
+            wnd.editmode.clear_repeat()
 
     def on_esc_pressed(self, wnd, event):
         pass
@@ -219,3 +228,18 @@ class ModeBase:
                 break
             last = span
         return last
+
+    def mode_insert(self, wnd):
+        wnd.set_editmode(editmode.EditMode())
+
+    def mode_visual(self, wnd):
+        wnd.set_editmode(editmode.VisualMode())
+
+    def mode_visual_linewise(self, wnd):
+        wnd.set_editmode(editmode.VisualLinewiseMode())
+
+    def mode_normal(self, wnd):
+        wnd.set_editmode(editmode.NormalMode())
+
+
+

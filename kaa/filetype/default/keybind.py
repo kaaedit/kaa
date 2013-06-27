@@ -82,13 +82,53 @@ normal_mode_keys = {
     'gg': 'cursor.top-of-file',
     'G': 'cursor.top-of-file',
 
+    # edit
+    'x': 'edit.delete',
+
     # mode change
-    'i': 'vimode.to_insert_mode',
-    'v': 'vimode.to_visual_mode',
-    'V': 'vimode.to_visual_line_mode',
+    'i': 'mode.insert',
+    'v': 'mode.visual',
+    'V': 'mode.visual-linewise',
 
     # undo/redo
     'u': 'edit.undo',
     (ctrl, 'r'): 'edit.redo',
 }
 
+visual_mode_keys = {
+    left: ('screen.selection.begin', 'cursor.left', 'screen.selection.set_end'),
+    right: ('screen.selection.begin', 'cursor.right', 'screen.selection.set_end'),
+    up: ('screen.selection.begin', 'cursor.up', 'screen.selection.set_end'),
+    down: ('screen.selection.begin', 'cursor.down', 'screen.selection.set_end'),
+
+    pagedown:('screen.selection.begin', 'cursor.pagedown', 'screen.selection.set_end'),
+    pageup:('screen.selection.begin', 'cursor.pageup', 'screen.selection.set_end'),
+
+    'h': ('screen.selection.begin', 'cursor.left', 'screen.selection.set_end'),
+    'l': ('screen.selection.begin', 'cursor.right', 'screen.selection.set_end'),
+    'k': ('screen.selection.begin', 'cursor.up', 'screen.selection.set_end'),
+    'j': ('screen.selection.begin', 'cursor.down', 'screen.selection.set_end'),
+
+    'gg': ('screen.selection.begin', 'cursor.top-of-file', 'screen.selection.set_end'),
+    'G': ('screen.selection.begin', 'cursor.top-of-file', 'screen.selection.set_end'),
+
+}
+
+visual_linewise_mode_keys = {
+    left: ('screen.lineselection.begin', 'cursor.left', 'screen.lineselection.set_end'),
+    right: ('screen.lineselection.begin', 'cursor.right', 'screen.lineselection.set_end'),
+    up: ('screen.lineselection.begin', 'cursor.up', 'screen.lineselection.set_end'),
+    down: ('screen.lineselection.begin', 'cursor.down', 'screen.lineselection.set_end'),
+
+    pagedown:('screen.lineselection.begin', 'cursor.pagedown', 'screen.lineselection.set_end'),
+    pageup:('screen.lineselection.begin', 'cursor.pageup', 'screen.lineselection.set_end'),
+
+    'h': ('screen.lineselection.begin', 'cursor.left', 'screen.lineselection.set_end'),
+    'l': ('screen.lineselection.begin', 'cursor.right', 'screen.lineselection.set_end'),
+    'k': ('screen.lineselection.begin', 'cursor.up', 'screen.lineselection.set_end'),
+    'j': ('screen.lineselection.begin', 'cursor.down', 'screen.lineselection.set_end'),
+
+    'gg': ('screen.lineselection.begin', 'cursor.top-of-file', 'screen.lineselection.set_end'),
+    'G': ('screen.lineselection.begin', 'cursor.top-of-file', 'screen.lineselection.set_end'),
+
+}

@@ -1,5 +1,5 @@
 import kaa
-from kaa.command import Commands, command, is_enable, norec
+from kaa.command import Commands, command, is_enable, norec, repeat
 from kaa import LOG
 from kaa import document
 
@@ -7,34 +7,42 @@ from kaa import document
 
 class CursorCommands(Commands):
     @command('cursor.right')
+    @repeat
     def right(self, wnd):
         wnd.cursor.right()
 
     @command('cursor.left')
+    @repeat
     def left(self, wnd):
         wnd.cursor.left()
 
     @command('cursor.up')
+    @repeat
     def up(self, wnd):
         wnd.cursor.up()
 
     @command('cursor.down')
+    @repeat
     def down(self, wnd):
         wnd.cursor.down()
 
     @command('cursor.word-right')
+    @repeat
     def word_right(self, wnd):
         wnd.cursor.right(word=True)
 
     @command('cursor.word-left')
+    @repeat
     def word_left(self, wnd):
         wnd.cursor.left(word=True)
 
     @command('cursor.pagedown')
+    @repeat
     def pagedown(self, wnd):
         wnd.cursor.pagedown()
 
     @command('cursor.pageup')
+    @repeat
     def pageup(self, wnd):
         wnd.cursor.pageup()
 
@@ -51,6 +59,32 @@ class ScreenCommands(Commands):
     @command('screen.selection.clear')
     def selection_clear(self, wnd):
         wnd.screen.selection.clear()
+
+    @command('screen.lineselection.curline')
+    def select_cur_line(self, wnd):
+        tol = wnd.document.gettol(wnd.cursor.pos)
+        eol = wnd.document.geteol(tol)
+
+        wnd.screen.selection.set_range(tol, eol)
+
+    @command('screen.lineselection.begin')
+    def lineselection_begin(self, wnd):
+        tol = wnd.document.gettol(wnd.cursor.pos)
+        wnd.screen.selection.start_selection(tol)
+
+    @command('screen.lineselection.set_end')
+    def lineselection_set_end(self, wnd):
+        f = wnd.screen.selection.start
+        if f is None:
+            self.select_cur_line(wnd)
+        else:
+            pos = wnd.cursor.pos
+            if pos < f:
+                tol = wnd.document.gettol(pos)
+                wnd.screen.selection.set_end(tol)
+            else:
+                eol = wnd.document.geteol(pos)
+                wnd.screen.selection.set_end(eol)
 
 
 class EditCommands(Commands):
@@ -134,6 +168,7 @@ class EditCommands(Commands):
             return True
 
     @command('edit.delete')
+    @repeat
     def delete(self, wnd):
         if self.delete_sel(wnd):
             return
@@ -145,6 +180,7 @@ class EditCommands(Commands):
             self.delete_string(wnd, pos, nextpos)
 
     @command('edit.backspace')
+    @repeat
     def backspace(self, wnd):
         if self.delete_sel(wnd):
             return
@@ -232,6 +268,7 @@ class EditCommands(Commands):
         self.delete_sel(wnd)
 
     @command('edit.paste')
+    @repeat
     def paste(self, wnd):
         if kaa.app.clipboard:
             self.put_string(wnd, kaa.app.clipboard)
@@ -255,6 +292,7 @@ class MacroCommands(Commands):
 
     @command('macro.run')
     @norec
+    @repeat
     def run_macro(self, wnd):
         wnd.document.undo.beginblock()
         try:

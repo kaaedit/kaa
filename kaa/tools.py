@@ -12,8 +12,8 @@ def _show_profile(f, *args, **kwargs):
     return ret
 
 
-def _get_caller():
-    rec = inspect.getouterframes(inspect.currentframe())[2]
+def _get_caller(n=2):
+    rec = inspect.getouterframes(inspect.currentframe())[n]
     frame, fname, lno, funcname, lines, index = rec
 
     return "{}:{} {} - {}".format(fname, lno, funcname, lines[0])
@@ -27,7 +27,7 @@ def _trace(*args):
     kaa.LOG.debug(' '.join(str(o) for o in args))
 
 @contextlib.contextmanager
-def _stime(header='---------------------------'):
+def _stime(header='--------------'):
     """
     with _stime('testing') as o:
         do_something()
@@ -35,7 +35,7 @@ def _stime(header='---------------------------'):
         do_something()
         o.t2
     """
-    _trace(_get_caller(), header)
+    _trace(_get_caller(3), header)
 
     f = time.clock()
     class ll:

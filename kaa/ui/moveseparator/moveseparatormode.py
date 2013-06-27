@@ -28,13 +28,15 @@ class MoveSeparatorCommands(Commands):
     @command('moveseparator.close')
     def close(self, wnd):
         # restore cursor
-        wnd.document.mode.org_wnd.activate()
+        org_wnd = wnd.document.mode.org_wnd
+        org_wnd.activate()
 
         # Destroy popup window
         popup = wnd.get_label('popup')
         if popup:
             popup.destroy()
-        wnd.document.mode.org_wnd.activate()
+
+        org_wnd.activate()
 
 class MoveSeparatorMode(dialogmode.DialogMode):
     @classmethod

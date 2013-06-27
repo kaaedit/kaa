@@ -175,11 +175,8 @@ class CuiApp:
                             self.mainframe.on_console_resized()
                             continue
 
-                        # esc key pressed?
-                        if c.key == '\x1b' and c.no_trailing_char:
-                            self.focus.on_esc_pressed(c)
-                        else:
-                            self.focus.on_keyevent(c)
+                        if self.focus.editmode:
+                            self.focus.editmode.on_keyevent(self.focus, c)
 
                 if not inputs:
                     if self.mainframe.on_idle():
