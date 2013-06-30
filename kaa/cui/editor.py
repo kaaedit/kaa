@@ -7,7 +7,7 @@ from kaa.cui.color import ColorName
 
 class TextEditorWindow(Window):
     """Text editor window"""
-
+    show_lineno = True
     splitter = None
     document = None
     statusbar = None
@@ -152,6 +152,13 @@ class TextEditorWindow(Window):
             updated = len(rows) != len(self._drawn_rows)
             drawn = self._drawn_rows
         self._drawn_rows = {}
+
+        tol = rows[0].tol
+        lineno_width = 0
+        if self.document.mode.SHOW_LINENO:
+            lineno_width = screen.calc_lineno_width(self.screen)
+            lineno = self.document.buf.lineno.lineno(self.screen.pos)
+
         for n, row in enumerate(rows):
             if n > h:
                 break
@@ -167,8 +174,18 @@ class TextEditorWindow(Window):
             self._cwnd.clrtoeol()
             self._cwnd.chgat(n, 0, -1, color)
 
+            # draw line no
+            if self.document.mode.SHOW_LINENO:
+                self._cwnd.move(n, 0)
+                if tol != row.tol:
+                    lineno += 1
+                    tol = row.tol
+
+                if row.posfrom == row.tol:
+                    self.add_str(str(lineno).rjust(lineno_width-1)+' ', 0)
+
             # move cursor to top of row
-            self._cwnd.move(n, row.wrapindent)
+            self._cwnd.move(n, row.wrapindent+lineno_width)
 
             rjust = False
             for (attr, attr_rjust), group in itertools.groupby(self._getcharattrs(row)):
@@ -217,12 +234,17 @@ class TextEditorWindow(Window):
         idx, x = self.screen.getrowcol(pos)
         y = idx - self.screen.portfrom
 
-        if (y, x) != self._cwnd.getyx():
-            h, w = self._cwnd.getmaxyx()
-            if y < h and x < w and y >=0 and x >= 0:
-                self._cwnd.move(y, x)
-
         retpos = self.screen.get_pos_under(idx, x)
+
+        screenx = x
+        if self.document.mode.SHOW_LINENO:
+            screenx = x + screen.calc_lineno_width(self.screen)
+
+        if (y, screenx) != self._cwnd.getyx():
+            h, w = self._cwnd.getmaxyx()
+            if y < h and screenx < w and y >=0 and screenx >= 0:
+                self._cwnd.move(y, screenx)
+
         self.document.mode.on_cursor_located(self, retpos, y, x)
         return retpos, y, x
 
@@ -290,14 +312,22 @@ class TextEditorWindow(Window):
 
     def update_status(self):
         if self.statusbar:
-            modified = ''
+            modified = False
             if self.document.undo:
                 if self.document.undo.is_dirty():
                     modified = True
 
+            linecount = self.document.buf.lineno.linecount()
+            lineno = self.document.buf.lineno.lineno(self.cursor.pos)
+            col = self.screen.get_cursorcol(self.cursor.pos)
             updated = self.statusbar.set_info(
                 filename=self.document.get_title(),
-                modified_mark='*' if modified else '')
+                modified=modified,
+                lineno=lineno,
+                col=col+1,
+                linecount=linecount,
+                modename=self.editmode.MODENAME,
+            )
 
             return updated
 

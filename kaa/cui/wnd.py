@@ -140,9 +140,9 @@ class Window(kaa.context.Context):
         except curses.error:
             # exception is raised if a characters are written
             # over right border.
-            logstr = letters if (len(letters) < 10) else (letters[:10]+'...')
-            LOG.debug('Error to write str:{!r}'.format(logstr), exc_info=True)
-
+#            logstr = letters if (len(letters) < 10) else (letters[:10]+'...')
+#            LOG.debug('Error to write str:{!r}'.format(logstr), exc_info=True)
+            pass
 
     def bring_top(self):
         self._panel.top()

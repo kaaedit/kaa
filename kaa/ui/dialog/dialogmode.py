@@ -127,8 +127,8 @@ class FormBuilder:
                     f = self.document.endpos()
                     self.document.append(text[lastpos:span[0]])
                     if stylename:
-                        self.document.styles.setints(f, self.document.endpos(),
-                                                 style_id)
+                        self.document.styles.setints(
+                            f, self.document.endpos(), style_id)
 
                 f = self.document.endpos()
                 c = m.group()[1]

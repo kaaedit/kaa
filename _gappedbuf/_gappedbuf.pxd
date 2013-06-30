@@ -37,6 +37,7 @@ cdef public class GappedBuffer [object GappedBufferObj, type GappedBufferType]:
 
     cdef int _get_slice(self, object obj,
             Py_ssize_t *f, Py_ssize_t *t) except *
+    cpdef getint(self, Py_ssize_t pos)
     cpdef getints(self, Py_ssize_t begin, Py_ssize_t end)
     cdef _insertints(self, Py_ssize_t index, object s)
     cpdef insertints(self, Py_ssize_t index, object s)

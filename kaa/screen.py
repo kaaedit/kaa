@@ -1,9 +1,18 @@
-import itertools, re
+import itertools, re, math
 from unicodedata import east_asian_width
 
 from kaa import LOG
 from kaa import document
 from kaa.document import is_combine
+
+def calc_lineno_width(screen):
+    if not screen.rows:
+        return 0
+
+    lineno = screen.document.buf.lineno.lineno(screen.rows[-1].posfrom)
+    digits = int(math.log10(lineno)+1)
+    digits += 2     # one space left and right of line number.
+    return digits
 
 class Row:
     height = 1
@@ -263,8 +272,6 @@ class Screen:
 
         self.selection = Selection(self)
 
-
-
     def set_document(self, doc):
         self._oninit()
 
@@ -295,7 +302,13 @@ class Screen:
 
     def _buildrow(self, pos, s, styles):
         dispchrs, dispcols, positions, intervals = translate_chars(pos, s)
-        return col_splitter(self.width, pos, dispchrs, dispcols, 
+        if self.document.mode.SHOW_LINENO:
+            linenowidth = calc_lineno_width(self)
+        else:
+            linenowidth = 0
+
+        width = max(2, self.width-linenowidth)
+        return col_splitter(width, pos, dispchrs, dispcols,
                 positions, intervals, styles, self.document.mode.stylemap, nowrap=self.nowrap)
 
     def _set_rowport(self):
@@ -455,6 +468,24 @@ class Screen:
             except ValueError:
                 col = len(row.positions)
             return idx, sum(c for c in row.cols[:col])+row.wrapindent
+
+    def get_cursorcol(self, pos):
+        idx, row = self.getrow(pos)
+        if idx == -1:
+            return 0
+        try:
+            cols = sum(row.cols[:row.positions.index(pos)])
+        except ValueError:
+            return 0
+
+        for n in range(idx-1, -1, -1):
+            nrow = self.rows[n]
+            if nrow.tol != row.tol:
+                return cols
+            else:
+                cols += sum(nrow.cols)
+
+        return cols
 
     def _fillscreen(self):
         while True:

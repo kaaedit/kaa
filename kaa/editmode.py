@@ -2,6 +2,8 @@ import kaa
 import string
 
 class EditMode:
+    MODENAME = 'Input'
+
     pending_str = ''
     repeat = None
     repeat_str = ''
@@ -95,6 +97,7 @@ class EditMode:
         self.repeat = n
 
 class NormalMode(EditMode):
+    MODENAME = ''
     def on_key_pressed(self, wnd, event):
         # check if key is repeat count
         if not self.pending_keys:
@@ -111,10 +114,12 @@ class NormalMode(EditMode):
         self.pending_str = ''
 
 class VisualMode(NormalMode):
+    MODENAME = 'Visual'
     def _get_keybinds(self, wnd):
         return [wnd.document.mode.keybind_vi_visualmode]
 
 class VisualLinewiseMode(NormalMode):
+    MODENAME = 'Visual(Line)'
     def _get_keybinds(self, wnd):
         return [wnd.document.mode.keybind_vi_visuallinewisemode]
 

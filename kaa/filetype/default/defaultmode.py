@@ -5,6 +5,8 @@ from . import keybind, theme, modebase
 from kaa import highlight
 
 class DefaultMode(modebase.ModeBase):
+    SHOW_LINENO = True
+
     def init_keybind(self):
         super().init_keybind()
 

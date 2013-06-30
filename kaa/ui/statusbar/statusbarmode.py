@@ -7,7 +7,11 @@ class StatusInfo:
     def __init__(self):
         self.infos = {
             'filename':'',
-            'modified_mark':'',
+            'modified':'',
+            'modename': '',
+            'lineno': 1,
+            'linecount': 1,
+            'col': 1,
         }
 
     def set_info(self, **values):
@@ -32,13 +36,13 @@ class StatusInfo:
 StatusBarTheme = Theme('default', [
     Style('default', 'red', 'cyan', False, False),
     Style('filename', 'magenta', 'cyan'),
+    Style('file', 'magenta', 'cyan'),
     Style('msg', 'default', 'default'),
+    Style('modename', 'magenta', 'green', rjust=True),
 ])
 
 
 class StatusBarMode(modebase.ModeBase):
-    STATUSBAR_MESSAGE = '{filename}[{modified_mark}]'
-
     def __init__(self):
         super().__init__()
         self.statusinfo = StatusInfo()
@@ -54,12 +58,21 @@ class StatusBarMode(modebase.ModeBase):
         super().on_add_window(wnd)
 
     def build_status(self, statusbar):
-        d = statusbar.infos.copy()
-        s = self.STATUSBAR_MESSAGE.format(**d)
+        d = statusbar.infos
+        self.document.delete(0, self.document.endpos())
 
-        self.document.replace(0, self.document.endpos(), s)
-        self.document.styles.setints(0, self.document.endpos(),
-                                    self.get_styleid('filename'))
+        style_filename = self.get_styleid('filename')
+        style_modename = self.get_styleid('modename')
+
+        self.document.append(d['filename'], style_filename)
+
+        if d['modified']:
+            self.document.append('*',  style_filename)
+
+        self.document.append(' ')
+        self.document.append('[{lineno}:{col}] {linecount}'.format(**d), style_filename)
+
+        self.document.append(d['modename'], style_modename)
 
     def set_info(self, **values):
         ret = self.statusinfo.set_info(**values)

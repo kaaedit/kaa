@@ -8,7 +8,6 @@ class Cursor:
 
     def refresh(self):
         self.pos, y, x = self.wnd.locate_cursor(self.pos)
-        self.wnd.document.mode.on_cursor_located(self.wnd, self.pos, y, x)
         assert self.pos is not None
 
     def setpos(self, pos):

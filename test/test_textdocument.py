@@ -290,3 +290,81 @@ class TestUndo:
         assert (('8', (), {}),) == tuple(undo.redo())
         assert undo.is_dirty()
 
+
+class TestLineNo(kaa_testutils._TestScreenBase):
+    def test_bisect_left(self):
+        lineno = document.LineNo()
+        lineno.buf.insertints(0, [0,1,2,3,4,5])
+
+        assert lineno.bisect_left(0) == 0
+        assert lineno.bisect_left(1) == 1
+        assert lineno.bisect_left(5) == 5
+        assert lineno.bisect_left(6) == 6
+        assert lineno.bisect_left(7) == 6
+
+        lineno = document.LineNo()
+        assert lineno.bisect_left(0) == 0
+
+    def test_insert(self):
+        lineno = document.LineNo()
+        lineno.inserted(0, 'abc')
+        assert len(lineno.buf) == 0
+
+        lineno.inserted(0, 'abc\n')
+        assert lineno.buf.getints(0, len(lineno.buf)) == [3]
+
+        lineno.inserted(0, 'abc\n')
+        assert lineno.buf.getints(0, len(lineno.buf)) == [3,7]
+
+        lineno.inserted(0, '\na\nab\n')
+        assert lineno.buf.getints(0, len(lineno.buf)) == [0,2,5,9,13]
+
+        lineno.inserted(14, 'a\nb')
+        assert lineno.buf.getints(0, len(lineno.buf)) == [0,2,5,9,13,15]
+
+    def test_delete(self):
+        lineno = document.LineNo()
+        lineno.inserted(0, 'abc\n1def\n23ghi\n')
+
+        lineno.deleted(0, 2)
+        assert lineno.buf.getints(0, len(lineno.buf)) == [1, 6, 12]
+
+        lineno.deleted(4, 8)
+        assert lineno.buf.getints(0, len(lineno.buf)) == [1, 8]
+
+        lineno = document.LineNo()
+        lineno.inserted(0, 'abcdefg')
+
+        lineno.deleted(0, 2)
+        assert lineno.buf.getints(0, len(lineno.buf)) == []
+
+        lineno = document.LineNo()
+        lineno.inserted(0, 'abc')
+        lineno.deleted(0, 100)
+        assert lineno.buf.getints(0, len(lineno.buf)) == []
+
+        lineno = document.LineNo()
+        lineno.inserted(0, 'abcde')
+        lineno.deleted(0, 2)
+        assert lineno.buf.getints(0, len(lineno.buf)) == []
+
+        lineno = document.LineNo()
+        lineno.inserted(0, 'abcde\nfghi')
+        lineno.deleted(0, 2)
+        assert lineno.buf.getints(0, len(lineno.buf)) == [3]
+
+        lineno = document.LineNo()
+        lineno.inserted(0, 'abcde\nfghi')
+        lineno.deleted(6, 8)
+        assert lineno.buf.getints(0, len(lineno.buf)) == [5]
+
+        lineno = document.LineNo()
+        lineno.inserted(0, 'abcde\nfghi')
+        lineno.deleted(3, 8)
+        assert lineno.buf.getints(0, len(lineno.buf)) == []
+
+        lineno = document.LineNo()
+        lineno.inserted(0, 'abc\ndef')
+        lineno.deleted(0, 100)
+        assert lineno.buf.getints(0, len(lineno.buf)) == []
+

@@ -10,9 +10,9 @@ class TestStatusBarMode(kaa_testutils._TestDocBase):
     def test_sbarinfo(self):
         sbarinfo = statusbarmode.StatusInfo()
         sbarinfo.set_info(filename='filename',
-                          modified_mark='mark')
+                          modified=1)
 
         doc = self._getdoc('')
         doc.mode.build_status(sbarinfo)
 
-        assert doc.gettext(0, doc.endpos()) == 'filename[mark]'
+        assert doc.gettext(0, doc.endpos()) == 'filename* [1:1] 1'

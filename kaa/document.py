@@ -1,4 +1,4 @@
-import weakref
+import weakref, re
 import gappedbuf
 
 
@@ -10,23 +10,85 @@ def is_combine(c):
 
         return True
 
+class LineNo:
+    def __init__(self):
+        self.buf = gappedbuf.GappedBuffer()
+
+    def linecount(self):
+        return len(self.buf)+1
+
+    def lineno(self, pos):
+        return self.bisect_left(pos) + 1
+
+    def bisect_left(self, pos):
+        lo = 0
+        hi = len(self.buf)
+
+        while lo < hi:
+            mid = (lo+hi)//2
+            if self.buf.getint(mid) < pos: lo = mid+1
+            else: hi = mid
+        return lo
+
+    def inserted(self, pos, s):
+        idx = 0
+        lfs = []
+        while True:
+            idx = s.find('\n', idx)
+            if idx == -1:
+                break
+            else:
+                lfs.append(pos+idx)
+            idx += 1
+
+        lno = self.bisect_left(pos)
+        self.buf.insertints(lno, lfs)
+
+        d = len(s)
+        for p in range(lno+len(lfs), len(self.buf)):
+            self.buf.setints(p, p+1, self.buf.getint(p)+d)
+
+    def deleted(self, delfrom, delto):
+        lno = self.bisect_left(delfrom)
+        for idx in range(lno, len(self.buf)):
+            pos = self.buf.getint(idx)
+            if pos >= delto:
+                break
+        else:
+            idx = len(self.buf)
+
+        if lno != idx:
+            self.buf.delete(lno, idx)
+
+        d = delto - delfrom
+        for p in range(lno, len(self.buf)):
+            pos = self.buf.getint(p)
+            d = min(delto, pos) - delfrom
+            self.buf.setints(p, p+1, pos-d)
+
 class Buffer(gappedbuf.GappedBuffer):
     def __init__(self):
         self.listeners = []
+        self.lineno = LineNo()
 
     def close(self):
         del self.listeners
+        del self.lineno
 
     def insert(self, index, s):
         super().insert(index, s)
+        self.lineno.inserted(index, s)
         self._updated(index, len(s), 0)
 
     def delete(self, begin, end):
         super().delete(begin, end)
+        self.lineno.deleted(begin, end)
         self._updated(begin, 0, end-begin)
 
     def replace(self, begin, end, s):
         super().replace(begin, end, s)
+        self.lineno.deleted(begin, end)
+        self.lineno.inserted(begin, s)
         self._updated(begin, len(s), end-begin)
     
     def add_listener(self, listener):
@@ -162,17 +224,21 @@ class Document:
         else:
             return (eol, self.buf[pos:eol])
 
-    def insert(self, pos, s):
+    def insert(self, pos, s, style=None):
         self.buf.insert(pos, s)
+        if style is not None:
+            self.styles.setints(pos, pos+len(s), style)
 
-    def append(self, s):
-        self.buf.insert(self.endpos(), s)
+    def append(self, s, style=None):
+        self.insert(self.endpos(), s, style)
 
     def delete(self, begin, end):
         self.buf.delete(begin, end)
 
-    def replace(self, begin, end, s):
+    def replace(self, begin, end, s, style=None):
         self.buf.replace(begin, end, s)
+        if style is not None:
+            self.styles.setints(pos, pos+len(s), style)
 
     def get_nextpos(self, pos):
         pos += 1
@@ -317,7 +383,7 @@ class Undo:
         return self._next_undo < len(self._actions)
 
     def undo(self):
-        """Performe undo action"""
+        """Perform undo action"""
 
         action, args, kwargs = self._actions[self._next_undo-1]
         self._next_undo -= 1
@@ -332,7 +398,7 @@ class Undo:
             yield from self.undo()
 
     def redo(self):
-        """Performe redo action"""
+        """Perform redo action"""
 
         action, args, kwargs = self._actions[self._next_undo]
         self._next_undo += 1

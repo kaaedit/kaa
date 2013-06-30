@@ -310,6 +310,14 @@ cdef class GappedBuffer:
 
         return -1
     
+    cpdef getint(self, Py_ssize_t pos):
+        if not (0 <= pos < self.numelems):
+            raise ValueError('Invalid range')
+        if pos < self.gap:
+            return <unsigned long>self.buf[pos]
+        else:
+            return <unsigned long>self.buf[self.gapsize+pos]
+
     cpdef getints(self, Py_ssize_t begin, Py_ssize_t end):
 
         cdef Py_ssize_t b, e, p, n
@@ -351,14 +359,14 @@ cdef class GappedBuffer:
                 self._expand_gap(max(1024, size*2))
 
             for value in s:
-                self.buf[self.gap] = value
+                self.buf[self.gap] = <unsigned long>value
                 self.gap += 1
 
             self.numelems += size
             self.gapsize -= size
 
     cpdef insertints(self, Py_ssize_t index, object s):
-        
+
         self._insertints(index, s)
 
     cpdef appendints(self, object s):

@@ -14,9 +14,9 @@ Requirements
 
 * Python 3.3 or later
 
-* Headers and libraries for ncurses. Consult documentation of your platform for details. For Debian/Ubuntu, you can install ncurses library by ::
+* Headers and libraries for ncurses with wide character support. Consult documentation of your platform for details. For Debian/Ubuntu, you can install ncurses library by ::
 
-  $ sudo apt-get install libncurses-dev
+  $ sudo apt-get install libncursesw5 libncursesw5-dev
 
 * (optional) Cython
 
