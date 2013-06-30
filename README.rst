@@ -127,11 +127,25 @@ Switch file
    Switch content of active window.
 
 
+Edit mode
+---------
+
+Kaa can be used as modeless editor, but optionally supports vi-like command mode and visual mode. Unlike vi, kaa is in the input-mode as initial state. You don't have to leave input mode to edit text, since most editor commands like cursor movement or deleting characters can be execused in the input mode. For example, arrow keys and emacs-like cursor key bindings(Control+f, Control+b, etc) are supported to move cursor. 
+
+If you want to use vi-like command mode, hit escape key to get into command mode. In the command mode, type ``i`` to enter input mode. Also, ``v`` (visual mode) and ``V`` (visual mode, line-wise) are supported.
+
 Key bindings
 ------------
 
+
+Input mode
++++++++++++
+
+Escape
+   Enter command mode.
+
 F1, alt+/
-   Show menu
+   Show menu.
 
 Arrow keys
    Move cursor.
@@ -171,6 +185,65 @@ Control+b|Control+f|Control+p|Control+n
 
 Alt+b|Alt+f
    Move cursor to next/prev word boundary.
+
+
+Command mode
+++++++++++++++
+
+1,2,..9
+   Set command repetition count.   
+
+i
+   Enter input mode.
+
+v
+   Enter visual mode.
+
+V
+   Enter visual mode(linewise).
+
+h
+   Cursor left.
+
+l
+   Cursor right.
+
+k
+   Cursor up.
+
+j
+   Cursor down.
+
+x
+   delete character.
+
+u
+   Undo last change.
+
+Control+r
+   Redo last undo.
+
+Visual mode
+++++++++++++++
+
+Escape
+   Enter command mode.
+
+1,2,..9
+   Set command repetition count.   
+
+h
+   Cursor left.
+
+l
+   Cursor right.
+
+k
+   Cursor up.
+
+j
+   Cursor down.
+
 
 Copyright 
 =========================

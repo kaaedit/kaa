@@ -101,7 +101,9 @@ class NormalMode(EditMode):
     def on_key_pressed(self, wnd, event):
         # check if key is repeat count
         if not self.pending_keys:
-            if isinstance(event.key, str) and (event.key in string.digits):
+            if (isinstance(event.key, str) and (event.key > '0') and
+                    (event.key in string.digits)):
+
                 self.add_repeat_char(wnd, event.key)
                 return
 
