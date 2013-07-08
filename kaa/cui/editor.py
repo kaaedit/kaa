@@ -158,6 +158,7 @@ class TextEditorWindow(Window):
         lineno_width = 0
         if self.document.mode.SHOW_LINENO:
             lineno_color = self.document.mode.theme.get_style('lineno').cui_colorattr
+            _trace(11111111111111, lineno_color)
             lineno_width = screen.calc_lineno_width(self.screen)
             lineno = self.document.buf.lineno.lineno(self.screen.pos)
 
@@ -189,16 +190,6 @@ class TextEditorWindow(Window):
                     self.add_str(' ' * (lineno_width-1), lineno_color)
 
                 self.add_str(' ', defaultcolor)
-
-            # draw line no
-            if self.document.mode.SHOW_LINENO:
-                self._cwnd.move(n, 0)
-                if tol != row.tol:
-                    lineno += 1
-                    tol = row.tol
-
-                if row.posfrom == row.tol:
-                    self.add_str(str(lineno).rjust(lineno_width-1)+' ', 0)
 
             # move cursor to top of row
             self._cwnd.move(n, row.wrapindent+lineno_width)
