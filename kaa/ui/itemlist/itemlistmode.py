@@ -14,6 +14,7 @@ ItemListTheme = Theme('default', [
 itemlist_keys = {
     left: 'itemlist.prev',
     right: 'itemlist.next',
+    '\r': 'itemlist.close',
     '\n': 'itemlist.close',
 }
 

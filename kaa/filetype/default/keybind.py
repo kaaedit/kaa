@@ -36,6 +36,8 @@ cursor_keys = {
 edit_command_keys = {
     backspace: 'edit.backspace',
     delete: 'edit.delete',
+    '\r': 'edit.newline',
+    '\n': 'edit.newline',
     (ctrl, 'z'): 'edit.undo',
     (ctrl, 'r'): 'edit.redo',
 }

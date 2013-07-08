@@ -23,7 +23,7 @@ class TextEditorWindow(Window):
         self.cursor = cursor.Cursor(self)
         self.pending_str = ''
         self._drawn_rows = {}
-
+        self.charattrs = {}
 
     def destroy(self):
         if self.document:
@@ -109,15 +109,16 @@ class TextEditorWindow(Window):
                 ColorName.DEFAULT,
                 ColorName.DEFAULT)
 
-            tokenid = self.document.styles.getints(pos, pos+1)[0]
+            tokenid = self.charattrs.get(pos, None)
+            if tokenid is None:
+                tokenid = self.document.styles.getints(pos, pos+1)[0]
 
-            if self.document.mode.highlight:
-                style = self.document.mode.get_style(tokenid)
-                color = style.cui_colorattr
-                if style.underline:
-                    color += curses.A_UNDERLINE
-                if style.bold:
-                    color += curses.A_BOLD
+            style = self.document.mode.get_style(tokenid)
+            color = style.cui_colorattr
+            if style.underline:
+                color += curses.A_UNDERLINE
+            if style.bold:
+                color += curses.A_BOLD
 
             yield (color + attr, style.rjust)
 
@@ -143,7 +144,7 @@ class TextEditorWindow(Window):
         cur_sel = self.screen.selection.get_range()
 
         theme = self.document.mode.theme
-        color = theme.get_style('default').cui_colorattr
+        defaultcolor = theme.get_style('default').cui_colorattr
 
         if force:
             drawn = {}
@@ -156,6 +157,7 @@ class TextEditorWindow(Window):
         tol = rows[0].tol
         lineno_width = 0
         if self.document.mode.SHOW_LINENO:
+            lineno_color = self.document.mode.theme.get_style('lineno').cui_colorattr
             lineno_width = screen.calc_lineno_width(self.screen)
             lineno = self.document.buf.lineno.lineno(self.screen.pos)
 
@@ -172,7 +174,21 @@ class TextEditorWindow(Window):
             # clear row
             self._cwnd.move(n, 0)
             self._cwnd.clrtoeol()
-            self._cwnd.chgat(n, 0, -1, color)
+            self._cwnd.chgat(n, 0, -1, defaultcolor)
+
+            # draw line no
+            if self.document.mode.SHOW_LINENO:
+                self._cwnd.move(n, 0)
+                if tol != row.tol:
+                    lineno += 1
+                    tol = row.tol
+
+                if row.posfrom == row.tol:
+                    self.add_str(str(lineno).rjust(lineno_width-1), lineno_color)
+                else:
+                    self.add_str(' ' * (lineno_width-1), lineno_color)
+
+                self.add_str(' ', defaultcolor)
 
             # draw line no
             if self.document.mode.SHOW_LINENO:
@@ -306,6 +322,9 @@ class TextEditorWindow(Window):
     def on_idle(self):
         if not self.closed:
             if self._flush_pending_str():
+                return True
+
+            if self.document.mode.update_charattr(self):
                 return True
 
             return self.update_status()

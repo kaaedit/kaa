@@ -180,6 +180,7 @@ fileopendlg_keys = {
     left: 'fileopendlg.prev',
     right: 'fileopendlg.next',
     '\t': 'fileopendlg.complete',
+    '\r': 'fileopendlg.openfile',
     '\n': 'fileopendlg.openfile',
 }
 
@@ -267,6 +268,7 @@ class FilenameEditCommand(editorcommand.EditCommands):
             filelist = wnd.document.mode.filelist
             filelist.document.mode.set_filename(filename)
             filelist.document.mode.build_doc()
+            filelist.get_label('popup').on_console_resized()
 
 
 class OpenFilenameDlgMode(dialogmode.DialogMode):

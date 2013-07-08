@@ -121,8 +121,10 @@ class ModeBase:
             if style.name == stylename:
                 return styleid
         else:
-            assert len(self.stylemap) not in self.stylemap
-            ret = len(self.stylemap)
+            if not self.stylemap:
+                ret = 1
+            else:
+                ret = max(self.stylemap.keys())+1
             self.stylemap[ret] = self.theme.get_style(stylename)
             return ret
 
@@ -166,6 +168,12 @@ class ModeBase:
 
     def on_cursor_located(self, wnd, pos, y, x):
         pass
+
+    def update_charattr(self, wnd):
+        if wnd.charattrs:
+            wnd.charattrs.clear()
+            wnd.screen.style_updated()
+            return True
 
     def on_idle(self):
         if self.closed:

@@ -10,13 +10,16 @@ CURSES_ESCDELAY = '50'
 def _init(stdscr):
     curses.start_color()
     curses.use_default_colors()
+
     curses.raw()
+    curses.nonl()
     stdscr.leaveok(1)
 #    curses.mousemask(curses.ALL_MOUSE_EVENTS)
 #    curses.mouseinterval(CURSES_MOUSEINTERVAL)
 
 def _restore():
     curses.noraw()
+    curses.nl()
 
 def main(stdscr):
     _init(stdscr)

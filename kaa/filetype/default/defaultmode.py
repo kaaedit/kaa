@@ -1,3 +1,4 @@
+from collections import defaultdict
 import kaa
 from kaa.commands import appcommand, filecommand, editorcommand, modecommand
 from . import keybind, theme, modebase
@@ -64,6 +65,76 @@ class DefaultMode(modebase.ModeBase):
         self.keybind_vi_visualmode.clear()
         self.keybind_vi_visuallinewisemode.clear()
 
+    PARENTHESIS_OPEN = '({['
+    PARENTHESIS_CLOSE = ')}]'
+    PARENTHESIS = PARENTHESIS_OPEN + PARENTHESIS_CLOSE
+    PARENSIS_PAIR = {o:c for (o, c) in
+                     zip(PARENTHESIS_OPEN+PARENTHESIS_CLOSE,
+                         PARENTHESIS_CLOSE+PARENTHESIS_OPEN)}
+
+    def iter_parenthesis(self, posfrom):
+        while True:
+            pos = self.document.buf.findchr(
+                self.PARENTHESIS, posfrom, self.document.endpos())
+
+            if pos == -1:
+                break
+
+            attr = self.document.styles.getint(pos)
+            yield pos, self.document.buf[pos], attr
+            posfrom = pos+1
+
+    def iter_rev_parenthesis(self, posfrom):
+        posfrom += 1
+        while True:
+            pos = self.document.buf.rfindchr(
+                self.PARENTHESIS, 0, posfrom)
+
+            if pos == -1:
+                break
+
+            attr = self.document.styles.getint(pos)
+            yield pos, self.document.buf[pos], attr
+            posfrom = pos
+
+    def find_match_parenthesis(self, posfrom):
+        opener = self.document.buf[posfrom]
+        curattr = self.document.styles.getint(posfrom)
+
+        d = defaultdict(int)
+        if opener in self.PARENTHESIS_OPEN:
+            f = self.iter_parenthesis
+            key = (opener, curattr)
+        else:
+            f = self.iter_rev_parenthesis
+            key = (self.PARENSIS_PAIR[opener], curattr)
+
+
+        for pos, c, attr in f(posfrom):
+            if c in self.PARENTHESIS_OPEN:
+                d[(c,attr)] += 1
+            else:
+                d[(self.PARENSIS_PAIR[c],attr)] -= 1
+
+            if d.get(key) == 0:
+                return pos
+
+    def update_charattr(self, wnd):
+        pos = wnd.cursor.pos
+        d = {}
+        if pos < self.document.endpos():
+            c = self.document.buf[pos]
+            if c in self.PARENTHESIS:
+                d[pos] = self.get_styleid('parenthesis_cur')
+                matchpos = self.find_match_parenthesis(pos)
+                if matchpos is not None:
+                    d[matchpos] = self.get_styleid('parenthesis_match')
+
+        if d != wnd.charattrs:
+            wnd.charattrs = d
+            wnd.screen.style_updated()
+            return True
+
 
     HIGHLIGHTBATCH = 300
     def run_highlight(self):
@@ -75,8 +146,3 @@ class DefaultMode(modebase.ModeBase):
             command(wnd)
             if kaa.app.macro.is_recording():
                 kaa.app.macro.record(command)
-
-
-
-
-

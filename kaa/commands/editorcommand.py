@@ -123,7 +123,7 @@ class EditCommands(Commands):
         wnd.document.replace(pos, posto, s)
 
         if update_cursor:
-            wnd.cursor.setpos(wnd.cursor.pos+len(s))
+            wnd.cursor.setpos(pos+len(s))
             wnd.cursor.savecol()
 
         if wnd.document.undo:
@@ -194,6 +194,11 @@ class EditCommands(Commands):
                 wnd.cursor.setpos(prevpos)
 
             self.delete_string(wnd, prevpos, pos)
+
+    @command('edit.newline')
+    @repeat
+    def newline(self, wnd):
+        self.insert_string(wnd, wnd.cursor.pos, '\n')
 
     def _undo(self, wnd, rec):
         (action, args, kwargs) = rec

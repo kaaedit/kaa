@@ -16,6 +16,7 @@ FrameListTheme = Theme('default', [
 framelist_keys = {
     left: 'framelist.prev',
     right: 'framelist.next',
+    '\r': 'framelist.close',
     '\n': 'framelist.close',
 }
 

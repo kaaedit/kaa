@@ -11,6 +11,7 @@ MoveSeparatorTheme = Theme('default', [
 moveseparator_keys = {
     left: 'moveseparator.prev',
     right: 'moveseparator.next',
+    '\r': 'moveseparator.close',
     '\n': 'moveseparator.close',
 }
 

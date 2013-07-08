@@ -62,9 +62,11 @@ class _TestDocBase:
         return cls()
 
 class _TestScreenBase(_TestDocBase):
-    def _getscreen(self, s, width=10, height=30, nowrap=False):
+    def _getscreen(self, s, width=10, height=30, nowrap=False, show_lineno=False):
         scrn = screen.Screen()
-        scrn.set_document(self._getdoc(s))
+        doc = self._getdoc(s)
+        doc.mode.SHOW_LINENO = show_lineno
+        scrn.set_document(doc)
         scrn.nowrap = nowrap
         scrn.setsize(width, height)
         scrn.locate(0, top=True)
