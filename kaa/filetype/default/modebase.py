@@ -70,7 +70,9 @@ class ModeBase:
         self.stylemap = None
 
     def _build_style_map(self):
+        self.stylemap[0] = self.theme.get_style('default')
         for tokenid in self.highlight.tokenids:
+            assert tokenid not in self.stylemap
             token = self.highlight.get_token(tokenid)
             if token:
                 stylename = token.get_stylename(tokenid)
@@ -117,6 +119,9 @@ class ModeBase:
         return (is_available, cmd)
 
     def get_styleid(self, stylename):
+        if stylename == 'default':
+            return 0
+
         for styleid, style in self.stylemap.items():
             if style.name == stylename:
                 return styleid

@@ -162,3 +162,23 @@ class Cursor:
             self.setpos(pos)
 
             return True
+
+    def home(self):
+        # Ensure current position is displayed
+        self.wnd.screen.locate(self.pos, middle=True, align_always=False)
+
+        idx, row = self.wnd.screen.getrow(self.pos)
+        self.setpos(row.posfrom)
+        self.savecol()
+
+    def end(self):
+        # Ensure current position is displayed
+        self.wnd.screen.locate(self.pos, middle=True, align_always=False)
+
+        idx, row = self.wnd.screen.getrow(self.pos)
+        if self.wnd.screen.is_lastrow(row):
+            pos = self.wnd.document.endpos()
+        else:
+            pos = row.posto-1
+        self.setpos(pos)
+        self.savecol()

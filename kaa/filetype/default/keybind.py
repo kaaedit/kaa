@@ -29,6 +29,9 @@ cursor_keys = {
 
     (alt, left): ('screen.selection.clear', 'cursor.word-left'),
     (alt, right): ('screen.selection.clear', 'cursor.word-right'),
+
+    home: ('screen.selection.clear', 'cursor.home'),
+    end: ('screen.selection.clear', 'cursor.end'),
 }
 
 

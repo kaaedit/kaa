@@ -46,6 +46,26 @@ class CursorCommands(Commands):
     def pageup(self, wnd):
         wnd.cursor.pageup()
 
+    @command('cursor.home')
+    @repeat
+    def home(self, wnd):
+        wnd.cursor.home()
+
+    @command('cursor.end')
+    @repeat
+    def end(self, wnd):
+        wnd.cursor.end()
+
+    @command('cursor.top')
+    @repeat
+    def top(self, wnd):
+        wnd.cursor.tol()
+
+    @command('cursor.last')
+    @repeat
+    def last(self, wnd):
+        wnd.cursor.end()
+
 
 class ScreenCommands(Commands):
     @command('screen.selection.begin')

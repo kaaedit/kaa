@@ -158,7 +158,6 @@ class TextEditorWindow(Window):
         lineno_width = 0
         if self.document.mode.SHOW_LINENO:
             lineno_color = self.document.mode.theme.get_style('lineno').cui_colorattr
-            _trace(11111111111111, lineno_color)
             lineno_width = screen.calc_lineno_width(self.screen)
             lineno = self.document.buf.lineno.lineno(self.screen.pos)
 
