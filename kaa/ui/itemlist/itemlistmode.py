@@ -54,6 +54,8 @@ class ItemListCommands(Commands):
         callback(cursel)
 
 class ItemListMode(dialogmode.DialogMode):
+    autoshrink = True
+
     @classmethod
     def build(cls, items, sel, callback):
         buf = document.Buffer()

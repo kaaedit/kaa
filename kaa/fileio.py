@@ -51,6 +51,7 @@ class FileStorage:
         kaa.app.messagebar.set_message('Written to {}({})'.format(file, dir))
 
 class FileInfo:
+    stat = None
     def __init__(self, storage, fullpathname, dirname, filename):
         self.storage = storage
         self.fullpathname = fullpathname

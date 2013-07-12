@@ -68,6 +68,7 @@ class FrameListCommands(Commands):
             popup.destroy()
 
 class FrameListMode(dialogmode.DialogMode):
+    autoshrink = True
     @classmethod
     def build(cls):
         buf = document.Buffer()

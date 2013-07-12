@@ -473,10 +473,14 @@ class Screen:
         idx, row = self.getrow(pos)
         if idx == -1:
             return 0
-        try:
-            cols = sum(row.cols[:row.positions.index(pos)])
-        except ValueError:
-            return 0
+
+        if row.cols:
+            if pos == row.posto:
+                cols = sum(row.cols)
+            else:
+                cols = sum(row.cols[:row.positions.index(pos)])
+        else:
+            cols = 0
 
         for n in range(idx-1, -1, -1):
             nrow = self.rows[n]

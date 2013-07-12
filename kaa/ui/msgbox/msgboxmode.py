@@ -15,6 +15,7 @@ MsgBoxTheme = Theme('default', [
 ])
 
 class MsgBoxMode(dialogmode.DialogMode):
+    autoshrink = True
     SEPARATOR = '/'
     def init_theme(self):
         self.theme = MsgBoxTheme

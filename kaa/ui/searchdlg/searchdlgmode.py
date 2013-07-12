@@ -20,6 +20,7 @@ SearchTheme = Theme('default', [
 LAST_SEARCH = modebase.SearchOption()
 
 class SearchDlgMode(dialogmode.DialogMode):
+    autoshrink = True
     def __init__(self, target):
         super().__init__()
 
@@ -218,6 +219,7 @@ class SearchDlgMode(dialogmode.DialogMode):
         self.document.close()
 
     def on_document_updated(self, pos, inslen, dellen):
+        super().on_document_updated(pos, inslen, dellen)
         if self.lastsearch:
             newstr = self.get_search_str()
             if newstr != self.option.text:

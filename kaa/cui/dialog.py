@@ -28,8 +28,6 @@ class DialogWnd(wnd.Window, kaa.context.ContextRoot):
         super().destroy()
 
         self.document = self.input = None
-        if self.mainframe.inputline:
-            self.mainframe.inputline = None
 
         # update focus
         if update_focus:

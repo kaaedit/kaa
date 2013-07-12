@@ -127,11 +127,6 @@ class CuiApp:
         '''
         self.mainframe.show_doc(doc)
 
-    def show_inputline(self, doc):
-        dlg = dialog.DialogWnd(parent=self.mainframe, doc=doc)
-        self.mainframe.show_inputline(dlg)
-        return dlg
-
     def show_dialog(self, doc):
         dlg = dialog.DialogWnd(parent=self.mainframe, doc=doc)
         self.mainframe.show_dialog(dlg)

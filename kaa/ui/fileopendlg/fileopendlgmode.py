@@ -177,9 +177,10 @@ FileNameDlgTheme = Theme('default', [
 ])
 
 fileopendlg_keys = {
-    left: 'fileopendlg.prev',
-    right: 'fileopendlg.next',
-    '\t': 'fileopendlg.complete',
+#    left: 'fileopendlg.prev',
+#    right: 'fileopendlg.next',
+    tab: 'fileopendlg.next',
+    (shift, tab): 'fileopendlg.prev',
     '\r': 'fileopendlg.openfile',
     '\n': 'fileopendlg.openfile',
 }

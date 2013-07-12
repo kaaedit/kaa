@@ -82,7 +82,6 @@ class MainFrame(Window, kaa.context.ContextRoot):
     """
 
     popups = []
-    inputline = None
 
     need_refresh = False
     need_redraw = False
@@ -113,12 +112,7 @@ class MainFrame(Window, kaa.context.ContextRoot):
 
         self.height, self.width = self._cwnd.getmaxyx()
 
-        if self.inputline:
-            w, h = self.inputline.getsize()
-            editorheight = max(1, self.height - h-1)
-        else:
-            editorheight = max(1, self.height-1)
-
+        editorheight = max(1, self.height-1)
         if self.activeframe:
             self.activeframe.set_rect(0, 0, self.width, editorheight)
 
@@ -139,10 +133,6 @@ class MainFrame(Window, kaa.context.ContextRoot):
 
     def add_popup(self, popup):
         self.popups.append(popup)
-
-    def show_inputline(self, inputline):
-        self.inputline = inputline
-        self.show_dialog(inputline)
 
     def show_dialog(self, dialog):
         self.add_popup(dialog)

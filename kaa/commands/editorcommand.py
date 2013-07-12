@@ -336,7 +336,7 @@ class SearchCommands(Commands):
         doc = document.Document(buf)
         doc.setmode(searchdlgmode.SearchDlgMode(target=wnd))
 
-        kaa.app.show_inputline(doc)
+        kaa.app.show_dialog(doc)
 
     @command('search.showreplace')
     @norec
@@ -347,5 +347,5 @@ class SearchCommands(Commands):
         doc = document.Document(buf)
         doc.setmode(searchdlgmode.ReplaceDlgMode(target=wnd))
 
-        kaa.app.show_inputline(doc)
+        kaa.app.show_dialog(doc)
 
