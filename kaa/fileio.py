@@ -13,7 +13,13 @@ class FileStorage:
     def get_fileinfo(self, filename):
         fullpath = os.path.abspath(filename)
         dirname, filename = os.path.split(filename)
-        ret = FileInfo(self, fullpath, dirname, filename)
+
+        ret = FileInfo()
+        ret.storage = self
+        ret.fullpathname = fullpath
+        ret.dirname = dirname
+        ret.filename = filename
+
         try:
             ret.stat = os.stat(filename)
         except FileNotFoundError:
@@ -52,17 +58,15 @@ class FileStorage:
 
 class FileInfo:
     stat = None
-    def __init__(self, storage, fullpathname, dirname, filename):
-        self.storage = storage
-        self.fullpathname = fullpathname
-        self.dirname = dirname
-        self.filename = filename
-
-class TextInfo:
-    def __init__(self, encoding, lf, tabwidth):
-        self.encoding = encoding
-        self.lf = lf
-        self.tabwidth = tabwidth
+    storage = None
+    fullpathname = None
+    dirname = None
+    filename = None
+    stat = None
+    encoding = None
+    newline = None
+    tabwidth = None
+    expandtab = None
 
 
 filetypes = [

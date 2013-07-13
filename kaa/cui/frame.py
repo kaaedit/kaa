@@ -109,7 +109,6 @@ class MainFrame(Window, kaa.context.ContextRoot):
 
     def on_console_resized(self):
         """Resize wnds"""
-
         self.height, self.width = self._cwnd.getmaxyx()
 
         editorheight = max(1, self.height-1)
@@ -119,7 +118,7 @@ class MainFrame(Window, kaa.context.ContextRoot):
         for popup in self.popups:
             popup.on_console_resized()
 
-        self.messagebar.set_rect(0, editorheight, self.width, self.height)
+        self.messagebar.set_rect(0, self.height-1, self.width, self.height)
 
     def show_doc(self, doc):
         page = ChildFrame(parent=self)
@@ -133,6 +132,11 @@ class MainFrame(Window, kaa.context.ContextRoot):
 
     def add_popup(self, popup):
         self.popups.append(popup)
+
+    def show_inputline(self, inputline):
+        self.inputline = inputline
+        self.show_dialog(inputline)
+        self.on_console_resized()
 
     def show_dialog(self, dialog):
         self.add_popup(dialog)

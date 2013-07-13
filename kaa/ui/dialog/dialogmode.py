@@ -92,6 +92,7 @@ class DialogMode(modebase.ModeBase):
                 # resize window if number of rows changed
                 if newh != h:
                     wnd.get_label('popup').on_console_resized()
+                    wnd.mainframe.on_console_resized()
                     f, t = wnd.screen.get_visible_range()
                     if t == self.document.endpos():
                         # display as many rows as we can

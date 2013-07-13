@@ -47,6 +47,11 @@ class DialogWnd(wnd.Window, kaa.context.ContextRoot):
 
         self.destroy_context()
 
+        if self.mainframe.inputline is self:
+            self.mainframe.inputline = None
+            self.mainframe.on_console_resized()
+
+
     def activate(self):
         super().activate()
         self.input.activate()
