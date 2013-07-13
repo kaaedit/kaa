@@ -57,7 +57,6 @@ class FileStorage:
         kaa.app.messagebar.set_message('Written to {}({})'.format(file, dir))
 
 class FileInfo:
-    stat = None
     storage = None
     fullpathname = None
     dirname = None
