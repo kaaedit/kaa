@@ -1,30 +1,31 @@
-import os, importlib, unicodedata, sys
+import os, importlib, unicodedata, sys, locale
 import kaa
-from kaa import LOG, document
+from kaa import LOG, document, encodingdef
 from kaa.filetype.default import defaultmode
+config = kaa.app.config
 
 class FileStorage:
     def get_textio(self, *args, **kwargs):
+        _trace(args, kwargs)
         try:
             return open(*args, **kwargs)
         except FileNotFoundError:
             return None
 
-    def get_fileinfo(self, filename):
+    def set_fileinfo(self, fileinfo, filename):
         fullpath = os.path.abspath(filename)
         dirname, filename = os.path.split(filename)
 
-        ret = FileInfo()
-        ret.storage = self
-        ret.fullpathname = fullpath
-        ret.dirname = dirname
-        ret.filename = filename
+        fileinfo.storage = self
+        fileinfo.fullpathname = fullpath
+        fileinfo.dirname = dirname
+        fileinfo.filename = filename
 
         try:
-            ret.stat = os.stat(filename)
+            fileinfo.stat = os.stat(filename)
         except FileNotFoundError:
-            ret.stat = None
-        return ret
+            fileinfo.stat = None
+        return fileinfo
 
     def listdir(self, dirname):
         dirs = []
@@ -39,12 +40,22 @@ class FileStorage:
             files = [unicodedata.normalize('NFC', n) for n in files]
         return dirs, files
 
-    def openfile(self, filename):
-        return openfile(filename)
+    def openfile(self, filename, encoding=None, newline=None):
+        return openfile(filename, encoding, newline)
 
     def save_document(self, filename, doc):
-        open(filename, 'w', encoding='utf-8', errors='surrogateescape').write(doc.gettext(0, doc.endpos()))
-        doc.fileinfo = self.get_fileinfo(filename)
+        if doc.fileinfo.encoding is None:
+            doc.fileinfo.encoding = config.DEFAULT_ENCODING
+
+        if doc.fileinfo.newline is None:
+            doc.fileinfo.newline = config.DEFAULT_NEWLINE
+        f = open(filename, 'w', encoding=doc.fileinfo.encoding,
+                 newline=config.NEWLINE_CHARS[doc.fileinfo.newline],
+                 errors='surrogateescape')
+        f.write(doc.gettext(0, doc.endpos()))
+
+        self.set_fileinfo(doc.fileinfo, filename)
+
         if doc.undo:
             doc.undo.saved()
         mode = select_mode(filename)
@@ -56,11 +67,12 @@ class FileStorage:
 
         kaa.app.messagebar.set_message('Written to {}({})'.format(file, dir))
 
+
 class FileInfo:
     storage = None
-    fullpathname = None
-    dirname = None
-    filename = None
+    fullpathname = ''
+    dirname = ''
+    filename = ''
     stat = None
     encoding = None
     newline = None
@@ -68,16 +80,9 @@ class FileInfo:
     expandtab = None
 
 
-filetypes = [
-    'kaa.filetype.python',
-    'kaa.filetype.html',
-    'kaa.filetype.javascript',
-    'kaa.filetype.css',
-]
-
 def select_mode(filename):
     ext = os.path.splitext(filename)[1].lower()
-    for pkgname in filetypes:
+    for pkgname in config.FILETYPES:
         try:
             pkg = importlib.import_module(pkgname)
             if ext in getattr(pkg, 'FILE_EXT'):
@@ -88,25 +93,37 @@ def select_mode(filename):
     return defaultmode.DefaultMode
 
 
-def openfile(filename):
+def openfile(filename, encoding=None, newline=None):
     # Open file
+    _trace(111111111, newline)
     if sys.platform == 'darwin':
         filename = unicodedata.normalize('NFC', filename)
 
-    fileinfo = kaa.app.storage.get_fileinfo(filename)
+    if encoding is None:
+        encoding = config.DEFAULT_ENCODING
 
+    if newline is None:
+        newline = config.DEFAULT_NEWLINE
+
+    fileinfo = FileInfo()
+    kaa.app.storage.set_fileinfo(fileinfo, filename)
+    fileinfo.encoding = encoding
+    fileinfo.newline = newline
+    nlchars = config.NEWLINE_CHARS[newline]
     # use surrogateescape to preserve file contents intact.
-    textio = kaa.app.storage.get_textio(fileinfo.fullpathname, 'r', encoding=None,
-                                errors='surrogateescape', newline=None)
+    textio = kaa.app.storage.get_textio(fileinfo.fullpathname, 'r', encoding=encoding,
+                                errors='surrogateescape', newline=nlchars)
 
     buf = document.Buffer()
     if textio:
         src = textio.read()
+        if nlchars is not None:
+            src = src.replace(nlchars, '\n')
         buf.insert(0, src)
 
     doc = document.Document(buf)
-    doc.setmode(select_mode(filename)())
     doc.fileinfo = fileinfo
+    doc.setmode(select_mode(filename)())
 
     dir, file = os.path.split(fileinfo.fullpathname)
     if not dir.endswith(os.path.sep):
@@ -114,4 +131,14 @@ def openfile(filename):
 
     kaa.app.messagebar.set_message('Read from {}({})'.format(file, dir))
 
+    return doc
+
+
+def newfile(mode=None):
+    buf = document.Buffer()
+    doc = document.Document(buf)
+    doc.fileinfo = FileInfo()
+    if not mode:
+        mode = defaultmode.DefaultMode()
+    doc.setmode(mode)
     return doc

@@ -46,7 +46,7 @@ class Window(kaa.context.Context):
         if self.parent:
             self.parent.children.append(self)
 
-        self.rect = (x, y, w, h)
+        self.rect = (x, y, x+w, y+h)
 
         self._oninit()
 
@@ -214,15 +214,3 @@ class Window(kaa.context.Context):
     def on_killfocus(self):
         pass
 
-    # def on_keyevent(self, event):
-    #     if event.key == '\x1b' and event.no_trailing_char:
-    #         return self.on_esc_pressed(event)
-    #     else:
-    #         return self.on_key_pressed(event)
-    #
-    # def on_key_pressed(self, event):
-    #     return False
-    #
-    # def on_esc_pressed(self, event):
-    #     pass
-    #

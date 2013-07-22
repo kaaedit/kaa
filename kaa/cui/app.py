@@ -2,7 +2,7 @@ import curses
 import kaa
 from kaa import LOG
 from . import keydef, color, dialog
-from kaa import keyboard, document, macro
+from kaa import config, keyboard, document, macro
 from kaa.ui.messagebar import messagebarmode
 
 
@@ -33,6 +33,7 @@ def dump_panel():
 
 class CuiApp:
     def __init__(self):
+        self.config = config.Config()
         self._idleprocs = None
         self.colors = color.Colors()
         self.menus = []

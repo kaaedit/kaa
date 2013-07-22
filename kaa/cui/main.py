@@ -39,12 +39,7 @@ def main(stdscr):
 
         if not opt.file:
             # no file args. show new document.
-            buf = document.Buffer()
-#            src = '\n'.join(chr(0x40+i)+'0123456789'*10+"abcdeg" for i in range(10))
-#            buf.insert(0, src)
-            doc = document.Document(buf)
-            doc.setmode(defaultmode.DefaultMode())
-
+            doc = fileio.newfile()
             kaa.app.show_doc(doc)
         else:
             for filename in opt.file:

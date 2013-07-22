@@ -59,6 +59,10 @@ class DefaultMode(modebase.ModeBase):
     def init_tokenizers(self):
         self.tokenizers = [highlight.Tokenizer([])]
 
+    def on_set_document(self, document):
+        assert document.fileinfo
+        super().on_set_document(document)
+
     def close(self):
         super().close()
         self.keybind_vi_normalmode.clear()

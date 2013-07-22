@@ -86,11 +86,11 @@ class SearchDlgMode(dialogmode.DialogMode):
 
     def _build_buttons(self, f):
         # buttons
-        f.append_text('checkbox', '[&Next]', mark_pair='next',
+        f.append_text('checkbox', '[&Next]',
                       shortcut_style='checkbox.shortcut',
                       on_shortcut=self.search_next)
 
-        f.append_text('checkbox', '[&Prev]', mark_pair='prev',
+        f.append_text('checkbox', '[&Prev]',
                       shortcut_style='checkbox.shortcut',
                       on_shortcut=self.search_prev)
 

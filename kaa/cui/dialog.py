@@ -62,13 +62,10 @@ class DialogWnd(wnd.Window, kaa.context.ContextRoot):
     def on_console_resized(self):
         """Resize wnds"""
 
-        top, height = self.document.mode.calc_position(self.input)
+        l, t, r, b = self.document.mode.calc_position(self.input)
 
-        self.set_rect(0, top, self.mainframe.width,
-                      top+height)
-
-        self.input.set_rect(0, top, self.mainframe.width,
-                      top+height)
+        self.set_rect(l, t, r, b)
+        self.input.set_rect(l, t, r, b)
 
     def draw_screen(self):
         pass

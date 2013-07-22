@@ -64,7 +64,8 @@ class StatusBarMode(modebase.ModeBase):
         style_filename = self.get_styleid('filename')
         style_modename = self.get_styleid('modename')
 
-        self.document.append(d['filename'], style_filename)
+        if d['filename']:
+            self.document.append(d['filename'], style_filename)
 
         if d['modified']:
             self.document.append('*',  style_filename)

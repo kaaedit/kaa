@@ -5,10 +5,10 @@ from kaa.theme import Theme, Style
 from kaa.keyboard import *
 
 ItemListTheme = Theme('default', [
-    Style('default', 'default', 'Blue'),
-    Style('caption', 'red', 'Blue'),
-    Style('activemark', 'red', 'Green', nowrap=True),
-    Style('nonactivemark', 'default', 'Blue', nowrap=True),
+    Style('default', 'default', 'Cyan'),
+    Style('caption', 'Magenta', 'Yellow'),
+    Style('activemark', 'black', 'Red', nowrap=True),
+    Style('nonactivemark', 'Red', 'Cyan', nowrap=True),
 ])
 
 itemlist_keys = {
@@ -55,9 +55,11 @@ class ItemListCommands(Commands):
 
 class ItemListMode(dialogmode.DialogMode):
     autoshrink = True
+    CAPTIONSEP = '\n'
+    ITEMSEP = ' '
 
     @classmethod
-    def build(cls, items, sel, callback):
+    def build(cls, caption, items, sel, callback):
         buf = document.Buffer()
         doc = document.Document(buf)
         mode = cls()
@@ -68,9 +70,14 @@ class ItemListMode(dialogmode.DialogMode):
         mode.callback = callback
 
         f = dialogmode.FormBuilder(doc)
+
+        if caption:
+            f.append_text('caption', caption.replace('&', '&&'))
+            f.append_text('default', cls.CAPTIONSEP)
+
         for i, item in enumerate(items):
             f.append_text('default', item.replace('&', '&&'), mark_pair=i)
-            f.append_text('default', ' ')
+            f.append_text('default', cls.ITEMSEP)
 
         mode._update_style(None)
         return doc
@@ -110,3 +117,6 @@ class ItemListMode(dialogmode.DialogMode):
 
     def on_str(self, wnd, s):
         pass
+
+
+

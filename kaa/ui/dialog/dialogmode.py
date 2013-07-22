@@ -46,7 +46,7 @@ class DialogMode(modebase.ModeBase):
     def on_add_window(self, wnd):
         super().on_add_window(wnd)
 
-        wnd.screen.build_entire_rows = True
+        wnd.screen.build_entire_rows = True # todo: use mode.
 
     def calc_height(self, wnd):
         height = wnd.screen.get_total_height()
@@ -67,7 +67,7 @@ class DialogMode(modebase.ModeBase):
         height = min(height, wnd.mainframe.height)
 
         top = wnd.mainframe.height - height -1 # todo: get height of messagebar
-        return top, height
+        return 0, top, wnd.mainframe.width, top+height
 
     def on_set_document(self, document):
         super().on_set_document(document)
@@ -88,7 +88,8 @@ class DialogMode(modebase.ModeBase):
         if self.autoshrink:
             for wnd in self.document.wnds:
                 w, h = wnd.getsize()
-                top, newh = self.calc_position(wnd)
+                l, t, r, b = self.calc_position(wnd)
+                newh = b - t
                 # resize window if number of rows changed
                 if newh != h:
                     wnd.get_label('popup').on_console_resized()
@@ -165,3 +166,4 @@ class FormBuilder:
                 self.document.marks[mark_pair] = (start, self.document.endpos())
         finally:
             self.document.marks.locked = False
+

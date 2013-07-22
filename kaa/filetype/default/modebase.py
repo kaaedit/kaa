@@ -29,7 +29,7 @@ class SearchOption:
 
 class ModeBase:
     SCREEN_NOWRAP = False
-    SCREEN_BUILD_ENTIRE_ROW = False
+    SCREEN_BUILD_ENTIRE_ROWS = False
     SHOW_LINENO = False
 
     closed = False

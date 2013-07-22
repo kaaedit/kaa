@@ -277,7 +277,7 @@ class Screen:
 
         self.document = doc
         self.nowrap = doc.mode.SCREEN_NOWRAP
-        self.build_entire_rows = doc.mode.SCREEN_BUILD_ENTIRE_ROW
+        self.build_entire_rows = doc.mode.SCREEN_BUILD_ENTIRE_ROWS
 
     def close(self):
         self.document = self.selection = None

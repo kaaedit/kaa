@@ -108,7 +108,7 @@ class ApplicationCommands(Commands):
 
         def saved():
             n = docs.index(wnd.document)
-            doc = itemlistmode.ItemListMode.build(titles, n, callback)
+            doc = itemlistmode.ItemListMode.build('', titles, n, callback)
             kaa.app.show_dialog(doc)
 
         if len(wnd.document.wnds) == 1:

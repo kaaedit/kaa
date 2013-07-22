@@ -1,14 +1,17 @@
-import re, string, os
+import re, string, os, sys
 import kaa
-from kaa.command import Commands, command, norec
-from kaa import document, utils
+from kaa.command import Commands, command
+from kaa import document, utils, encodingdef
 from kaa.ui.dialog import dialogmode
 from kaa.theme import Theme, Style
 from kaa.keyboard import *
 from kaa.ui.msgbox import msgboxmode
+from kaa.ui.itemlist import itemlistmode
 
 from kaa.commands import editorcommand
 import kaa.filetype.default.keybind
+
+config = kaa.app.config
 
 FileOpenDlgTheme = Theme('default', [
     Style('default', 'default', 'Blue'),
@@ -17,7 +20,10 @@ FileOpenDlgTheme = Theme('default', [
     Style('dirname-active', 'red', 'Green', nowrap=True),
     Style('filename', 'Yellow', 'Blue', nowrap=True),
     Style('filename-active', 'Yellow', 'Green', nowrap=True),
+
 ])
+
+
 
 class FileListDlgMode(dialogmode.DialogMode):
     filename_check = None
@@ -61,28 +67,31 @@ class FileListDlgMode(dialogmode.DialogMode):
         self.cursel = None
 
     def build_doc(self):
-        self.document.delete(0, self.document.endpos())
-        if self.filename_check:
-            files = [file for file in self.files if self.filename_check(file)]
-            dirs = [dir for dir in self.dirs if self.filename_check(dir)]
-        else:
-            files = self.files
-            dirs = self.dirs
+        with self.document.suspend_update():
+            self.document.delete(0, self.document.endpos())
+            if self.filename_check:
+                files = [file for file in self.files if self.filename_check(file)]
+                dirs = [dir for dir in self.dirs if self.filename_check(dir)]
+            else:
+                files = self.files
+                dirs = self.dirs
 
-        self._cur_items = dirs+files
+            self._cur_items = dirs+files
 
-        f = dialogmode.FormBuilder(self.document)
+            f = dialogmode.FormBuilder(self.document)
 
-        f.append_text('caption', self.dirname+':\n')
-        for dir in dirs:
-            start = f.document.endpos()
-            f.append_text('dirname', dir.replace('&', '&&')+'/', mark_pair=dir)
-            f.append_text('default', ' ')
+            f.append_text('caption', self.dirname+':\n')
+            for dir in dirs:
+                start = f.document.endpos()
+                f.append_text('dirname', dir.replace('&', '&&')+'/',
+                              mark_pair=dir)
+                f.append_text('default', ' ')
 
-        for file in files:
-            start = f.document.endpos()
-            f.append_text('filename', file.replace('&', '&&'), mark_pair=file)
-            f.append_text('default', ' ')
+            for file in files:
+                start = f.document.endpos()
+                f.append_text('filename', file.replace('&', '&&'),
+                              mark_pair=file)
+                f.append_text('default', ' ')
 
 
     def init_keybind(self):
@@ -102,8 +111,9 @@ class FileListDlgMode(dialogmode.DialogMode):
         return 0   # hide cursor
 
     def calc_position(self, wnd):
-        top, height = super().calc_position(wnd)
-        return (top-2, height)  # display above FilenameDlgMode
+        l, t, r, b = super().calc_position(wnd)
+        # display above FilenameDlgMode
+        return (l, t-2, r, b-2)
 
     def on_esc_pressed(self, wnd, event):
         self.fileopendlg_commands.close(wnd)
@@ -174,11 +184,13 @@ class FileListDlgMode(dialogmode.DialogMode):
 FileNameDlgTheme = Theme('default', [
     Style('default', 'Magenta', 'Cyan'),
     Style('caption', 'Magenta', 'Yellow'),
+
+    Style('option', 'default', 'magenta', rjust=True, nowrap=True),
+    Style('option.shortcut', 'green', 'magenta', underline=True,
+          bold=True, rjust=True, nowrap=True),
 ])
 
 fileopendlg_keys = {
-#    left: 'fileopendlg.prev',
-#    right: 'fileopendlg.next',
     tab: 'fileopendlg.next',
     (shift, tab): 'fileopendlg.prev',
     '\r': 'fileopendlg.openfile',
@@ -234,7 +246,8 @@ class FileOpenDlgCommands(Commands):
     def openfile(self, wnd):
         filename = self._build_filename(wnd)
         if os.path.isfile(filename):
-            wnd.document.mode.callback(filename)
+            wnd.document.mode.callback(filename, wnd.document.mode.encoding,
+                                       wnd.document.mode.newline)
             self.close(wnd)
             return
 
@@ -276,18 +289,29 @@ class OpenFilenameDlgMode(dialogmode.DialogMode):
     min_height = 2
 
     @classmethod
-    def build(cls, filelist):
+    def build(cls, filelist, newline, encoding):
         buf = document.Buffer()
         doc = document.Document(buf)
         doc.undo = None
         mode = cls()
         doc.setmode(mode)
-        mode.filelist = filelist
 
+        mode.filelist = filelist
+        mode.newline = newline if newline else config.DEFAULT_NEWLINE
+        mode.encoding = encoding if encoding else config.DEFAULT_ENCODING
         f = dialogmode.FormBuilder(doc)
         f.append_text('caption', 'Filename:' )
         f.append_text('default', ' ')
         f.append_text('default', '', mark_pair='filename')
+        f.append_text('default', ' ')
+
+        f.append_text('option', '[&Encoding:{}]'.format(mode.encoding), mark_pair='enc',
+                      shortcut_style='option.shortcut',
+                      on_shortcut=lambda wnd:wnd.document.mode.select_encoding(wnd))
+
+        f.append_text('option', '[&Newline:{}]'.format(mode.newline), mark_pair='newline',
+                      shortcut_style='option.shortcut',
+                      on_shortcut=lambda wnd:wnd.document.mode.select_newline(wnd))
 
         return doc
 
@@ -338,9 +362,8 @@ class OpenFilenameDlgMode(dialogmode.DialogMode):
         w, h = wnd.getsize()
         height = self.calc_height(wnd)
         height = min(height, wnd.mainframe.height)
-
         top = wnd.mainframe.height - height -1 # todo: get height of messagebar
-        return top, height
+        return 0, top, wnd.mainframe.width, top+height
 
     def get_filename(self):
         f, t = self.document.marks['filename']
@@ -352,8 +375,38 @@ class OpenFilenameDlgMode(dialogmode.DialogMode):
         wnd.screen.selection.set_range(f, f+len(s))
         wnd.cursor.setpos(f+len(s))
 
-        _trace(s, f, t, len(s))
+    def select_encoding(self, wnd):
+        def callback(n):
+            enc = encodingdef.encodings[n]
+            if enc != self.encoding:
+                self.encoding = enc
+                f, t = self.document.marks['enc']
+                # [Encoding:{mode}]
+                # 01234567890    10
+                self.document.replace(f+10, t-1, self.encoding)
 
+        doc = itemlistmode.ItemListMode.build(
+            'Select character encoding:',
+            encodingdef.encodings,
+            encodingdef.encodings.index(self.encoding), callback)
+
+        kaa.app.show_dialog(doc)
+
+    def select_newline(self, wnd):
+        def callback(n):
+            nl = config.NEWLINES[n]
+            if nl != self.newline:
+                self.newline = nl
+                f, t = self.document.marks['newline']
+                # [Newline:{mode}]
+                # 0123456789    10
+                self.document.replace(f+9, t-1, self.newline)
+
+        doc = itemlistmode.ItemListMode.build(
+            'Select newline mode:',
+            config.NEWLINES, config.NEWLINES.index(self.newline), callback)
+
+        kaa.app.show_dialog(doc)
 
 def show_fileopen(filename, callback):
     filename = os.path.abspath(
@@ -365,7 +418,7 @@ def show_fileopen(filename, callback):
     doc = FileListDlgMode.build()
     dlg = kaa.app.show_dialog(doc)
 
-    doc = OpenFilenameDlgMode.build(dlg)
+    doc = OpenFilenameDlgMode.build(dlg, config.DEFAULT_NEWLINE, config.DEFAULT_ENCODING)
 
     doc.mode.callback = callback
     dlg = kaa.app.show_dialog(doc)
@@ -390,26 +443,29 @@ class FileSaveAsDlgCommands(FileOpenDlgCommands):
                 # query overwrite if file already exists.
                 if os.path.exists(filename):
                     def choice(c):
-                        if c =='y':
-                            wnd.document.mode.callback(filename)
+                        if c in 'yY':
+                            wnd.document.mode.callback(filename, wnd.document.mode.encoding,
+                                       wnd.document.mode.newline)
                             self.close(wnd)
 
                     msgboxmode.MsgBoxMode.show_msgbox(
                         'File `{}` already exists. Overwrite?: '.format(filename),
                         ['&Yes', '&No'], choice)
                 else:
-                    wnd.document.mode.callback(filename)
+                    wnd.document.mode.callback(filename, wnd.document.mode.encoding,
+                                       wnd.document.mode.newline)
                     self.close(wnd)
                 return
 
         return super().openfile(wnd)
 
+    def on_str(self, wnd, s):
+        return super().on_str(wnd, s)
+
+    def on_commands(self, wnd, commandids):
+        return super().on_commands(wnd, commandids)
 
 class SaveAsFilenameDlgMode(OpenFilenameDlgMode):
-    @classmethod
-    def build(cls, filelist):
-        return super().build(filelist)
-
     def init_commands(self):
         super().init_commands()
 
@@ -425,9 +481,7 @@ class SaveAsFilenameDlgMode(OpenFilenameDlgMode):
         self.cursor_commands = editorcommand.CursorCommands()
         self.register_command(self.cursor_commands )
 
-
-
-def show_filesaveas(filename, callback):
+def show_filesaveas(filename, encoding, newline, callback):
     filename = os.path.abspath(
         os.path.expanduser(filename))
     if os.path.isdir(filename) and not filename.endswith(os.path.sep):
@@ -436,7 +490,7 @@ def show_filesaveas(filename, callback):
     doc = FileListDlgMode.build()
     dlg = kaa.app.show_dialog(doc)
 
-    doc = SaveAsFilenameDlgMode.build(dlg)
+    doc = SaveAsFilenameDlgMode.build(dlg, encoding, newline)
     doc.mode.callback = callback
     dlg = kaa.app.show_dialog(doc)
 

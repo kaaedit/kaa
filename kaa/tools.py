@@ -23,6 +23,12 @@ def _get_stack(limit=None):
     traceback.print_stack(sys._getframe(2), limit=limit, file=out)
     _trace(out.getvalue())
 
+def _print_exc():
+    out = io.StringIO()
+    traceback.print_exc(file=out)
+    _trace(out.getvalue())
+
+
 def _trace(*args):
     kaa.LOG.debug(' '.join(str(o) for o in args))
 
@@ -77,3 +83,4 @@ builtins._get_stack= _get_stack
 builtins._trace = _trace
 builtins._stime = _stime
 builtins._pprint = _pprint
+builtins._print_exc = _print_exc
