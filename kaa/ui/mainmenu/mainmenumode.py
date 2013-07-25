@@ -38,7 +38,8 @@ class FileMenuMode(MenuMode):
     @classmethod
     def build(cls, wnd):
         return cls.build_menu(wnd,
-           (('&Open', ('file.open',)),
+           (('&New', ('file.new',)),
+            ('&Open', ('file.open',)),
             ('&Save', ('file.save',)),
             ('Save &As', ('file.saveas',)),
             ('&Close', ('file.close',)),

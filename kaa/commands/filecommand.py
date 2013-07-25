@@ -5,6 +5,13 @@ from kaa.ui.msgbox import msgboxmode
 from kaa import document
 
 class FileCommands(Commands):
+    @command('file.new')
+    @norec
+    def file_new(self, wnd):
+        from kaa import fileio
+        doc = fileio.newfile()
+        kaa.app.show_doc(doc)
+
     @command('file.open')
     @norec
     def file_open(self, wnd):
@@ -15,7 +22,6 @@ class FileCommands(Commands):
 
         from kaa.ui.fileopendlg import fileopendlgmode
         fileopendlgmode.show_fileopen('.', cb)
-
 
     @command('file.save')
     @norec
