@@ -4,17 +4,12 @@ from gappedbuf import re as gre
 from kaa.highlight import Tokenizer, Span, Keywords, EndSection
 from kaa.theme import Theme, Style
 
-JavaScriptTheme = Theme('javascipt', [
-    Style('default', 'default', 'default', False, False),
-    Style('lineno', 'White', 'Blue', False, False),
-    Style('parenthesis_cur', 'White', 'Blue', False, False),
-    Style('parenthesis_match', 'Red', 'Yellow', False, False),
-
-    Style('keyword', 'magenta', 'default'),
-    Style('comment', 'red', 'default'),
-    Style('string', 'green', 'default'),
-])
-
+JavaScriptThemes = {
+    'default':
+        Theme([
+            # None defined
+        ])
+}
 def build_tokenizer(stop=None, terminates=None):
     JSTOKENS = namedtuple('jstokens', ['keywords', 'comment1', 'comment2',
                        'string1', 'string2', 'stop'])
@@ -38,8 +33,9 @@ def build_tokenizer(stop=None, terminates=None):
 
 
 class JavaScriptMode(defaultmode.DefaultMode):
-    def init_theme(self):
-        self.theme = JavaScriptTheme
+    def init_themes(self):
+        super().init_themes()
+        self.themes.append(JavaScriptThemes)
 
     def init_tokenizers(self):
         self.tokenizers = [build_tokenizer()]

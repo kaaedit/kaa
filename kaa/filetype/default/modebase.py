@@ -4,7 +4,7 @@ import gappedbuf.re
 import kaa
 from kaa import keyboard, editmode, LOG
 from kaa import highlight
-
+from kaa import theme
 
 class SearchOption:
     def __init__(self):
@@ -33,22 +33,27 @@ class ModeBase:
     SHOW_LINENO = False
 
     closed = False
+    USE_UNDO = True
+
+    theme = None
 
     def __init__(self):
         self.commands = {}
         self.is_availables = {}
         self.keybind = keyboard.KeyBind()
-        self.keybind_vi_normalmode = keyboard.KeyBind()
+        self.keybind_vi_commandmode = keyboard.KeyBind()
         self.keybind_vi_visualmode = keyboard.KeyBind()
         self.keybind_vi_visuallinewisemode = keyboard.KeyBind()
 
-        self.theme = None
+        self.themes = []
 
         self.init_keybind()
         self.init_vikeybind()
 
         self.init_commands()
-        self.init_theme()
+        self.init_themes()
+
+        self._build_theme()
         kaa.app.translate_theme(self.theme)
         self.tokenizers = []
         self.init_tokenizers()
@@ -87,12 +92,13 @@ class ModeBase:
         self.document.styles.setints(0, len(self.document.styles), 0)
 
         self._build_style_map()
-
+        self.document.use_undo(self.USE_UNDO)
+        
     def on_document_updated(self, pos, inslen, dellen):
         pass
 
     def on_add_window(self, wnd):
-        self.mode_insert(wnd)
+        self.editmode_insert(wnd)
 
     def init_keybind(self):
         pass
@@ -103,7 +109,7 @@ class ModeBase:
     def init_commands(self):
         pass
 
-    def init_theme(self):
+    def init_themes(self):
         pass
 
     def init_tokenizers(self):
@@ -132,6 +138,18 @@ class ModeBase:
                 ret = max(self.stylemap.keys())+1
             self.stylemap[ret] = self.theme.get_style(stylename)
             return ret
+
+    def select_theme(self, theme_name, themes):
+        theme = themes.get(theme_name, None)
+        if theme is None:
+            theme = theme[kaa.app.DEFAULT_THEME]
+        return theme
+
+    def _build_theme(self):
+        theme_name = kaa.app.get_current_theme()
+        self.theme = theme.Theme([])
+        for t in self.themes:
+            self.theme.update(self.select_theme(theme_name, t))
 
     def get_style(self, tokenid):
         ret = self.stylemap.get(tokenid, None)
@@ -243,17 +261,17 @@ class ModeBase:
             last = span
         return last
 
-    def mode_insert(self, wnd):
+    def editmode_insert(self, wnd):
         wnd.set_editmode(editmode.EditMode())
 
-    def mode_visual(self, wnd):
+    def editmode_visual(self, wnd):
         wnd.set_editmode(editmode.VisualMode())
 
-    def mode_visual_linewise(self, wnd):
+    def editmode_visual_linewise(self, wnd):
         wnd.set_editmode(editmode.VisualLinewiseMode())
 
-    def mode_normal(self, wnd):
-        wnd.set_editmode(editmode.NormalMode())
+    def editmode_command(self, wnd):
+        wnd.set_editmode(editmode.CommandMode())
 
 
 

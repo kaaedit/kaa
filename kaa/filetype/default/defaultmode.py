@@ -1,6 +1,6 @@
 from collections import defaultdict
 import kaa
-from kaa.commands import appcommand, filecommand, editorcommand, modecommand
+from kaa.commands import appcommand, filecommand, editorcommand, editmodecommand
 from . import keybind, theme, modebase
 
 from kaa import highlight
@@ -21,7 +21,7 @@ class DefaultMode(modebase.ModeBase):
     def init_vikeybind(self):
         super().init_vikeybind()
 
-        self.keybind_vi_normalmode.add_keybind(keybind.normal_mode_keys)
+        self.keybind_vi_commandmode.add_keybind(keybind.command_mode_keys)
         self.keybind_vi_visualmode.add_keybind(keybind.visual_mode_keys)
         self.keybind_vi_visuallinewisemode.add_keybind(
             keybind.visual_linewise_mode_keys)
@@ -50,11 +50,12 @@ class DefaultMode(modebase.ModeBase):
         self.search_commands = editorcommand.SearchCommands()
         self.register_command(self.search_commands)
 
-        self.mode_commands = modecommand.ModeCommands()
+        self.mode_commands = editmodecommand.EditModeCommands()
         self.register_command(self.mode_commands)
 
-    def init_theme(self):
-        self.theme = theme.DefaultTheme
+    def init_themes(self):
+        super().init_themes()
+        self.themes.append(theme.DefaultThemes)
 
     def init_tokenizers(self):
         self.tokenizers = [highlight.Tokenizer([])]
@@ -65,7 +66,7 @@ class DefaultMode(modebase.ModeBase):
 
     def close(self):
         super().close()
-        self.keybind_vi_normalmode.clear()
+        self.keybind_vi_commandmode.clear()
         self.keybind_vi_visualmode.clear()
         self.keybind_vi_visuallinewisemode.clear()
 
@@ -145,7 +146,8 @@ class DefaultMode(modebase.ModeBase):
         return self.highlight.update_style(self.document, batch=self.HIGHLIGHTBATCH)
 
     def on_esc_pressed(self, wnd, event):
-        is_available, command = self.get_command('mode.normal')
+        # Pressing esc key starts command mode.
+        is_available, command = self.get_command('editmode.command')
         if command:
             command(wnd)
             if kaa.app.macro.is_recording():

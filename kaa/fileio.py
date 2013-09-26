@@ -2,11 +2,9 @@ import os, importlib, unicodedata, sys, locale
 import kaa
 from kaa import LOG, document, encodingdef
 from kaa.filetype.default import defaultmode
-config = kaa.app.config
 
 class FileStorage:
     def get_textio(self, *args, **kwargs):
-        _trace(args, kwargs)
         try:
             return open(*args, **kwargs)
         except FileNotFoundError:
@@ -45,12 +43,12 @@ class FileStorage:
 
     def save_document(self, filename, doc):
         if doc.fileinfo.encoding is None:
-            doc.fileinfo.encoding = config.DEFAULT_ENCODING
+            doc.fileinfo.encoding = kaa.app.config.DEFAULT_ENCODING
 
         if doc.fileinfo.newline is None:
-            doc.fileinfo.newline = config.DEFAULT_NEWLINE
+            doc.fileinfo.newline = kaa.app.config.DEFAULT_NEWLINE
         f = open(filename, 'w', encoding=doc.fileinfo.encoding,
-                 newline=config.NEWLINE_CHARS[doc.fileinfo.newline],
+                 newline=kaa.app.config.NEWLINE_CHARS[doc.fileinfo.newline],
                  errors='surrogateescape')
         f.write(doc.gettext(0, doc.endpos()))
 
@@ -82,7 +80,7 @@ class FileInfo:
 
 def select_mode(filename):
     ext = os.path.splitext(filename)[1].lower()
-    for pkgname in config.FILETYPES:
+    for pkgname in kaa.app.config.FILETYPES:
         try:
             pkg = importlib.import_module(pkgname)
             if ext in getattr(pkg, 'FILE_EXT'):
@@ -95,21 +93,20 @@ def select_mode(filename):
 
 def openfile(filename, encoding=None, newline=None):
     # Open file
-    _trace(111111111, newline)
     if sys.platform == 'darwin':
         filename = unicodedata.normalize('NFC', filename)
 
     if encoding is None:
-        encoding = config.DEFAULT_ENCODING
+        encoding = kaa.app.config.DEFAULT_ENCODING
 
     if newline is None:
-        newline = config.DEFAULT_NEWLINE
+        newline = kaa.app.config.DEFAULT_NEWLINE
 
     fileinfo = FileInfo()
     kaa.app.storage.set_fileinfo(fileinfo, filename)
     fileinfo.encoding = encoding
     fileinfo.newline = newline
-    nlchars = config.NEWLINE_CHARS[newline]
+    nlchars = kaa.app.config.NEWLINE_CHARS[newline]
     # use surrogateescape to preserve file contents intact.
     textio = kaa.app.storage.get_textio(fileinfo.fullpathname, 'r', encoding=encoding,
                                 errors='surrogateescape', newline=nlchars)
@@ -134,8 +131,10 @@ def openfile(filename, encoding=None, newline=None):
     return doc
 
 
-def newfile(mode=None):
+def newfile(mode=None, s=''):
     buf = document.Buffer()
+    if s:
+        buf.insert(0, s)
     doc = document.Document(buf)
     doc.fileinfo = FileInfo()
     if not mode:

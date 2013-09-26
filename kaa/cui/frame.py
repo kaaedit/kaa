@@ -60,6 +60,7 @@ class ChildFrame(Window, kaa.context.ContextRoot):
 
 
     def on_focus(self):
+        super().on_focus()
         self.mainframe.activeframe = self
         if self.active_editor:
             self.active_editor.activate()
@@ -88,6 +89,9 @@ class MainFrame(Window, kaa.context.ContextRoot):
     need_redraw = False
     childframes = []
     activeframe = None
+
+    MESSAGEBAR_HEIGHT = 1
+
     def __init__(self, wnd):
         Window.mainframe = self
         super().__init__(None, wnd)
@@ -105,6 +109,7 @@ class MainFrame(Window, kaa.context.ContextRoot):
         self.messagebar.show_doc(doc)
 
     def on_focus(self):
+        super().on_focus()
         if self.activeframe:
             self.activeframe.on_focus()
 
@@ -114,9 +119,9 @@ class MainFrame(Window, kaa.context.ContextRoot):
 
         if self.inputline:
             w, h = self.inputline.getsize()
-            editorheight = max(1, self.height - h-1)
+            editorheight = max(1, self.height - h-self.MESSAGEBAR_HEIGHT)
         else:
-            editorheight = max(1, self.height-1)
+            editorheight = max(1, self.height-self.MESSAGEBAR_HEIGHT)
 
         if self.activeframe:
             self.activeframe.set_rect(0, 0, self.width, editorheight)
@@ -124,7 +129,7 @@ class MainFrame(Window, kaa.context.ContextRoot):
         for popup in self.popups:
             popup.on_console_resized()
 
-        self.messagebar.set_rect(0, self.height-1, self.width, self.height)
+        self.messagebar.set_rect(0, self.height-self.MESSAGEBAR_HEIGHT, self.width, self.height)
 
     def show_doc(self, doc):
         page = ChildFrame(parent=self)

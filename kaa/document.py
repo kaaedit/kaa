@@ -139,6 +139,13 @@ class Document:
 
         self.marks = self.buf = self.mode = None
 
+    def use_undo(self, is_useundo):
+        if is_useundo:
+            if not self.undo:
+                self.undo = Undo()
+        else:
+            self.undo = None
+
     @contextlib.contextmanager
     def suspend_update(self):
         org = self.delay_update
@@ -146,7 +153,8 @@ class Document:
         yield
         self.delay_update = org
 
-        self.update_screen(0, 0, 0)
+        if not self.delay_update:
+            self.update_screen(0, 0, 0)
 
     def get_title(self):
         if self.fileinfo:

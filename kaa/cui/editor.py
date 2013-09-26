@@ -51,6 +51,7 @@ class TextEditorWindow(Window):
 
     def set_editmode(self, mode):
         self.editmode = mode
+        self.editmode.activated(self)
 
     def dup(self):
         ret = self.__class__(parent=self.parent)
@@ -70,6 +71,10 @@ class TextEditorWindow(Window):
 
             self.draw_screen(force=True)
 
+    def activate(self):
+        super().activate()
+        kaa.app.set_focus(self)
+
     def set_cursor(self, cursor):
         self.cursor = cursor
 
@@ -84,6 +89,7 @@ class TextEditorWindow(Window):
             frame.set_active_editor(self)
 
     def on_focus(self):
+        super().on_focus()
         self._update_activeframe()
 
         if self.document:
@@ -231,11 +237,14 @@ class TextEditorWindow(Window):
                 self.refresh()
 
     CURSOR_TO_MIDDLE_ON_SCROLL = True
-    def locate_cursor(self, pos):
+    def locate_cursor(self, pos, top=None, middle=None, bottom=None):
+
+        if top is middle is bottom is None:
+            middle = self.CURSOR_TO_MIDDLE_ON_SCROLL
+            bottom = not self.CURSOR_TO_MIDDLE_ON_SCROLL
+
         updated = self.screen.apply_updates()
-        self.screen.locate(pos,
-                           middle=self.CURSOR_TO_MIDDLE_ON_SCROLL,
-                           bottom=not self.CURSOR_TO_MIDDLE_ON_SCROLL)
+        self.screen.locate(pos, top=top, middle=middle, bottom=bottom)
 
         idx, x = self.screen.getrowcol(pos)
         y = idx - self.screen.portfrom

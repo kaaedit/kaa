@@ -257,9 +257,9 @@ class Screen:
 
         # Rows displayed on screen
         # A row at self.rows[0] should be start from top
-        # of document or from top of physical line.
+        # of document or from a top of physical line.
         # A row at self.rows[-1] should be finished at end
-        # of document or end of physical line.
+        # of document or an end of physical line.
         # An entire physical line will be stored in self.rows,
         # never be a part of physical line.
         self.rows = []

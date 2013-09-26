@@ -16,12 +16,11 @@ class FileCommands(Commands):
     @norec
     def file_open(self, wnd):
         def cb(filename, encoding, newline):
-            _trace(filename, encoding, newline)
             doc = kaa.app.storage.openfile(filename, encoding, newline)
             kaa.app.show_doc(doc)
 
-        from kaa.ui.fileopendlg import fileopendlgmode
-        fileopendlgmode.show_fileopen('.', cb)
+        from kaa.ui.selectfile import selectfile
+        selectfile.show_fileopen('.', cb)
 
     @command('file.save')
     @norec
@@ -65,8 +64,8 @@ class FileCommands(Commands):
         if not document:
             document = wnd.document
 
-        from kaa.ui.fileopendlg import fileopendlgmode
-        fileopendlgmode.show_filesaveas(document.fileinfo.fullpathname,
+        from kaa.ui.selectfile import selectfile
+        selectfile.show_filesaveas(document.fileinfo.fullpathname,
                                         document.fileinfo.newline,
                                         document.fileinfo.encoding, cb)
 

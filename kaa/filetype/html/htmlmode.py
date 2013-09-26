@@ -6,28 +6,19 @@ from kaa.theme import Theme, Style
 from kaa.filetype.javascript import javascriptmode
 from kaa.filetype.css import cssmode
 
-HTMLTheme = Theme('html', [
-    Style('default', 'default', 'default', False, False),
-    Style('lineno', 'White', 'Blue', False, False),
-    Style('parenthesis_cur', 'White', 'Blue', False, False),
-    Style('parenthesis_match', 'Red', 'Yellow', False, False),
+HTMLThemes = {
+    'default':
+        Theme([
+            Style('html-tag', 'green', 'default'),
+            Style('html-attrname', 'blue', 'default'),
+            Style('html-attrvalue', 'yellow', 'default'),
 
-    Style('keyword', 'magenta', 'default'),
-    Style('comment', 'red', 'default'),
-    Style('html-tag', 'green', 'default'),
-    Style('html-attrname', 'blue', 'default'),
-    Style('html-attrvalue', 'yellow', 'default'),
-
-    # js styles
-    Style('string', 'cyan', 'default'),
-
-    # css styles
-    Style('selector', 'magenta', 'default'),
-    Style('propname', 'green', 'default'),
-    Style('propvalue', 'blue', 'default'),
-
-])
-
+            # css styles
+            Style('css-selector', 'magenta', 'default'),
+            Style('css-propname', 'green', 'default'),
+            Style('css-propvalue', 'blue', 'default'),
+        ])
+}
 
 class HTMLTag(Token):
     def re_start(self):
@@ -203,8 +194,9 @@ def build_tokenizers():
 
 
 class HTMLMode(defaultmode.DefaultMode):
-    def init_theme(self):
-        self.theme = HTMLTheme
+    def init_themes(self):
+        super().init_themes()
+        self.themes.append(HTMLThemes)
 
     def init_tokenizers(self):
         self.tokenizers = build_tokenizers()

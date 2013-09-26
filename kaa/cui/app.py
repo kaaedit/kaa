@@ -28,10 +28,12 @@ def dump_panel():
         mode = ''
         if hasattr(pw, 'document'):
             mode = pw.document.mode
-        _trace((l,t, l+w, t+h), panel.hidden(), pw, mode)
         panel = panel.below()
 
 class CuiApp:
+    INITIAL_MESSAGE = 'Type F1 or alt+/ for menu.'
+    DEFAULT_THEME = 'default'
+
     def __init__(self):
         self.config = config.Config()
         self._idleprocs = None
@@ -40,6 +42,7 @@ class CuiApp:
         self.focus = None
         self.clipboard = ''
         self._quit = False
+        self._theme_name = self.DEFAULT_THEME
 
     def init(self, mainframe):
         self.messagebar = messagebarmode.MessageBarMode()
@@ -47,12 +50,14 @@ class CuiApp:
         buf = document.Buffer()
         doc = document.Document(buf)
         doc.setmode(self.messagebar)
-        doc.insert(0, 'ready')
         mainframe.set_messagebar(doc)
 
         self.mainframe = mainframe
         self.focus = self.mainframe
         self.macro = macro.Macro()
+
+    def get_current_theme(self):
+        return self._theme_name
 
     def quit(self):
         self._quit = True
@@ -60,7 +65,7 @@ class CuiApp:
     def on_idle(self):
         if not self._idleprocs:
             self._idleprocs = [
-                doc.mode.on_idle for doc in document.Document.all]
+                doc.mode.on_idle for doc in document.Document.all if doc.mode]
 
         if self._idleprocs:
             proc = self._idleprocs.pop(0)
@@ -122,11 +127,11 @@ class CuiApp:
         if wnd:
             wnd.on_focus()
 
-    def show_doc(self, doc):
+    def show_doc(self, docs):
         '''
         Create new window for the doc and show it.
         '''
-        self.mainframe.show_doc(doc)
+        self.mainframe.show_doc(docs)
 
     def show_inputline(self, doc):
         dlg = dialog.DialogWnd(parent=self.mainframe, doc=doc)
@@ -151,7 +156,8 @@ class CuiApp:
             menu.close()
 
         if self.menus:
-            self.show_dialog(self.menus[-1])
+            doc = self.menus[-1]
+            self.show_dialog(doc)
 
     def clear_menu(self):
         self.menus = []
@@ -165,6 +171,8 @@ class CuiApp:
 
     def run(self):
         self.mainframe.on_console_resized()
+        kaa.app.messagebar.set_message(self.INITIAL_MESSAGE)
+
         nonblocking = True
         while not self._quit:
             try:
@@ -190,6 +198,5 @@ class CuiApp:
             except Exception as e:
                 LOG.error('Unhandled exception', exc_info=True)
                 kaa.app.messagebar.set_message(str(e))
-#                raise
 
 

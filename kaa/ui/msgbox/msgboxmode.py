@@ -5,20 +5,26 @@ from kaa.ui.dialog import dialogmode
 from kaa.theme import Theme, Style
 from kaa.ui.dialog import dialogmode
 
-MsgBoxTheme = Theme('default', [
-    Style('default', 'default', 'Magenta'),
-    Style('underline', 'default', 'Magenta', underline=True),
-    Style('caption', 'red', 'Green'),
-    Style('button', 'default', 'magenta', nowrap=True),
-    Style('button.shortcut', 'green', 'magenta', underline=True,
-          bold=True, nowrap=True),
-])
+MsgBoxThemes = {
+    'default':
+        Theme([
+            Style('default', 'default', 'Magenta'),
+            Style('underline', 'default', 'Magenta', underline=True),
+            Style('caption', 'red', 'Green'),
+            Style('button', 'default', 'magenta', nowrap=True),
+            Style('button.shortcut', 'green', 'magenta', underline=True,
+                  bold=True, nowrap=True),
+        ])
+}
 
 class MsgBoxMode(dialogmode.DialogMode):
     autoshrink = True
     SEPARATOR = '/'
-    def init_theme(self):
-        self.theme = MsgBoxTheme
+    USE_UNDO = False
+
+    def init_themes(self):
+        super().init_themes()
+        self.themes.append(MsgBoxThemes)
 
     def init_keybind(self):
         pass

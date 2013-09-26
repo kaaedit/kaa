@@ -3,9 +3,12 @@ from kaa import cursor, keyboard
 from kaa.filetype.default import modebase
 from kaa.theme import Theme, Style
 
-DialogTheme = Theme('default', [
-    Style('default', 'default', 'default', False, False),
-])
+DialogThemes = {
+    'default':
+        Theme([
+            Style('default', 'default', 'default', False, False),
+    ])
+}
 
 class DialogCursor(cursor.Cursor):
     def __init__(self, wnd, ranges):
@@ -37,8 +40,9 @@ class DialogMode(modebase.ModeBase):
     autoshrink = False
     min_height = 1
 
-    def init_theme(self):
-        self.theme = DialogTheme
+    def init_themes(self):
+        super().init_themes()
+        self.themes.append(DialogThemes)
 
     def init_tokenizers(self):
         self.tokenizers = []
@@ -50,23 +54,17 @@ class DialogMode(modebase.ModeBase):
 
     def calc_height(self, wnd):
         height = wnd.screen.get_total_height()
-        w, h = wnd.getsize()
+        if height < self.min_height:
+            return self.min_height
         maxw, maxh = wnd.mainframe.getsize()
-        if height > maxh//2:
-            return maxh//2
-        elif height == h:
-            return h
-        elif height > h:
-            return min(maxh//2, height)
-        else:
-            return max(self.min_height, height)
+        return min(maxh, height)
 
     def calc_position(self, wnd):
         w, h = wnd.getsize()
         height = self.calc_height(wnd)
-        height = min(height, wnd.mainframe.height)
+        height = min(height, wnd.mainframe.messagebar.rect[1])
 
-        top = wnd.mainframe.height - height -1 # todo: get height of messagebar
+        top = wnd.mainframe.messagebar.rect[1] - height
         return 0, top, wnd.mainframe.width, top+height
 
     def on_set_document(self, document):
@@ -164,6 +162,11 @@ class FormBuilder:
 
             if mark_pair is not None:
                 self.document.marks[mark_pair] = (start, self.document.endpos())
+
+            # Dialog texts are not undoable
+            if self.document.undo:
+                self.document.undo.clear()
+
         finally:
             self.document.marks.locked = False
 

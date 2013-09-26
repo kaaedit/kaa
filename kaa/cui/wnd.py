@@ -72,7 +72,6 @@ class Window(kaa.context.Context):
 
         if self.parent:
             self.parent.children.remove(self)
-
         self.parent = None
         self._cwnd = self._panel = None
 

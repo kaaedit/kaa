@@ -6,12 +6,15 @@ from kaa.ui.dialog import dialogmode
 from kaa.theme import Theme, Style
 from kaa.keyboard import *
 
-FrameListTheme = Theme('default', [
-    Style('default', 'default', 'Blue'),
-    Style('caption', 'red', 'Blue'),
-    Style('activemark', 'red', 'Green', nowrap=True),
-    Style('nonactivemark', 'default', 'Blue', nowrap=True),
-])
+FrameListThemes = {
+    'default':
+        Theme([
+            Style('default', 'default', 'Blue'),
+            Style('caption', 'red', 'Blue'),
+            Style('activemark', 'red', 'Green', nowrap=True),
+            Style('nonactivemark', 'default', 'Blue', nowrap=True),
+        ])
+}
 
 framelist_keys = {
     left: 'framelist.prev',
@@ -69,6 +72,8 @@ class FrameListCommands(Commands):
 
 class FrameListMode(dialogmode.DialogMode):
     autoshrink = True
+    USE_UNDO = False
+
     @classmethod
     def build(cls):
         buf = document.Buffer()
@@ -114,8 +119,9 @@ class FrameListMode(dialogmode.DialogMode):
         self.framelist_commands = FrameListCommands()
         self.register_command(self.framelist_commands)
 
-    def init_theme(self):
-        self.theme = FrameListTheme
+    def init_themes(self):
+        super().init_themes()
+        self.themes.append(FrameListThemes)
 
     def get_cursor_visibility(self):
         return 0   # hide cursor

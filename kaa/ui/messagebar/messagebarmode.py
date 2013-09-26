@@ -2,14 +2,19 @@ import kaa
 from kaa.filetype.default import modebase
 from kaa.theme import Theme, Style
 
-MessageBarTheme = Theme('default', [
-    Style('default', 'red', 'default', False, False),
-])
-
+MessageBarThemes = {
+    'default':
+        Theme([
+            Style('default', 'red', 'default', False, False),
+        ])
+}
 
 class MessageBarMode(modebase.ModeBase):
-    def init_theme(self):
-        self.theme = MessageBarTheme
+    USE_UNDO = False
+
+    def init_themes(self):
+        super().init_themes()
+        self.themes.append(MessageBarThemes)
 
     def on_set_document(self, doc):
         super().on_set_document(doc)

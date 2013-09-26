@@ -4,9 +4,12 @@ from kaa.ui.dialog import dialogmode
 from kaa.theme import Theme, Style
 from kaa.keyboard import *
 
-MoveSeparatorTheme = Theme('default', [
-    Style('default', 'default', 'Blue'),
-])
+MoveSeparatorThemes = {
+    'default':
+        Theme([
+            Style('default', 'default', 'Blue'),
+        ])
+}
 
 moveseparator_keys = {
     left: 'moveseparator.prev',
@@ -40,6 +43,8 @@ class MoveSeparatorCommands(Commands):
         org_wnd.activate()
 
 class MoveSeparatorMode(dialogmode.DialogMode):
+    USE_UNDO = False
+
     @classmethod
     def build(cls, target):
         buf = document.Buffer()
@@ -63,8 +68,9 @@ class MoveSeparatorMode(dialogmode.DialogMode):
         self.moveseparator_commands = MoveSeparatorCommands()
         self.register_command(self.moveseparator_commands)
 
-    def init_theme(self):
-        self.theme = MoveSeparatorTheme
+    def init_themes(self):
+        super().init_themes()
+        self.themes.append(MoveSeparatorThemes)
 
     def get_cursor_visibility(self):
         return 0   # hide cursor

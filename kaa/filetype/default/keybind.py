@@ -4,6 +4,7 @@ from kaa.keyboard import *
 app_keys = {
     (alt, '/'): 'app.mainmenu',
     f1: 'app.mainmenu',
+    f2: 'file.open2',
 }
 
 # default cursor commands
@@ -78,8 +79,8 @@ emacs_keys = {
 
 
 # vi like commands
-normal_mode_keys = {
-    # normal mode
+command_mode_keys = {
+    # command mode
     'h': 'cursor.left',
     'l': 'cursor.right',
     'k': 'cursor.up',
@@ -90,10 +91,10 @@ normal_mode_keys = {
     # edit
     'x': 'edit.delete',
 
-    # mode change
-    'i': 'mode.insert',
-    'v': 'mode.visual',
-    'V': 'mode.visual-linewise',
+    # editmode change
+    'i': 'editmode.insert',
+    'v': 'editmode.visual',
+    'V': 'editmode.visual-linewise',
 
     # undo/redo
     'u': 'edit.undo',

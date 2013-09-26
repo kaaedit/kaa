@@ -1,15 +1,18 @@
-from kaa.command import Commands, command, norec
+from kaa.command import Commands, command
 from kaa import document
 from kaa.ui.dialog import dialogmode
 from kaa.theme import Theme, Style
 from kaa.keyboard import *
 
-ItemListTheme = Theme('default', [
-    Style('default', 'default', 'Cyan'),
-    Style('caption', 'Magenta', 'Yellow'),
-    Style('activemark', 'black', 'Red', nowrap=True),
-    Style('nonactivemark', 'Red', 'Cyan', nowrap=True),
-])
+ItemListThemes = {
+    'default':
+        Theme([
+            Style('default', 'default', 'Cyan'),
+            Style('caption', 'Magenta', 'Yellow'),
+            Style('activemark', 'black', 'Red', nowrap=True),
+            Style('nonactivemark', 'Red', 'Cyan', nowrap=True),
+        ])
+}
 
 itemlist_keys = {
     left: 'itemlist.prev',
@@ -88,9 +91,11 @@ class ItemListMode(dialogmode.DialogMode):
             f, t = self.document.marks[i]
             if i == self.cursel:
                 style = 'activemark'
+                cursor = f
             else:
                 style = 'nonactivemark'
-                cursor = f
+                if cursor is None:
+                    cursor = f
 
             self.document.styles.setints(f, t, self.get_styleid(style))
 
@@ -106,8 +111,9 @@ class ItemListMode(dialogmode.DialogMode):
         self.itemlist_commands = ItemListCommands()
         self.register_command(self.itemlist_commands)
 
-    def init_theme(self):
-        self.theme = ItemListTheme
+    def init_themes(self):
+        super().init_themes()
+        self.themes.append(ItemListThemes)
 
     def get_cursor_visibility(self):
         return 0   # hide cursor
@@ -116,7 +122,22 @@ class ItemListMode(dialogmode.DialogMode):
         self.itemlist_commands.close(wnd)
 
     def on_str(self, wnd, s):
-        pass
+        cursel = self.cursel
+        if cursel is None:
+            cursel = -1
+        c = s[-1]
+        cont = True
+        while cont:
+            if cursel < 0:
+                cont = False
+            for i in range(cursel+1, len(self.items)):
+                if self.items[i].startswith(c):
+                    self.cursel = i
+                    self._update_style(wnd)
+                    return
+            cursel = -1
+
+
 
 
 

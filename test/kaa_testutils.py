@@ -14,7 +14,7 @@ class _DmyWnd(context.Context):
     def get_context_parent(self):
         return None
 
-    def locate_cursor(self, pos):
+    def locate_cursor(self, pos, top=None, middle=None, bottom=None):
         return pos, 0, 0
 
     def locate(self, pos, top=False, middle=False, bottom=False, align_always=False):
@@ -40,15 +40,10 @@ class _DmyWnd(context.Context):
 
 
 class _TestDocBase:
-    def _getbuf(self, s=''):
-        buf = document.Buffer()
-        buf.insert(0, s)
-        return buf
-
     def _getdoc(self, s=''):
-        doc = document.Document(self._getbuf(s))
-        doc.setmode(self._getmode())
-        return doc
+        mode = self._getmode()
+        import kaa.fileio
+        return kaa.fileio.newfile(mode, s)
 
     def _getmode(self):
         with patch('kaa.app', create=True):

@@ -6,16 +6,18 @@ from . import searchcommand, keybind
 from kaa.ui.msgbox import msgboxmode
 from kaa.commands import editorcommand
 
-SearchTheme = Theme('default', [
-    Style('default', 'default', 'Blue'),
-    Style('caption', 'red', 'Green'),
-    Style('checkbox', 'default', 'magenta', rjust=True, nowrap=True),
-    Style('checkbox.checked', 'yellow', 'red', bold=True, rjust=True,
-          nowrap=True),
-    Style('checkbox.shortcut', 'green', 'magenta', underline=True,
-          bold=True, rjust=True, nowrap=True),
-])
-
+SearchThemes = {
+    'default':
+    Theme([
+        Style('default', 'default', 'Blue'),
+        Style('caption', 'red', 'Green'),
+        Style('checkbox', 'default', 'magenta', rjust=True, nowrap=True),
+        Style('checkbox.checked', 'yellow', 'red', bold=True, rjust=True,
+              nowrap=True),
+        Style('checkbox.shortcut', 'green', 'magenta', underline=True,
+              bold=True, rjust=True, nowrap=True),
+    ])
+}
 
 LAST_SEARCH = modebase.SearchOption()
 
@@ -60,8 +62,9 @@ class SearchDlgMode(dialogmode.DialogMode):
         self._searchcommands = searchcommand.SearchCommands()
         self.register_command(self._searchcommands)
 
-    def init_theme(self):
-        self.theme = SearchTheme
+    def init_themes(self):
+        super().init_themes()
+        self.themes.append(SearchThemes)
 
     def create_cursor(self, wnd):
         return dialogmode.DialogCursor(wnd,

@@ -5,14 +5,14 @@ from kaa.highlight import Tokenizer, Span, SingleToken, Token, SubSection, EndSe
 from kaa.theme import Theme, Style
 from kaa.filetype.javascript import javascriptmode
 
-CSSTheme = Theme('css', [
-    Style('default', 'default', 'default', False, False),
-    Style('selector', 'magenta', 'default'),
-    Style('comment', 'red', 'default'),
-    Style('string', 'yellow', 'default'),
-    Style('propname', 'green', 'default'),
-    Style('propvalue', 'blue', 'default'),
-])
+CSSThemes = {
+    'default':
+        Theme([
+            Style('css-selector', 'magenta', 'default'),
+            Style('css-propname', 'green', 'default'),
+            Style('css-propvalue', 'blue', 'default'),
+    ])
+}
 
 class CSSProp(Token):
     def __init__(self, name, stylename, close='', closestyle=None):
@@ -44,16 +44,16 @@ class CSSProp(Token):
         self.span_string = self.assign_tokenid(tokenizer, 'string')
         self.span_string_end = self.assign_tokenid(tokenizer, 'string')
 
-        self.span_selector = self.assign_tokenid(tokenizer, 'selector')
-        self.span_open_brace = self.assign_tokenid(tokenizer, 'selector')
-        self.span_close_brace = self.assign_tokenid(tokenizer, 'selector')
+        self.span_selector = self.assign_tokenid(tokenizer, 'css-selector')
+        self.span_open_brace = self.assign_tokenid(tokenizer, 'css-selector')
+        self.span_close_brace = self.assign_tokenid(tokenizer, 'css-selector')
 
-        self.span_propname = self.assign_tokenid(tokenizer, 'propname')
-        self.span_colon = self.assign_tokenid(tokenizer, 'propname')
+        self.span_propname = self.assign_tokenid(tokenizer, 'css-propname')
+        self.span_colon = self.assign_tokenid(tokenizer, 'css-propname')
 
-        self.span_propvalue = self.assign_tokenid(tokenizer, 'propvalue')
-        self.span_colon = self.assign_tokenid(tokenizer, 'propvalue')
-        self.span_semicolon = self.assign_tokenid(tokenizer, 'propvalue')
+        self.span_propvalue = self.assign_tokenid(tokenizer, 'css-propvalue')
+        self.span_colon = self.assign_tokenid(tokenizer, 'css-propvalue')
+        self.span_semicolon = self.assign_tokenid(tokenizer, 'css-propvalue')
         if self.close:
             self.span_close = self.assign_tokenid(tokenizer, self.closestyle)
 
@@ -220,8 +220,9 @@ def build_proptokenizer(close=None, closestyle=None):
 
 
 class CSSMode(defaultmode.DefaultMode):
-    def init_theme(self):
-        self.theme = CSSTheme
+    def init_themes(self):
+        super().init_themes()
+        self.themes.append(CSSThemes)
 
     def init_tokenizers(self):
         self.tokenizers = [build_tokenizer()]

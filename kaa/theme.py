@@ -1,8 +1,7 @@
 import kaa
 
 class Theme:
-    def __init__(self, name, styles):
-        self.name = name
+    def __init__(self, styles):
         self.styles = {}
         self.add_styles(styles)
 
@@ -12,6 +11,9 @@ class Theme:
     def add_styles(self, styles):
         for style in styles:
             self.styles[style.name] = style
+
+    def update(self, rhs):
+        self.add_styles(rhs.styles.values())
 
 class Style:
     def __init__(self, name, fgcolor=None, bgcolor=None, underline=None,

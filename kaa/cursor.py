@@ -6,15 +6,15 @@ class Cursor:
         self.pos = 0
         self.preferred_col = 0
 
-    def refresh(self):
-        self.pos, y, x = self.wnd.locate_cursor(self.pos)
+    def refresh(self, top=None, middle=None, bottom=None):
+        self.pos, y, x = self.wnd.locate_cursor(self.pos, top=top, middle=middle, bottom=bottom)
         assert self.pos is not None
 
-    def setpos(self, pos):
+    def setpos(self, pos, top=None, middle=None, bottom=None):
         assert pos is not None
 
         self.pos = pos
-        self.refresh()
+        self.refresh(top=top, middle=middle, bottom=bottom)
 
     def savecol(self):
         """Update current preferred column"""

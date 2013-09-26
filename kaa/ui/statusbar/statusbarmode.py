@@ -33,22 +33,27 @@ class StatusInfo:
 
 
 
-StatusBarTheme = Theme('default', [
-    Style('default', 'red', 'cyan', False, False),
-    Style('filename', 'magenta', 'cyan'),
-    Style('file', 'magenta', 'cyan'),
-    Style('msg', 'default', 'default'),
-    Style('modename', 'magenta', 'green', rjust=True),
-])
-
+StatusBarThemes = {
+    'default':
+        Theme([
+            Style('default', 'red', 'cyan', False, False),
+            Style('filename', 'magenta', 'cyan'),
+            Style('file', 'magenta', 'cyan'),
+            Style('msg', 'default', 'default'),
+            Style('modename', 'magenta', 'green', rjust=True),
+        ])
+}
 
 class StatusBarMode(modebase.ModeBase):
+    USE_UNDO = False
+
     def __init__(self):
         super().__init__()
         self.statusinfo = StatusInfo()
 
-    def init_theme(self):
-        self.theme = StatusBarTheme
+    def init_themes(self):
+        super().init_themes()
+        self.themes.append(StatusBarThemes)
 
     def on_set_document(self, doc):
         super().on_set_document(doc)

@@ -4,6 +4,7 @@ from kaa.ui.msgbox import msgboxmode
 
 class MenuMode(msgboxmode.MsgBoxMode):
     SEPARATOR = '/'
+    USE_UNDO = False
 
     @classmethod
     def build_menu(cls, wnd, items):
