@@ -220,6 +220,7 @@ def build_proptokenizer(close=None, closestyle=None):
 
 
 class CSSMode(defaultmode.DefaultMode):
+    MODENAME = 'CSS'
     def init_themes(self):
         super().init_themes()
         self.themes.append(CSSThemes)

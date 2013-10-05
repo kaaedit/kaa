@@ -1,6 +1,5 @@
-import re, string
 import kaa
-from kaa.command import Commands, command, norec
+from kaa.command import Commands, command
 from kaa import document
 from kaa.ui.dialog import dialogmode
 from kaa.theme import Theme, Style
@@ -11,7 +10,7 @@ FrameListThemes = {
         Theme([
             Style('default', 'default', 'Blue'),
             Style('caption', 'red', 'Blue'),
-            Style('activemark', 'red', 'Green', nowrap=True),
+            Style('activemark', 'default', 'red', nowrap=True),
             Style('nonactivemark', 'default', 'Blue', nowrap=True),
         ])
 }

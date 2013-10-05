@@ -1,7 +1,6 @@
 import itertools, re, math
 from unicodedata import east_asian_width
 
-from kaa import LOG
 from kaa import document
 from kaa.document import is_combine
 
@@ -35,16 +34,15 @@ class Row:
                 ret.append(c)
         return ''.join(ret)
 
-TABWIDTH = 4
 
 
-
-def translate_chars(posfrom, chars):
+def translate_chars(posfrom, chars, tab_width):
     """Build character informations from chars.
 
-    Returns tuple of four lists. The first is a list of characters to be
-    displayed. Second is a list of columns of each characters. Third is a 
-    list of position in document of each characters.
+    Returns tuple of four lists. The first item is a list of characters to be
+    displayed. Second item is a list of columns of each characters. Third item
+    is a list of position in document of each characters. Last item is a list of
+    interval from first column top of character of each character.
     """
 
     curcol = 0
@@ -58,7 +56,7 @@ def translate_chars(posfrom, chars):
 
     for c in chars:
         if c == '\t':
-            dispstr = ' ' * (TABWIDTH - (curcol % TABWIDTH))
+            dispstr = ' ' * (tab_width - (curcol % tab_width))
         elif (((c != '\n') and (c < '\x20')) # control chars
               or (c == '\x7f')                     # backspace
               or ('\ud800' <= c <= '\udfff')):     # surrogate pair
@@ -213,7 +211,8 @@ class Selection:
     def set_end(self, pos):
         """Update where selection ends."""
 
-        assert self.is_started()
+        if not self.is_started():
+            return
 
         changed = self.end != pos
         self.end = pos
@@ -301,7 +300,7 @@ class Screen:
                 self.locate(self.pos, top=True, refresh=True)
 
     def _buildrow(self, pos, s, styles):
-        dispchrs, dispcols, positions, intervals = translate_chars(pos, s)
+        dispchrs, dispcols, positions, intervals = translate_chars(pos, s, self.document.mode.tab_width)
         if self.document.mode.SHOW_LINENO:
             linenowidth = calc_lineno_width(self)
         else:

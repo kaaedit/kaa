@@ -9,7 +9,7 @@ from kaa.filetype.css import cssmode
 HTMLThemes = {
     'default':
         Theme([
-            Style('html-tag', 'green', 'default'),
+            Style('html-tag', 'red', 'default'),
             Style('html-attrname', 'blue', 'default'),
             Style('html-attrvalue', 'yellow', 'default'),
 
@@ -55,7 +55,7 @@ class HTMLTag(Token):
             return match.end()
 
         yield f, f+1, self.span_attrvalue
-        js_to, tok, close = yield from func.on_start(None, doc, f+1, None)
+        js_to, tok, close = yield from func.iter_subtokenizers(None, doc, f+1, None)
 
         pos = js_to
         if js_to < doc.endpos():
@@ -76,7 +76,7 @@ class HTMLTag(Token):
             return match.end()
 
         yield f, f+1, self.span_attrvalue
-        pos, tok, close = yield from func.on_start(None, doc, f+1, None)
+        pos, tok, close = yield from func.iter_subtokenizers(None, doc, f+1, None)
         return pos
 
     RE_ELEMNAME=gre.compile(r'\s*[^>\s]+')
@@ -194,6 +194,7 @@ def build_tokenizers():
 
 
 class HTMLMode(defaultmode.DefaultMode):
+    MODENAME = 'HTML'
     def init_themes(self):
         super().init_themes()
         self.themes.append(HTMLThemes)

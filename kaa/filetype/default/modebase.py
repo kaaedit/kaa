@@ -2,9 +2,11 @@ import itertools, unicodedata
 
 import gappedbuf.re
 import kaa
-from kaa import keyboard, editmode, LOG
+from kaa import keyboard, editmode
+import kaa.log
 from kaa import highlight
 from kaa import theme
+from kaa import screen
 
 class SearchOption:
     def __init__(self):
@@ -27,13 +29,23 @@ class SearchOption:
         regex = gappedbuf.re.compile(text, opt)
         return regex
 
+SearchOption.LAST_SEARCH = SearchOption()
+
 class ModeBase:
+    CLOSE_ON_DEL_WINDOW = True
+
     SCREEN_NOWRAP = False
     SCREEN_BUILD_ENTIRE_ROWS = False
     SHOW_LINENO = False
+    USE_UNDO = True
+
+
+    tab_width = 8
+    indent_width = 4
+    indent_tab = False
+    auto_indent = True
 
     closed = False
-    USE_UNDO = True
 
     theme = None
 
@@ -48,7 +60,6 @@ class ModeBase:
         self.themes = []
 
         self.init_keybind()
-        self.init_vikeybind()
 
         self.init_commands()
         self.init_themes()
@@ -67,7 +78,10 @@ class ModeBase:
         self.keybind.clear()
 
         self.theme = None
+
+        self.commands.clear()
         self.commands = None
+
         self.is_availables = None
         self.highlight.close()
         self.highlight = None
@@ -95,19 +109,24 @@ class ModeBase:
         self.document.use_undo(self.USE_UNDO)
         
     def on_document_updated(self, pos, inslen, dellen):
-        pass
+        if self.highlight:
+            self.highlight.updated(self.document, pos, inslen, dellen)
 
     def on_add_window(self, wnd):
         self.editmode_insert(wnd)
 
+    def register_keys(self, keybind, keys):
+        for d in keys:
+            keybind.add_keybind(d)
+
     def init_keybind(self):
         pass
 
-    def init_vikeybind(self):
-        pass
-
     def init_commands(self):
-        pass
+        for name in dir(self):
+            attr = getattr(self, name)
+            if hasattr(attr, 'COMMAND_ID') and callable(attr):
+                self.commands[getattr(attr, 'COMMAND_ID')] = attr
 
     def init_themes(self):
         pass
@@ -123,6 +142,18 @@ class ModeBase:
         is_available = self.is_availables.get(commandid, None)
         cmd = self.commands.get(commandid, None)
         return (is_available, cmd)
+
+    def editmode_insert(self, wnd):
+        wnd.set_editmode(editmode.EditMode())
+
+    def editmode_visual(self, wnd):
+        wnd.set_editmode(editmode.VisualMode())
+
+    def editmode_visual_linewise(self, wnd):
+        wnd.set_editmode(editmode.VisualLinewiseMode())
+
+    def editmode_command(self, wnd):
+        wnd.set_editmode(editmode.CommandMode())
 
     def get_styleid(self, stylename):
         if stylename == 'default':
@@ -142,7 +173,7 @@ class ModeBase:
     def select_theme(self, theme_name, themes):
         theme = themes.get(theme_name, None)
         if theme is None:
-            theme = theme[kaa.app.DEFAULT_THEME]
+            theme = themes[kaa.app.DEFAULT_THEME]
         return theme
 
     def _build_theme(self):
@@ -160,6 +191,9 @@ class ModeBase:
     def get_cursor_visibility(self):
         return 1   # normal
 
+    def on_keypressed(self, wnd, event, s, commands, candidate):
+        return s, commands, candidate
+
     def on_str(self, wnd, s):
         self.edit_commands.put_string(wnd, s)
         if kaa.app.macro.is_recording():
@@ -174,15 +208,23 @@ class ModeBase:
                 commandids(wnd)
                 return
 
+            lastcommands = []
             for commandid in commandids:
                 is_available, command = self.get_command(commandid)
                 if not command:
-                    LOG.warn('command {!r} is not registered.'.format(commandid))
+                    msg = 'command {!r} is not registered.'.format(commandid)
+                    kaa.app.messagebar.set_message(msg)
                     return
 
                 command(wnd)
                 if kaa.app.macro.is_recording():
                     kaa.app.macro.record(command)
+
+                if not getattr(command, 'NORERUN', False):
+                    lastcommands.append(commandid)
+            if lastcommands:
+                kaa.app.lastcommands = lastcommands
+
         finally:
             wnd.editmode.clear_repeat()
 
@@ -247,6 +289,7 @@ class ModeBase:
 
     def search_next(self, wnd, pos, searchinfo):
         regex = searchinfo.get_regex()
+        pos = min(max(0, pos), self.document.endpos())
         m = regex.search(self.document.buf, pos)
         if m:
             return m.span()
@@ -261,17 +304,32 @@ class ModeBase:
             last = span
         return last
 
-    def editmode_insert(self, wnd):
-        wnd.set_editmode(editmode.EditMode())
+    def get_indent_range(self, pos):
+        tol =  self.document.gettol(pos)
+        regex = gappedbuf.re.compile(self.RE_WHITESPACE)
+        m = regex.match(self.document.buf, tol)
+        if m:
+            return m.span()
+        else:
+            return (tol, tol)
 
-    def editmode_visual(self, wnd):
-        wnd.set_editmode(editmode.VisualMode())
+    def build_indent_str(self, col):
+        if self.indent_tab:
+            ctab = col // self.tab_width
+            cspc = col % self.tab_width
+            return  '\t' * ctab + ' ' * cspc
+        else:
+            return ' ' * col
 
-    def editmode_visual_linewise(self, wnd):
-        wnd.set_editmode(editmode.VisualLinewiseMode())
+    def get_auto_indent(self, pos):
+        f, t = self.get_indent_range(pos)
+        indent = self.document.gettext(f, min(pos, t))
+        return '\n'+indent
 
-    def editmode_command(self, wnd):
-        wnd.set_editmode(editmode.CommandMode())
+    def calc_cols(self, f, t):
+        chars = self.document.gettext(f, t)
+        (dispchrs, dispcols, positions,
+         intervals) = screen.translate_chars(f, chars, self.tab_width)
 
-
+        return sum(dispcols)
 

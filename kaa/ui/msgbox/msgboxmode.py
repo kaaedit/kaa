@@ -10,7 +10,7 @@ MsgBoxThemes = {
         Theme([
             Style('default', 'default', 'Magenta'),
             Style('underline', 'default', 'Magenta', underline=True),
-            Style('caption', 'red', 'Green'),
+            Style('caption', 'white', 'Red'),
             Style('button', 'default', 'magenta', nowrap=True),
             Style('button.shortcut', 'green', 'magenta', underline=True,
                   bold=True, nowrap=True),
@@ -29,13 +29,7 @@ class MsgBoxMode(dialogmode.DialogMode):
     def init_keybind(self):
         pass
 
-    def init_commands(self):
-        pass # no commands
-
     def on_str(self, wnd, s):
-        pass
-
-    def build_document(self):
         pass
 
     def on_start(self, wnd):

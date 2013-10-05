@@ -3,7 +3,7 @@ import kaa_testutils
 
 class TestTranslateChars:
     def test_transform(self):
-        chrs, cols, positions, intervals = screen.translate_chars(10, 'abcdefg')
+        chrs, cols, positions, intervals = screen.translate_chars(10, 'abcdefg', 8)
 
         assert chrs == 'abcdefg'
         assert cols == [1] * 7
@@ -11,7 +11,7 @@ class TestTranslateChars:
         assert intervals == [0] * 7
 
     def test_tab(self):
-        chrs, cols, positions, intervals = screen.translate_chars(10, 'ab\t\tc')
+        chrs, cols, positions, intervals = screen.translate_chars(10, 'ab\t\tc', 4)
 
         assert chrs == 'ab      c'
         assert cols == [1] * 9
@@ -19,7 +19,7 @@ class TestTranslateChars:
         assert intervals == [0, 0, 0, 1, 0, 1, 2, 3, 0]
 
     def test_ctrlchars(self):
-        chrs, cols, positions, intervals = screen.translate_chars(10, '\x01\x02\x03\x7f')
+        chrs, cols, positions, intervals = screen.translate_chars(10, '\x01\x02\x03\x7f', 8)
 
         assert chrs == r'\x01\x02\x03\x7f'
         assert cols == [1] * 16
@@ -29,7 +29,7 @@ class TestTranslateChars:
         assert intervals == [0, 1, 2, 3] * 4
 
 
-        chrs, cols, positions, intervals = screen.translate_chars(10, '\r\n')
+        chrs, cols, positions, intervals = screen.translate_chars(10, '\r\n', 8)
 
         assert chrs == '\\r\n'
         assert cols == [1] * 3
@@ -75,7 +75,7 @@ class TestColumnSplitter:
         assert row.posto == 5
 
     def test_controlchr(self):
-        chrs, cols, positions, intervals = screen.translate_chars(0, '\x01\x02\x03\x7f')
+        chrs, cols, positions, intervals = screen.translate_chars(0, '\x01\x02\x03\x7f', 8)
         rows = screen.col_splitter(6, 0, chrs, cols, positions, intervals, [0]*4, {})
 
         row1, row2, row3, row4 = rows

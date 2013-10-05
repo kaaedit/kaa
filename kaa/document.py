@@ -105,10 +105,13 @@ class Document:
     fileinfo = None
 
     delay_update = False
-    def __init__(self, buf):
+
+    def __init__(self, buf=None):
         self.wnds = []
         self.all.add(self)
 
+        if buf is None:
+            buf = Buffer()
         self.buf = buf
         self.buf.add_listener(self.updated)
 
@@ -120,7 +123,7 @@ class Document:
         self.marks = Marks()
         self.mode = None
 
-        self.title = 'untitled'
+        self.title = ''
 
     def add_window(self, wnd):
         self.wnds.append(wnd)
@@ -128,9 +131,14 @@ class Document:
 
     def del_window(self, wnd):
         self.wnds.remove(wnd)
+        if self.mode.CLOSE_ON_DEL_WINDOW:
+            if not self.wnds:
+                self.close()
 
     def close(self):
         """Close this document"""
+        assert not self.wnds
+
         self.closed = True
         del self.wnds
 
@@ -157,10 +165,14 @@ class Document:
             self.update_screen(0, 0, 0)
 
     def get_title(self):
-        if self.fileinfo:
-            return self.fileinfo.filename
-        else:
-            return self.title
+        title = '<untitled>'
+
+        if self.fileinfo and self.fileinfo.filename:
+            title = self.fileinfo.filename
+        elif self.title:
+            title = self.title
+
+        return title
 
     def get_filename(self):
         filename = ''
@@ -178,9 +190,6 @@ class Document:
 
     def updated(self, buf, pos, inslen, dellen):
         """Called when document updated"""
-
-        if self.mode.highlight:
-            self.mode.highlight.updated(self, pos, inslen, dellen)
 
         if inslen:
             style = 0
@@ -369,7 +378,11 @@ class Undo:
 
         block = self._getblock()
         assert block is not self
-        block._closed = True
+        if not block.can_undo():
+            # Nothing happend
+            del self._actions[-1]
+        else:
+            block._closed = True
 
     def _add(self, action, *args, **kwargs):
         # Can not redo thereafter

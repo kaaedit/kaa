@@ -1,6 +1,6 @@
 import os, re, collections
 import kaa
-from kaa import document, encodingdef, utils
+from kaa import document, encodingdef, utils, consts
 from kaa.ui.dialog import dialogmode
 from kaa.ui.selectlist import selectlist
 from kaa.ui.itemlist import itemlistmode
@@ -18,11 +18,11 @@ FileOpenDlgThemes = {
     'default':
         Theme([
             Style('default', 'default', 'Blue'),
-            Style('caption', 'Magenta', 'Yellow'),
+            Style('caption', 'Red', 'Yellow'),
             Style('dirname', 'Green', 'Blue', nowrap=True),
-            Style('dirname-active', 'red', 'Green', nowrap=True),
+            Style('dirname-active', 'White', 'Red', nowrap=True),
             Style('filename', 'Yellow', 'Blue', nowrap=True),
-            Style('filename-active', 'Yellow', 'Green', nowrap=True),
+            Style('filename-active', 'Yellow', 'Red', nowrap=True),
         ])
 }
 
@@ -78,8 +78,8 @@ class DirFileListMode(selectlist.SelectItemList):
 FileNameDlgThemes = {
     'default':
         Theme([
-            Style('default', 'Magenta', 'Cyan'),
-            Style('caption', 'Magenta', 'Yellow'),
+            Style('default', 'Red', 'Cyan'),
+            Style('caption', 'Red', 'Yellow'),
 
             Style('option', 'default', 'magenta', rjust=True, nowrap=True),
             Style('option.shortcut', 'green', 'magenta', underline=True,
@@ -129,7 +129,6 @@ class FileOpenDlgCommands(Commands):
         dir, rest = utils.split_existing_dirs(filename)
 
         # set existing directory as current dir.
-
         filelist = wnd.get_label('filelist')
         filelist.document.mode.set_dir(dir)
 
@@ -196,6 +195,9 @@ class OpenFilenameDlgMode(dialogmode.DialogMode):
 
         return doc
 
+    def close(self):
+        super().close()
+        kaa.app.messagebar.set_message("")
 
     def init_themes(self):
         super().init_themes()
@@ -204,6 +206,7 @@ class OpenFilenameDlgMode(dialogmode.DialogMode):
     def init_keybind(self):
         self.keybind.add_keybind(kaa.filetype.default.keybind.edit_command_keys)
         self.keybind.add_keybind(kaa.filetype.default.keybind.cursor_keys)
+        self.keybind.add_keybind(kaa.filetype.default.keybind.emacs_keys)
         self.keybind.add_keybind(fileopendlg_keys)
 
     def init_commands(self):
@@ -233,6 +236,7 @@ class OpenFilenameDlgMode(dialogmode.DialogMode):
         wnd.cursor.setpos(self.document.marks['filename'][1])
 
         wnd.set_label('filename_field', self)
+        kaa.app.messagebar.set_message("Hit tab/shift+tab to complete.")
 
     def calc_position(self, wnd):
         w, h = wnd.getsize()
@@ -275,7 +279,7 @@ class OpenFilenameDlgMode(dialogmode.DialogMode):
 
     def select_newline(self, wnd):
         def callback(n):
-            nl = kaa.app.config.NEWLINES[n]
+            nl = consts.NEWLINES[n]
             if nl != self.newline:
                 self.newline = nl
                 f, t = self.document.marks['newline']
@@ -285,8 +289,8 @@ class OpenFilenameDlgMode(dialogmode.DialogMode):
 
         doc = itemlistmode.ItemListMode.build(
             'Select newline mode:',
-            kaa.app.config.NEWLINES,
-            kaa.app.config.NEWLINES.index(self.newline),
+            consts.NEWLINES,
+            consts.NEWLINES.index(self.newline),
             callback)
 
         kaa.app.show_dialog(doc)

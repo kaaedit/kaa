@@ -25,9 +25,6 @@ class SelectItemList(dialogmode.DialogMode):
     def init_keybind(self):
         pass
 
-    def init_commands(self):
-        pass
-
     def get_cursor_visibility(self):
         return 0   # hide cursor
 

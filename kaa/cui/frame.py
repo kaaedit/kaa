@@ -1,7 +1,6 @@
 import curses, itertools
 
 import kaa
-from kaa import LOG
 import kaa.context
 from kaa.cui.wnd import Window
 from kaa.cui import splitter, editor

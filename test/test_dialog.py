@@ -1,5 +1,6 @@
 from unittest.mock import patch
 
+import kaa
 from kaa.ui.dialog import dialogmode
 from kaa import highlight
 from kaa.theme import Theme, Style
@@ -57,16 +58,19 @@ class TestFormBuilder(kaa_testutils._TestScreenBase):
         assert doc.gettext(doc.marks['mark3'], doc.marks['mark4']) == 'def'
 
     def test_build_shortcut(self):
-        doc = self._getdoc('')
-
-        doc.mode.theme = Theme([
-            Style('default', 'default', 'default', False, False),
-            Style('shortcut', 'default', 'default', False, False),
-        ])
-
-        f = dialogmode.FormBuilder(doc)
-        def cb(wnd):pass
         with patch('kaa.app', create=True):
+            kaa.app.DEFAULT_THEME = 'default'
+
+            doc = self._getdoc('')
+
+            doc.mode.themes = [{'default':Theme([
+                Style('default', 'default', 'default', False, False),
+                Style('shortcut', 'default', 'default', False, False),
+            ])}]
+            doc.mode._build_theme()
+
+            f = dialogmode.FormBuilder(doc)
+            def cb(wnd):pass
             f.append_text('default', 'ab&cdef', on_shortcut=cb,
                           shortcut_style='shortcut', shortcut_mark='mark1')
 

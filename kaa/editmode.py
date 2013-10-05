@@ -54,6 +54,9 @@ class EditMode:
 
     def on_key_pressed(self, wnd, event):
         s, commands, candidate = self._get_command(wnd, event)
+        s, commands, candidate = wnd.document.mode.on_keypressed(
+                                    wnd, event, s, commands, candidate)
+
         try:
             if s:
                 self._on_str(wnd, s)

@@ -1,6 +1,6 @@
 import curses, collections
 import kaa
-from kaa import context, document, LOG
+from kaa import document
 from kaa.cui.color import ColorName
 from kaa.ui.statusbar import statusbarmode
 from kaa.cui import editor
@@ -94,7 +94,7 @@ class Splitter:
         next = None
         for w in (self.left, self.right, self.above, self.below):
             if w:
-                if wnd is w.wnd:
+                if wnd is not w.wnd:
                     w.destroy()
                 else:
                     next = w
@@ -163,10 +163,7 @@ class Splitter:
     def get_title(self):
         if self.wnd:
             doc = self.wnd.document
-            if doc.fileinfo:
-                return [doc.fileinfo.filename]
-            else:
-                return ['<untitled>']
+            return [doc.get_title()]
 
         elif self.left:
             return self.left.get_title() + self.right.get_title()

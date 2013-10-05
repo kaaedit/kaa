@@ -1,7 +1,7 @@
 import curses, curses.panel
 import collections
 
-from kaa import LOG
+from kaa import log
 from kaa.cui import keydef
 import kaa.context
 from kaa import editmode
@@ -111,12 +111,12 @@ class Window(kaa.context.Context):
         except curses.error as e:
             if repr(e.args) != self._lasterror:
                 if e.args[0] != 'no input':
-                    LOG.debug('Error in get_wch()', exc_info=True)
+                    log.debug('Error in get_wch()', exc_info=True)
                 self._lasterror = repr(e.args)
             else:
                 self._skipped += 1
                 if self._skipped % 500 == 0:
-                    LOG.debug('Too much input-error skips!: {} times'.format(self._skipped))
+                    log.debug('Too much input-error skips!: {} times'.format(self._skipped))
             return []
 
         self._lasterror = ''
@@ -127,10 +127,10 @@ class Window(kaa.context.Context):
             keys = [keydef.MouseEvent(self, mouseid, x, y, z, bstate)]
         else:
             keys = [keydef.KeyEvent(self, k, no_trailing_char)
-                    for k in keydef.convert_meta_key(c)]
+                    for k in keydef.convert_registered_key(c)]
 
         for k in keys:
-            LOG.debug('{!r}'.format(k))
+            log.debug('{!r}'.format(k))
         return keys
 
     def add_str(self, letters, attr):
@@ -140,7 +140,7 @@ class Window(kaa.context.Context):
             # exception is raised if a characters are written
             # over right border.
 #            logstr = letters if (len(letters) < 10) else (letters[:10]+'...')
-#            LOG.debug('Error to write str:{!r}'.format(logstr), exc_info=True)
+#            log.debug('Error to write str:{!r}'.format(logstr), exc_info=True)
             pass
 
     def bring_top(self):
@@ -161,7 +161,7 @@ class Window(kaa.context.Context):
             self._cwnd = curses.newwin(b-t, r-l, t, l)
             self.rect = (l, t, r, b)
         except curses.error as e:
-            LOG.debug('error on resizing window: {} {}'.format(self,
+            log.debug('error on resizing window: {} {}'.format(self,
                                        (l, t, r, b), exc_info=True))
             # shrink window to avoid segfault in curses
             self._cwnd = curses.newwin(1, 1, 0, 0)

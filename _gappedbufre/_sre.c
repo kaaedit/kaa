@@ -1495,9 +1495,13 @@ SRE_SEARCH(SRE_STATE* state, SRE_CODE* pattern)
         if (pattern[3] > 1) {
             /* adjust end point (but make sure we leave at least one
                character in there, so literal search will work) */
-            end -= (pattern[3]-1) * state->charsize;
-            if (end <= ptr)
-                end = ptr + state->charsize;
+
+            /* end can be minus value in gappedbufre */
+            if (end >= (char*)((pattern[3]-1) * state->charsize)) {
+                end -= (pattern[3]-1) * state->charsize;
+                if (end <= ptr)
+                    end = ptr + state->charsize;
+            }
         }
 
         if (flags & SRE_INFO_PREFIX) {

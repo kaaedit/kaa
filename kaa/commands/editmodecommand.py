@@ -7,7 +7,6 @@ class EditModeCommands(Commands):
         wnd.document.mode.editmode_command(wnd)
         kaa.app.messagebar.set_message('You are in command mode now. Type `i` to return insert mode.')
 
-
     @command('editmode.insert')
     def editmode_insertmode(self, wnd):
         wnd.document.mode.editmode_insert(wnd)

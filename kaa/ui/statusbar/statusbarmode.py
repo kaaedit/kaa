@@ -37,8 +37,7 @@ StatusBarThemes = {
     'default':
         Theme([
             Style('default', 'red', 'cyan', False, False),
-            Style('filename', 'magenta', 'cyan'),
-            Style('file', 'magenta', 'cyan'),
+            Style('filename', 'red', 'cyan'),
             Style('msg', 'default', 'default'),
             Style('modename', 'magenta', 'green', rjust=True),
         ])
@@ -65,7 +64,7 @@ class StatusBarMode(modebase.ModeBase):
     def build_status(self, statusbar):
         d = statusbar.infos
         self.document.delete(0, self.document.endpos())
-
+        style_default = self.get_styleid('default')
         style_filename = self.get_styleid('filename')
         style_modename = self.get_styleid('modename')
 
@@ -75,7 +74,7 @@ class StatusBarMode(modebase.ModeBase):
         if d['modified']:
             self.document.append('*',  style_filename)
 
-        self.document.append(' ')
+        self.document.append(' ', style_default)
         self.document.append('[{lineno}:{col}] {linecount}'.format(**d), style_filename)
 
         self.document.append(d['modename'], style_modename)

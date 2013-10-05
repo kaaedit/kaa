@@ -1,4 +1,6 @@
 from unittest.mock import patch
+
+import kaa
 from kaa.ui.searchdlg import searchdlgmode
 import kaa_testutils
 
@@ -11,6 +13,7 @@ class TestSearchDlgMode(kaa_testutils._TestDocBase):
     @patch('kaa.app', create=True)
     def test_searchdlg(self, mock):
         doc = self._getdoc('')
+        doc.mode.build_document()
         ignorecase = doc.mode.option.ignorecase
         word = doc.mode.option.word
         regex = doc.mode.option.regex
@@ -31,6 +34,8 @@ class TestSearchDlgMode(kaa_testutils._TestDocBase):
     @patch('kaa.app', create=True)
     def test_execsearh(self, mock):
         doc = self._getdoc('')
+        doc.mode.build_document()
+
         option = doc.mode.option
         option.ignorecase = False
         option.word = False
@@ -52,6 +57,8 @@ class TestReplaceDlg(kaa_testutils._TestDocBase):
     @patch('kaa.app', create=True)
     def test_replacedlg(self, mock):
         doc = self._getdoc('')
+        doc.mode.build_document()
+
         ignorecase = doc.mode.option.ignorecase
         word = doc.mode.option.word
         regex = doc.mode.option.regex
@@ -71,7 +78,11 @@ class TestReplaceDlg(kaa_testutils._TestDocBase):
 
     @patch('kaa.app', create=True)
     def test_execsearh(self, mock):
+        kaa.app.DEFAULT_THEME = 'default'
+
         doc = self._getdoc('')
+        doc.mode.build_document()
+
         option = doc.mode.option
         option.ignorecase = False
         option.word = False

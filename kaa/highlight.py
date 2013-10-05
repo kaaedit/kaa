@@ -125,11 +125,13 @@ class SubTokenizer(Token):
     def re_start(self):
         return self.start
 
-    def on_start(self, tokenizer, doc, pos, match):
-        """Don't use on_start! iter_subtokenizers()"""
-
+    def iter_subtokenizers(self, tokenizer, doc, pos, match):
         pos, tok = yield from self.subtokenizer.start(doc, pos)
         return pos, None, False
+
+    def on_start(self, tokenizer, doc, pos, match):
+        ret = yield from self.iter_subtokenizers(tokenizer, doc, pos, match)
+        return ret
 
     def resume_pos(self, highlighter, tokenizer, doc, pos):
         # Returns top of current keyword

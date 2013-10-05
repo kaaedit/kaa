@@ -26,6 +26,11 @@ class TestGappedBuf:
         regex = gappedbuf.re.compile('[あ-お]+')
         assert regex.search(buf, 11).group() == 'いうえお'
 
+    def test_empty(self):
+        buf = _gappedbuf.GappedBuffer()
+        regex = gappedbuf.re.compile('abc', gappedbuf.re.IGNORECASE)
+        assert regex.search(buf, 0) is None
+
     def test_finditer(self):
         class B(_gappedbuf.GappedBuffer):
             pass

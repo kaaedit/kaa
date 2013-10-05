@@ -12,6 +12,9 @@ PythonThemes = {
 }
 
 class PythonMode(defaultmode.DefaultMode):
+    MODENAME = 'Python'
+    re_begin_block = gre.compile(r"[^#]*:\s*(#.*)?$")
+
     def init_themes(self):
         super().init_themes()
         self.themes.append(PythonThemes)
@@ -32,4 +35,18 @@ class PythonMode(defaultmode.DefaultMode):
             Span('python-bytes11', 'python-bytes', '(br?|r?b)"', '"', escape='\\'),
             Span('python-bytes12', 'python-bytes', "(br?|r?b)'", "'", escape='\\'),
         ])]
+
+    RE_BEGIN_NEWBLOCK = gre.compile(r"[^#]*\:\s*(#.*)?$", gre.M)
+    def get_auto_indent(self, pos):
+        tol = self.document.gettol(pos)
+        m = self.RE_BEGIN_NEWBLOCK.match(self.document.buf, tol, pos)
+        if not m:
+            return super().get_auto_indent(pos)
+        else:
+            f, t = self.get_indent_range(pos)
+            t = min(t, pos)
+            cols = self.calc_cols(f, t)
+            indent = self.build_indent_str(cols+self.indent_width)
+            return '\n'+indent
+
 

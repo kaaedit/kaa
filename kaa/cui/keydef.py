@@ -228,9 +228,9 @@ KEYNAME_TO_CODE = {
 def keyfromname(key, ctrl, shift):
     return KEYNAME_TO_CODE.get((ctrl, shift, key))
 
-def convert_meta_key(key):
-    if key in REGISTERD_META_SEQUENCE:
-        return ['\x1b', REGISTERD_META_SEQUENCE[key]]
+def convert_registered_key(key):
+    if key in REGISTERD_SEQUENCE:
+        return REGISTERD_SEQUENCE[key]
     else:
         return [key]
 
@@ -276,7 +276,15 @@ CAPNAME_TO_CODE = {
     'knp': curses.KEY_NPAGE,
 }
 
-REGISTERD_META_SEQUENCE = {}
+# Terminals like iTerm2 sends following codes for alt+cursor keys
+KNOWN_KEY_SEQUENCE = {
+    b'\x1b\x1b[A': ['\x1b', curses.KEY_UP],
+    b'\x1b\x1b[B': ['\x1b', curses.KEY_DOWN],
+    b'\x1b\x1b[C': ['\x1b', curses.KEY_RIGHT],
+    b'\x1b\x1b[D': ['\x1b', curses.KEY_LEFT],
+}
+
+REGISTERD_SEQUENCE = {}
 
 def init():
     # Experimental code to get keycode from cap name
@@ -288,10 +296,19 @@ def init():
 
     reg_code = KAA_KEYCODE_FROM
     # register ESC + seq
+    registered_seqs = set()
     for name, keycode in CAPNAME_TO_CODE.items():
         seq = curses.tigetstr(name)
         if seq:
-            curses_ex.define_key(b'\x1b'+seq, reg_code)
-            REGISTERD_META_SEQUENCE[reg_code] = keycode
+            seq = b'\x1b'+seq
+            curses_ex.define_key(seq, reg_code)
+            REGISTERD_SEQUENCE[reg_code] = ['\x1b', keycode]
+            reg_code += 1
+            registered_seqs.add(seq)
+
+    for seq, keycode in KNOWN_KEY_SEQUENCE.items():
+        if seq not in registered_seqs:
+            curses_ex.define_key(seq, reg_code)
+            REGISTERD_SEQUENCE[reg_code] = keycode
             reg_code += 1
 

@@ -1,4 +1,6 @@
 from unittest.mock import patch
+
+import kaa
 from kaa.ui.msgbox import msgboxmode
 import kaa_testutils
 
@@ -6,6 +8,7 @@ class TestSearchDlgMode(kaa_testutils._TestDocBase):
 
     @patch('kaa.app', create=True)
     def test_msbbox(self, mock):
+        kaa.app.DEFAULT_THEME = 'default'
 
         def cb(c):
             pass

@@ -6,25 +6,37 @@ from . import keybind, theme, modebase
 from kaa import highlight
 
 class DefaultMode(modebase.ModeBase):
-    SHOW_LINENO = True
+    MODENAME = 'default'
+    SHOW_LINENO = False
+    KEY_BINDS = [
+        keybind.app_keys,
+        keybind.cursor_keys,
+        keybind.edit_command_keys,
+        keybind.emacs_keys,
+        keybind.search_command_keys,
+        keybind.macro_command_keys,
+        keybind.rerun_keys,
+    ]
+
+    VI_KEY_BIND = [
+#        keybind.command_mode_keys
+    ]
+
+    VI_VISUAL_MODE_KEY_BIND = [
+#        keybind.visual_mode_keys
+    ]
+    VI_VISUAL_LINEWISE_MODE_KEY_BIND = [
+#        keybind.visual_linewise_mode_keys
+    ]
 
     def init_keybind(self):
         super().init_keybind()
-
-        self.keybind.add_keybind(keybind.app_keys)
-        self.keybind.add_keybind(keybind.cursor_keys)
-        self.keybind.add_keybind(keybind.edit_command_keys)
-        self.keybind.add_keybind(keybind.emacs_keys)
-        self.keybind.add_keybind(keybind.search_command_keys)
-        self.keybind.add_keybind(keybind.macro_command_keys)
-
-    def init_vikeybind(self):
-        super().init_vikeybind()
-
-        self.keybind_vi_commandmode.add_keybind(keybind.command_mode_keys)
-        self.keybind_vi_visualmode.add_keybind(keybind.visual_mode_keys)
-        self.keybind_vi_visuallinewisemode.add_keybind(
-            keybind.visual_linewise_mode_keys)
+        self.register_keys(self.keybind, self.KEY_BINDS)
+        self.register_keys(self.keybind_vi_commandmode, self.VI_KEY_BIND)
+        self.register_keys(self.keybind_vi_visualmode,
+                           self.VI_VISUAL_MODE_KEY_BIND)
+        self.register_keys(self.keybind_vi_visuallinewisemode,
+                           self.VI_VISUAL_LINEWISE_MODE_KEY_BIND)
 
     def init_commands(self):
         super().init_commands()
@@ -49,6 +61,9 @@ class DefaultMode(modebase.ModeBase):
 
         self.search_commands = editorcommand.SearchCommands()
         self.register_command(self.search_commands)
+
+        self.rerun_commands = editorcommand.RerunCommand()
+        self.register_command(self.rerun_commands)
 
         self.mode_commands = editmodecommand.EditModeCommands()
         self.register_command(self.mode_commands)
@@ -146,9 +161,18 @@ class DefaultMode(modebase.ModeBase):
         return self.highlight.update_style(self.document, batch=self.HIGHLIGHTBATCH)
 
     def on_esc_pressed(self, wnd, event):
+        return
         # Pressing esc key starts command mode.
         is_available, command = self.get_command('editmode.command')
         if command:
             command(wnd)
             if kaa.app.macro.is_recording():
                 kaa.app.macro.record(command)
+
+    def on_keypressed(self, wnd, event, s, commands, candidate):
+        if not commands and not candidate:
+            if not s or s[0] < ' ':
+                kaa.app.messagebar.set_message(kaa.app.SHOW_MENU_MESSAGE)
+
+        return super().on_keypressed(wnd, event, s, commands, candidate)
+

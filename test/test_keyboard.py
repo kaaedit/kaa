@@ -1,5 +1,5 @@
 from unittest.mock import patch
-from kaa import keyboard, LOG
+from kaa import keyboard
 from kaa.keyboard import *
 
 class TestKeyBind:

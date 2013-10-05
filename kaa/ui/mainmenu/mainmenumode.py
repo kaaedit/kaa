@@ -5,6 +5,7 @@ from kaa.ui.msgbox import msgboxmode
 class MenuMode(msgboxmode.MsgBoxMode):
     SEPARATOR = '/'
     USE_UNDO = False
+    CLOSE_ON_DEL_WINDOW = False
 
     @classmethod
     def build_menu(cls, wnd, items):
@@ -25,14 +26,17 @@ class MenuMode(msgboxmode.MsgBoxMode):
             commandids = self.items[item]
             self.target.document.mode.on_commands(self.target, commandids)
 
+
 class MainMenuMode(MenuMode):
+    SEPARATOR = ''
     @classmethod
     def build(cls, wnd):
         return cls.build_menu(wnd,
-           (('&File', ('menu.file',)),
-            ('&Edit', ('menu.edit',)),
-            ('&Macro', ('menu.macro',)),
-            ('&Window', ('menu.window',)))
+           (('[&File]', ('menu.file',)),
+            ('[&Edit]', ('menu.edit',)),
+            ('[&Macro]', ('menu.macro',)),
+            ('[&Tools]', ('menu.tools',)),
+            ('[&Window]', ('menu.window',)))
         )
 
 class FileMenuMode(MenuMode):
@@ -41,11 +45,13 @@ class FileMenuMode(MenuMode):
         return cls.build_menu(wnd,
            (('&New', ('file.new',)),
             ('&Open', ('file.open',)),
+            ('File &Info', ('file.info',)),
             ('&Save', ('file.save',)),
             ('Save &As', ('file.saveas',)),
             ('&Close', ('file.close',)),
-            ('&Quit', ('file.quit',)))
-        )
+            ('&Quit', ('file.quit',))
+           ))
+
 
 class EditMenuMode(MenuMode):
     @classmethod
@@ -55,8 +61,19 @@ class EditMenuMode(MenuMode):
             ('C&opy', ('edit.copy',)),
             ('&Paste', ('edit.paste',)),
             ('&Undo', ('edit.undo',)),
-            ('&Redo', ('edit.redo',)))
-        )
+            ('&Redo', ('edit.redo',)),
+            ('[&Convert]', ('menu.edit.convert',)),
+           ))
+
+class EditMenuConvertMode(MenuMode):
+    @classmethod
+    def build(cls, wnd):
+        return cls.build_menu(wnd,
+           (('&Upper', ('edit.conv.upper',)),
+            ('&Lower', ('edit.conv.lower',)),
+            ('&Normalization', ('edit.conv.nfkc',)),
+            ('&Full-width', ('edit.conv.full-width',)),
+           ))
 
 
 class MacroMenuMode(MenuMode):
@@ -65,8 +82,16 @@ class MacroMenuMode(MenuMode):
         return cls.build_menu(wnd,
            (('&Start Record', ('macro.start-record',)),
             ('&End Record', ('macro.end-record',)),
-            ('&Run Macro', ('macro.run',)))
-        )
+            ('&Run Macro', ('macro.run',))
+           ))
+
+class ToolsMenuMode(MenuMode):
+    @classmethod
+    def build(cls, wnd):
+        return cls.build_menu(wnd,
+           (('&Paste lines', ('edit.paste-lines',)),
+            ('&Shell command', ('tools.execute-shell-command',)),
+           ))
 
 class WindowMenuMode(MenuMode):
     @classmethod
@@ -77,8 +102,8 @@ class WindowMenuMode(MenuMode):
             ('Split &horz', ('editor.splithorz',)),
             ('&Move separator', ('editor.moveseparator',)),
             ('&Next window', ('editor.nextwindow',)),
+            ('&Prev window', ('editor.prevwindow',)),
             ('&Join window', ('editor.joinwindow',)),
             ('&Switch file', ('editor.switchfile',)),
-           )
-        )
+           ))
 

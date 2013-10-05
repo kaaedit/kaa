@@ -1,43 +1,21 @@
 import curses
 import kaa
-from kaa import LOG
+import kaa.log
 from . import keydef, color, dialog
 from kaa import config, keyboard, document, macro
 from kaa.ui.messagebar import messagebarmode
 
-
-import curses.panel
-def dump_panel():
-    _trace('------------------------------------------')
-    wnds = [w for w in kaa.app.mainframe.walk_children()]
-    panel = curses.panel.top_panel()
-    while panel:
-        wnd = panel.window()
-        t, l = wnd.getbegyx()
-        h, w = wnd.getmaxyx()
-        for ww in wnds:
-            if ww._cwnd is wnd:
-                pw = ww
-                break
-        else:
-            if kaa.app.mainframe._cwnd is wnd:
-                pw = kaa.app.mainframe
-            else:
-                pw='<error>'
-
-        mode = ''
-        if hasattr(pw, 'document'):
-            mode = pw.document.mode
-        panel = panel.below()
+from kaa.exceptions import KaaError
 
 class CuiApp:
-    INITIAL_MESSAGE = 'Type F1 or alt+/ for menu.'
+    SHOW_MENU_MESSAGE = 'Type F1 or alt+/ for menu.'
     DEFAULT_THEME = 'default'
 
-    def __init__(self):
-        self.config = config.Config()
+    def __init__(self, config):
+        self.config = config
         self._idleprocs = None
         self.colors = color.Colors()
+        self.lastcommands = ()
         self.menus = []
         self.focus = None
         self.clipboard = ''
@@ -98,12 +76,12 @@ class CuiApp:
 
         if isinstance(c, str):
             if shift:
-                raise kaa.KaaError(
+                raise KaaError(
                     'Cannot use shift key for character: {!r}'.format((mod, c)))
             if ctrl:
                 c = c.upper()
                 if not (0x40 <= ord(c) <= 0x5f):
-                    raise kaa.KaaError(
+                    raise KaaError(
                         'Cannot use control key for character: {!r}'.format((mod, c)))
                 return meta+chr(ord(c)-0x40)
             else:
@@ -111,7 +89,7 @@ class CuiApp:
         else:
             ret = keydef.keyfromname(c, ctrl, shift)
             if ret is None:
-                raise kaa.KaaError(
+                raise KaaError(
                     'Cannot convert character: {!r}'.format((mod, c)))
 
             return [ret] if not meta else [meta, ret]
@@ -171,7 +149,7 @@ class CuiApp:
 
     def run(self):
         self.mainframe.on_console_resized()
-        kaa.app.messagebar.set_message(self.INITIAL_MESSAGE)
+        self.messagebar.set_message(self.SHOW_MENU_MESSAGE)
 
         nonblocking = True
         while not self._quit:
@@ -196,7 +174,7 @@ class CuiApp:
                         nonblocking = False
 
             except Exception as e:
-                LOG.error('Unhandled exception', exc_info=True)
+                kaa.log.error('Unhandled exception', exc_info=True)
                 kaa.app.messagebar.set_message(str(e))
 
 

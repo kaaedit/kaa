@@ -67,17 +67,10 @@ class DialogMode(modebase.ModeBase):
         top = wnd.mainframe.messagebar.rect[1] - height
         return 0, top, wnd.mainframe.width, top+height
 
-    def on_set_document(self, document):
-        super().on_set_document(document)
-        self.build_document()
-
     def on_start(self, wnd):
         pass
 
     def on_esc_pressed(self, wnd, event):
-        pass
-
-    def build_document(self):
         pass
 
     def on_document_updated(self, pos, inslen, dellen):
@@ -104,7 +97,8 @@ class FormBuilder:
         self.document = document
 
     def append_text(self, stylename, text, mark_start=None, mark_end=None, mark_pair=None,
-                    on_shortcut=None, shortcut_style=None, shortcut_mark=None):
+                    on_shortcut=None, shortcut_style=None, shortcut_mark=None,
+                    shortcut_need_alt=True):
 
         # marks should not be moved until the document completed.
         self.document.marks.locked = True
@@ -136,6 +130,11 @@ class FormBuilder:
                     if on_shortcut:
                         self.document.mode.keybind.add_keybind(
                             {(keyboard.alt, c.lower()): on_shortcut})
+                        if not shortcut_need_alt:
+                            self.document.mode.keybind.add_keybind(
+                                {(c.lower()): on_shortcut})
+                            self.document.mode.keybind.add_keybind(
+                                {(c.upper()): on_shortcut})
 
                     if shortcut_mark:
                         self.document.marks[shortcut_mark] = f

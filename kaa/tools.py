@@ -1,4 +1,4 @@
-import kaa
+import kaa.log
 import cProfile, pstats, io, sys, contextlib, time, traceback, pprint, inspect
 
 def _show_profile(f, *args, **kwargs):
@@ -30,7 +30,7 @@ def _print_exc():
 
 
 def _trace(*args):
-    kaa.LOG.debug(' '.join(str(o) for o in args))
+    kaa.log.debug(' '.join(str(o) for o in args))
 
 @contextlib.contextmanager
 def _stime(header='--------------'):

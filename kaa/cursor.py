@@ -1,5 +1,3 @@
-from kaa import LOG
-
 class Cursor:
     def __init__(self, wnd):
         self.wnd = wnd
@@ -144,7 +142,9 @@ class Cursor:
             idx = max(0, min(self.wnd.screen.portto-1,
                              self.wnd.screen.portfrom+y))
             pos = self.wnd.screen.get_pos_under(idx, self.preferred_col)
-            self.setpos(pos)
+
+            nextpos = self.adjust_nextpos(self.pos, pos)
+            self.setpos(nextpos)
 
             return True
 
@@ -159,7 +159,8 @@ class Cursor:
             idx = max(0, min(self.wnd.screen.portto-1,
                              self.wnd.screen.portfrom+y))
             pos = self.wnd.screen.get_pos_above(idx, self.preferred_col)
-            self.setpos(pos)
+            nextpos = self.adjust_nextpos(self.pos, pos)
+            self.setpos(nextpos)
 
             return True
 
@@ -168,7 +169,8 @@ class Cursor:
         self.wnd.screen.locate(self.pos, middle=True, align_always=False)
 
         idx, row = self.wnd.screen.getrow(self.pos)
-        self.setpos(row.posfrom)
+        nextpos = self.adjust_nextpos(self.pos, row.posfrom)
+        self.setpos(nextpos)
         self.savecol()
 
     def end(self):
@@ -180,5 +182,21 @@ class Cursor:
             pos = self.wnd.document.endpos()
         else:
             pos = row.posto-1
-        self.setpos(pos)
+
+        nextpos = self.adjust_nextpos(self.pos, pos)
+        self.setpos(nextpos)
         self.savecol()
+
+    def tof(self):
+        self.wnd.screen.locate(0, top=True)
+        nextpos = self.adjust_nextpos(self.pos, 0)
+        self.setpos(nextpos)
+        self.savecol()
+
+    def eof(self):
+        nextpos = self.wnd.document.endpos()
+        self.wnd.screen.locate(nextpos, middle=True)
+        nextpos = self.adjust_nextpos(self.pos, nextpos)
+        self.setpos(nextpos)
+        self.savecol()
+

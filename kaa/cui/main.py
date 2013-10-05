@@ -1,8 +1,13 @@
-import curses, os
+import curses, os, sys, types
+import setproctitle
+import kaa.tools
+import kaa.log
+from kaa import options, consts, config
+from . import app, keydef, frame
 
-import kaa
-from kaa import options, LOG
-from . import app, wnd, keydef, frame
+from .. import document
+#from kaa.filetype.default import defaultmode
+from kaa import fileio
 
 CURSES_MOUSEINTERVAL = 200
 CURSES_ESCDELAY = '50'
@@ -21,21 +26,36 @@ def _restore():
     curses.noraw()
     curses.nl()
 
+
+def run_userinit():
+    fname = os.path.join(kaa.app.config.KAADIR, '__kaa__.py')
+    if os.path.isfile(fname):
+        with open(fname) as f:
+            src = f.read()
+
+        code = compile(src, fname, 'exec')
+        module = types.ModuleType('__kaa__')
+        exec(code, module.__dict__)
+
+        sys.modules['__kaa__'] = module
+
 def main(stdscr):
+    conf = config.Config()
+    sys.path.insert(0, conf.KAADIR)
+
+    kaa.log.init(conf.LOGDIR)
+
     _init(stdscr)
     try:
         keydef.init()
 
-        kaa.app = app.CuiApp()
-        from kaa import fileio
+        kaa.app = app.CuiApp(conf)
         kaa.app.storage = fileio.FileStorage()
 
         mainframe = frame.MainFrame(stdscr)
         kaa.app.init(mainframe)
 
-        from .. import document
-        from kaa.filetype.default import defaultmode
-        from kaa import fileio
+        run_userinit()
 
         if not opt.file:
             # no file args. show new document.
@@ -49,10 +69,12 @@ def main(stdscr):
         kaa.app.run()
 
         mainframe.destroy()
+
     finally:
         _restore()
 
 def run():
+    setproctitle.setproctitle('kaa')
     parser = options.build_parser()
 
     global opt
@@ -60,6 +82,7 @@ def run():
 
     if not os.environ.get('ESCDELAY'):
         os.environ['ESCDELAY'] = CURSES_ESCDELAY
+
     curses.wrapper(main)
 
 

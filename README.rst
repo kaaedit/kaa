@@ -16,7 +16,9 @@ Requirements
 
 * Headers and libraries for ncurses with wide character support. Consult documentation of your platform for details. For Debian/Ubuntu, you can install ncurses library by ::
 
-  $ sudo apt-get install libncursesw5 libncursesw5-dev
+  $ sudo apt-get install libncurses5 libncurses5-dev libncursesw5 libncursesw5-dev 
+
+* UTF-8 locales
 
 * (optional) Cython
 
@@ -54,8 +56,14 @@ Typing escape key hides menu.
 File menu
 ++++++++++
 
+New
+   Create new file.
+
 Open
    Open existing file.
+
+File info
+   Show file information. Also update per file editor settings of tab/indentation.
 
 Save
    Save current file.
@@ -88,6 +96,24 @@ Undo
 Redo
    Redo last undo.
 
+Convert
+    Show text convert menu
+
+Text convert menu
+~~~~~~~~~~~~~~~~~~~~
+
+Upper
+    Convert selected text to upper case.
+
+Lower
+    Convert selected text to lower case.
+
+Normalization
+    Convert selected text to Unicode Normalization Forms(NFKC).
+
+Full-width
+    Convert alphabet and numbers in the selected text to full-width character.
+
 
 Macro menu
 ++++++++++
@@ -101,6 +127,15 @@ End record
 Run macro
    Run last macro.
 
+
+Tools menu
+++++++++++
+
+Paste lines
+   Insert lines of text without auto indentation.
+
+Shell command
+   Execute external shell command and insert the output.
 
 Window menu
 +++++++++++
@@ -127,16 +162,8 @@ Switch file
    Switch content of active window.
 
 
-Edit mode
----------
-
-Kaa can be used as modeless editor, but optionally supports vi-like command mode and visual mode. Unlike vi, kaa is in the input-mode as initial state. You don't have to leave input mode to edit text, since most editor commands like cursor movement or deleting characters can be execused in the input mode. For example, arrow keys and emacs-like cursor key bindings(Control+f, Control+b, etc) are supported to move cursor. 
-
-If you want to use vi-like command mode, hit escape key to get into command mode. In the command mode, type ``i`` to enter input mode. Also, ``v`` (visual mode) and ``V`` (visual mode, line-wise) are supported.
-
 Key bindings
 ------------
-
 
 Input mode
 +++++++++++
@@ -147,7 +174,7 @@ Escape
 F1, alt+/
    Show menu.
 
-Arrow keys
+Arrow keys(up, down, left, right)
    Move cursor.
 
 Shift+arrow keys
@@ -156,16 +183,58 @@ Shift+arrow keys
 Control+left/right arrow keys
    Move cursor to next/prev word boundary.
 
-Backspace
+Control+b, Control+f, Control+p, Control+n
+   Move cursor to left/right/up/down.
+
+Alt+b, Alt+f
+   Move cursor to next/prev word boundary.
+
+Control+v, Alt+v
+    Page down/up
+
+Home, Shift+Home
+   Move cursor to top of line. Shift+Home selects text to top of line.
+
+End, Shift+End
+   Move cursor to end of line. Shift+Home selects text to end of line.
+
+Control+Home, Control+Shift+Home
+   Move cursor to top of file. Control+Shift+Home selects text to top of file.
+
+Control+End, Control+Shift+End.
+   Move cursor to end of file. Control+Shift+End selects text to end of file.
+
+Backspace, Control+h
    Delete the character to the left.
 
-Delete
+Delete, Control+d
    Delete the character at the cursor.
 
-Control+z
+Control+backspace, Alt+h
+   Delete the word to the left.
+
+Control+Delete, Alt+d
+   Delete the word to the right.
+
+Control+k
+   Delete the line to the right.
+
+Alt+k
+   Delete the current line.
+
+Control+y
+   Paste selection
+
+Control+w
+   Cut selection
+
+Alt+w
+   Copy selection
+
+Control+u
    Undo last change.
 
-Control+r
+Alt+u
    Redo last undo.
 
 F6
@@ -174,77 +243,63 @@ F6
 F5
    Run macro.
 
-Control+S
+Alt+.
+   Run last execused edit command again.
+
+Control+s
    Search text.
 
-Alt+S
+Alt+s
    Replace text.
 
-Control+b|Control+f|Control+p|Control+n
-   Move cursor to left|right|up|down.
+Tab, Shift+Tab
+   Indent/dedent selection
 
-Alt+b|Alt+f
-   Move cursor to next/prev word boundary.
+Alt-M v
+    Show text conversion menu.
 
+Ctrl+u Alt+!
+    Execute command and insert the output.
 
-Command mode
-++++++++++++++
+Customization
+==================
 
-1,2,..9
-   Set command repetition count.   
+Kaa executes a Python script file at `~/.kaa/__kaa__.py` on startup. You can write Python script to customize Kaa as you like.
 
-i
-   Enter input mode.
+Sample - Show line numbers
+----------------------------------
 
-v
-   Enter visual mode.
+.. code:: python
 
-V
-   Enter visual mode(linewise).
+   from kaa.filetype.default import defaultmode
+   defaultmode.DefaultMode.SHOW_LINENO = True
 
-h
-   Cursor left.
+`defaultmode.DefaultMode` is base class of all text file types. Line number is diplayed if `Defaultmode.SHOW_LINENO` is True. If you want to show line number of paticular file types, you can update SHOW_LINENO attribute of each file type classes.
 
-l
-   Cursor right.
+.. code:: python
 
-k
-   Cursor up.
+   # Show line number in HTML mode
+   from kaa.filetype.html import htmlmode
+   htmlmode.HTMLMode.SHOW_LINENO = True
 
-j
-   Cursor down.
+Sample - Customize key binding
+----------------------------------
 
-x
-   delete character.
+Assign same keyboard shortcut of splitting windows command as Emacs.
 
-u
-   Undo last change.
+.. code:: python
 
-Control+r
-   Redo last undo.
-
-Visual mode
-++++++++++++++
-
-Escape
-   Enter command mode.
-
-1,2,..9
-   Set command repetition count.   
-
-h
-   Cursor left.
-
-l
-   Cursor right.
-
-k
-   Cursor up.
-
-j
-   Cursor down.
+    from kaa.keyboard import *
+    from kaa.filetype.default.defaultmode import DefaultMode
+    
+    DefaultMode.KEY_BINDS.append({
+       ((ctrl, 'x'), '2'): 'editor.splithorz'    # Assign C-x 2 
+    })
+   
+In this example, key sequence C-x 2 (control+x followed by 2) is assigned to 'editor.splithorz' command.
 
 
+        
 Copyright 
 =========================
 

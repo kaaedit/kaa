@@ -33,6 +33,7 @@ def build_tokenizer(stop=None, terminates=None):
 
 
 class JavaScriptMode(defaultmode.DefaultMode):
+    MODENAME = 'JavaScript'
     def init_themes(self):
         super().init_themes()
         self.themes.append(JavaScriptThemes)

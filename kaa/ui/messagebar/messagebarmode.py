@@ -6,12 +6,13 @@ MessageBarThemes = {
     'default':
         Theme([
             Style('default', 'red', 'default', False, False),
+            Style('rec', 'white', 'red'),
         ])
 }
 
 class MessageBarMode(modebase.ModeBase):
     USE_UNDO = False
-
+    message = ''
     def init_themes(self):
         super().init_themes()
         self.themes.append(MessageBarThemes)
@@ -21,7 +22,18 @@ class MessageBarMode(modebase.ModeBase):
         doc.undo = None
 
     def set_message(self, msg):
-        self.document.replace(0, self.document.endpos(), msg)
-        self.document.styles.setints(0, self.document.endpos(),
-                                    self.get_styleid('default'))
+        self.message = msg
+        self.update()
+
+    def update(self):
+        style_default = self.get_styleid('default')
+        style_rec = self.get_styleid('rec')
+
+        self.document.delete(0, self.document.endpos())
+        if kaa.app.macro.is_recording():
+            self.document.append('[REC]', style_rec)
+            self.document.append(' ', style_default)
+
+        self.document.append(self.message, style_default)
+
 

@@ -1,7 +1,7 @@
 import itertools, curses, curses.panel
 from kaa.cui.wnd import Window
 import kaa
-from kaa import LOG
+import kaa.log
 from kaa import screen, cursor
 from kaa.cui.color import ColorName
 
@@ -48,6 +48,7 @@ class TextEditorWindow(Window):
         self._drawn_rows = {}
         self.draw_screen()
         self.refresh()
+        self.cursor.refresh(middle=True)
 
     def set_editmode(self, mode):
         self.editmode = mode
@@ -132,7 +133,7 @@ class TextEditorWindow(Window):
         try:
             self._draw_screen(force=force)
         except curses.error:
-            LOG.debug('error on drawing: {}'.format(self), exc_info=True)
+            kaa.log.debug('error on drawing: {}'.format(self), exc_info=True)
 
     def _draw_screen(self, force=False):
         frame = self.get_label('frame')

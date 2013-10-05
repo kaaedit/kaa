@@ -4,7 +4,6 @@ from kaa.keyboard import *
 app_keys = {
     (alt, '/'): 'app.mainmenu',
     f1: 'app.mainmenu',
-    f2: 'file.open2',
 }
 
 # default cursor commands
@@ -20,30 +19,56 @@ cursor_keys = {
     pagedown:('screen.selection.clear', 'cursor.pagedown'),
     pageup:('screen.selection.clear', 'cursor.pageup'),
 
-    (shift, left): ('screen.selection.begin', 'cursor.left', 'screen.selection.set_end'),
-    (shift, right): ('screen.selection.begin', 'cursor.right', 'screen.selection.set_end'),
-    (shift, up): ('screen.selection.begin', 'cursor.up', 'screen.selection.set_end'),
-    (shift, down): ('screen.selection.begin', 'cursor.down', 'screen.selection.set_end'),
+    (shift, left): ('screen.selection.begin', 'cursor.left', 'screen.selection.set-end'),
+    (shift, right): ('screen.selection.begin', 'cursor.right', 'screen.selection.set-end'),
+    (shift, up): ('screen.selection.begin', 'cursor.up', 'screen.selection.set-end'),
+    (shift, down): ('screen.selection.begin', 'cursor.down', 'screen.selection.set-end'),
 
-    (shift, ctrl, left): ('screen.selection.begin', 'cursor.word-left', 'screen.selection.set_end'),
-    (shift, ctrl, right):('screen.selection.begin', 'cursor.word-right', 'screen.selection.set_end'),
-
-    (alt, left): ('screen.selection.clear', 'cursor.word-left'),
-    (alt, right): ('screen.selection.clear', 'cursor.word-right'),
+    (shift, ctrl, left): ('screen.selection.begin', 'cursor.word-left', 'screen.selection.set-end'),
+    (shift, ctrl, right):('screen.selection.begin', 'cursor.word-right', 'screen.selection.set-end'),
 
     home: ('screen.selection.clear', 'cursor.home'),
     end: ('screen.selection.clear', 'cursor.end'),
+
+    (shift, home): ('screen.selection.begin', 'cursor.home', 'screen.selection.set-end'),
+    (shift, end): ('screen.selection.begin', 'cursor.end', 'screen.selection.set-end'),
+
+    (ctrl, home): ('screen.selection.clear', 'cursor.top-of-file'),
+    (ctrl, end): ('screen.selection.clear', 'cursor.end-of-file'),
+
+    (shift, ctrl, home): ('screen.selection.begin', 'cursor.top-of-file', 'screen.selection.set-end'),
+    (shift, ctrl, end): ('screen.selection.begin', 'cursor.end-of-file', 'screen.selection.set-end'),
+
 }
 
 
 # edit commands
 edit_command_keys = {
     backspace: 'edit.backspace',
+    (ctrl, 'h'): 'edit.backspace',
+    (alt, 'h'): 'edit.backspace.word',
+
     delete: 'edit.delete',
+    (ctrl, 'd'): 'edit.delete',
+    (alt, 'd'): 'edit.delete.word',
+
+    (ctrl, 'k'): 'edit.delete.line',
+    (alt, 'k'): 'edit.delete.currentline',
+
     '\r': 'edit.newline',
     '\n': 'edit.newline',
-    (ctrl, 'z'): 'edit.undo',
-    (ctrl, 'r'): 'edit.redo',
+
+    (ctrl, 'w'): 'edit.cut',
+    (alt, 'w'): 'edit.copy',
+    (ctrl, 'y'): 'edit.paste',
+    (ctrl, '_'): 'edit.undo',
+    (alt, '_'): 'edit.redo',
+
+    tab: 'edit.indent',
+    (shift, tab): 'edit.dedent',
+
+    ((alt, 'm'), ('v')): 'menu.edit.convert',
+    ((ctrl, 'u'), (alt, '!')): 'tools.execute-shell-command',
 }
 
 # macro commands
@@ -52,29 +77,40 @@ macro_command_keys = {
     f5: 'macro.run',
 }
 
+# rerun commands
+rerun_keys = {
+    (alt, '.'): 'command.rerun',
+}
+
+
+
 # search commands
 search_command_keys = {
     (ctrl, 's'): 'search.showsearch',
     (alt, 's'): 'search.showreplace',
+    f3: 'search.next',
+    f4: 'search.prev',
+
 }
 
 # emacs like keys
 emacs_keys = {
-    (ctrl, 'b'): cursor_keys[left],
-    (ctrl, 'f'): cursor_keys[right],
-    (ctrl, 'p'): cursor_keys[up],
-    (ctrl, 'n'): cursor_keys[down],
+    (ctrl, 'b'): ('cursor.left', 'screen.selection.set-end'),
+    (ctrl, 'f'): ('cursor.right', 'screen.selection.set-end'),
+    (ctrl, 'p'): ('cursor.up', 'screen.selection.set-end'),
+    (ctrl, 'n'): ('cursor.down', 'screen.selection.set-end'),
 
-    (alt, 'b'): ('screen.selection.clear', 'cursor.word-left'),
-    (alt, 'f'): ('screen.selection.clear', 'cursor.word-right'),
-    (alt, 'B'): ('screen.selection.begin', 'cursor.word-left', 'screen.selection.set_end'),
-    (alt, 'F'): ('screen.selection.begin', 'cursor.word-right', 'screen.selection.set_end'),
+    (alt, 'b'): ('cursor.word-left', 'screen.selection.set-end'),
+    (alt, 'f'): ('cursor.word-right', 'screen.selection.set-end'),
 
-    (ctrl, 'v'): cursor_keys[pagedown],
-    (alt, 'v'): cursor_keys[pageup],
+    (ctrl, 'a'): ('cursor.home'),
+    (ctrl, 'e'): ('cursor.end'),
 
-    (alt, '<'): 'cursor.top-of-file',
-    (alt, '>'): 'cursor.end-of-file',
+    (ctrl, 'v'): ('cursor.pagedown', 'screen.selection.set-end'),
+    (alt, 'v'): ('cursor.pageup', 'screen.selection.set-end'),
+
+    (alt, '<'): ('cursor.top-of-file', 'screen.selection.set-end'),
+    (alt, '>'): ('cursor.end-of-file', 'screen.selection.set-end'),
 }
 
 
@@ -102,39 +138,40 @@ command_mode_keys = {
 }
 
 visual_mode_keys = {
-    left: ('screen.selection.begin', 'cursor.left', 'screen.selection.set_end'),
-    right: ('screen.selection.begin', 'cursor.right', 'screen.selection.set_end'),
-    up: ('screen.selection.begin', 'cursor.up', 'screen.selection.set_end'),
-    down: ('screen.selection.begin', 'cursor.down', 'screen.selection.set_end'),
+    left: ('screen.selection.begin', 'cursor.left', 'screen.selection.set-end'),
+    right: ('screen.selection.begin', 'cursor.right', 'screen.selection.set-end'),
+    up: ('screen.selection.begin', 'cursor.up', 'screen.selection.set-end'),
+    down: ('screen.selection.begin', 'cursor.down', 'screen.selection.set-end'),
 
-    pagedown:('screen.selection.begin', 'cursor.pagedown', 'screen.selection.set_end'),
-    pageup:('screen.selection.begin', 'cursor.pageup', 'screen.selection.set_end'),
+    pagedown:('screen.selection.begin', 'cursor.pagedown', 'screen.selection.set-end'),
+    pageup:('screen.selection.begin', 'cursor.pageup', 'screen.selection.set-end'),
 
-    'h': ('screen.selection.begin', 'cursor.left', 'screen.selection.set_end'),
-    'l': ('screen.selection.begin', 'cursor.right', 'screen.selection.set_end'),
-    'k': ('screen.selection.begin', 'cursor.up', 'screen.selection.set_end'),
-    'j': ('screen.selection.begin', 'cursor.down', 'screen.selection.set_end'),
+    'h': ('screen.selection.begin', 'cursor.left', 'screen.selection.set-end'),
+    'l': ('screen.selection.begin', 'cursor.right', 'screen.selection.set-end'),
+    'k': ('screen.selection.begin', 'cursor.up', 'screen.selection.set-end'),
+    'j': ('screen.selection.begin', 'cursor.down', 'screen.selection.set-end'),
 
-    'gg': ('screen.selection.begin', 'cursor.top-of-file', 'screen.selection.set_end'),
-    'G': ('screen.selection.begin', 'cursor.top-of-file', 'screen.selection.set_end'),
+    'gg': ('screen.selection.begin', 'cursor.top-of-file', 'screen.selection.set-end'),
+    'G': ('screen.selection.begin', 'cursor.end-of-file', 'screen.selection.set-end'),
 
 }
 
 visual_linewise_mode_keys = {
-    left: ('screen.lineselection.begin', 'cursor.left', 'screen.lineselection.set_end'),
-    right: ('screen.lineselection.begin', 'cursor.right', 'screen.lineselection.set_end'),
-    up: ('screen.lineselection.begin', 'cursor.up', 'screen.lineselection.set_end'),
-    down: ('screen.lineselection.begin', 'cursor.down', 'screen.lineselection.set_end'),
+    left: ('screen.lineselection.begin', 'cursor.left', 'screen.lineselection.set-end'),
+    right: ('screen.lineselection.begin', 'cursor.right', 'screen.lineselection.set-end'),
+    up: ('screen.lineselection.begin', 'cursor.up', 'screen.lineselection.set-end'),
+    down: ('screen.lineselection.begin', 'cursor.down', 'screen.lineselection.set-end'),
 
-    pagedown:('screen.lineselection.begin', 'cursor.pagedown', 'screen.lineselection.set_end'),
-    pageup:('screen.lineselection.begin', 'cursor.pageup', 'screen.lineselection.set_end'),
+    pagedown:('screen.lineselection.begin', 'cursor.pagedown', 'screen.lineselection.set-end'),
+    pageup:('screen.lineselection.begin', 'cursor.pageup', 'screen.lineselection.set-end'),
 
-    'h': ('screen.lineselection.begin', 'cursor.left', 'screen.lineselection.set_end'),
-    'l': ('screen.lineselection.begin', 'cursor.right', 'screen.lineselection.set_end'),
-    'k': ('screen.lineselection.begin', 'cursor.up', 'screen.lineselection.set_end'),
-    'j': ('screen.lineselection.begin', 'cursor.down', 'screen.lineselection.set_end'),
+    'h': ('screen.lineselection.begin', 'cursor.left', 'screen.lineselection.set-end'),
+    'l': ('screen.lineselection.begin', 'cursor.right', 'screen.lineselection.set-end'),
+    'k': ('screen.lineselection.begin', 'cursor.up', 'screen.lineselection.set-end'),
+    'j': ('screen.lineselection.begin', 'cursor.down', 'screen.lineselection.set-end'),
 
-    'gg': ('screen.lineselection.begin', 'cursor.top-of-file', 'screen.lineselection.set_end'),
-    'G': ('screen.lineselection.begin', 'cursor.top-of-file', 'screen.lineselection.set_end'),
+    'gg': ('screen.lineselection.begin', 'cursor.top-of-file', 'screen.lineselection.set-end'),
+    'G': ('screen.lineselection.begin', 'cursor.end-of-file', 'screen.lineselection.set-end'),
 
 }
+

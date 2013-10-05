@@ -2,7 +2,8 @@
 
 import itertools
 import kaa
-from kaa import LOG, KaaError
+from kaa import log
+from kaa.exceptions import KaaError
 
 class KeyBind:
     translator = None
@@ -68,7 +69,7 @@ class KeyBind:
                 self.keylist.insert(0, (keys, commands))
 
             except KaaError:
-                LOG.warning('Failed to load key', exc_info=True)
+                log.warning('Failed to load key', exc_info=True)
 
     def get_command(self, keys):
         for cmdkeys, commands in self.get_candidates(keys):

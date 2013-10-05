@@ -1,28 +1,80 @@
 import kaa
 from kaa.ui.dialog import dialogmode
 from kaa.theme import Theme, Style
-from kaa.filetype.default import modebase, keybind as default_keybind
-from . import searchcommand, keybind
+from kaa.filetype.default import modebase, keybind
 from kaa.ui.msgbox import msgboxmode
+from kaa.command import command, Commands
 from kaa.commands import editorcommand
 
 SearchThemes = {
     'default':
-    Theme([
-        Style('default', 'default', 'Blue'),
-        Style('caption', 'red', 'Green'),
-        Style('checkbox', 'default', 'magenta', rjust=True, nowrap=True),
-        Style('checkbox.checked', 'yellow', 'red', bold=True, rjust=True,
-              nowrap=True),
-        Style('checkbox.shortcut', 'green', 'magenta', underline=True,
-              bold=True, rjust=True, nowrap=True),
-    ])
+        Theme([
+            Style('default', 'default', 'Blue'),
+            Style('caption', 'default', 'magenta'),
+            Style('checkbox', 'default', 'magenta', rjust=True, nowrap=True),
+            Style('checkbox.checked', 'yellow', 'red', bold=True, rjust=True,
+                  nowrap=True),
+            Style('checkbox.shortcut', 'green', 'magenta', underline=True,
+                  bold=True, rjust=True, nowrap=True),
+        ])
 }
 
-LAST_SEARCH = modebase.SearchOption()
+
+
+class SearchCommands(editorcommand.EditCommands):
+
+    @command('edit.backspace')
+    def backspace(self, wnd):
+        pos = wnd.cursor.pos
+        if pos > wnd.document.marks['searchtext'][0]:
+            super().backspace(wnd)
+
+    @command('edit.delete')
+    def delete(self, wnd):
+        pos = wnd.cursor.pos
+        if pos < wnd.document.marks['searchtext'][1]:
+            super().delete(wnd)
+
+    @command('searchdlg.search.next')
+    def search_next(self, wnd):
+        mode = wnd.document.mode
+        mode.search_next(wnd)
+
+    @command('searchdlg.search.prev')
+    def search_prev(self, wnd):
+        mode = wnd.document.mode
+        mode.search_prev(wnd)
+
+    @command('searchdlg.toggle.ignorecase')
+    def toggle_ignorecase(self, wnd):
+        mode = wnd.document.mode
+        mode.toggle_option_ignorecase()
+
+    @command('searchdlg.toggle.wordsearch')
+    def toggle_wordsearch(self, wnd):
+        mode = wnd.document.mode
+        mode.toggle_option_wordsearch()
+
+    @command('searchdlg.toggle.regex')
+    def toggle_regex(self, wnd):
+        mode = wnd.document.mode
+        mode.toggle_option_regex()
+
+searchdlg_keys = {
+    '\r': ('searchdlg.search.next'),
+    '\n': ('searchdlg.search.next'),
+}
 
 class SearchDlgMode(dialogmode.DialogMode):
     autoshrink = True
+
+    KEY_BINDS = [
+        keybind.cursor_keys,
+        keybind.edit_command_keys,
+        keybind.emacs_keys,
+        keybind.macro_command_keys,
+    ]
+
     def __init__(self, target):
         super().__init__()
 
@@ -30,22 +82,18 @@ class SearchDlgMode(dialogmode.DialogMode):
         self.initialpos = target.cursor.pos
         self.initialrange = target.screen.selection.get_range()
         self.lastsearch = None
-        self.option = LAST_SEARCH
+        self.option = modebase.SearchOption.LAST_SEARCH
 
     def close(self):
         super().close()
         self.target = None
+        kaa.app.messagebar.set_message("")
 
     def init_keybind(self):
         super().init_keybind()
 
-        self.keybind.add_keybind(default_keybind.cursor_keys)
-        self.keybind.add_keybind(default_keybind.edit_command_keys)
-        self.keybind.add_keybind(default_keybind.emacs_keys)
-        self.keybind.add_keybind(default_keybind.search_command_keys)
-        self.keybind.add_keybind(default_keybind.macro_command_keys)
-
-        self.keybind.add_keybind(keybind.searchdlg_keys)
+        self.register_keys(self.keybind, self.KEY_BINDS)
+        self.keybind.add_keybind(searchdlg_keys)
 
     def init_commands(self):
         super().init_commands()
@@ -59,7 +107,7 @@ class SearchDlgMode(dialogmode.DialogMode):
         self.screen_commands = editorcommand.ScreenCommands()
         self.register_command(self.screen_commands)
 
-        self._searchcommands = searchcommand.SearchCommands()
+        self._searchcommands = SearchCommands()
         self.register_command(self._searchcommands)
 
     def init_themes(self):
@@ -123,6 +171,7 @@ class SearchDlgMode(dialogmode.DialogMode):
         self._build_options(f)
 
         self.update_option_style()
+        kaa.app.messagebar.set_message("Hit alt+N/alt+P to search Next/Prev")
 
     def _set_option_style(self, mark, style,
                           shortcutmark, shortcutstyle):
@@ -176,8 +225,6 @@ class SearchDlgMode(dialogmode.DialogMode):
             self.target.cursor.setpos(hit[0])
             self.target.screen.selection.start = hit[0]
             self.target.screen.selection.end = hit[1]
-            self.lastsearch = hit
-
             kaa.app.messagebar.set_message('found')
         else:
             kaa.app.messagebar.set_message('not found')
@@ -191,13 +238,15 @@ class SearchDlgMode(dialogmode.DialogMode):
                 else:
                     pos = self.initialpos
             else:
-                pos = self.lastsearch[1]
-
-            if pos >= self.target.document.endpos():
-                return
+                pos = self.lastsearch[0]+1
 
             ret = self.target.document.mode.search_next(self.target, pos, self.option)
             self._show_searchresult(ret)
+            if ret:
+                self.lastsearch = ret
+            else:
+                self.lastsearch = (-1, 0)
+
             return ret
 
     def search_prev(self, wnd):
@@ -209,17 +258,21 @@ class SearchDlgMode(dialogmode.DialogMode):
                 else:
                     pos = self.initialpos
             else:
-                pos = self.lastsearch[0]
+                pos = self.lastsearch[1]-1
 
             ret = self.target.document.mode.search_prev(self.target, pos, self.option)
             self._show_searchresult(ret)
+            if ret:
+                self.lastsearch = ret
+            else:
+                endpos = self.target.document.endpos()
+                self.lastsearch = (endpos+1, endpos+1)
             return ret
 
     def on_esc_pressed(self, wnd, event):
         self.target.activate()
         self.target = None
         wnd.get_label('popup').destroy()
-        self.document.close()
 
     def on_document_updated(self, pos, inslen, dellen):
         super().on_document_updated(pos, inslen, dellen)
@@ -229,15 +282,41 @@ class SearchDlgMode(dialogmode.DialogMode):
                 self.lastsearch = None
 
 
+class ReplaceCommands(Commands):
+    @command('replacedlg.field.next')
+    def field_next(self, wnd):
+        searchfrom, searchto = wnd.document.marks['searchtext']
+        replacefrom, replaceto = wnd.document.marks['replacetext']
+
+        if searchfrom <= wnd.cursor.pos <= searchto:
+            wnd.cursor.setpos(replacefrom)
+            wnd.screen.selection.set_range(replacefrom, replaceto)
+        else:
+            wnd.cursor.setpos(searchfrom)
+            wnd.screen.selection.set_range(searchfrom, searchto)
+
+
+replacedlg_keys = {
+    '\r': ('replacedlg.field.next'),
+    '\n': ('replacedlg.field.next'),
+}
+
+
 class ReplaceDlgMode(SearchDlgMode):
+    KEY_BINDS = [
+        keybind.cursor_keys,
+        keybind.edit_command_keys,
+        keybind.emacs_keys,
+        keybind.macro_command_keys,
+    ]
 
     def init_keybind(self):
         super().init_keybind()
-        self.keybind.add_keybind(keybind.replacedlg_keys)
+        self.keybind.add_keybind(replacedlg_keys)
 
     def init_commands(self):
         super().init_commands()
-        self._replacecommands = searchcommand.ReplaceCommands()
+        self._replacecommands = ReplaceCommands()
         self.register_command(self._replacecommands)
 
     def create_cursor(self, wnd):
@@ -274,6 +353,7 @@ class ReplaceDlgMode(SearchDlgMode):
         self._build_options(f)
 
         self.update_option_style()
+        kaa.app.messagebar.set_message("Hit enter to move field. Hit alt+N/alt+P to replace.")
 
         return
             
@@ -292,15 +372,28 @@ class ReplaceDlgMode(SearchDlgMode):
                 self.replace_all(wnd)
             else:
                 pass
-            msgdoc.close()
 
         msgdoc = msgboxmode.MsgBoxMode.show_msgbox(
             'Replace text?', ['&Yes', '&No', '&All', '&Cancel'], cb)
 
+    def _show_search_again(self, wnd, on_y):
+        def cb(c):
+            wnd.activate()
+            if c == 'y':
+                on_y(wnd)
+
+        msgdoc = msgboxmode.MsgBoxMode.show_msgbox(
+            'Search failed. Resume again?', ['&Yes', '&Cancel'], cb)
+
     def search_next(self, wnd):
+        if not self.get_search_str():
+            return
+
         ret = super().search_next(wnd)
         if ret:
             self._show_replace_msg(wnd, self.replace_and_next, self.search_next)
+        else:
+            self._show_search_again(wnd, self.search_next)
 
     def replace_and_next(self, wnd):
         if self.lastsearch:
@@ -314,9 +407,14 @@ class ReplaceDlgMode(SearchDlgMode):
             self.search_next(wnd)
 
     def search_prev(self, wnd):
+        if not self.get_search_str():
+            return
+
         ret = super().search_prev(wnd)
         if ret:
             self._show_replace_msg(wnd, self.replace_and_prev, self.search_prev)
+        else:
+            self._show_search_again(wnd, self.search_prev)
 
     def replace_and_prev(self, wnd):
         if self.lastsearch:

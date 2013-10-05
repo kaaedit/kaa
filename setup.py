@@ -22,7 +22,7 @@ def read(fname):
 setup(
     cmdclass = cmdclass,
     name = "kaa",
-    version = "0.0.1",
+    version = "0.0.2",
     description='kaa - console text editor.',
     author='Atsuo Ishimoto',
     author_email='ishimoto@gembook.org',
@@ -34,7 +34,7 @@ setup(
             "Environment :: Console :: Curses",
             "License :: OSI Approved :: MIT License", ],
 
-    install_requires=['curses_ex'],
+    install_requires=['curses_ex', 'pyjf3', 'setproctitle'],
     packages=find_packages(),
     ext_modules = [ext],
     entry_points = {

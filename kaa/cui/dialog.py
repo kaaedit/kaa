@@ -92,7 +92,6 @@ class DialogWnd(_dialogwnd):
         self.set_rect(l, t, r, b)
 
         for w, (wl, wt, wr, wb) in zip(self.inputs, rects):
-            _trace (t, wl, wt, wr, wb)
             b = t + (wb - wt)
             w.set_rect(l, t, r, b)
             t = b + 1

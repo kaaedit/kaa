@@ -1,5 +1,7 @@
 from unittest.mock import patch
 
+import kaa
+import kaa.config
 from kaa import screen, document, cursor, context, editmode
 from kaa.filetype.default import defaultmode
 
@@ -38,15 +40,21 @@ class _DmyWnd(context.Context):
     def pageup(self):
         return self.screen.pageup()
 
+class DmyApp:
+    config = kaa.config.Config()
 
 class _TestDocBase:
     def _getdoc(self, s=''):
+        import kaa
+        if not hasattr(kaa, 'app'):
+            kaa.app = DmyApp()
         mode = self._getmode()
         import kaa.fileio
         return kaa.fileio.newfile(mode, s)
 
     def _getmode(self):
         with patch('kaa.app', create=True):
+            kaa.app.DEFAULT_THEME = 'default'
             cls = self._getmodeclass()
             return self._createmode(cls)
 

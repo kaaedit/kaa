@@ -58,6 +58,20 @@ class TestEdit(kaa_testutils._TestScreenBase):
         assert wnd.document.gettext(0, 2) == 'bc'
         assert wnd.cursor.pos == 0
 
+    def test_lineindent(self):
+        wnd = self._getwnd("abc")
+        wnd.cursor.setpos(0)
+        cmd = editorcommand.EditCommands()
+        cmd.indent(wnd)
+        assert wnd.document.gettext(0, 7) == '    abc'
+
+    def test_blockindent(self):
+        wnd = self._getwnd("abc\ndef\nghi")
+        wnd.screen.selection.set_range(1,9)
+        cmd = editorcommand.EditCommands()
+        cmd.indent(wnd)
+        assert wnd.document.gettext(0, 7) == '    abc'
+
     def test_undo_ins(self):
         wnd = self._getwnd("")
         cmd = editorcommand.EditCommands()
@@ -96,3 +110,23 @@ class TestEdit(kaa_testutils._TestScreenBase):
         cmd.redo(wnd)
         assert wnd.document.gettext(0, 2) == 'bc'
         assert wnd.cursor.pos == 0
+
+
+    def test_undo_newline(self):
+        wnd = self._getwnd("    abc")
+        cmd = editorcommand.EditCommands()
+
+        wnd.cursor.setpos(7)
+        cmd.newline(wnd)
+
+        assert wnd.document.gettext(0, 7) == '    abc'
+        assert wnd.document.gettext(7, 12) == '\n    '
+
+        wnd = self._getwnd("      abc")
+        cmd = editorcommand.EditCommands()
+
+        wnd.cursor.setpos(4)
+        cmd.newline(wnd)
+
+        assert wnd.document.gettext(0, 5) == '    \n'
+        assert wnd.document.gettext(5, 15) == '      abc'
