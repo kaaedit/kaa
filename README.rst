@@ -27,12 +27,12 @@ Installation
 
 1. Get source from github ::
 
-   $ git clone git@github.com:atsuoishimoto/kaa.git
+   $ git clone https://github.com/kaaedit/kaa.git
 
 2. Install kaa ::
    
    $ cd kaa
-   $ python setup.py install
+   $ python3.3 setup.py install
 
 Command line options
 ====================

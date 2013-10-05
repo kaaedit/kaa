@@ -24,6 +24,7 @@ setup(
     name = "kaa",
     version = "0.0.2",
     description='kaa - console text editor.',
+    url='https://github.com/kaaedit/kaa',
     author='Atsuo Ishimoto',
     author_email='ishimoto@gembook.org',
     long_description=read('README.rst'),
@@ -33,9 +34,9 @@ setup(
             "Topic :: Text Editors",
             "Environment :: Console :: Curses",
             "License :: OSI Approved :: MIT License", ],
-
+    license='MIT License',
     install_requires=['curses_ex', 'pyjf3', 'setproctitle'],
-    packages=find_packages(),
+    packages = find_packages(),
     ext_modules = [ext],
     entry_points = {
         'console_scripts': [

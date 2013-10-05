@@ -1,0 +1,3 @@
+include *.txt *.rst
+recursive-include _gappedbuf *.py *.c *.h *.pyx *.pxd
+recursive-include _gappedbufre *.py *.c *.h *.pyx *.pxd
