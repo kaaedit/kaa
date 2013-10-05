@@ -168,9 +168,6 @@ Key bindings
 Input mode
 +++++++++++
 
-Escape
-   Enter command mode.
-
 F1, alt+/
    Show menu.
 
@@ -223,7 +220,7 @@ Alt+k
    Delete the current line.
 
 Control+y
-   Paste selection
+   Paste
 
 Control+w
    Cut selection
