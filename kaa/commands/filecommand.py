@@ -80,7 +80,7 @@ class FileCommands(Commands):
                                         document.fileinfo.newline,
                                         document.fileinfo.encoding, cb)
 
-    def ask_doc_close(self, wnd, document, callback):
+    def ask_doc_close(self, wnd, document, callback, msg):
         def saved():
            callback()
 
@@ -92,13 +92,13 @@ class FileCommands(Commands):
 
         if document.undo and document.undo.is_dirty():
             msgboxmode.MsgBoxMode.show_msgbox(
-                'Save file before close? [{}]: '.format(
-                    document.get_title()),
+                '{} [{}]: '.format(
+                    msg, document.get_title()),
                 ['&Yes', '&No', '&Cancel'], choice)
         else:
             callback()
 
-    def save_documents(self, wnd, docs, callback):
+    def save_documents(self, wnd, docs, callback, msg):
         docs = list(docs)
         def save_documents():
             if not docs:
@@ -106,7 +106,7 @@ class FileCommands(Commands):
                     callback()
             else:
                 doc = docs.pop()
-                self.ask_doc_close(wnd, doc, save_documents)
+                self.ask_doc_close(wnd, doc, save_documents, msg)
         save_documents()
 
     @command('file.close')
@@ -136,19 +136,33 @@ class FileCommands(Commands):
                 doc = kaa.fileio.newfile()
                 kaa.app.show_doc(doc)
 
-        self.save_documents(wnd, docs, saved)
+        self.save_documents(wnd, docs, saved, 'Save file before close?')
+
+    def get_current_documents(self, wnd):
+        docs = set()
+        for frame in wnd.mainframe.childframes:
+            editors = {e for e in frame.get_editors()}
+            docs |= {e.document for e in editors if e.document.mode.DOCUMENT}
+        return docs
+        
+    @command('file.save.all')
+    @norec
+    @norerun
+    def file_saveall(self, wnd):
+
+        def saved():
+            pass
+        
+        docs = self.get_current_documents(wnd)
+        self.save_documents(wnd, docs, saved, 'Save file?')
 
     @command('file.quit')
     @norec
     @norerun
     def file_quit(self, wnd):
 
-        docs = set()
-        for frame in wnd.mainframe.childframes:
-            editors = {e for e in frame.get_editors()}
-            docs |= {e.document for e in editors}
-
         def saved():
             kaa.app.quit()
-
-        self.save_documents(wnd, docs, saved)
+        
+        docs = self.get_current_documents(wnd)
+        self.save_documents(wnd, docs, saved, 'Save file before close?')

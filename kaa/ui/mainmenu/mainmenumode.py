@@ -48,6 +48,7 @@ class FileMenuMode(MenuMode):
             ('File &Info', ('file.info',)),
             ('&Save', ('file.save',)),
             ('Save &As', ('file.saveas',)),
+            ('Save a&ll', ('file.save.all',)),
             ('&Close', ('file.close',)),
             ('&Quit', ('file.quit',))
            ))

@@ -38,7 +38,7 @@ class ModeBase:
     SCREEN_BUILD_ENTIRE_ROWS = False
     SHOW_LINENO = False
     USE_UNDO = True
-
+    DOCUMENT = False
 
     tab_width = 8
     indent_width = 4

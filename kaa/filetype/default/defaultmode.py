@@ -6,6 +6,7 @@ from . import keybind, theme, modebase
 from kaa import highlight
 
 class DefaultMode(modebase.ModeBase):
+    DOCUMENT = True
     MODENAME = 'default'
     SHOW_LINENO = False
     KEY_BINDS = [
