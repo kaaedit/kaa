@@ -74,6 +74,8 @@ def main(stdscr):
         _restore()
 
 def run():
+    if sys.version_info[:2] < (3, 3):
+        raise RuntimeError('kaa requires Python 3.3 or later')
     setproctitle.setproctitle('kaa')
     parser = options.build_parser()
 
