@@ -25,7 +25,7 @@ Requirements
 Installation
 ============
 
-1. Use easy_install3 or 3 to install kaa from from PyPI ::
+1. Use easy_install3 or pip3 to install kaa from from PyPI ::
 
    $ easy_install3 kaaedit
 
