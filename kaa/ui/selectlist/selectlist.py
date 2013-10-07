@@ -40,17 +40,16 @@ class SelectItemList(dialogmode.DialogMode):
     def update_doc(self, items):
         self.items = items
 
-        with self.document.suspend_update():
-            self.document.marks.clear()
-            self.document.delete(0, self.document.endpos())
-            f = dialogmode.FormBuilder(self.document)
+        self.document.marks.clear()
+        self.document.delete(0, self.document.endpos())
+        f = dialogmode.FormBuilder(self.document)
 
-            if self.caption:
-                f.append_text('caption', self.caption+':\n')
+        if self.caption:
+            f.append_text('caption', self.caption+':\n')
 
-            for item in self.items:
-                f.append_text(item.style, item.text, mark_pair=item)
-                f.append_text('default', ' ')
+        for item in self.items:
+            f.append_text(item.style, item.text, mark_pair=item)
+            f.append_text('default', ' ')
 
     def _update_item_style(self, wnd, item, activate, bottom=None):
 

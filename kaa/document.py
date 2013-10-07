@@ -1,5 +1,5 @@
 import weakref, re
-import gappedbuf, contextlib
+import gappedbuf
 
 
 def is_combine(c):
@@ -104,8 +104,6 @@ class Document:
     closed = False
     fileinfo = None
 
-    delay_update = False
-
     def __init__(self, buf=None):
         self.wnds = []
         self.all.add(self)
@@ -154,16 +152,6 @@ class Document:
         else:
             self.undo = None
 
-    @contextlib.contextmanager
-    def suspend_update(self):
-        org = self.delay_update
-        self.delay_update = True
-        yield
-        self.delay_update = org
-
-        if not self.delay_update:
-            self.update_screen(0, 0, 0)
-
     def get_title(self):
         title = '<untitled>'
 
@@ -200,8 +188,7 @@ class Document:
             self.styles.delete(pos, pos+dellen)
 
         self.marks.updated(pos, inslen, dellen)
-        if not self.delay_update:
-            self.update_screen(pos, inslen, dellen)
+        self.update_screen(pos, inslen, dellen)
 
     def update_screen(self, pos, inslen, dellen):
         for wnd in self.wnds:

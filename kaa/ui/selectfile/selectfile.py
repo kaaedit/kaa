@@ -167,7 +167,7 @@ class FilenameEditCommand(editorcommand.EditCommands):
 
 class OpenFilenameDlgMode(dialogmode.DialogMode):
     MAX_INPUT_HEIGHT = 4
-
+    autoshrink = True
     @classmethod
     def build(cls, newline, encoding, callback):
         buf = document.Buffer()
