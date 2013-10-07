@@ -36,6 +36,9 @@ class TextEditorWindow(Window):
         super().destroy()
 
     def show_doc(self, doc):
+        if doc is self.document:
+            return
+
         if self.document:
             self.document.del_window(self)
 

@@ -139,13 +139,18 @@ class MainFrame(Window, kaa.context.ContextRoot):
             return
 
         wnd = frames[0].splitter.wnd
-        if wnd and wnd.document.provisional:
-            if not wnd.document.undo.is_dirty():
-                return frames[0]
+        if wnd and wnd.document:
+            doc = wnd.document
+            if doc.provisional and not wnd.document.undo.is_dirty():
+                if len(doc.wnds) == 1:
+                    return frames[0]
 
     def show_doc(self, doc):
         frame = self._get_provisional_frame()
-        if not frame:
+        if frame:
+            if frame.splitter.wnd.document is doc:
+                return
+        else:
             frame = ChildFrame(parent=self)
 
         editorwnd = frame.show_doc(doc)
@@ -157,6 +162,7 @@ class MainFrame(Window, kaa.context.ContextRoot):
 
         self.activeframe = frame
         self.on_console_resized()
+
         return
 
     def add_popup(self, popup):

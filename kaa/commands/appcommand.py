@@ -177,7 +177,7 @@ class ApplicationCommands(Commands):
 
         if len(wnd.document.wnds) == 1:
             wnd.document.mode.file_commands.ask_doc_close(
-                wnd, wnd.document, saved)
+                wnd, wnd.document, saved, 'Save file before close?')
         else:
             saved()
 
