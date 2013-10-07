@@ -166,13 +166,25 @@ class ApplicationCommands(Commands):
 
         titles = [doc.get_title() for doc in docs]
 
+        curdoc = wnd.document
+        curdoc_close = curdoc.mode.CLOSE_ON_DEL_WINDOW
+
         def callback(n):
+            curdoc.mode.CLOSE_ON_DEL_WINDOW = curdoc_close
+            if n is not None:
+                doc = docs[n]
+                wnd.show_doc(doc)
+            else:
+                wnd.show_doc(curdoc)
+
+        def selchanged(n):
             doc = docs[n]
             wnd.show_doc(doc)
 
         def saved():
+            curdoc.mode.CLOSE_ON_DEL_WINDOW = False
             n = docs.index(wnd.document)
-            doc = itemlistmode.ItemListMode.build('', titles, n, callback)
+            doc = itemlistmode.ItemListMode.build('', titles, n, callback, selchanged)
             kaa.app.show_dialog(doc)
 
         if len(wnd.document.wnds) == 1:

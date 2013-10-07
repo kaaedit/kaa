@@ -133,6 +133,9 @@ class FileInfoMode(dialogmode.DialogMode):
         names = [mode.MODENAME for mode in modes]
 
         def callback(n):
+            if n is None:
+                return
+
             mode = modes[n]
             if mode is not type(self.target.document.mode):
                 self.target.document.setmode(mode())
@@ -149,6 +152,9 @@ class FileInfoMode(dialogmode.DialogMode):
     def _on_update_tab(self, c):
         values = [str(i) for i in range(2, 9)]
         def callback(n):
+            if n is None:
+                return
+
             width = int(values[n])
             if self.target.document.mode.tab_width != width:
                 self.target.document.mode.tab_width = width
@@ -166,6 +172,9 @@ class FileInfoMode(dialogmode.DialogMode):
     def _on_update_indent(self, c):
         values = [str(i) for i in range(2, 9)]
         def callback(n):
+            if n is None:
+                return
+
             width = int(values[n])
             if self.target.document.mode.indent_width != width:
                 self.target.document.mode.indent_width = width
@@ -183,6 +192,9 @@ class FileInfoMode(dialogmode.DialogMode):
     def _on_update_usetab(self, c):
         values = ['no', 'yes']
         def callback(n):
+            if n is None:
+                return
+
             v = bool(n)
             if self.target.document.mode.indent_tab != v:
                 self.target.document.mode.indent_tab = v
@@ -200,6 +212,9 @@ class FileInfoMode(dialogmode.DialogMode):
     def _on_update_autoindent(self, c):
         values = ['No', 'Yes']
         def callback(n):
+            if n is None:
+                return
+
             v = bool(n)
             if self.target.document.mode.auto_indent != v:
                 self.target.document.mode.auto_indent = v

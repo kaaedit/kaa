@@ -26,10 +26,15 @@ class ItemListCommands(Commands):
     def prev(self, wnd):
         mode = wnd.document.mode
         if mode.items:
+            cur = mode.cursel
             if mode.cursel is None:
                 mode.cursel = 0
             elif mode.cursel > 0:
                 mode.cursel -= 1
+
+            if cur is None or cur != mode.cursel:
+                if mode.onchange:
+                    mode.onchange(mode.cursel)
 
         wnd.document.mode._update_style(wnd)
 
@@ -37,10 +42,15 @@ class ItemListCommands(Commands):
     def next(self, wnd):
         mode = wnd.document.mode
         if mode.items:
+            cur = mode.cursel
             if mode.cursel is None:
                 mode.cursel = 0
             elif mode.cursel < len(mode.items)-1:
                 mode.cursel += 1
+
+            if cur is None or cur != mode.cursel:
+                if mode.onchange:
+                    mode.onchange(mode.cursel)
 
         wnd.document.mode._update_style(wnd)
 
@@ -62,7 +72,7 @@ class ItemListMode(dialogmode.DialogMode):
     ITEMSEP = ' '
 
     @classmethod
-    def build(cls, caption, items, sel, callback):
+    def build(cls, caption, items, sel, callback, onchange=None):
         buf = document.Buffer()
         doc = document.Document(buf)
         mode = cls()
@@ -71,6 +81,7 @@ class ItemListMode(dialogmode.DialogMode):
         mode.items = items
         mode.cursel = sel
         mode.callback = callback
+        mode.onchange = onchange
 
         f = dialogmode.FormBuilder(doc)
 
@@ -119,6 +130,7 @@ class ItemListMode(dialogmode.DialogMode):
         return 0   # hide cursor
 
     def on_esc_pressed(self, wnd, event):
+        self.cursel = None
         self.itemlist_commands.close(wnd)
 
     def on_str(self, wnd, s):

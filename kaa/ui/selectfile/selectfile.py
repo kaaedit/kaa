@@ -261,6 +261,9 @@ class OpenFilenameDlgMode(dialogmode.DialogMode):
 
     def select_encoding(self, wnd):
         def callback(n):
+            if n is None:
+                return
+
             enc = encodingdef.encodings[n]
             if enc != self.encoding:
                 self.encoding = enc
@@ -279,6 +282,9 @@ class OpenFilenameDlgMode(dialogmode.DialogMode):
 
     def select_newline(self, wnd):
         def callback(n):
+            if n is None:
+                return
+
             nl = consts.NEWLINES[n]
             if nl != self.newline:
                 self.newline = nl
