@@ -25,14 +25,9 @@ Requirements
 Installation
 ============
 
-1. Get source from github ::
+1. Use easy_install3 or 3 to install kaa from from PyPI ::
 
-   $ git clone https://github.com/kaaedit/kaa.git
-
-2. Install kaa ::
-   
-   $ cd kaa
-   $ python3.3 setup.py install
+   $ easy_install3 kaaedit
 
 Command line options
 ====================
