@@ -287,6 +287,14 @@ class ModeBase:
 
         yield from self._split_chars(begin, self.document.endpos())
 
+    def get_word_at(self, pos):
+        tol = self.document.gettol(pos)
+        for f, t, s in self.split_word(tol):
+            if (pos <= f) or (pos < t):
+                return f, t
+
+        return tol, self.document.geteol(tol)
+
     def search_next(self, wnd, pos, searchinfo):
         regex = searchinfo.get_regex()
         pos = min(max(0, pos), self.document.endpos())

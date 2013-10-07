@@ -193,8 +193,14 @@ End, Shift+End
 Control+Home, Control+Shift+Home
    Move cursor to top of file. Control+Shift+Home selects text to top of file.
 
-Control+End, Control+Shift+End.
+Control+End, Control+Shift+End
    Move cursor to end of file. Control+Shift+End selects text to end of file.
+
+Alt+a
+   Select all text.
+
+Ctrl+c
+   Select current word for first press, current line for second time and entire text for third time.
 
 Backspace, Control+h
    Delete the character to the left.

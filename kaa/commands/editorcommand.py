@@ -86,18 +86,60 @@ class ScreenCommands(Commands):
     def selection_clear(self, wnd):
         wnd.screen.selection.clear()
 
-    @command('screen.lineselection.curline')
+    @command('screen.selection.all')
+    @norerun
+    def select_all(self, wnd):
+        f = wnd.cursor.adjust_nextpos(wnd.cursor.pos, 0)
+        t = wnd.cursor.adjust_nextpos(wnd.cursor.pos, wnd.document.endpos())
+        wnd.screen.selection.set_range(f, t)
+
+    @command('screen.selection.curline')
     @norerun
     def select_cur_line(self, wnd):
-        tol = wnd.document.gettol(wnd.cursor.pos)
-        eol = wnd.document.geteol(tol)
+        tol = wnd.cursor.adjust_nextpos(
+                wnd.cursor.pos,
+                wnd.document.gettol(wnd.cursor.pos))
+        eol = wnd.cursor.adjust_nextpos(
+                wnd.cursor.pos,
+                wnd.document.geteol(tol))
 
         wnd.screen.selection.set_range(tol, eol)
+
+    @command('screen.selection.curword')
+    @norerun
+    def select_cur_word(self, wnd):
+        f, t = wnd.document.mode.get_word_at(wnd.cursor.pos)
+
+        f = wnd.cursor.adjust_nextpos(wnd.cursor.pos, f)
+        t = wnd.cursor.adjust_nextpos(wnd.cursor.pos, t)
+
+        wnd.screen.selection.set_range(f, t)
+
+    @command('screen.selection.expand_sel')
+    @norerun
+    @norec
+    def expand_sel(self, wnd):
+        mode = wnd.document.mode
+        keys = wnd.editmode.last_command_keys
+        L = len(keys )
+        if L >= 3 and keys [-1] == keys [-2] == keys [-3]:
+            self.select_all(wnd)
+            if kaa.app.macro.recording:
+                kaa.app.macro.record(self.select_all)
+
+        elif L >= 2 and keys[-1] == keys[-2]:
+            self.select_cur_line(wnd)
+            if kaa.app.macro.recording:
+                kaa.app.macro.record(self.select_cur_line)
+        else:
+            self.select_cur_word(wnd)
+            if kaa.app.macro.recording:
+                kaa.app.macro.record(self.select_cur_word)
 
     @command('screen.lineselection.begin')
     @norerun
     def lineselection_begin(self, wnd):
-        tol = wnd.document.gettol(wnd.cursor.pos)
+        tol = wnd.cursor.adjust_nextpos(wnd.document.gettol(wnd.cursor.pos))
         wnd.screen.selection.start_selection(tol)
 
     @command('screen.lineselection.set-end')
@@ -109,10 +151,12 @@ class ScreenCommands(Commands):
         else:
             pos = wnd.cursor.pos
             if pos < f:
-                tol = wnd.document.gettol(pos)
+                tol = wnd.cursor.adjust_nextpos(
+                        wnd.document.gettol(pos))
                 wnd.screen.selection.set_end(tol)
             else:
-                eol = wnd.document.geteol(pos)
+                eol = wnd.cursor.adjust_nextpos(
+                        wnd.document.geteol(pos))
                 wnd.screen.selection.set_end(eol)
 
 

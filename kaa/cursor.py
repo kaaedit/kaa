@@ -64,6 +64,34 @@ class Cursor:
     def adjust_nextpos(self, curpos, nextpos):
         return nextpos
 
+    def word_right_pos(self, pos):
+        # Get next word break
+        nextpos = self.wnd.document.endpos()
+        for word in self.wnd.document.mode.split_word(pos):
+            f, t, chars = word
+            nextpos = t
+            if f == pos: # first word
+                # get next word
+                continue
+            nextpos = f
+            break
+
+        return self.adjust_nextpos(pos, nextpos)
+
+    def word_left_pos(self, pos):
+        # Get previous word break
+        prevpos = tol = self.wnd.document.gettol(pos)
+        if pos == prevpos:
+            prevpos -= 1
+        else:
+            for f, t, chars in self.wnd.document.mode.split_word(tol):
+                #  This word is at after cursor pos
+                if pos <= f:
+                    break
+                prevpos = f
+
+        return self.adjust_nextpos(pos, prevpos)
+
     def right(self, word=False):
         # Ensure current position is displayed
         self.wnd.screen.locate(self.pos, middle=True, align_always=False)
@@ -74,19 +102,10 @@ class Cursor:
         if not word:
             # Get right of current position
             nextpos = self.wnd.document.get_nextpos(self.pos)
+            nextpos = self.adjust_nextpos(self.pos, nextpos)
         else:
-            # Get next word break
-            nextpos = self.wnd.document.endpos()
-            for word in self.wnd.document.mode.split_word(self.pos):
-                f, t, chars = word
-                nextpos = t
-                if f == self.pos: # first word
-                    # get next word
-                    continue
-                nextpos = f
-                break
+            nextpos = self.word_right_pos(self.pos)
 
-        nextpos = self.adjust_nextpos(self.pos, nextpos)
         if nextpos != self.pos:
             # Scroll down if next position is not visible
             while not self.wnd.screen.is_visible(nextpos):
@@ -107,20 +126,10 @@ class Cursor:
         if not word:
             # Get left of current position
             prevpos = self.wnd.document.get_prevpos(self.pos)
+            prevpos = self.adjust_nextpos(self.pos, prevpos)
         else:
-            # Get previous word break
-            prevpos = tol = self.wnd.document.gettol(self.pos)
-            if self.pos == prevpos:
-                prevpos -= 1
-            else:
-                for f, t, chars in self.wnd.document.mode.split_word(tol):
-                    #  This word is at after cursor pos
-                    if self.pos <= f:
-                        break
+            prevpos = self.word_left_pos(self.pos)
 
-                    prevpos = f
-
-        prevpos = self.adjust_nextpos(self.pos, prevpos)
         if prevpos != self.pos:
             # Scroll up if next position is not visible
             while not self.wnd.screen.is_visible(prevpos):

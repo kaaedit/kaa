@@ -39,6 +39,9 @@ cursor_keys = {
     (shift, ctrl, home): ('screen.selection.begin', 'cursor.top-of-file', 'screen.selection.set-end'),
     (shift, ctrl, end): ('screen.selection.begin', 'cursor.end-of-file', 'screen.selection.set-end'),
 
+    (alt, 'a'): 'screen.selection.all',
+
+    (ctrl, 'c'): 'screen.selection.expand_sel',
 }
 
 

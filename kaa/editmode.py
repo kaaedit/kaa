@@ -10,6 +10,7 @@ class EditMode:
 
     def __init__(self):
         self.pending_keys = []
+        self.last_command_keys = []
 
     def activated(self, wnd):
         pass
@@ -60,9 +61,14 @@ class EditMode:
         try:
             if s:
                 self._on_str(wnd, s)
+                del self.last_command_keys[:]
 
             elif commands:
                 self.flush_pending_str(wnd)
+
+                self.last_command_keys.append(self.pending_keys)
+                del self.last_command_keys[:-3]
+
                 wnd.document.mode.on_commands(wnd, commands)
         finally:
             if s or commands or not candidate:
@@ -71,6 +77,7 @@ class EditMode:
     def on_esc_pressed(self, wnd, event):
         self.pending_keys = []
         self.clear_repeat()
+        del self.last_command_keys[:]
 
         if not wnd.closed:
             self.flush_pending_str(wnd)
