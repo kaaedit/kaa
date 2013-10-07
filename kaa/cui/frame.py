@@ -130,13 +130,32 @@ class MainFrame(Window, kaa.context.ContextRoot):
 
         self.messagebar.set_rect(0, self.height-self.MESSAGEBAR_HEIGHT, self.width, self.height)
 
+    def _get_provisional_frame(self):
+        # if kaa has only one frame and the frame has provisional document,
+        #  then dispose the document and reuse the frame.
+
+        frames = kaa.app.get_frames()
+        if len(frames) != 1:
+            return
+
+        wnd = frames[0].splitter.wnd
+        if wnd and wnd.document.provisional:
+            if not wnd.document.undo.is_dirty():
+                return frames[0]
+
     def show_doc(self, doc):
-        page = ChildFrame(parent=self)
-        editorwnd = page.show_doc(doc)
+        frame = self._get_provisional_frame()
+        if not frame:
+            frame = ChildFrame(parent=self)
+
+        editorwnd = frame.show_doc(doc)
         editorwnd.activate()
 
-        self.childframes.append(page)
-        self.activeframe = page
+        if frame in self.childframes:
+            self.childframes.remove(frame)
+        self.childframes.insert(0, frame)
+
+        self.activeframe = frame
         self.on_console_resized()
         return
 

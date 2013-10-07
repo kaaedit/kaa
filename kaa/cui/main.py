@@ -59,7 +59,7 @@ def main(stdscr):
 
         if not opt.file:
             # no file args. show new document.
-            doc = fileio.newfile()
+            doc = fileio.newfile(provisional=True)
             kaa.app.show_doc(doc)
         else:
             for filename in opt.file:

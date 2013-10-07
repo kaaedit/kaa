@@ -133,7 +133,7 @@ class FileCommands(Commands):
             if frame.mainframe.childframes:
                 kaa.app.set_focus(frame.mainframe.childframes[-1])
             else:
-                doc = kaa.fileio.newfile()
+                doc = kaa.fileio.newfile(provisional=True)
                 kaa.app.show_doc(doc)
 
         self.save_documents(wnd, docs, saved, 'Save file before close?')

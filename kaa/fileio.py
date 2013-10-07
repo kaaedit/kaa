@@ -133,11 +133,13 @@ def openfile(filename, encoding=None, newline=None):
     return doc
 
 NUM_NEWFILE = 1
-def newfile(mode=None, s=''):
+def newfile(mode=None, s='', provisional=False):
     buf = document.Buffer()
     if s:
         buf.insert(0, s)
+
     doc = document.Document(buf)
+    doc.provisional = provisional
 
     global NUM_NEWFILE
     doc.title = '<Untitled {}>'.format(NUM_NEWFILE)
