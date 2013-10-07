@@ -115,7 +115,6 @@ class ApplicationCommands(Commands):
                 n = len(wnds)-1
             wnds[n].activate()
 
-
     @command('editor.joinwindow')
     @norec
     def editor_joinwindow(self, wnd):
@@ -137,32 +136,13 @@ class ApplicationCommands(Commands):
 
             wnd.document.mode.file_commands.save_documents(wnd, saves, saved)
 
-
-        #if wnd.splitter and wnd.splitter.parent:
-        #    if wnd.splitter.parent.wnd:
-        #        # not splitted
-        #        return
-        #
-        #    def saved():
-        #        wnd.splitter.parent.join(wnd)
-        #
-        #    if len(wnd.document.wnds) == 1:
-        #        wnd.document.mode.file_commands.ask_doc_close(
-        #            wnd, wnd.document, saved)
-        #    else:
-        #        saved()
-
     @command('editor.switchfile')
     @norec
     @norerun
     def editor_switchfile(self, wnd):
         docs = []
         for frame in kaa.app.get_frames():
-            for splitter, w in frame.splitter.walk():
-                if w:
-                    doc = w.document
-                    if doc not in docs:
-                        docs.append(doc)
+            docs.extend(frame.get_documents())
 
         titles = [doc.get_title() for doc in docs]
 

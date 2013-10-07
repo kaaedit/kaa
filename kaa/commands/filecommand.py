@@ -17,6 +17,21 @@ class FileCommands(Commands):
     @norerun
     def file_open(self, wnd):
         def cb(filename, encoding, newline):
+            for frame in kaa.app.get_frames():
+                for doc in frame.get_documents():
+                    if doc.get_filename() == filename:
+                        if doc.wnds:
+                            wnd = doc.wnds[0]
+                            wnd.get_label('frame').bring_top()
+                            wnd.activate()
+
+                        MAX_FILENAMEMSG_LEN = 50
+                        if len(filename) > MAX_FILENAMEMSG_LEN:
+                            filename = '...{}'.format(filename[MAX_FILENAMEMSG_LEN*-1:])
+
+                        kaa.app.messagebar.set_message("`{}` is already opened.".format(filename))
+                        return
+
             doc = kaa.app.storage.openfile(filename, encoding, newline)
             kaa.app.show_doc(doc)
 

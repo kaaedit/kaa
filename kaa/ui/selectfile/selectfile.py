@@ -197,7 +197,6 @@ class OpenFilenameDlgMode(dialogmode.DialogMode):
 
     def close(self):
         super().close()
-        kaa.app.messagebar.set_message("")
 
     def init_themes(self):
         super().init_themes()
@@ -248,6 +247,7 @@ class OpenFilenameDlgMode(dialogmode.DialogMode):
     def on_esc_pressed(self, wnd, event):
         popup = wnd.get_label('popup')
         popup.destroy()
+        kaa.app.messagebar.set_message("")
 
     def get_filename(self):
         f, t = self.document.marks['filename']

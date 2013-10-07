@@ -35,6 +35,15 @@ class ChildFrame(Window, kaa.context.ContextRoot):
     def set_active_editor(self, editorwnd):
         self.active_editor = editorwnd
 
+    def get_documents(self):
+        docs = []
+        for splitter, w in self.splitter.walk():
+            if w:
+                doc = w.document
+                if doc not in docs:
+                    docs.append(doc)
+        return docs
+
     def get_title(self):
         if self.splitter:
             return '/'.join(self.splitter.get_title())
