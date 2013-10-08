@@ -20,6 +20,10 @@ class LineNo:
     def lineno(self, pos):
         return self.bisect_left(pos) + 1
 
+    def getpos(self, lineno):
+        if lineno <= len(self.buf):
+            return self.buf.getint(lineno-1)
+
     def bisect_left(self, pos):
         lo = 0
         hi = len(self.buf)
@@ -274,7 +278,13 @@ class Document:
                 break
         return pos
 
+    def get_lineno_pos(self, lineno):
+        # line number starts from one.
 
+        if lineno >= self.buf.lineno.linecount():
+            return self.endpos()
+        else:
+            return self.buf.lineno.getpos(lineno)
 
 
 class Marks(dict):

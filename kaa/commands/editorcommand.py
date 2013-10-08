@@ -1,3 +1,4 @@
+import re
 import subprocess
 import unicodedata
 import pyjf3
@@ -67,6 +68,39 @@ class CursorCommands(Commands):
     @norerun
     def last(self, wnd):
         wnd.cursor.eof()
+
+    @command('cursor.go-to-line')
+    @norerun
+    @norec
+    def go_to_line(self, wnd):
+        def callback(w, s):
+            s = s.strip()
+            try:
+                lineno = int(s)
+            except ValueError as e:
+                kaa.app.messagebar.set_message(str(e))
+                return
+
+            if lineno == 0 or lineno > wnd.document.buf.lineno.linecount():
+                kaa.app.messagebar.set_message('Enter valid line number.')
+                return
+
+            pos = wnd.document.get_lineno_pos(lineno)
+            tol = wnd.document.gettol(pos)
+            wnd.cursor.setpos(wnd.cursor.adjust_nextpos(wnd.cursor.pos, tol))
+
+            popup = w.get_label('popup')
+            popup.destroy()
+
+
+        def filter(wnd, s):
+            return re.match(r'\d*', s).group()
+
+        from kaa.ui.inputline import inputlinemode
+        doc = inputlinemode.InputlineMode.build('Line number:', callback, filter=filter)
+        kaa.app.messagebar.set_message("Enter line number")
+
+        kaa.app.show_dialog(doc)
 
 
 class ScreenCommands(Commands):
@@ -167,7 +201,7 @@ class EditCommands(Commands):
      UNDO_DELETE) = range(3)
 
     def on_edited(self, wnd):
-        pass
+        wnd.document.mode.on_edited(wnd)
 
     def insert_string(self, wnd, pos, s, update_cursor=True):
         """Insert string"""
@@ -223,6 +257,8 @@ class EditCommands(Commands):
         self.on_edited(wnd)
 
     def put_string(self, wnd, s):
+        s = wnd.document.mode.filter_string(wnd, s)
+
         sel = wnd.screen.selection.get_range()
         wnd.screen.selection.clear()
         if sel:

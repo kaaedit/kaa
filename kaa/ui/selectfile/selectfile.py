@@ -158,6 +158,8 @@ class FileOpenDlgCommands(Commands):
 
 class FilenameEditCommand(editorcommand.EditCommands):
     def on_edited(self, wnd):
+        super().on_edited(wnd)
+
         filename = wnd.document.mode.get_filename()
         if os.sep not in filename:
             filelist = wnd.get_label('filelist')

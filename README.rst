@@ -196,6 +196,9 @@ Control+Home, Control+Shift+Home
 Control+End, Control+Shift+End
    Move cursor to end of file. Control+Shift+End selects text to end of file.
 
+Control+g
+   Go to line number.
+
 Alt+a
    Select all text.
 

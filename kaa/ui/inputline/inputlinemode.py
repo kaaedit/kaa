@@ -68,19 +68,34 @@ class InputlineMode(dialogmode.DialogMode):
         popup.destroy()
         kaa.app.messagebar.set_message("Canceled")
 
-    @command.command('inputline')
-    def input_line(self, w):
+    def filter_string(self, wnd, s):
+        if self.filter:
+            s = self.filter(wnd, s)
+        return s
+
+    def get_input_text(self):
         f, t = self.document.marks['inputtext']
         s = self.document.gettext(f, t)
+        return s
+
+    def set_input_ext(self, wnd, s):
+        cur = self.get_input_text()
+        f, t = self.document.marks['inputtext']
+        self.document.replace(f, t, s, self.get_styleid('default'))
+
+    @command.command('inputline')
+    def input_line(self, w):
+        s = self.get_input_text()
         self.callback(w, s)
 
     @classmethod
-    def build(cls, caption, callback):
+    def build(cls, caption, callback, filter=None):
         buf = document.Buffer()
         doc = document.Document(buf)
         mode = cls()
         doc.setmode(mode)
         mode.callback = callback
+        mode.filter = filter
 
         f = dialogmode.FormBuilder(doc)
 

@@ -194,6 +194,12 @@ class ModeBase:
     def on_keypressed(self, wnd, event, s, commands, candidate):
         return s, commands, candidate
 
+    def filter_string(self, wnd, s):
+        return s
+
+    def on_edited(self, wnd):
+        pass
+
     def on_str(self, wnd, s):
         self.edit_commands.put_string(wnd, s)
         if kaa.app.macro.is_recording():
