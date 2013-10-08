@@ -1,4 +1,4 @@
-asdaimport os, sys
+import os, sys
 from setuptools import setup, find_packages, Extension
 
 
