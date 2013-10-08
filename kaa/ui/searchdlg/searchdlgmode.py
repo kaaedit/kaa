@@ -20,7 +20,6 @@ SearchThemes = {
 }
 
 
-
 class SearchCommands(editorcommand.EditCommands):
 
     @command('edit.backspace')
@@ -82,6 +81,7 @@ class SearchDlgMode(dialogmode.DialogMode):
         self.initialpos = target.cursor.pos
         self.initialrange = target.screen.selection.get_range()
         self.lastsearch = None
+        self.lasthit = None
         self.option = modebase.SearchOption.LAST_SEARCH
 
     def close(self):
@@ -220,6 +220,11 @@ class SearchDlgMode(dialogmode.DialogMode):
         f, t = self.document.marks['searchtext']
         return self.document.gettext(f, t)
 
+    def on_edited(self, wnd):
+        self.lastsearch = None
+        self.lasthit = None
+        self._search_next(wnd)
+
     def _show_searchresult(self, hit):
         if hit:
             self.target.cursor.setpos(hit[0])
@@ -227,47 +232,66 @@ class SearchDlgMode(dialogmode.DialogMode):
             self.target.screen.selection.end = hit[1]
             kaa.app.messagebar.set_message('found')
         else:
+            self.target.screen.selection.clear()
             kaa.app.messagebar.set_message('not found')
 
-    def search_next(self, wnd):
+    def _search_next(self, wnd):
         self.option.text = self.get_search_str()
         if self.option.text:
-            if not self.lastsearch:
+            if self.lasthit is self.lastsearch is None:
+                # initial search
                 if self.initialrange:
                     pos = self.initialrange[0]
                 else:
                     pos = self.initialpos
+
+            elif self.lasthit:
+                # continue previous search
+                pos = self.lasthit[0] + 1
+
             else:
-                pos = self.lastsearch[0]+1
+                # resume from top
+                pos = 0
 
             ret = self.target.document.mode.search_next(self.target, pos, self.option)
             self._show_searchresult(ret)
-            if ret:
-                self.lastsearch = ret
-            else:
-                self.lastsearch = (-1, 0)
+
+            self.lastsearch = pos
+            self.lasthit = ret
 
             return ret
 
-    def search_prev(self, wnd):
+    def search_next(self, wnd):
+        return self._search_next(wnd)
+
+    def _search_prev(self, wnd):
         self.option.text = self.get_search_str()
         if self.option.text:
-            if not self.lastsearch:
+            if self.lasthit is self.lastsearch is None:
+                # initial search
                 if self.initialrange:
                     pos = self.initialrange[1]
                 else:
                     pos = self.initialpos
+
+            elif self.lasthit:
+                # continue previous search
+                pos = self.lasthit[1] - 1
+
             else:
-                pos = self.lastsearch[1]-1
+                # resume from end
+                pos = self.target.document.endpos()
 
             ret = self.target.document.mode.search_prev(self.target, pos, self.option)
             self._show_searchresult(ret)
-            if ret:
-                self.lastsearch = ret
-            else:
-                endpos = self.target.document.endpos()
-                self.lastsearch = (endpos+1, endpos+1)
+
+            self.lastsearch = pos
+            self.lasthit = ret
+
             return ret
+
+    def search_prev(self, wnd):
+        return self._search_prev(wnd)
 
     def on_esc_pressed(self, wnd, event):
         self.target.activate()
@@ -389,43 +413,50 @@ class ReplaceDlgMode(SearchDlgMode):
         if not self.get_search_str():
             return
 
-        ret = super().search_next(wnd)
-        if ret:
-            self._show_replace_msg(wnd, self.replace_and_next, self.search_next)
+        if self.lastsearch is None:
+            self._search_next(wnd)
+
+        if self.lasthit:
+            self._show_replace_msg(wnd, self.replace_and_next, self.skip_and_next)
         else:
-            self._show_search_again(wnd, self.search_next)
+            self._show_search_again(wnd, self.skip_and_next)
 
     def replace_and_next(self, wnd):
-        if self.lastsearch:
-            f, t = self.lastsearch
-            newstr = self.get_replace_str()
-            self.target.document.mode.edit_commands.replace_string(
-                self.target, f, t, newstr)
+        f, t = self.lasthit
+        newstr = self.get_replace_str()
+        self.target.document.mode.edit_commands.replace_string(
+            self.target, f, t, newstr)
 
-            f, t = self.lastsearch
-            self.lastsearch = (f, f+len(newstr))
-            self.search_next(wnd)
+        self.lasthit = (f, f+len(newstr))
+        self._search_next(wnd)
+        self.search_next(wnd)
+
+    def skip_and_next(self, wnd):
+        self._search_next(wnd)
+        self.search_next(wnd)
 
     def search_prev(self, wnd):
         if not self.get_search_str():
             return
 
-        ret = super().search_prev(wnd)
-        if ret:
-            self._show_replace_msg(wnd, self.replace_and_prev, self.search_prev)
+        self._search_prev(wnd)
+
+        if self.lasthit:
+            self._show_replace_msg(wnd, self.replace_and_prev, self.skip_and_prev)
         else:
-            self._show_search_again(wnd, self.search_prev)
+            self._show_search_again(wnd, self.skip_and_prev)
 
     def replace_and_prev(self, wnd):
-        if self.lastsearch:
-            f, t = self.lastsearch
-            newstr = self.get_replace_str()
-            self.target.document.mode.edit_commands.replace_string(
-                self.target, f, t, newstr)
+        f, t = self.lasthit
+        newstr = self.get_replace_str()
+        self.target.document.mode.edit_commands.replace_string(
+            self.target, f, t, newstr)
 
-            f, t = self.lastsearch
-            self.lastsearch = (f, f+len(newstr))
-            self.search_prev(wnd)
+        self.lasthit = (f, f+len(newstr))
+        self.search_prev(wnd)
+
+    def skip_and_prev(self, wnd):
+        self.search_prev(wnd)
 
     def replace_all(self, wnd):
         self.option.text = self.get_search_str()
