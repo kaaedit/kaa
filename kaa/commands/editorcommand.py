@@ -1,4 +1,3 @@
-import shlex
 import subprocess
 import unicodedata
 import pyjf3
@@ -121,16 +120,18 @@ class ScreenCommands(Commands):
     def expand_sel(self, wnd):
         mode = wnd.document.mode
         keys = wnd.editmode.last_command_keys
-        L = len(keys )
-        if L >= 3 and keys [-1] == keys [-2] == keys [-3]:
+        L = len(keys)
+
+        if L >= 3 and keys[-1] == keys[-2] == keys[-3]:
             self.select_all(wnd)
             if kaa.app.macro.recording:
                 kaa.app.macro.record(self.select_all)
 
-        elif L >= 2 and keys[-1] == keys[-2]:
+        elif L >= 2 and (keys[-1] == keys[-2]):
             self.select_cur_line(wnd)
             if kaa.app.macro.recording:
                 kaa.app.macro.record(self.select_cur_line)
+
         else:
             self.select_cur_word(wnd)
             if kaa.app.macro.recording:
@@ -279,7 +280,7 @@ class EditCommands(Commands):
         pos = wnd.cursor.pos
         f = wnd.cursor.adjust_nextpos(pos, wnd.document.gettol(pos))
         t = wnd.cursor.adjust_nextpos(pos, wnd.document.geteol(f))
-        _trace(wnd.document.gettol(pos), wnd.document.geteol(pos))
+
         if f < t:
             self.delete_string(wnd, f, t)
 

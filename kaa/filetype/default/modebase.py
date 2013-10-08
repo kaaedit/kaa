@@ -46,7 +46,7 @@ class ModeBase:
     auto_indent = True
 
     closed = False
-
+    current_lastcommands = None
     theme = None
 
     def __init__(self):
@@ -202,13 +202,17 @@ class ModeBase:
             # run highlighter a bit to display changes immediately.
             self.highlight.update_style(self.document, batch=50)
 
+    def add_lastcommands(self, commandids):
+        if self.current_lastcommands is not None:
+            self.current_lastcommands.extend(commandids)
+
     def on_commands(self, wnd, commandids):
         try:
             if callable(commandids):
                 commandids(wnd)
                 return
 
-            lastcommands = []
+            self.current_lastcommands = []
             for commandid in commandids:
                 is_available, command = self.get_command(commandid)
                 if not command:
@@ -221,12 +225,14 @@ class ModeBase:
                     kaa.app.macro.record(command)
 
                 if not getattr(command, 'NORERUN', False):
-                    lastcommands.append(commandid)
-            if lastcommands:
-                kaa.app.lastcommands = lastcommands
+                    self.current_lastcommands.append(commandid)
+
+            if self.current_lastcommands:
+                kaa.app.lastcommands = self.current_lastcommands
 
         finally:
             wnd.editmode.clear_repeat()
+            self.current_lastcommands = None
 
     def on_esc_pressed(self, wnd, event):
         pass
