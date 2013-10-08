@@ -62,10 +62,29 @@ def main(stdscr):
             doc = fileio.newfile(provisional=True)
             kaa.app.show_doc(doc)
         else:
+            dirname = None
             for filename in opt.file:
-                doc = kaa.app.storage.openfile(filename)
-                kaa.app.show_doc(doc)
-
+                if os.path.isdir(filename):
+                    if not dirname:
+                        dirname = filename
+                else:
+                    doc = kaa.app.storage.openfile(filename)
+                    kaa.app.show_doc(doc)
+            
+            if dirname:
+                from kaa.ui.selectfile import selectfile
+                def cb(filename, encoding, newline):
+                    if filename:
+                        doc = kaa.app.storage.openfile(
+                                filename, encoding, newline)
+                        kaa.app.show_doc(doc)
+                    else:
+                        if not kaa.app.mainframe.childframes:
+                            doc = fileio.newfile(provisional=True)
+                            kaa.app.show_doc(doc)
+                    
+                selectfile.show_fileopen(dirname, cb)
+                
         kaa.app.run()
 
         mainframe.destroy()

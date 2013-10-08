@@ -34,6 +34,9 @@ class CuiApp:
         self.focus = self.mainframe
         self.macro = macro.Macro()
 
+        self.mainframe.on_console_resized()
+        self.messagebar.set_message(self.SHOW_MENU_MESSAGE)
+
     def get_current_theme(self):
         return self._theme_name
 
@@ -148,8 +151,6 @@ class CuiApp:
         return self.mainframe.activeframe
 
     def run(self):
-        self.mainframe.on_console_resized()
-        self.messagebar.set_message(self.SHOW_MENU_MESSAGE)
 
         nonblocking = True
         while not self._quit:

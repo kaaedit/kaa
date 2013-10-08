@@ -17,6 +17,9 @@ class FileCommands(Commands):
     @norerun
     def file_open(self, wnd):
         def cb(filename, encoding, newline):
+            if not filename:
+                return
+
             for frame in kaa.app.get_frames():
                 for doc in frame.get_documents():
                     if doc.get_filename() == filename:
@@ -84,8 +87,9 @@ class FileCommands(Commands):
     def file_saveas(self, wnd, saved=None, document=None):
         "Show save_as dialog and save to the specified file."
         def cb(filename, enc, newline):
-            self.file_save(wnd, filename, saved=saved, document=document,
-                           encoding=enc, newline=newline)
+            if filename:
+                self.file_save(wnd, filename, saved=saved, document=document,
+                               encoding=enc, newline=newline)
 
         if not document:
             document = wnd.document

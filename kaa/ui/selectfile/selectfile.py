@@ -171,7 +171,7 @@ class OpenFilenameDlgMode(dialogmode.DialogMode):
     MAX_INPUT_HEIGHT = 4
     autoshrink = True
     @classmethod
-    def build(cls, newline, encoding, callback):
+    def build(cls, filename, newline, encoding, callback):
         buf = document.Buffer()
         doc = document.Document(buf)
         mode = cls()
@@ -184,7 +184,7 @@ class OpenFilenameDlgMode(dialogmode.DialogMode):
         f = dialogmode.FormBuilder(doc)
         f.append_text('caption', 'Filename:' )
         f.append_text('default', ' ')
-        f.append_text('default', '', mark_pair='filename')
+        f.append_text('default', filename, mark_pair='filename')
         f.append_text('default', ' ')
 
         f.append_text('option', '[&Encoding:{}]'.format(mode.encoding), mark_pair='enc',
@@ -250,7 +250,8 @@ class OpenFilenameDlgMode(dialogmode.DialogMode):
         popup = wnd.get_label('popup')
         popup.destroy()
         kaa.app.messagebar.set_message("")
-
+        self.callback(None, None, None)
+        
     def get_filename(self):
         f, t = self.document.marks['filename']
         return self.document.gettext(f, t)
@@ -308,15 +309,21 @@ def show_fileopen(filename, callback):
     filename = os.path.abspath(
         os.path.expanduser(filename))
 
-    if os.path.isdir(filename) and not filename.endswith(os.path.sep):
-        filename += os.path.sep
+    if os.path.isdir(filename):
+        dirname = filename
+        filename = ''
+    else:
+        dirname, filename = os.path.split(filename)
+       
+    if not dirname.endswith(os.path.sep):
+        dirname += os.path.sep
 
-    doc = OpenFilenameDlgMode.build(None, None, callback)
+    doc = OpenFilenameDlgMode.build(filename, None, None, callback)
     dlg = kaa.app.show_dialog(doc)
 
     filelist = DirFileListMode.build()
     dlg.add_doc('dlg_filelist', 0, filelist)
-    filelist.mode.set_dir('.')
+    filelist.mode.set_dir(dirname)
     filelist.mode.show_files()
     dlg.on_console_resized()
     return doc
@@ -366,7 +373,7 @@ def show_filesaveas(filename, encoding, newline, callback):
     if os.path.isdir(filename) and not filename.endswith(os.path.sep):
         filename += os.path.sep
 
-    doc = SaveAsFilenameDlgMode.build(encoding, newline, callback)
+    doc = SaveAsFilenameDlgMode.build('', encoding, newline, callback)
     dlg = kaa.app.show_dialog(doc)
 
     filelist = DirFileListMode.build()
