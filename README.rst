@@ -34,8 +34,12 @@ Command line options
 
 To start kaa, type ::
 
-   $ kaa [FILE]...
+   $ kaa [-h] [--version] [FILE [FILE ...]]
 
+   optional arguments:
+     -h, --help  show this help message and exit
+     --version show version info and exit
+      
 Usage
 =====
 

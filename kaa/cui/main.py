@@ -2,7 +2,7 @@ import curses, os, sys, types
 import setproctitle
 import kaa.tools
 import kaa.log
-from kaa import options, consts, config
+from kaa import options, version, consts, config
 from . import app, keydef, frame
 
 from .. import document
@@ -76,11 +76,16 @@ def main(stdscr):
 def run():
     if sys.version_info[:2] < (3, 3):
         raise RuntimeError('kaa requires Python 3.3 or later')
+        
     setproctitle.setproctitle('kaa')
     parser = options.build_parser()
 
     global opt
     opt = parser.parse_args()
+
+    if opt.show_version:
+        print(version.version_info())
+        return
 
     if not os.environ.get('ESCDELAY'):
         os.environ['ESCDELAY'] = CURSES_ESCDELAY

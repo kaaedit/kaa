@@ -101,7 +101,7 @@ class FileCommands(Commands):
 
         def choice(c):
             if c == 'y':
-                self.file_save(wnd, saved=saved)
+                self.file_save(wnd, saved=saved, document=document)
             elif c == 'n':
                 callback()
 
@@ -113,16 +113,21 @@ class FileCommands(Commands):
         else:
             callback()
 
-    def save_documents(self, wnd, docs, callback, msg):
+    def save_documents(self, wnd, docs, callback, msg='', force=False):
+
         docs = list(docs)
-        def save_documents():
+        def _save_documents():
             if not docs:
                 if callback:
                     callback()
             else:
                 doc = docs.pop()
-                self.ask_doc_close(wnd, doc, save_documents, msg)
-        save_documents()
+                if force:
+                    self.file_save(wnd, saved=_save_documents, document=doc)
+                else:
+                    self.ask_doc_close(wnd, doc, _save_documents, msg)
+
+        _save_documents()
 
     @command('file.close')
     @norec
@@ -169,7 +174,9 @@ class FileCommands(Commands):
             pass
         
         docs = self.get_current_documents(wnd)
-        self.save_documents(wnd, docs, saved, 'Save file?')
+        docs = [doc for doc in docs if doc.undo.is_dirty()]
+        if docs:
+            self.save_documents(wnd, docs, saved, force=True)
 
     @command('file.quit')
     @norec

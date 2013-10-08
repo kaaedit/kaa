@@ -55,7 +55,7 @@ class FileStorage:
         f.write(doc.gettext(0, doc.endpos()))
 
         self.set_fileinfo(doc.fileinfo, filename)
-
+        doc.provisional = False
         if doc.undo:
             doc.undo.saved()
 
