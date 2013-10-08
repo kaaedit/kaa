@@ -69,6 +69,9 @@ edit_command_keys = {
     (ctrl, '_'): 'edit.undo',
     (alt, '_'): 'edit.redo',
 
+}
+
+addtional_edit_command_keys = {
     tab: 'edit.indent',
     (shift, tab): 'edit.dedent',
 

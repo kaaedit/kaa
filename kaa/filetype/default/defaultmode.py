@@ -13,6 +13,7 @@ class DefaultMode(modebase.ModeBase):
         keybind.app_keys,
         keybind.cursor_keys,
         keybind.edit_command_keys,
+            keybind.addtional_edit_command_keys,
         keybind.emacs_keys,
         keybind.search_command_keys,
         keybind.macro_command_keys,
