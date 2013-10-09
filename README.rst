@@ -9,6 +9,36 @@ Kaa is a small and easy text editor for console environment.
 
 .. contents::
 
+
+Overview
+============
+
+Kaa is a easy yet powerful text editor for console user interface providing numerous features like 
+
+- Macro recording.
+
+- Undo/Redo.
+
+- Multiple windows/frames.
+
+- Syntax highlighting.
+
+- Open source software(MIT)
+
+- More to come!
+
+
+Kaa is easy!
+------------
+
+Kaa is very easy to learn in spite of its rich functions. Only thing you need to remember is "*To display menu, hit F1 key or alt+'/' key*". Most of basic feartures could be accessed from fancy menus by hitting underlined character in the menu items. You can use Kaa as easy as you are with Notepad on MS-Windows.
+
+Customisable
+------------
+
+Kaa is written in `Python <http://www.python.org/>`_. So, you can easily customise many aspects of kaa with simple Python scripts.
+
+
 Requirements
 ============
 
@@ -95,8 +125,15 @@ Undo
 Redo
    Redo last undo.
 
+Search
+    Search text.
+    
+Replace
+    Replace text.
+
 Convert
     Show text convert menu
+
 
 Text convert menu
 ~~~~~~~~~~~~~~~~~~~~
@@ -303,6 +340,42 @@ Assign same keyboard shortcut of splitting windows command as Emacs.
    
 In this example, key sequence C-x 2 (control+x followed by 2) is assigned to 'editor.splithorz' command.
 
+
+Version history
+=================
+
+0.0.3 - 2013.10.9
+-----------------
+
+- Incremental search.
+
+- Accept directory name as command line argument.
+
+- New command: Go to line(^g).
+
+- New command: Select current word(^c).
+
+- New command: Save all files(menu|file|Save All).
+
+- Improve file open dialog.
+
+
+0.0.2 - 2013.10.5
+-----------------
+
+- Misc commands.
+
+- Highlight parenthesis at cursor.
+
+- Support text encodnig other than utf-8.
+
+- Other a lot of changes.
+
+
+0.0.1 - 2013.6.16
+-----------------
+
+- Initial release.
 
         
 Copyright 

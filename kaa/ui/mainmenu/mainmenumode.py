@@ -63,6 +63,8 @@ class EditMenuMode(MenuMode):
             ('&Paste', ('edit.paste',)),
             ('&Undo', ('edit.undo',)),
             ('&Redo', ('edit.redo',)),
+            ('&Search', ('search.showsearch',)),
+            ('R&eplace', ('search.showreplace',)),
             ('[&Convert]', ('menu.edit.convert',)),
            ))
 
