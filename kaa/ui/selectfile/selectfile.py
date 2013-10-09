@@ -100,17 +100,38 @@ class FileOpenDlgCommands(Commands):
         if filename and wnd.document.mode.get_filename() != filename:
             wnd.document.mode.set_filename(wnd, filename)
 
-    @command('fileopendlg.prev')
-    def prev(self, wnd):
+    def _check_needcomplete(self, wnd):
+        cur = wnd.document.mode.get_filename()
+        cur = os.path.expanduser(cur)
+        
+        if os.path.isabs(cur):
+            if os.path.isdir(cur):
+                cur += os.sep
+            self.show_filename(wnd, cur)
+            return True
+        
+        d, f = os.path.split(cur)
+        if d and f:
+            filename = self._build_filename(wnd)
+            self.show_filename(wnd, filename)
+            
+    @command('fileopendlg.next')
+    def next(self, wnd):
+        if self._check_needcomplete(wnd):
+            return 
+            
         filelist = wnd.get_label('filelist')
-        cursel = filelist.document.mode.sel_prev(filelist)
+        cursel = filelist.document.mode.sel_next(filelist)
         if cursel:
             self._update_filefield(wnd, cursel.value)
 
-    @command('fileopendlg.next')
-    def next(self, wnd):
+    @command('fileopendlg.prev')
+    def prev(self, wnd):
+        if self._check_needcomplete(wnd):
+            return 
+            
         filelist = wnd.get_label('filelist')
-        cursel = filelist.document.mode.sel_next(filelist)
+        cursel = filelist.document.mode.sel_prev(filelist)
         if cursel:
             self._update_filefield(wnd, cursel.value)
 
