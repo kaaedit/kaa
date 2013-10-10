@@ -11,7 +11,7 @@ class ApplicationCommands(Commands):
     @norerun
     def show_mainmenu(self, wnd):
         doc = mainmenumode.MainMenuMode.build(wnd)
-        kaa.app.show_menu(wnd, doc, root=False)
+        kaa.app.show_menu(wnd, doc, root=True)
 
     @command('menu.file')
     @norec

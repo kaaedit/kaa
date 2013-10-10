@@ -333,22 +333,17 @@ def show_fileopen(filename, callback):
     filename = os.path.abspath(
         os.path.expanduser(filename))
 
-    if os.path.isdir(filename):
-        dirname = filename
-        filename = ''
-    else:
-        dirname, filename = os.path.split(filename)
-       
-    if not dirname.endswith(os.path.sep):
-        dirname += os.path.sep
+    if os.path.isdir(filename) and not filename.endswith(os.path.sep):
+        filename += os.path.sep
 
-    doc = OpenFilenameDlgMode.build(filename, None, None, callback)
+    doc = OpenFilenameDlgMode.build('', None, None, callback)
     dlg = kaa.app.show_dialog(doc)
 
     filelist = DirFileListMode.build()
     dlg.add_doc('dlg_filelist', 0, filelist)
-    filelist.mode.set_dir(dirname)
-    filelist.mode.show_files(dlg.get_label('editor'))
+
+    doc.mode.fileopendlg_commands.show_filename(
+        dlg.get_label('editor'), filename)
     dlg.on_console_resized()
 
     return doc

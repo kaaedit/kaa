@@ -17,8 +17,8 @@ def show_recentlyused(callback, title, items):
 
     filterlistdoc.mode.set_candidates(files)
 
-    editor = dlg.get_label('editor')
-    filterlistdoc.mode.set_query(editor, '')
+    list = dlg.get_label('dlg_filterlist')
+    filterlistdoc.mode.set_query(list, '')
     dlg.on_console_resized()
 
     return doc

@@ -1,10 +1,12 @@
 import kaa
+from kaa.keyboard import *
 from kaa.ui.dialog import dialogmode
 from kaa.theme import Theme, Style
 from kaa.filetype.default import modebase, keybind
 from kaa.ui.msgbox import msgboxmode
 from kaa.command import command, Commands
 from kaa.commands import editorcommand
+from kaa.ui.selectlist import filterlist
 
 SearchThemes = {
     'default':
@@ -44,6 +46,31 @@ class SearchCommands(editorcommand.EditCommands):
         mode = wnd.document.mode
         mode.search_prev(wnd)
 
+    
+    def _show_histdlg(self, wnd, title, candidates, callback):
+        doc = filterlist.FilterListInputDlgMode.build(
+                title, callback)
+        dlg = kaa.app.show_dialog(doc)
+    
+        filterlistdoc = filterlist.FilterListMode.build()
+        dlg.add_doc('dlg_filterlist', 0, filterlistdoc)
+        
+        filterlistdoc.mode.set_candidates(candidates)
+    
+        list = dlg.get_label('dlg_filterlist')
+        filterlistdoc.mode.set_query(list, '')
+        dlg.on_console_resized()
+        
+    @command('searchdlg.history')
+    def search_history(self, wnd):
+        def callback(result):
+            if result:
+                f, t = wnd.document.marks['searchtext']
+                wnd.document.replace(f, t, result)
+            
+        self._show_histdlg(wnd, 'Recent searches', 
+                kaa.app.config.hist_searchstr, callback)
+        
     @command('searchdlg.toggle.ignorecase')
     def toggle_ignorecase(self, wnd):
         mode = wnd.document.mode
@@ -62,6 +89,7 @@ class SearchCommands(editorcommand.EditCommands):
 searchdlg_keys = {
     '\r': ('searchdlg.search.next'),
     '\n': ('searchdlg.search.next'),
+    up: ('searchdlg.history'),
 }
 
 class SearchDlgMode(dialogmode.DialogMode):
@@ -171,7 +199,7 @@ class SearchDlgMode(dialogmode.DialogMode):
         self._build_options(f)
 
         self.update_option_style()
-        kaa.app.messagebar.set_message("Hit alt+N/alt+P to search Next/Prev")
+        kaa.app.messagebar.set_message("Hit alt+N/alt+P to search Next/Prev. Hit up to show history.")
 
     def _set_option_style(self, mark, style,
                           shortcutmark, shortcutstyle):
@@ -261,7 +289,11 @@ class SearchDlgMode(dialogmode.DialogMode):
 
             return ret
 
+    def _save_searchstr(self):
+        kaa.app.config.hist_searchstr.add(self.get_search_str())
+        
     def search_next(self, wnd):
+        self._save_searchstr()
         return self._search_next(wnd)
 
     def _search_prev(self, wnd):
@@ -291,9 +323,11 @@ class SearchDlgMode(dialogmode.DialogMode):
             return ret
 
     def search_prev(self, wnd):
+        self._save_searchstr()
         return self._search_prev(wnd)
 
     def on_esc_pressed(self, wnd, event):
+        self._save_searchstr()
         self.target.activate()
         self.target = None
         wnd.get_label('popup').destroy()
@@ -306,7 +340,7 @@ class SearchDlgMode(dialogmode.DialogMode):
                 self.lastsearch = None
 
 
-class ReplaceCommands(Commands):
+class ReplaceCommands(SearchCommands):
     @command('replacedlg.field.next')
     def field_next(self, wnd):
         searchfrom, searchto = wnd.document.marks['searchtext']
@@ -319,10 +353,29 @@ class ReplaceCommands(Commands):
             wnd.cursor.setpos(searchfrom)
             wnd.screen.selection.set_range(searchfrom, searchto)
 
+    def replace_repl_history(self, wnd):
+        def callback(result):
+            if result:
+                f, t = wnd.document.marks['replacetext']
+                wnd.document.replace(f, t, result)
+            
+        self._show_histdlg(wnd, 'Recent searches', 
+                kaa.app.config.hist_searchstr, callback)
+
+    @command('replacedlg.history')
+    def replace_history(self, wnd):
+        searchfrom, searchto = wnd.document.marks['searchtext']
+
+        if searchfrom <= wnd.cursor.pos <= searchto:
+            self.search_history(wnd)
+        else:
+            self.replace_repl_history(wnd)
+
 
 replacedlg_keys = {
     '\r': ('replacedlg.field.next'),
     '\n': ('replacedlg.field.next'),
+    up: ('replacedlg.history'),
 }
 
 
@@ -377,7 +430,7 @@ class ReplaceDlgMode(SearchDlgMode):
         self._build_options(f)
 
         self.update_option_style()
-        kaa.app.messagebar.set_message("Hit enter to move field. Hit alt+N/alt+P to replace.")
+        kaa.app.messagebar.set_message("Hit enter to move field. Hit up to show history.`")
 
         return
             
@@ -409,9 +462,18 @@ class ReplaceDlgMode(SearchDlgMode):
         msgdoc = msgboxmode.MsgBoxMode.show_msgbox(
             'Search failed. Resume again?', ['&Yes', '&Cancel'], cb)
 
+    def _save_replstr(self):
+        kaa.app.config.hist_replstr.add(self.get_replace_str())
+        
     def search_next(self, wnd):
         if not self.get_search_str():
             return
+
+        self._save_searchstr()
+        self._save_replstr()
+        
+        kaa.app.config.hist_searchstr.add(self.get_search_str())
+        
 
         if self.lastsearch is None:
             self._search_next(wnd)
@@ -438,6 +500,9 @@ class ReplaceDlgMode(SearchDlgMode):
     def search_prev(self, wnd):
         if not self.get_search_str():
             return
+
+        self._save_searchstr()
+        self._save_replstr()
 
         self._search_prev(wnd)
 

@@ -104,7 +104,7 @@ class DialogWnd(_dialogwnd):
 
     def add_doc(self, label, pos, doc):
         input = editor.TextEditorWindow(parent=self)
-        self.set_label('label', input)
+        self.set_label(label, input)
         input.show_doc(doc)
         self.inputs.insert(pos, input)
 

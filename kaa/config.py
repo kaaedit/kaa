@@ -30,6 +30,8 @@ class History(list):
             return
 
     def add(self, item):
+        if not item:
+            return
         if item in self:
             self.remove(item)
 
@@ -73,8 +75,14 @@ class Config:
         self.LOGDIR = logdir
         self.HISTDIR = histdir
 
-        self.hist_files = History(os.path.join(self.HISTDIR, consts.HIST_FILENAME))
-        self.hist_dirs = History(os.path.join(self.HISTDIR, consts.HIST_DIRNAME))
+        self.hist_files = History(
+            os.path.join(self.HISTDIR, consts.HIST_FILENAME))
+        self.hist_dirs = History(
+            os.path.join(self.HISTDIR, consts.HIST_DIRNAME))
+        self.hist_searchstr = History(
+            os.path.join(self.HISTDIR, consts.HIST_SEARCH))
+        self.hist_replstr = History(
+            os.path.join(self.HISTDIR, consts.HIST_REPLACE))
 
     def get_mode_packages(self):
         for pkgname in self.FILETYPES:

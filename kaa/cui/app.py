@@ -40,10 +40,14 @@ class CuiApp:
 
         self.config.hist_files.load()
         self.config.hist_dirs.load()
+        self.config.hist_searchstr.load()
+        self.config.hist_replstr.load()
 
     def on_shutdown(self):
         self.config.hist_files.save()
         self.config.hist_dirs.save()
+        self.config.hist_searchstr.save()
+        self.config.hist_replstr.save()
 
     def get_current_theme(self):
         return self._theme_name
