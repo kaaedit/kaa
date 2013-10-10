@@ -133,15 +133,9 @@ class FileCommands(Commands):
 
         _save_documents()
 
-    @command('file.close')
-    @norec
-    @norerun
-    def file_close(self, wnd):
-        "Close active frame"
 
-        import kaa.fileio
+    def _close_frame(self, frame, callback):
 
-        frame = wnd.get_label('frame')
         editors = {e for e in frame.get_editors()}
         alldocs = {e.document for e in editors}
 
@@ -151,17 +145,30 @@ class FileCommands(Commands):
             if not doc_editors:
                 docs.append(doc)
 
-        def saved():
+        def cb():
             frame.destroy()
+            callback()
+    
+        self.save_documents(frame, docs, cb, 'Save file before close?')
 
+    @command('file.close')
+    @norec
+    @norerun
+    def file_close(self, wnd, callback=None):
+        "Close active frame"
+
+        import kaa.fileio
+
+        frame = wnd.get_label('frame')
+        def saved():
             if frame.mainframe.childframes:
                 kaa.app.set_focus(frame.mainframe.childframes[-1])
             else:
                 doc = kaa.fileio.newfile(provisional=True)
                 kaa.app.show_doc(doc)
 
-        self.save_documents(wnd, docs, saved, 'Save file before close?')
-
+        self._close_frame(frame, saved)
+        
     def get_current_documents(self, wnd):
         docs = set()
         for frame in wnd.mainframe.childframes:
@@ -181,6 +188,23 @@ class FileCommands(Commands):
         docs = [doc for doc in docs if doc.undo.is_dirty()]
         if docs:
             self.save_documents(wnd, docs, saved, force=True)
+
+    @command('file.close.all')
+    @norec
+    @norerun
+    def file_closeall(self, wnd):
+
+        def callback():
+            import kaa.fileio
+            if frames:
+                f = frames.pop()
+                self._close_frame(f, callback)
+            else:
+                doc = kaa.fileio.newfile(provisional=True)
+                kaa.app.show_doc(doc)
+                
+        frames = wnd.mainframe.childframes[:]
+        callback()
 
     @command('file.recently-used-files')
     @norec

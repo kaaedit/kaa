@@ -106,6 +106,9 @@ Close
 Save All
    Save all current files.
 
+Close All
+   Close all frames.
+
 Recently
     Show recently used files menu.
 

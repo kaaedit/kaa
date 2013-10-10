@@ -50,7 +50,8 @@ class FileMenuMode(MenuMode):
             ('Save &As', ('file.saveas',)),
             ('&Close', ('file.close',)),
             ('Save a&ll', ('file.save.all',)),
-            ('[&Recently]', ('menu.recently-used-files',)),
+            ('Clos&e all', ('file.close.all',)),
+            ('&Recently', ('menu.recently-used-files',)),
             ('&Quit', ('file.quit',))
            ))
 
