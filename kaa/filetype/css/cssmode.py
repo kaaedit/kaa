@@ -9,8 +9,8 @@ CSSThemes = {
     'default':
         Theme([
             Style('css-selector', 'magenta', 'default'),
-            Style('css-propname', 'green', 'default'),
-            Style('css-propvalue', 'blue', 'default'),
+            Style('css-propname', 'blue', 'default', bold=True),
+            Style('css-propvalue', 'green', 'default', bold=True),
     ])
 }
 

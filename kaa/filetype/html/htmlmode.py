@@ -1,7 +1,8 @@
 from collections import namedtuple
 from kaa.filetype.default import defaultmode
 from gappedbuf import re as gre
-from kaa.highlight import Tokenizer, Span, SingleToken, Token, SubSection, EndSection, SubTokenizer
+from kaa.highlight import (Tokenizer, Span, SingleToken, Token, 
+        SubSection, EndSection, SubTokenizer)
 from kaa.theme import Theme, Style
 from kaa.filetype.javascript import javascriptmode
 from kaa.filetype.css import cssmode
@@ -13,11 +14,6 @@ HTMLThemes = {
             Style('html-tag', 'Magenta', 'default'),
             Style('html-attrname', 'blue', 'default', bold=True),
             Style('html-attrvalue', 'yellow', 'default'),
-
-            # css styles
-            Style('css-selector', 'magenta', 'default'),
-            Style('css-propname', 'green', 'default'),
-            Style('css-propvalue', 'blue', 'default'),
         ])
 }
 
@@ -204,6 +200,7 @@ class HTMLMode(defaultmode.DefaultMode):
     def init_themes(self):
         super().init_themes()
         self.themes.append(HTMLThemes)
+        self.themes.append(cssmode.CSSThemes)
 
     def init_tokenizers(self):
         self.tokenizers = build_tokenizers()
