@@ -304,7 +304,6 @@ class TextEditorWindow(Window):
             self.refresh()
 
     def update_window(self):
-
         # if this editor is a part of ChildFrame,
         # update if the ChildFrame is active.
         frame = self.get_label('frame')

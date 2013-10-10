@@ -9,8 +9,9 @@ from kaa.filetype.css import cssmode
 HTMLThemes = {
     'default':
         Theme([
-            Style('html-tag', 'red', 'default'),
-            Style('html-attrname', 'blue', 'default'),
+            Style('html-decl', 'Red', 'default'),
+            Style('html-tag', 'Magenta', 'default'),
+            Style('html-attrname', 'blue', 'default', bold=True),
             Style('html-attrvalue', 'yellow', 'default'),
 
             # css styles
@@ -160,12 +161,17 @@ class HTMLTag(Token):
 def build_tokenizers():
 
     HTMLTOKENS = namedtuple('htmltokens', ['keywords', 'comment',
-                       'endtag', 'jsstart', 'cssstart', 'htmltag',
-                       'jsattr1', 'jsattr2', 'cssattr1', 'cssattr2'])
+                       'xmlpi', 'xmldef', 'endtag', 'jsstart', 'cssstart',
+                       'htmltag', 'jsattr1', 'jsattr2', 'cssattr1',
+                       'cssattr2'])
 
     keywords=SingleToken('html-entityrefs', 'keyword',
                          [r'&\w+;', r'&\#x[0-9a-hA-H]+;', r'&\#[0-9]+;'])
+
     comment=Span('html-comment', 'comment', r'<!--', r'--\s*>')
+    xmlpi=Span('xmlpi', 'html-decl', r'<\?', r'\?>')
+    xmldef=Span('xmldef', 'html-decl', r'<!', r'>')
+
     endtag = Span('html-endtag', 'html-tag', r'</', r'>')
     htmltag = HTMLTag('html', 'default')
 
@@ -188,7 +194,7 @@ def build_tokenizers():
     styleattr2 = SubTokenizer('sub-css', '', cssmode.build_proptokenizer('"', 'html-attrvalue'))
 
     return [Tokenizer(
-        HTMLTOKENS(keywords, comment, endtag, jsstart, cssstart, htmltag,
+        HTMLTOKENS(keywords, comment, xmlpi, xmldef, endtag, jsstart, cssstart, htmltag,
                    jsattr1, jsattr2, styleattr1, styleattr2)),
         jstokenizer, csstokenizer]
 

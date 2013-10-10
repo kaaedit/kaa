@@ -86,6 +86,7 @@ def main(stdscr):
                 selectfile.show_fileopen(dirname, cb)
                 
         kaa.app.run()
+        kaa.app.on_shutdown()
 
         mainframe.destroy()
 

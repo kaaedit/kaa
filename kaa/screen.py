@@ -290,6 +290,11 @@ class Screen:
 
     def get_total_height(self):
         self.apply_updates()
+
+        if self.build_entire_rows:
+            if self.rows:
+                assert self.rows[0].posfrom == 0
+
         return sum(r.height for r in self.rows)
 
     def setsize(self, width, height):
@@ -523,12 +528,14 @@ class Screen:
         if not refresh and (posidx != -1):
             if not align_always and (self.portfrom <= posidx < self.portto):
                 return False
+
         elif self.build_entire_rows:
             eol, s = self.document.getline(0)
             styles = self.document.get_styles(0, eol)
             self.rows = self._buildrow(0, s, styles)
             self._fillscreen()
             posidx, posrow = self.getrow(pos)
+
         else:
             # build specified row
             tol = self.document.gettol(pos)
@@ -538,6 +545,7 @@ class Screen:
             posidx, posrow = self.getrow(pos)
 
         self.vert_align(posidx, top, middle, bottom)
+
         return True
 
     def vert_align(self, rowidx, top=False, middle=False, bottom=False):

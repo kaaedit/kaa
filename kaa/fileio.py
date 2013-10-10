@@ -40,19 +40,36 @@ class FileStorage:
             files = [unicodedata.normalize('NFC', n) for n in files]
         return dirs, files
 
+    def _save_hist(self, filename):
+        abspath = os.path.abspath(filename)
+        dirname = os.path.dirname(abspath)
+        if dirname.endswith(os.pathsep):
+            dirname = dirname[:-1]
+
+        kaa.app.config.hist_files.add(abspath)
+        kaa.app.config.hist_dirs.add(dirname)
+        kaa.app.last_dir = dirname
+
     def openfile(self, filename, encoding=None, newline=None):
+        self._save_hist(filename)
         return openfile(filename, encoding, newline)
 
     def save_document(self, filename, doc):
+        self._save_hist(filename)
+
         if doc.fileinfo.encoding is None:
             doc.fileinfo.encoding = kaa.app.config.DEFAULT_ENCODING
 
         if doc.fileinfo.newline is None:
             doc.fileinfo.newline = kaa.app.config.DEFAULT_NEWLINE
-        f = open(filename, 'w', encoding=doc.fileinfo.encoding,
+
+        with open(filename, 'w', encoding=doc.fileinfo.encoding,
                  newline=consts.NEWLINE_CHARS[doc.fileinfo.newline],
-                 errors='surrogateescape')
-        f.write(doc.gettext(0, doc.endpos()))
+                 errors='surrogateescape') as f:
+
+            # TODO: save as another file and rename?
+            # TODO: fsync
+            f.write(doc.gettext(0, doc.endpos()))
 
         self.set_fileinfo(doc.fileinfo, filename)
         doc.provisional = False

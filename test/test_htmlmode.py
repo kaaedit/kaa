@@ -208,3 +208,21 @@ class TestHTMLHighlight(kaa_testutils._TestDocBase):
             (10, 11, hl.tokenizers[0].tokens.cssattr1.subtokenizer.tokens[0].span_close),
             (11, 12, hl.tokenizers[0].tokens.htmltag.span_gt),
         ] == list((f, t, style) for f, t, style in hl.highlight(doc, 0))
+
+    def test_xhtml(self):
+        hl = highlight.Highlighter(tokenizers=self.tokenizers)
+        doc = self._getdoc("""<?xml version="1.0" encoding="utf-8" ?>""")
+        assert [
+            (0, 2, self.tokenizers[0].tokens.xmlpi.span_start),
+            (2, 37, self.tokenizers[0].tokens.xmlpi.span_mid),
+            (37, 39, self.tokenizers[0].tokens.xmlpi.span_end),
+        ] == list((f, t, style) for f, t, style in hl.highlight(doc, 0))
+
+        doc = self._getdoc("""<!DOCTYPE html PUBLIC>""")
+
+        assert [
+            (0, 2, self.tokenizers[0].tokens.xmldef.span_start),
+            (2, 21, self.tokenizers[0].tokens.xmldef.span_mid),
+            (21, 22, self.tokenizers[0].tokens.xmldef.span_end),
+        ] == list((f, t, style) for f, t, style in hl.highlight(doc, 0))
+

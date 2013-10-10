@@ -12,7 +12,8 @@ class SelectItemList(dialogmode.DialogMode):
     cursel = None
     filterfunc = None
     caption = None
-
+    SEP = ' '
+    
     @classmethod
     def build(cls):
         buf = document.Buffer()
@@ -39,6 +40,7 @@ class SelectItemList(dialogmode.DialogMode):
 
     def update_doc(self, items):
         self.items = items
+        self.cursel = None
 
         self.document.marks.clear()
         self.document.delete(0, self.document.endpos())
@@ -47,9 +49,10 @@ class SelectItemList(dialogmode.DialogMode):
         if self.caption:
             f.append_text('caption', self.caption+':\n')
 
-        for item in self.items:
+        for n, item in enumerate(self.items):
             f.append_text(item.style, item.text, mark_pair=item)
-            f.append_text('default', ' ')
+            if n != (len(self.items)-1):
+                f.append_text('default', self.SEP)
 
     def _update_item_style(self, wnd, item, activate, bottom=None):
 
@@ -64,7 +67,9 @@ class SelectItemList(dialogmode.DialogMode):
         f, t = self.document.marks[item]
         self.document.styles.setints(f, t, self.get_styleid(style))
         if activate:
-            wnd.cursor.setpos(f, bottom=bottom)
+            wnd.screen.apply_updates()
+            top = not bottom
+            wnd.screen.locate(f, top=top, bottom=bottom)
 
     def update_sel(self, wnd, newsel, bottom=None):
         if self.cursel is not None:
@@ -91,7 +96,7 @@ class SelectItemList(dialogmode.DialogMode):
                 else:
                     newsel = self.items[0]
 
-        self.update_sel(wnd, newsel)
+        self.update_sel(wnd, newsel, bottom=True)
         return newsel
 
     def sel_prev(self, wnd):
@@ -113,5 +118,6 @@ class SelectItemList(dialogmode.DialogMode):
                 else:
                     newsel = self.items[-1]
                     bottom = True
+
         self.update_sel(wnd, newsel, bottom=bottom)
         return newsel

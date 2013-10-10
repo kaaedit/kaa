@@ -64,7 +64,7 @@ class DirFileListMode(selectlist.SelectItemList):
         else:
             self.filterfunc = None
 
-    def show_files(self):
+    def show_files(self, wnd):
         self.cursel = None
         dirs = [selectlist.SelectItem('dirname', name, name)
                     for name in self.dirs]
@@ -156,7 +156,7 @@ class FileOpenDlgCommands(Commands):
         # set rest of filename to filename filter.
         filelist.document.mode.set_filename(rest)
 
-        filelist.document.mode.show_files()
+        filelist.document.mode.show_files(wnd)
         filelist.get_label('popup').on_console_resized()
 
         # set rest of filename filename field.
@@ -177,7 +177,7 @@ class FileOpenDlgCommands(Commands):
                 filename += os.path.sep
         self.show_filename(wnd, filename)
 
-class FilenameEditCommand(editorcommand.EditCommands):
+class FilenameEditCommands(editorcommand.EditCommands):
     def on_edited(self, wnd):
         super().on_edited(wnd)
 
@@ -185,7 +185,7 @@ class FilenameEditCommand(editorcommand.EditCommands):
         if os.sep not in filename:
             filelist = wnd.get_label('filelist')
             filelist.document.mode.set_filename(filename)
-            filelist.document.mode.show_files()
+            filelist.document.mode.show_files(wnd)
             filelist.get_label('popup').on_console_resized()
 
 class OpenFilenameDlgMode(dialogmode.DialogMode):
@@ -237,7 +237,7 @@ class OpenFilenameDlgMode(dialogmode.DialogMode):
         self.fileopendlg_commands = FileOpenDlgCommands()
         self.register_command(self.fileopendlg_commands)
 
-        self.edit_commands = FilenameEditCommand()
+        self.edit_commands = FilenameEditCommands()
         self.register_command(self.edit_commands)
 
         self.screen_commands = editorcommand.ScreenCommands()
@@ -327,6 +327,9 @@ class OpenFilenameDlgMode(dialogmode.DialogMode):
 
 
 def show_fileopen(filename, callback):
+    if not filename:
+        filename = kaa.app.last_dir
+
     filename = os.path.abspath(
         os.path.expanduser(filename))
 
@@ -345,8 +348,9 @@ def show_fileopen(filename, callback):
     filelist = DirFileListMode.build()
     dlg.add_doc('dlg_filelist', 0, filelist)
     filelist.mode.set_dir(dirname)
-    filelist.mode.show_files()
+    filelist.mode.show_files(dlg.get_label('editor'))
     dlg.on_console_resized()
+
     return doc
 
 class FileSaveAsDlgCommands(FileOpenDlgCommands):
@@ -389,6 +393,9 @@ class SaveAsFilenameDlgMode(OpenFilenameDlgMode):
 
 
 def show_filesaveas(filename, encoding, newline, callback):
+    if not filename:
+        filename = kaa.app.last_dir
+
     filename = os.path.abspath(
         os.path.expanduser(filename))
     if os.path.isdir(filename) and not filename.endswith(os.path.sep):

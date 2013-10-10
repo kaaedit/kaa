@@ -52,6 +52,9 @@ class DialogMode(modebase.ModeBase):
 
         wnd.screen.build_entire_rows = True # todo: use mode.
 
+    def calc_width(self, wnd):
+        return wnd.mainframe.getsize()[0]
+
     def calc_height(self, wnd):
         height = wnd.screen.get_total_height()
         if height < self.min_height:
@@ -60,11 +63,13 @@ class DialogMode(modebase.ModeBase):
         return min(maxh, height)
 
     def calc_position(self, wnd):
-        w, h = wnd.getsize()
+        w = self.calc_width(wnd)
+        wnd.screen.setsize(w, wnd.screen.height)
         height = self.calc_height(wnd)
         height = min(height, wnd.mainframe.messagebar.rect[1])
 
         top = wnd.mainframe.messagebar.rect[1] - height
+
         return 0, top, wnd.mainframe.width, top+height
 
     def on_start(self, wnd):

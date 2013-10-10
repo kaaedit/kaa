@@ -103,9 +103,24 @@ Save As
 Close
    Close current frame.
 
+Save All
+   Save all current files.
+
+Recently
+    Show recently used files menu.
+
 Quit
    Terminate kaa.
 
+
+Recently used files memu
+~~~~~~~~~~~~~~~~~~~~~~~~
+
+Recently used files
+    Show list of recently used files.
+
+Recently used dirs.
+    Show list of recently used directories.
 
 Edit menu
 +++++++++

@@ -224,6 +224,7 @@ class ModeBase:
                 if not command:
                     msg = 'command {!r} is not registered.'.format(commandid)
                     kaa.app.messagebar.set_message(msg)
+                    kaa.log.error(msg)
                     return
 
                 command(wnd)

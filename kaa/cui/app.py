@@ -21,6 +21,7 @@ class CuiApp:
         self.clipboard = ''
         self._quit = False
         self._theme_name = self.DEFAULT_THEME
+        self.last_dir = '.'
 
     def init(self, mainframe):
         self.messagebar = messagebarmode.MessageBarMode()
@@ -36,6 +37,13 @@ class CuiApp:
 
         self.mainframe.on_console_resized()
         self.messagebar.set_message(self.SHOW_MENU_MESSAGE)
+
+        self.config.hist_files.load()
+        self.config.hist_dirs.load()
+
+    def on_shutdown(self):
+        self.config.hist_files.save()
+        self.config.hist_dirs.save()
 
     def get_current_theme(self):
         return self._theme_name

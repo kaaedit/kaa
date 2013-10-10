@@ -12,7 +12,7 @@ MsgBoxThemes = {
             Style('underline', 'default', 'Magenta', underline=True),
             Style('caption', 'white', 'Red'),
             Style('button', 'default', 'magenta', nowrap=True),
-            Style('button.shortcut', 'green', 'magenta', underline=True,
+            Style('button.shortcut', 'yellow', 'magenta', underline=True,
                   bold=True, nowrap=True),
         ])
 }
@@ -28,6 +28,11 @@ class MsgBoxMode(dialogmode.DialogMode):
 
     def init_keybind(self):
         pass
+
+    def on_add_window(self, wnd):
+        super().on_add_window(wnd)
+
+        wnd.CURSOR_TO_MIDDLE_ON_SCROLL = False
 
     def on_str(self, wnd, s):
         pass

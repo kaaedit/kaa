@@ -15,7 +15,7 @@ class FileCommands(Commands):
     @command('file.open')
     @norec
     @norerun
-    def file_open(self, wnd):
+    def file_open(self, wnd, filename=''):
         def cb(filename, encoding, newline):
             if not filename:
                 return
@@ -39,7 +39,7 @@ class FileCommands(Commands):
             kaa.app.show_doc(doc)
 
         from kaa.ui.selectfile import selectfile
-        selectfile.show_fileopen('.', cb)
+        selectfile.show_fileopen(filename, cb)
 
     @command('file.info')
     @norec
@@ -181,6 +181,30 @@ class FileCommands(Commands):
         docs = [doc for doc in docs if doc.undo.is_dirty()]
         if docs:
             self.save_documents(wnd, docs, saved, force=True)
+
+    @command('file.recently-used-files')
+    @norec
+    @norerun
+    def file_recently_used_files(self, wnd):
+
+        def cb(filename):
+            if filename:
+                self.file_open(wnd, filename)
+
+        from kaa.ui.recentlyusedfiles import recentlyusedfilesmode
+        recentlyusedfilesmode.show_recentlyusedfiles(cb)
+
+    @command('file.recently-used-directories')
+    @norec
+    @norerun
+    def file_recently_used_dirs(self, wnd):
+
+        def cb(filename):
+            if filename:
+                self.file_open(wnd, filename)
+
+        from kaa.ui.recentlyusedfiles import recentlyusedfilesmode
+        recentlyusedfilesmode.show_recentlyuseddirs(cb)
 
     @command('file.quit')
     @norec

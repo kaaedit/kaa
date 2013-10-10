@@ -48,11 +48,19 @@ class FileMenuMode(MenuMode):
             ('File &Info', ('file.info',)),
             ('&Save', ('file.save',)),
             ('Save &As', ('file.saveas',)),
-            ('Save a&ll', ('file.save.all',)),
             ('&Close', ('file.close',)),
+            ('Save a&ll', ('file.save.all',)),
+            ('[&Recently]', ('menu.recently-used-files',)),
             ('&Quit', ('file.quit',))
            ))
 
+class RecentlyUsedFileMenuMode(MenuMode):
+    @classmethod
+    def build(cls, wnd):
+        return cls.build_menu(wnd,
+           (('Recently used &Files', ('file.recently-used-files',)),
+            ('Recently used &Dir', ('file.recently-used-directories',)),
+           ))
 
 class EditMenuMode(MenuMode):
     @classmethod

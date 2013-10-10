@@ -11,13 +11,20 @@ class ApplicationCommands(Commands):
     @norerun
     def show_mainmenu(self, wnd):
         doc = mainmenumode.MainMenuMode.build(wnd)
-        kaa.app.show_menu(wnd, doc, root=True)
+        kaa.app.show_menu(wnd, doc, root=False)
 
     @command('menu.file')
     @norec
     @norerun
     def show_filemenu(self, wnd):
         doc = mainmenumode.FileMenuMode.build(wnd)
+        kaa.app.show_menu(wnd, doc, root=False)
+
+    @command('menu.recently-used-files')
+    @norec
+    @norerun
+    def show_recentfilesmenu(self, wnd):
+        doc = mainmenumode.RecentlyUsedFileMenuMode.build(wnd)
         kaa.app.show_menu(wnd, doc, root=False)
 
     @command('menu.edit')
