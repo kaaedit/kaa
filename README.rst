@@ -10,7 +10,7 @@ Kaa is a small and easy text editor for console environment.
 Overview
 ============
 
-Kaa is a easy yet powerful text editor for console user interface providing numerous features like 
+Kaa is a easy yet powerful text editor for console user interface, providing numerous features like 
 
 - Macro recording.
 
