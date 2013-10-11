@@ -84,6 +84,8 @@ class InputlineMode(dialogmode.DialogMode):
         self.document.replace(f, t, s, self.get_styleid('default'))
 
     @command.command('inputline')
+    @command.norec
+    @command.norerun
     def input_line(self, w):
         s = self.get_input_text()
         self.callback(w, s)

@@ -18,6 +18,9 @@ class ChildFrame(Window, kaa.context.ContextRoot):
 
     def destroy(self):
         super().destroy()
+        if self.splitter:
+            self.splitter.destroy()
+
         self.destroy_context()
         self.mainframe.childframes.remove(self)
 
@@ -59,17 +62,17 @@ class ChildFrame(Window, kaa.context.ContextRoot):
         super().bring_top()
         if self.splitter:
             self.splitter.bring_top()
-        self.mainframe.activeframe = self
+        self.mainframe.set_activeframe(self)
         self.mainframe.on_console_resized()
 
     def on_setrect(self, l, t, r, b):
         if self.splitter:
             self.splitter.set_rect(l, t, r, b)
 
-
     def on_focus(self):
         super().on_focus()
-        self.mainframe.activeframe = self
+        self.mainframe.set_activeframe(self)
+        
         if self.active_editor:
             self.active_editor.activate()
         elif self.splitter:
@@ -80,7 +83,6 @@ class ChildFrame(Window, kaa.context.ContextRoot):
     def draw_screen(self):
         if self.splitter:
             self.splitter.draw()
-
 
 
 class MainFrame(Window, kaa.context.ContextRoot):
@@ -141,7 +143,7 @@ class MainFrame(Window, kaa.context.ContextRoot):
 
     def _get_provisional_frame(self):
         # if kaa has only one frame and the frame has provisional document,
-        #  then dispose the document and reuse the frame.
+        # then dispose the document and reuse the frame.
 
         frames = kaa.app.get_frames()
         if len(frames) != 1:
@@ -154,6 +156,11 @@ class MainFrame(Window, kaa.context.ContextRoot):
                 if len(doc.wnds) == 1:
                     return frames[0]
 
+    def register_childframe(self, childframe):
+        if childframe in self.childframes:
+            self.childframes.remove(childframe)
+        self.childframes.insert(0, childframe)
+
     def show_doc(self, doc):
         frame = self._get_provisional_frame()
         if frame:
@@ -165,15 +172,16 @@ class MainFrame(Window, kaa.context.ContextRoot):
         editorwnd = frame.show_doc(doc)
         editorwnd.activate()
 
-        if frame in self.childframes:
-            self.childframes.remove(frame)
-        self.childframes.insert(0, frame)
+        self.register_childframe(frame)
 
-        self.activeframe = frame
+        self.set_activeframe(frame)
         self.on_console_resized()
 
         return
 
+    def set_activeframe(self, frame):
+        self.activeframe = frame
+        
     def add_popup(self, popup):
         self.popups.append(popup)
 

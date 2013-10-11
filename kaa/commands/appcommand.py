@@ -1,6 +1,8 @@
 import kaa
 from kaa.command import Commands, command, is_enable, norec, norerun
 from kaa import document
+
+#todo: following imports should be defered
 from kaa.ui.mainmenu import mainmenumode
 from kaa.ui.itemlist import itemlistmode
 from kaa.ui.moveseparator import moveseparatormode

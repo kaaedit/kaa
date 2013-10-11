@@ -8,7 +8,7 @@ from kaa.ui.msgbox import msgboxmode
 
 from kaa.theme import Theme, Style
 
-from kaa.command import Commands, command
+from kaa.command import Commands, command, norec, norerun
 from kaa.keyboard import *
 from kaa.commands import editorcommand
 import kaa.filetype.default.keybind
@@ -116,6 +116,8 @@ class FileOpenDlgCommands(Commands):
             self.show_filename(wnd, filename)
             
     @command('fileopendlg.next')
+    @norec
+    @norerun
     def next(self, wnd):
         if self._check_needcomplete(wnd):
             return 
@@ -126,6 +128,8 @@ class FileOpenDlgCommands(Commands):
             self._update_filefield(wnd, cursel.value)
 
     @command('fileopendlg.prev')
+    @norec
+    @norerun
     def prev(self, wnd):
         if self._check_needcomplete(wnd):
             return 
@@ -163,6 +167,8 @@ class FileOpenDlgCommands(Commands):
         wnd.document.mode.set_filename(wnd, rest)
 
     @command('fileopendlg.openfile')
+    @norec
+    @norerun
     def openfile(self, wnd):
         filename = self._build_filename(wnd)
         if os.path.isfile(filename):
@@ -350,6 +356,8 @@ def show_fileopen(filename, callback):
 
 class FileSaveAsDlgCommands(FileOpenDlgCommands):
     @command('fileopendlg.openfile')
+    @norec
+    @norerun
     def openfile(self, wnd):
         filename = self._build_filename(wnd)
 

@@ -1,4 +1,4 @@
-from kaa.command import Commands, command
+from kaa.command import Commands, command, norec, norerun
 from kaa import document
 from kaa.ui.dialog import dialogmode
 from kaa.theme import Theme, Style
@@ -20,16 +20,22 @@ moveseparator_keys = {
 
 class MoveSeparatorCommands(Commands):
     @command('moveseparator.prev')
+    @norec
+    @norerun
     def prev(self, wnd):
         if wnd.document.mode.target:
             wnd.document.mode.target.separator_prev()
 
     @command('moveseparator.next')
+    @norec
+    @norerun
     def next(self, wnd):
         if wnd.document.mode.target:
             wnd.document.mode.target.separator_next()
 
     @command('moveseparator.close')
+    @norec
+    @norerun
     def close(self, wnd):
         # restore cursor
         org_wnd = wnd.document.mode.org_wnd

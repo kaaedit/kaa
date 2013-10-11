@@ -89,7 +89,7 @@ class TextEditorWindow(Window):
     def _update_activeframe(self):
         frame = self.get_label('frame')
         if frame:
-            self.mainframe.activeframe = frame
+            self.mainframe.set_activeframe(frame)
             frame.set_active_editor(self)
 
     def on_focus(self):
@@ -141,7 +141,7 @@ class TextEditorWindow(Window):
     def _draw_screen(self, force=False):
         frame = self.get_label('frame')
         if frame:
-            if self.mainframe.activeframe is not frame:
+            if kaa.app.get_activeframe() is not frame:
                 return
 
         self.screen.apply_updates()
@@ -305,10 +305,10 @@ class TextEditorWindow(Window):
 
     def update_window(self):
         # if this editor is a part of ChildFrame,
-        # update if the ChildFrame is active.
+        # update only if the ChildFrame is active.
         frame = self.get_label('frame')
         if frame:
-            if self.mainframe.activeframe is not frame:
+            if kaa.app.get_activeframe() is not frame:
                 return
 
         self.screen.apply_updates()

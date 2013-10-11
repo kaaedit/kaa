@@ -362,6 +362,16 @@ In this example, key sequence C-x 2 (control+x followed by 2) is assigned to 'ed
 Version history
 =================
 
+0.0.4 - 2013.10.
+-----------------
+
+- New command: Close all.
+
+- New command: Recently used file/directory.
+
+- Search/Replace history.
+
+
 0.0.3 - 2013.10.9
 -----------------
 

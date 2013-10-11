@@ -5,7 +5,7 @@ from kaa.ui.selectlist import selectlist
 
 from kaa.theme import Theme, Style
 
-from kaa.command import command
+from kaa.command import command, norec, norerun
 from kaa.keyboard import *
 from kaa.commands import editorcommand
 import kaa.filetype.default.keybind
@@ -146,17 +146,23 @@ class FilterListInputDlgMode(dialogmode.DialogMode):
         return self.document.gettext(f, t)
 
     @command('filterlistdlg.next')
+    @norec
+    @norerun
     def next(self, wnd):
 
         filterlist = wnd.get_label('filterlist')
         filterlist.document.mode.sel_next(filterlist)
 
     @command('filterlistdlg.prev')
+    @norec
+    @norerun
     def prev(self, wnd):
         filterlist = wnd.get_label('filterlist')
         filterlist.document.mode.sel_prev(filterlist)
 
     @command('filterlistdlg.openfile')
+    @norec
+    @norerun
     def on_open(self, wnd):
         filterlist = wnd.get_label('filterlist')
         cur = filterlist.document.mode.cursel

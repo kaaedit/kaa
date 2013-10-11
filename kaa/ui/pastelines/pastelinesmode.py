@@ -76,6 +76,8 @@ class PasteLinesMode(dialogmode.DialogMode):
         kaa.app.messagebar.set_message("Canceled")
 
     @command.command('paste.lines')
+    @command.norec
+    @command.norerun
     def paste_lines(self, w):
         f, t = self.document.marks['pastetext']
         s = self.document.gettext(f, t)

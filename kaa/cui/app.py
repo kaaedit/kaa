@@ -159,7 +159,6 @@ class CuiApp:
         return self.mainframe.childframes[:]
 
     def get_activeframe(self):
-        assert self.mainframe.activeframe
         return self.mainframe.activeframe
 
     def run(self):
@@ -167,6 +166,9 @@ class CuiApp:
         nonblocking = True
         while not self._quit:
             try:
+                if not self.focus:
+                    kaa.log.error('Internal error: invalid focus window.')
+                    break
                 inputs = self.focus.do_input(nonblocking)
                 for c in inputs:
                     if isinstance(c, keydef.KeyEvent):

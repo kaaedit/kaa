@@ -251,10 +251,10 @@ class EditCommands(Commands):
                 wnd.cursor.setpos(pos)
                 wnd.cursor.savecol()
 
-        if wnd.document.undo:
-            wnd.document.undo.add(self.UNDO_DELETE, pos, posto, deled,
-                                  cur_pos, wnd.cursor.pos)
-        self.on_edited(wnd)
+            if wnd.document.undo:
+                wnd.document.undo.add(self.UNDO_DELETE, pos, posto, deled,
+                                      cur_pos, wnd.cursor.pos)
+            self.on_edited(wnd)
 
     def put_string(self, wnd, s):
         s = wnd.document.mode.filter_string(wnd, s)
@@ -368,10 +368,11 @@ class EditCommands(Commands):
 
     def _get_line_sel(self, wnd):
         doc = wnd.document
-        if not wnd.screen.selection.is_started():
+        sel = wnd.screen.selection.get_range()
+        if not sel:
             f = t = wnd.cursor.pos
         else:
-            f, t = wnd.screen.selection.get_range()
+            f, t = sel
 
         tol =  doc.gettol(f)
 

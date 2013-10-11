@@ -162,7 +162,9 @@ class FileCommands(Commands):
         frame = wnd.get_label('frame')
         def saved():
             if frame.mainframe.childframes:
-                kaa.app.set_focus(frame.mainframe.childframes[-1])
+                f = frame.mainframe.childframes[0]
+                f.bring_top()
+                kaa.app.set_focus(f)
             else:
                 doc = kaa.fileio.newfile(provisional=True)
                 kaa.app.show_doc(doc)

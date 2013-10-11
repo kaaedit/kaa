@@ -4,7 +4,7 @@ from kaa.ui.dialog import dialogmode
 from kaa.theme import Theme, Style
 from kaa.filetype.default import modebase, keybind
 from kaa.ui.msgbox import msgboxmode
-from kaa.command import command, Commands
+from kaa.command import command, Commands, norec, norerun
 from kaa.commands import editorcommand
 from kaa.ui.selectlist import filterlist
 
@@ -25,23 +25,31 @@ SearchThemes = {
 class SearchCommands(editorcommand.EditCommands):
 
     @command('edit.backspace')
+    @norec
+    @norerun
     def backspace(self, wnd):
         pos = wnd.cursor.pos
         if pos > wnd.document.marks['searchtext'][0]:
             super().backspace(wnd)
 
     @command('edit.delete')
+    @norec
+    @norerun
     def delete(self, wnd):
         pos = wnd.cursor.pos
         if pos < wnd.document.marks['searchtext'][1]:
             super().delete(wnd)
 
     @command('searchdlg.search.next')
+    @norec
+    @norerun
     def search_next(self, wnd):
         mode = wnd.document.mode
         mode.search_next(wnd)
 
     @command('searchdlg.search.prev')
+    @norec
+    @norerun
     def search_prev(self, wnd):
         mode = wnd.document.mode
         mode.search_prev(wnd)
@@ -62,6 +70,8 @@ class SearchCommands(editorcommand.EditCommands):
         dlg.on_console_resized()
         
     @command('searchdlg.history')
+    @norec
+    @norerun
     def search_history(self, wnd):
         def callback(result):
             if result:
@@ -72,16 +82,22 @@ class SearchCommands(editorcommand.EditCommands):
                 kaa.app.config.hist_searchstr, callback)
         
     @command('searchdlg.toggle.ignorecase')
+    @norec
+    @norerun
     def toggle_ignorecase(self, wnd):
         mode = wnd.document.mode
         mode.toggle_option_ignorecase()
 
     @command('searchdlg.toggle.wordsearch')
+    @norec
+    @norerun
     def toggle_wordsearch(self, wnd):
         mode = wnd.document.mode
         mode.toggle_option_wordsearch()
 
     @command('searchdlg.toggle.regex')
+    @norec
+    @norerun
     def toggle_regex(self, wnd):
         mode = wnd.document.mode
         mode.toggle_option_regex()
@@ -342,6 +358,8 @@ class SearchDlgMode(dialogmode.DialogMode):
 
 class ReplaceCommands(SearchCommands):
     @command('replacedlg.field.next')
+    @norec
+    @norerun
     def field_next(self, wnd):
         searchfrom, searchto = wnd.document.marks['searchtext']
         replacefrom, replaceto = wnd.document.marks['replacetext']
@@ -363,6 +381,8 @@ class ReplaceCommands(SearchCommands):
                 kaa.app.config.hist_searchstr, callback)
 
     @command('replacedlg.history')
+    @norec
+    @norerun
     def replace_history(self, wnd):
         searchfrom, searchto = wnd.document.marks['searchtext']
 

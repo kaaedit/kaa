@@ -44,11 +44,6 @@ class Splitter:
         self.resize()
 
     def destroy(self):
-        if self.wnd:
-            self.wnd.destroy()
-        if self.statusbar:
-            self.statusbar.destroy()
-
         if self.left: self.left.destroy()
         if self.right: self.right.destroy()
         if self.above: self.above.destroy()

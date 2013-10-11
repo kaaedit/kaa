@@ -221,8 +221,9 @@ class Selection:
             self.screen.style_updated()
 
     def get_range(self):
-        if self.start is None or self.end is None:
+        if self.start is None or self.end is None or (self.start == self.end):
             return None
+
         return tuple(sorted((self.start, self.end)))
 
     def set_range(self, f, t):

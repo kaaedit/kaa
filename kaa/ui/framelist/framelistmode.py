@@ -1,5 +1,5 @@
 import kaa
-from kaa.command import Commands, command
+from kaa.command import Commands, command, norec, norerun
 from kaa import document
 from kaa.ui.dialog import dialogmode
 from kaa.theme import Theme, Style
@@ -33,11 +33,10 @@ class FrameListCommands(Commands):
         ret = sorted(ret, key=lambda e:e[1])
         return [f for f, pos in ret]
 
-    def _get_frames(self):
-        return []
-
     # todo: refactor
     @command('framelist.prev')
+    @norec
+    @norerun
     def prev(self, wnd):
         cur = kaa.app.get_activeframe()
         frames = self._itermarks(wnd)
@@ -47,9 +46,12 @@ class FrameListCommands(Commands):
                     frames[n-1].bring_top()
                     wnd.get_label('popup').bring_top()
                     wnd.document.mode._update_style(wnd)
+                    wnd.document.mode._activated_frame = frames[n-1]
                     return
 
     @command('framelist.next')
+    @norec
+    @norerun
     def next(self, wnd):
         cur = kaa.app.get_activeframe()
         frames = self._itermarks(wnd)
@@ -60,10 +62,17 @@ class FrameListCommands(Commands):
                     frames[n+1].bring_top()
                     wnd.get_label('popup').bring_top()
                     wnd.document.mode._update_style(wnd)
+                    wnd.document.mode._activated_frame = frames[n+1]
                     return
 
     @command('framelist.close')
+    @norec
+    @norerun
     def close(self, wnd):
+        if wnd.document.mode._activated_frame:
+            wnd.mainframe.register_childframe(
+                wnd.document.mode._activated_frame)
+
         # Destroy popup window
         popup = wnd.get_label('popup')
         if popup:
@@ -72,7 +81,8 @@ class FrameListCommands(Commands):
 class FrameListMode(dialogmode.DialogMode):
     autoshrink = True
     USE_UNDO = False
-
+    _activated_frame = None
+    
     @classmethod
     def build(cls):
         buf = document.Buffer()

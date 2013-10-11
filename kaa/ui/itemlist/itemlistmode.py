@@ -1,4 +1,4 @@
-from kaa.command import Commands, command
+from kaa.command import Commands, command, norec, norerun
 from kaa import document
 from kaa.ui.dialog import dialogmode
 from kaa.theme import Theme, Style
@@ -23,6 +23,8 @@ itemlist_keys = {
 
 class ItemListCommands(Commands):
     @command('itemlist.prev')
+    @norec
+    @norerun
     def prev(self, wnd):
         mode = wnd.document.mode
         if mode.items:
@@ -39,6 +41,8 @@ class ItemListCommands(Commands):
         wnd.document.mode._update_style(wnd)
 
     @command('itemlist.next')
+    @norec
+    @norerun
     def next(self, wnd):
         mode = wnd.document.mode
         if mode.items:
@@ -55,6 +59,8 @@ class ItemListCommands(Commands):
         wnd.document.mode._update_style(wnd)
 
     @command('itemlist.close')
+    @norec
+    @norerun
     def close(self, wnd):
         callback = wnd.document.mode.callback
         cursel = wnd.document.mode.cursel
