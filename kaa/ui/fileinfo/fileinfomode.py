@@ -75,6 +75,15 @@ class FileInfoMode(dialogmode.DialogMode):
         f.append_text('default', ' {}\n'.format(
             fileinfo.newline if fileinfo else ''))
 
+        f.append_text('caption', '  Line number: ')
+        f.append_text('default', ' {}       '.format(
+            'Show' if mode.SHOW_LINENO else 'Hide'))
+        f.append_text('button', '[Change &Line number]\n',
+                      on_shortcut=self._on_update_lineno,
+                      shortcut_style='shortcut',
+                      shortcut_need_alt=False)
+
+
         f.append_text('default', '\n')
 
         f.append_text('caption', '    Tab width: ',
@@ -149,6 +158,26 @@ class FileInfoMode(dialogmode.DialogMode):
 
         kaa.app.show_dialog(doc)
 
+    def _on_update_lineno(self, c):
+        values = ['Hide', 'Show']
+        def callback(n):
+            if n is None:
+                return
+
+            v = bool(n)
+            if self.target.document.mode.SHOW_LINENO != v:
+                self.target.document.mode.SHOW_LINENO = v
+                self.target.document.update_screen(0, 0, 0)
+                self.build_doc()
+
+        doc = itemlistmode.ItemListMode.build(
+            'Use tab for indent?',
+            values,
+            int(self.target.document.mode.SHOW_LINENO),
+            callback)
+
+        kaa.app.show_dialog(doc)
+
     def _on_update_tab(self, c):
         values = [str(i) for i in range(2, 9)]
         def callback(n):
@@ -190,7 +219,7 @@ class FileInfoMode(dialogmode.DialogMode):
         kaa.app.show_dialog(doc)
 
     def _on_update_usetab(self, c):
-        values = ['no', 'yes']
+        values = ['No', 'Yes']
         def callback(n):
             if n is None:
                 return
