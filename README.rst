@@ -4,9 +4,6 @@ Kaa - console text editor
 
 Kaa is a small and easy text editor for console environment.
 
-.. DANGER::
-   Kaa is still in the very early stage of the development. Don't use kaa for other purpose than evaluation.
-
 .. contents::
 
 
