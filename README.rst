@@ -356,6 +356,16 @@ Assign same keyboard shortcut of splitting windows command as Emacs.
 In this example, key sequence C-x 2 (control+x followed by 2) is assigned to 'editor.splithorz' command.
 
 
+Links
+==========
+
+- `Github project page <http://kaaedit.github.io/>`_
+
+- `Github repository <http://github.com/kaaedit/kaa>`_
+
+- `Python Package Index(PyPI) <http://pypi.python.org/pypi/kaaedit/>`_
+
+
 Version history
 =================
 
