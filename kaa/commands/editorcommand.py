@@ -714,6 +714,20 @@ class SearchCommands(Commands):
                                                     modebase.SearchOption.LAST_SEARCH)
                 self._show_searchresult(wnd, ret)
 
+    @command('search.showgrep')
+    @norec
+    @norerun
+    def showgrep(self, wnd):
+        from kaa.ui.grep import grepdlgmode
+
+        buf = document.Buffer()
+        doc = document.Document(buf)
+        mode = grepdlgmode.GrepDlgMode()
+        doc.setmode(mode)
+        mode.build_document()
+
+        kaa.app.show_dialog(doc)
+
 
 class RerunCommand(Commands):
     @command('command.rerun')

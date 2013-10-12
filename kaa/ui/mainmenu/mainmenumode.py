@@ -103,6 +103,7 @@ class ToolsMenuMode(MenuMode):
         return cls.build_menu(wnd,
            (('&Paste lines', ('edit.paste-lines',)),
             ('&Shell command', ('tools.execute-shell-command',)),
+            ('&Grep', ('search.showgrep',)),
            ))
 
 class WindowMenuMode(MenuMode):
