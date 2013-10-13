@@ -92,7 +92,7 @@ def main(stdscr):
 
     finally:
         _restore()
-
+        _trace('end')
 def run():
     if sys.version_info[:2] < (3, 3):
         raise RuntimeError('kaa requires Python 3.3 or later')

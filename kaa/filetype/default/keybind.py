@@ -96,9 +96,8 @@ rerun_keys = {
 search_command_keys = {
     (ctrl, 's'): 'search.showsearch',
     (alt, 's'): 'search.showreplace',
+    f2: 'search.prev',
     f3: 'search.next',
-    f4: 'search.prev',
-
 }
 
 # emacs like keys

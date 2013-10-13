@@ -78,7 +78,6 @@ class DefaultMode(modebase.ModeBase):
         self.tokenizers = [highlight.Tokenizer([])]
 
     def on_set_document(self, document):
-        assert document.fileinfo
         super().on_set_document(document)
 
     def close(self):

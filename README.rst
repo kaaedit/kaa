@@ -41,9 +41,9 @@ Requirements
 
 * Python 3.3 or later
 
-* Headers and libraries for ncurses with wide character support. Consult documentation of your platform for details. For Debian/Ubuntu, you can install ncurses library by ::
+* Headers and libraries for Python and ncurses with wide character support. Consult documentation of your platform for details. For Debian/Ubuntu, you can install ncurses library by ::
 
-  $ sudo apt-get install libncurses5 libncurses5-dev libncursesw5 libncursesw5-dev 
+  $ sudo apt-get install python3-dev libncurses5-dev 
 
 * UTF-8 locales
 
@@ -308,6 +308,12 @@ Control+s
 
 Alt+s
    Replace text.
+
+F2
+    Search prev
+
+F3
+    Search next
 
 Tab, Shift+Tab
    Indent/dedent selection

@@ -1,3 +1,4 @@
+import re
 import kaa
 from kaa.keyboard import *
 from kaa.ui.dialog import dialogmode
@@ -7,31 +8,15 @@ from kaa.ui.msgbox import msgboxmode
 from kaa.command import command, Commands, norec, norerun
 from kaa.commands import editorcommand
 from kaa.ui.selectlist import filterlist
+from kaa.ui.grep import grepmode
 
-
-class GrepOption:
+class GrepOption(modebase.SearchOption):
+    RE = re
     def __init__(self):
-        self.text = ''
-        self.ignorecase = True
-        self.word = False
-        self.regex = False
+        super().__init__()
         self.tree = True
         self.directory = ''
-        self.filename = ''
-
-    def get_regex(self):
-        text = self.text
-        if not self.regex:
-            text = gappedbuf.re.escape(text)
-        if self.word:
-            text = r'\b'+text+r'\b'
-
-        opt = gappedbuf.re.MULTILINE
-        if self.ignorecase:
-            opt += gappedbuf.re.IGNORECASE
-
-        regex = gappedbuf.re.compile(text, opt)
-        return regex
+        self.filenames = ''
 
 GrepOption.LASTOPTION = GrepOption()
 
@@ -57,7 +42,7 @@ class GrepCommands(editorcommand.EditCommands):
     def field_next(self, wnd):
         searchfrom, searchto = wnd.document.marks['searchtext']
         dirfrom, dirto = wnd.document.marks['directory']
-        filefrom, fileto = wnd.document.marks['filename']
+        filefrom, fileto = wnd.document.marks['filenames']
 
         if searchfrom <= wnd.cursor.pos <= searchto:
             wnd.cursor.setpos(dirfrom)
@@ -93,15 +78,15 @@ class GrepCommands(editorcommand.EditCommands):
             if result:
                 f, t = wnd.document.marks['searchtext']
                 wnd.document.replace(f, t, result)
-            
+   
         self._show_histdlg(wnd, 'Recent searches', 
                 kaa.app.config.hist_grepstr, callback)
-        
+
 
 grepdlg_keys = {
     '\r': ('grepdlg.field.next'),
     '\n': ('grepdlg.field.next'),
-    up: ('searchdlg.history'),
+    up: ('grepdlg.history'),
 }
 
 
@@ -155,13 +140,23 @@ class GrepDlgMode(dialogmode.DialogMode):
         cursor = dialogmode.DialogCursor(wnd,
                    [dialogmode.MarkRange('searchtext'), 
                     dialogmode.MarkRange('directory'), 
-                    dialogmode.MarkRange('filename')])
+                    dialogmode.MarkRange('filenames')])
         wnd.set_cursor(cursor)
+
+        
+        if self.option.directory:
+            self.document.insert(
+                self.document.marks['directory'][0], self.option.directory)
+
+        if self.option.filenames:
+            self.document.insert(
+                self.document.marks['filenames'][0], self.option.filenames)
 
         if self.option.text:
             self.document.insert(
                 self.document.marks['searchtext'][0], self.option.text)
             wnd.screen.selection.set_range(*self.document.marks['searchtext'])
+
         wnd.cursor.setpos(self.document.marks['searchtext'][1])
 
     def build_document(self):
@@ -180,9 +175,9 @@ class GrepDlgMode(dialogmode.DialogMode):
         f.append_text('default', '\n')
 
         # filename
-        f.append_text('caption', ' Filename:')
+        f.append_text('caption', ' Filenames:')
         f.append_text('default', ' ')
-        f.append_text('default', '', mark_pair='filename')
+        f.append_text('default', '', mark_pair='filenames')
         f.append_text('default', ' ')
 
         # buttons
@@ -199,6 +194,7 @@ class GrepDlgMode(dialogmode.DialogMode):
         f.append_text('checkbox', '[&Ignore case]',
                       mark_pair='ignore-case',
                       on_shortcut=self.toggle_option_ignorecase,
+
                       shortcut_style='checkbox.shortcut',
                       shortcut_mark='shortcut-i')
 
@@ -273,9 +269,25 @@ class GrepDlgMode(dialogmode.DialogMode):
         f, t = self.document.marks['searchtext']
         return self.document.gettext(f, t)
 
+    def get_dir(self):
+        f, t = self.document.marks['directory']
+        return self.document.gettext(f, t)
+
+    def get_files(self):
+        f, t = self.document.marks['filenames']
+        return self.document.gettext(f, t)
+
     def search_next(self, wnd):
         kaa.app.config.hist_searchstr.add(self.get_search_str())
-        return self._search_next(wnd)
+        self.option.text = self.get_search_str()
+        self.option.directory = self.get_dir()
+        self.option.filenames = self.get_files()
+
+        if (self.option.text and self.option.directory and 
+                self.option.filenames):
+            grepmode.grep(self.option)
+        
+        wnd.get_label('popup').destroy()
 
     def on_esc_pressed(self, wnd, event):
         wnd.get_label('popup').destroy()

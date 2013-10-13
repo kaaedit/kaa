@@ -9,6 +9,7 @@ from kaa import theme
 from kaa import screen
 
 class SearchOption:
+    RE = gappedbuf.re
     def __init__(self):
         self.text = ''
         self.ignorecase = True
@@ -18,15 +19,15 @@ class SearchOption:
     def get_regex(self):
         text = self.text
         if not self.regex:
-            text = gappedbuf.re.escape(text)
+            text = self.RE.escape(text)
         if self.word:
             text = r'\b'+text+r'\b'
 
-        opt = gappedbuf.re.MULTILINE
+        opt = self.RE.MULTILINE
         if self.ignorecase:
-            opt += gappedbuf.re.IGNORECASE
+            opt += self.RE.IGNORECASE
 
-        regex = gappedbuf.re.compile(text, opt)
+        regex = self.RE.compile(text, opt)
         return regex
 
 SearchOption.LAST_SEARCH = SearchOption()

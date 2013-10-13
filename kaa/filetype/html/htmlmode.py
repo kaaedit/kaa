@@ -201,6 +201,7 @@ class HTMLMode(defaultmode.DefaultMode):
         super().init_themes()
         self.themes.append(HTMLThemes)
         self.themes.append(cssmode.CSSThemes)
+        self.themes.append(javascriptmode.JavaScriptThemes)
 
     def init_tokenizers(self):
         self.tokenizers = build_tokenizers()
