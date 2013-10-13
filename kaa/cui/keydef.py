@@ -1,4 +1,4 @@
-import curses, curses_ex
+import curses, curses_ex, io, os
 from kaa.keyboard import *
 
 KAA_KEYCODE_FROM = 1000
@@ -286,7 +286,7 @@ KNOWN_KEY_SEQUENCE = {
 
 REGISTERD_SEQUENCE = {}
 
-def init():
+def init(conf):
     # Experimental code to get keycode from cap name
     for i in range(512, 1024):
         name = str(curses.keyname(i), 'utf-8', 'replace')
@@ -294,6 +294,9 @@ def init():
             KEYNAME_TO_CODE[CAPNAME_TO_KEY[name]] = i
             CAPNAME_TO_CODE[name] = i
 
+    result = io.StringIO()
+    err = False
+    
     reg_code = KAA_KEYCODE_FROM
     # register ESC + seq
     registered_seqs = set()
@@ -301,14 +304,32 @@ def init():
         seq = curses.tigetstr(name)
         if seq:
             seq = b'\x1b'+seq
-            curses_ex.define_key(seq, reg_code)
+            try:
+                curses_ex.define_key(seq, reg_code)
+                print('OK: ', name, keycode, reg_code, seq, file=result)
+            except Exception:
+                print('NG: ', name, keycode, reg_code, seq, file=result)
+                err = True
+                continue
+                
             REGISTERD_SEQUENCE[reg_code] = ['\x1b', keycode]
             reg_code += 1
             registered_seqs.add(seq)
 
     for seq, keycode in KNOWN_KEY_SEQUENCE.items():
         if seq not in registered_seqs:
-            curses_ex.define_key(seq, reg_code)
+            try:
+                curses_ex.define_key(seq, reg_code)
+                print('OK: ', keycode, reg_code, seq, file=result)
+            except Exception:
+                print('NG: ', keycode, reg_code, seq, file=result)
+                err = True
+                continue
+
             REGISTERD_SEQUENCE[reg_code] = keycode
             reg_code += 1
 
+    logname = os.path.join(conf.LOGDIR, 'DEFINE_KEY.LOG')
+    with open(logname, 'w') as f:
+        f.write(result.getvalue())
+        

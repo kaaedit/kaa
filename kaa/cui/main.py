@@ -47,7 +47,7 @@ def main(stdscr):
 
     _init(stdscr)
     try:
-        keydef.init()
+        keydef.init(conf)
 
         kaa.app = app.CuiApp(conf)
         kaa.app.storage = fileio.FileStorage()
