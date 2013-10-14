@@ -68,8 +68,8 @@ edit_command_keys = {
     (ctrl, 'w'): 'edit.cut',
     (alt, 'w'): 'edit.copy',
     (ctrl, 'y'): 'edit.paste',
-    (ctrl, '_'): 'edit.undo',
-    (alt, '_'): 'edit.redo',
+    (ctrl, 'u'): 'edit.undo',
+    (alt, 'u'): 'edit.redo',
 
 }
 
