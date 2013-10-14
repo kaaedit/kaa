@@ -108,6 +108,12 @@ class Document:
     closed = False
     fileinfo = None
 
+    @classmethod
+    def find_filename(cls, filename):
+        for doc in cls.all:
+            if doc.get_filename() == filename:
+                return doc
+
     def __init__(self, buf=None):
         self.wnds = []
         self.all.add(self)
@@ -148,7 +154,8 @@ class Document:
         self.buf.close()
 
         self.marks = self.buf = self.mode = None
-
+        self.all.remove(self)
+        
     def use_undo(self, is_useundo):
         if is_useundo:
             if not self.undo:

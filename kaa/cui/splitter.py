@@ -43,15 +43,20 @@ class Splitter:
         self.rect = (l, t, r, b)
         self.resize()
 
-    def destroy(self):
+    def _destroy_children(self):
         if self.left: self.left.destroy()
         if self.right: self.right.destroy()
         if self.above: self.above.destroy()
         if self.below: self.below.destroy()
-
+        self.wnd = self.left = self.right = self.above = self.below = None
+        
+    def destroy(self):
+        self._destroy_children()
+        if self.wnd: self.wnd.destroy()
+        if self.statusbar: self.statusbar.destroy()
+        
         self.parent = None
         self.frame = None
-        self.wnd = self.left = self.right = self.above = self.below = None
         self.statusbar = None
 
     def get_buddy(self):
@@ -65,22 +70,38 @@ class Splitter:
             elif self.parent.below is self:
                 return self.parent.above
 
-    def split(self, vert):
+    def show_doc(self, doc):
+        if not self.wnd:
+            self._destroy_children()
+            self.wnd = editor.TextEditorWindow(parent=self.frame)
+            self.resize()
+            
+        self.wnd.show_doc(doc)
+            
+    def split(self, vert, doc=None):
         w, h = self.wnd.getsize()
+        if not doc:
+            doc = self.wnd.document
         if vert:
             self.vsep = w//2
             self.left = Splitter(self.frame, self, self.wnd)
             self.right = Splitter(self.frame, self, self.wnd.dup())
+            self.right.wnd.show_doc(doc)
             self.wnd = None
             self.left.activate()
+            ret = self.right
         else:
             self.hsep = h//2
             self.above = Splitter(self.frame, self, self.wnd)
             self.below = Splitter(self.frame, self, self.wnd.dup())
+            self.below.wnd.show_doc(doc)
             self.wnd = None
             self.above.activate()
+            ret = self.below
+            
         self.resize()
-
+        return ret
+        
     def join(self, wnd):
         if self.wnd:
             # not splitted
@@ -89,7 +110,10 @@ class Splitter:
         next = None
         for w in (self.left, self.right, self.above, self.below):
             if w:
-                if wnd is not w.wnd:
+                if wnd is next is None:
+                    # Keep first window if wnd is None
+                    next = w
+                elif wnd is not w.wnd:
                     w.destroy()
                 else:
                     next = w

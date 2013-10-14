@@ -59,7 +59,6 @@ class TextEditorWindow(Window):
 
     def dup(self):
         ret = self.__class__(parent=self.parent)
-        ret.show_doc(self.document)
         return ret
 
     def set_splitter(self, splitter):

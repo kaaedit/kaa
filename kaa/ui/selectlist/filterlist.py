@@ -172,3 +172,20 @@ class FilterListInputDlgMode(dialogmode.DialogMode):
 
             self.callback(cur.value)
 
+
+
+def show_listdlg(title, candidates, callback):
+    doc = FilterListInputDlgMode.build(
+            title, callback)
+    dlg = kaa.app.show_dialog(doc)
+
+    filterlistdoc = FilterListMode.build()
+    dlg.add_doc('dlg_filterlist', 0, filterlistdoc)
+    
+    filterlistdoc.mode.set_candidates(candidates)
+
+    list = dlg.get_label('dlg_filterlist')
+    filterlistdoc.mode.set_query(list, '')
+    dlg.on_console_resized()
+    
+    return dlg

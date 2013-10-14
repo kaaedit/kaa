@@ -16,6 +16,14 @@ class SearchOption:
         self.word = False
         self.regex = False
 
+    def clone(self):
+        ret = self.__class__()
+        ret.text = self.text
+        ret.ignorecase = self.ignorecase
+        ret.word = self.word
+        ret.regex = self.regex
+        return ret
+        
     def get_regex(self):
         text = self.text
         if not self.regex:
@@ -355,3 +363,9 @@ class ModeBase:
 
         return sum(dispcols)
 
+    def on_global_next(self, wnd):
+        return
+
+    def on_global_prev(self, wnd):
+        return
+ 

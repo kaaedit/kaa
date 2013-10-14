@@ -43,11 +43,19 @@ class CuiApp:
         self.config.hist_searchstr.load()
         self.config.hist_replstr.load()
 
+        self.config.hist_grepstr.load()
+        self.config.hist_grepdir.load()
+        self.config.hist_grepfiles.load()
+
     def on_shutdown(self):
         self.config.hist_files.save()
         self.config.hist_dirs.save()
         self.config.hist_searchstr.save()
         self.config.hist_replstr.save()
+
+        self.config.hist_grepstr.save()
+        self.config.hist_grepdir.save()
+        self.config.hist_grepfiles.save()
 
     def get_current_theme(self):
         return self._theme_name

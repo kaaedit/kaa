@@ -83,6 +83,12 @@ class Config:
             os.path.join(self.HISTDIR, consts.HIST_SEARCH))
         self.hist_replstr = History(
             os.path.join(self.HISTDIR, consts.HIST_REPLACE))
+        self.hist_grepstr = History(
+            os.path.join(self.HISTDIR, consts.HIST_GREPSTR))
+        self.hist_grepdir = History(
+            os.path.join(self.HISTDIR, consts.HIST_GREPDIR))
+        self.hist_grepfiles = History(
+            os.path.join(self.HISTDIR, consts.HIST_GREPFILES))
 
     def get_mode_packages(self):
         for pkgname in self.FILETYPES:

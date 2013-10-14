@@ -680,6 +680,8 @@ class SearchCommands(Commands):
     def searchnext(self, wnd):
         if not modebase.SearchOption.LAST_SEARCH:
             return
+        if not modebase.SearchOption.LAST_SEARCH.text:
+            return
         range = wnd.screen.selection.get_range()
         if range:
             start = range[0]+1
@@ -698,6 +700,8 @@ class SearchCommands(Commands):
     @norerun
     def searchprev(self, wnd):
         if not modebase.SearchOption.LAST_SEARCH:
+            return
+        if not modebase.SearchOption.LAST_SEARCH.text:
             return
         range = wnd.screen.selection.get_range()
         if range:
@@ -722,7 +726,7 @@ class SearchCommands(Commands):
 
         buf = document.Buffer()
         doc = document.Document(buf)
-        mode = grepdlgmode.GrepDlgMode()
+        mode = grepdlgmode.GrepDlgMode(wnd)
         doc.setmode(mode)
         mode.build_document()
 

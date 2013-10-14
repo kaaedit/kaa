@@ -56,18 +56,21 @@ class SearchCommands(editorcommand.EditCommands):
 
     
     def _show_histdlg(self, wnd, title, candidates, callback):
-        doc = filterlist.FilterListInputDlgMode.build(
-                title, callback)
-        dlg = kaa.app.show_dialog(doc)
-    
-        filterlistdoc = filterlist.FilterListMode.build()
-        dlg.add_doc('dlg_filterlist', 0, filterlistdoc)
+        filterlist.show_listdlg(title, candidates, callback)
         
-        filterlistdoc.mode.set_candidates(candidates)
-    
-        list = dlg.get_label('dlg_filterlist')
-        filterlistdoc.mode.set_query(list, '')
-        dlg.on_console_resized()
+        
+#        doc = filterlist.FilterListInputDlgMode.build(
+#                title, callback)
+#        dlg = kaa.app.show_dialog(doc)
+#    
+#        filterlistdoc = filterlist.FilterListMode.build()
+#        dlg.add_doc('dlg_filterlist', 0, filterlistdoc)
+#        
+#        filterlistdoc.mode.set_candidates(candidates)
+#    
+#        list = dlg.get_label('dlg_filterlist')
+#        filterlistdoc.mode.set_query(list, '')
+#        dlg.on_console_resized()
         
     @command('searchdlg.history')
     @norec
@@ -77,6 +80,7 @@ class SearchCommands(editorcommand.EditCommands):
             if result:
                 f, t = wnd.document.marks['searchtext']
                 wnd.document.replace(f, t, result)
+                wnd.cursor.setpos(f)
             
         self._show_histdlg(wnd, 'Recent searches', 
                 kaa.app.config.hist_searchstr, callback)
@@ -376,9 +380,10 @@ class ReplaceCommands(SearchCommands):
             if result:
                 f, t = wnd.document.marks['replacetext']
                 wnd.document.replace(f, t, result)
-            
-        self._show_histdlg(wnd, 'Recent searches', 
-                kaa.app.config.hist_searchstr, callback)
+                wnd.cursor.setpos(f)
+                
+        self._show_histdlg(wnd, 'Recent replace strings', 
+                kaa.app.config.hist_replstr, callback)
 
     @command('replacedlg.history')
     @norec

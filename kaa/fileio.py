@@ -6,7 +6,20 @@ from kaa.filetype.default import defaultmode
 from kaa import consts
 
 class FileStorage:
-    def get_textio(self, filename, mode, encoding=None, newline=None):
+    def get_textio(self, fileinfo):
+        try:
+            # use surrogateescape to preserve file contents intact.
+            textio = open(fileinfo.fullpathname, 'r',
+                        encoding=fileinfo.encoding, 
+                        errors='surrogateescape', 
+                        newline=fileinfo.nlchars)
+        
+        except FileNotFoundError:
+            return None
+
+        return textio
+
+    def get_fileinfo(self, filename, encoding=None, newline=None):
         if sys.platform == 'darwin':
             filename = unicodedata.normalize('NFC', filename)
     
@@ -17,22 +30,7 @@ class FileStorage:
             newline = kaa.app.config.DEFAULT_NEWLINE
     
         fileinfo = FileInfo()
-        kaa.app.storage.set_fileinfo(fileinfo, filename)
-        fileinfo.encoding = encoding
-        fileinfo.newline = newline
-        
-        try:
-            # use surrogateescape to preserve file contents intact.
-            textio = open(fileinfo.fullpathname, 'r',
-                        encoding=encoding, errors='surrogateescape', 
-                        newline=fileinfo.nlchars)
-        
-        except FileNotFoundError:
-            return None, fileinfo
 
-        return textio, fileinfo
-
-    def set_fileinfo(self, fileinfo, filename):
         fullpath = os.path.abspath(filename)
         dirname, filename = os.path.split(filename)
 
@@ -45,8 +43,12 @@ class FileStorage:
             fileinfo.stat = os.stat(filename)
         except FileNotFoundError:
             fileinfo.stat = None
-        return fileinfo
 
+        fileinfo.encoding = encoding
+        fileinfo.newline = newline
+        
+        return fileinfo
+        
     def listdir(self, dirname):
         dirs = []
         files = []
@@ -88,11 +90,11 @@ class FileStorage:
                  newline=consts.NEWLINE_CHARS[doc.fileinfo.newline],
                  errors='surrogateescape') as f:
 
-            # TODO: save as another file and rename?
+            # TODO: save as another file and rename.
             # TODO: fsync
             f.write(doc.gettext(0, doc.endpos()))
 
-        self.set_fileinfo(doc.fileinfo, filename)
+        doc.fileinfo = self.get_fileinfo(filename)
         doc.provisional = False
         if doc.undo:
             doc.undo.saved()
@@ -137,7 +139,8 @@ def select_mode(filename):
 
 def openfile(filename, encoding=None, newline=None):
     # Open file
-    textio, fileinfo = kaa.app.storage.get_textio(filename, 'r', encoding, newline)
+    fileinfo = kaa.app.storage.get_fileinfo(filename, encoding, newline)
+    textio = kaa.app.storage.get_textio(fileinfo)
 
     buf = document.Buffer()
     if textio:

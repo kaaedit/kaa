@@ -17,9 +17,10 @@ class ChildFrame(Window, kaa.context.ContextRoot):
         self.splitter = None
 
     def destroy(self):
-        super().destroy()
         if self.splitter:
             self.splitter.destroy()
+
+        super().destroy()
 
         self.destroy_context()
         self.mainframe.childframes.remove(self)

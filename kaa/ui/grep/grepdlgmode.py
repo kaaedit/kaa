@@ -15,8 +15,15 @@ class GrepOption(modebase.SearchOption):
     def __init__(self):
         super().__init__()
         self.tree = True
-        self.directory = ''
-        self.filenames = ''
+        self.directory = '.'
+        self.filenames = '*.*'
+
+    def clone(self):
+        ret = super().clone()
+        ret.tree = self.tree
+        ret.directory  = self.directory
+        ret.filenames  = self.filenames
+        return ret
 
 GrepOption.LASTOPTION = GrepOption()
 
@@ -56,31 +63,45 @@ class GrepCommands(editorcommand.EditCommands):
             wnd.cursor.setpos(searchfrom)
             wnd.screen.selection.set_range(searchfrom, searchto)
 
-    def _show_histdlg(self, wnd, title, candidates, callback):
-        doc = filterlist.FilterListInputDlgMode.build(
-                title, callback)
-        dlg = kaa.app.show_dialog(doc)
-    
-        filterlistdoc = filterlist.FilterListMode.build()
-        dlg.add_doc('dlg_filterlist', 0, filterlistdoc)
-        
-        filterlistdoc.mode.set_candidates(candidates)
-    
-        list = dlg.get_label('dlg_filterlist')
-        filterlistdoc.mode.set_query(list, '')
-        dlg.on_console_resized()
         
     @command('grepdlg.history')
     @norec
     @norerun
     def grep_history(self, wnd):
-        def callback(result):
-            if result:
-                f, t = wnd.document.marks['searchtext']
-                wnd.document.replace(f, t, result)
-   
-        self._show_histdlg(wnd, 'Recent searches', 
+        searchfrom, searchto = wnd.document.marks['searchtext']
+        dirfrom, dirto = wnd.document.marks['directory']
+        filefrom, fileto = wnd.document.marks['filenames']
+
+        if searchfrom <= wnd.cursor.pos <= searchto:
+            def callback(result):
+                if result:
+                    f, t = wnd.document.marks['searchtext']
+                    wnd.document.replace(f, t, result)
+                    wnd.cursor.setpos(f)
+       
+            filterlist.show_listdlg('Recent searches', 
                 kaa.app.config.hist_grepstr, callback)
+
+        elif dirfrom <= wnd.cursor.pos <= dirto:
+            def callback(result):
+                if result:
+                    f, t = wnd.document.marks['directory']
+                    wnd.document.replace(f, t, result)
+                    wnd.cursor.setpos(f)
+       
+            filterlist.show_listdlg('Recent directories', 
+                kaa.app.config.hist_grepdir, callback)
+
+        else:
+            def callback(result):
+                if result:
+                    f, t = wnd.document.marks['filenames']
+                    wnd.document.replace(f, t, result)
+                    wnd.cursor.setpos(f)
+                    
+            filterlist.show_listdlg('Recent filenames', 
+                kaa.app.config.hist_grepfiles, callback)
+        
 
 
 grepdlg_keys = {
@@ -100,12 +121,26 @@ class GrepDlgMode(dialogmode.DialogMode):
         keybind.macro_command_keys,
         grepdlg_keys,
     ]
-
-    def __init__(self):
+    
+    target = None
+    def __init__(self, wnd=None):
         super().__init__()
-
+        if isinstance(wnd.document.mode, grepmode.GrepMode):
+            GrepOption.LASTOPTION = wnd.document.mode.grepoption
+            self.target = wnd
+        else:
+            config = kaa.app.config
+            if config.hist_grepstr:
+                GrepOption.LASTOPTION.text = config.hist_grepstr[0]
+                    
+            if config.hist_grepdir:
+                GrepOption.LASTOPTION.directory = config.hist_grepdir[0]
+                    
+            if config.hist_grepfiles:
+                GrepOption.LASTOPTION.filenames = config.hist_grepfiles[0]
+                    
         self.option = GrepOption.LASTOPTION
-
+        
     def close(self):
         super().close()
         kaa.app.messagebar.set_message("")
@@ -142,21 +177,6 @@ class GrepDlgMode(dialogmode.DialogMode):
                     dialogmode.MarkRange('directory'), 
                     dialogmode.MarkRange('filenames')])
         wnd.set_cursor(cursor)
-
-        
-        if self.option.directory:
-            self.document.insert(
-                self.document.marks['directory'][0], self.option.directory)
-
-        if self.option.filenames:
-            self.document.insert(
-                self.document.marks['filenames'][0], self.option.filenames)
-
-        if self.option.text:
-            self.document.insert(
-                self.document.marks['searchtext'][0], self.option.text)
-            wnd.screen.selection.set_range(*self.document.marks['searchtext'])
-
         wnd.cursor.setpos(self.document.marks['searchtext'][1])
 
     def build_document(self):
@@ -165,25 +185,26 @@ class GrepDlgMode(dialogmode.DialogMode):
         # search text
         f.append_text('caption', '   Search:')
         f.append_text('default', ' ')
-        f.append_text('default', '', mark_pair='searchtext')
+        f.append_text('default', self.option.text, mark_pair='searchtext')
         f.append_text('default', '\n')
 
         # directory
         f.append_text('caption', 'Directory:')
         f.append_text('default', ' ')
-        f.append_text('default', '', mark_pair='directory')
+        f.append_text('default', self.option.directory,
+                        mark_pair='directory')
         f.append_text('default', '\n')
 
         # filename
-        f.append_text('caption', ' Filenames:')
+        f.append_text('caption', 'Filenames:')
         f.append_text('default', ' ')
-        f.append_text('default', '', mark_pair='filenames')
+        f.append_text('default', self.option.filenames, mark_pair='filenames')
         f.append_text('default', ' ')
 
         # buttons
         f.append_text('checkbox', '[&Search]',
                       shortcut_style='checkbox.shortcut',
-                      on_shortcut=self.search_next)
+                      on_shortcut=self.run_grep)
 
         f.append_text('checkbox', '[&Tree]',
                       mark_pair='search-tree',
@@ -277,15 +298,19 @@ class GrepDlgMode(dialogmode.DialogMode):
         f, t = self.document.marks['filenames']
         return self.document.gettext(f, t)
 
-    def search_next(self, wnd):
-        kaa.app.config.hist_searchstr.add(self.get_search_str())
+    def run_grep(self, wnd):
         self.option.text = self.get_search_str()
         self.option.directory = self.get_dir()
         self.option.filenames = self.get_files()
 
         if (self.option.text and self.option.directory and 
                 self.option.filenames):
-            grepmode.grep(self.option)
+
+            kaa.app.config.hist_grepstr.add(self.option.text)
+            kaa.app.config.hist_grepdir.add(self.option.directory)
+            kaa.app.config.hist_grepfiles.add(self.option.filenames)
+            
+            grepmode.grep(self.option, self.target)
         
         wnd.get_label('popup').destroy()
 

@@ -174,12 +174,7 @@ class Window(kaa.context.Context):
 
         self._cwnd.keypad(1)
 
-        old = self._panel
         self._panel = curses.panel.new_panel(self._cwnd)
-        if hasattr(self, 'document'):
-            s = self.document.mode
-        else:
-            s = ''
         self.on_setrect(*self.rect)
 
 

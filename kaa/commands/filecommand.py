@@ -1,3 +1,4 @@
+import os
 import kaa
 import kaa.log
 from kaa.command import Commands, command, is_enable, norec, norerun
@@ -117,7 +118,8 @@ class FileCommands(Commands):
         else:
             callback()
 
-    def save_documents(self, wnd, docs, callback, msg='', force=False):
+    def save_documents(self, wnd, docs, callback, 
+                       msg='Save file before close?', force=False):
 
         docs = list(docs)
         def _save_documents():
@@ -134,16 +136,20 @@ class FileCommands(Commands):
         _save_documents()
 
 
-    def _close_frame(self, frame, callback):
-
-        editors = {e for e in frame.get_editors()}
+    def get_closed_docs(self, editors):
         alldocs = {e.document for e in editors}
-
         docs = []
+
         for doc in alldocs:
             doc_editors = set(doc.wnds) - editors
             if not doc_editors:
                 docs.append(doc)
+        return docs
+        
+    def close_frame(self, frame, callback):
+
+        editors = {e for e in frame.get_editors()}
+        docs = self.get_closed_docs(editors)
 
         def cb():
             frame.destroy()
@@ -169,7 +175,7 @@ class FileCommands(Commands):
                 doc = kaa.fileio.newfile(provisional=True)
                 kaa.app.show_doc(doc)
 
-        self._close_frame(frame, saved)
+        self.close_frame(frame, saved)
         
     def get_current_documents(self, wnd):
         docs = set()
@@ -200,7 +206,7 @@ class FileCommands(Commands):
             import kaa.fileio
             if frames:
                 f = frames.pop()
-                self._close_frame(f, callback)
+                self.close_frame(f, callback)
             else:
                 doc = kaa.fileio.newfile(provisional=True)
                 kaa.app.show_doc(doc)
@@ -217,8 +223,14 @@ class FileCommands(Commands):
             if filename:
                 self.file_open(wnd, filename)
 
-        from kaa.ui.recentlyusedfiles import recentlyusedfilesmode
-        recentlyusedfilesmode.show_recentlyusedfiles(cb)
+        files = []
+        for p in kaa.app.config.hist_files:
+            path = os.path.relpath(p)
+            files.append(path if len(path) < len(p) else p)
+
+        from kaa.ui.selectlist import filterlist
+        filterlist.show_listdlg('Recently used files', 
+            files, cb)
 
     @command('file.recently-used-directories')
     @norec
@@ -229,8 +241,14 @@ class FileCommands(Commands):
             if filename:
                 self.file_open(wnd, filename)
 
-        from kaa.ui.recentlyusedfiles import recentlyusedfilesmode
-        recentlyusedfilesmode.show_recentlyuseddirs(cb)
+        files = []
+        for p in kaa.app.config.hist_dirs:
+            path = os.path.relpath(p)
+            files.append(path if len(path) < len(p) else p)
+
+        from kaa.ui.selectlist import filterlist
+        filterlist.show_listdlg('Recently used directories', 
+            files, cb)
 
     @command('file.quit')
     @norec

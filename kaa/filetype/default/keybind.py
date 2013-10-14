@@ -4,6 +4,8 @@ from kaa.keyboard import *
 app_keys = {
     (alt, '/'): 'app.mainmenu',
     f1: 'app.mainmenu',
+    f9: 'app.global.prev',
+    f10: 'app.global.next',
 }
 
 # default cursor commands

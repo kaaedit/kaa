@@ -12,49 +12,49 @@ from kaa.command import command, Commands, norec, norerun
 from kaa.commands import editorcommand
 
 FILES_IGNORE = [
-'*.com',
-'*.class',
-'*.dll',
-'*.exe',
-'*.o',
-'*.a',
-'*.so',
-'*.pyc',
-'*.pyo',
-
-'*.7z',
-'*.dmg',
-'*.gz',
-'*.bz2',
-'*.iso',
-'*.jar',
-'*.rar',
-'*.tar',
-'*.zip',
-
-'*.png',
-'*.gif',
-'*.jpeg',
-'*.jpg',
-'*.bmp',
-
-'.DS_Store',
-'.Trashes',
-'ehthumbs.db',
-'Thumbs.db',
-
-'*.bak',
-'#*#',
-'*.swp',
+    '*.com',
+    '*.class',
+    '*.dll',
+    '*.exe',
+    '*.o',
+    '*.a',
+    '*.so',
+    '*.pyc',
+    '*.pyo',
+    
+    '*.7z',
+    '*.dmg',
+    '*.gz',
+    '*.bz2',
+    '*.iso',
+    '*.jar',
+    '*.rar',
+    '*.tar',
+    '*.zip',
+    
+    '*.png',
+    '*.gif',
+    '*.jpeg',
+    '*.jpg',
+    '*.bmp',
+    
+    '.DS_Store',
+    '.Trashes',
+    'ehthumbs.db',
+    'Thumbs.db',
+    
+    '*.bak',
+    '#*#',
+    '*.swp',
 ]
 
 DIRS_IGNORE = [
-'.git',
-'.hg',
-'.bzr',
-'.svn',
-'CVS',
-'__pycache__',
+    '.git',
+    '.hg',
+    '.bzr',
+    '.svn',
+    'CVS',
+    '__pycache__',
 ]
 
 
@@ -80,6 +80,7 @@ def _walk(dirname, filenames, tree):
 
         dirs[:] = [dir for dir in dirs if not dir_ignore.match(dir)]
 
+
 def _iter_lines(text):
     lineno = 1
     pos = 0
@@ -93,13 +94,19 @@ def _iter_lines(text):
         pos = next
     
     yield lineno, pos, len(text), text[pos:]
-    
+
+
 def _grep(filename, regex):
-    f, fileinfo = kaa.app.storage.get_textio(filename, 'r')
-    if not f:
-        return
-    with f:
-        text = f.read()
+    doc = document.Document.find_filename(filename)
+    if doc:
+        text = doc.gettext(0, doc.endpos())
+    else:
+        fileinfo = kaa.app.storage.get_fileinfo(filename)
+        f = kaa.app.storage.get_textio(fileinfo)
+        if not f:
+            return
+        with f:
+            text = f.read()
 
     lines = _iter_lines(text)
     lineno, linefrom, lineto, line = next(lines)
@@ -112,16 +119,22 @@ def _grep(filename, regex):
         yield lineno, linefrom, lineto, line, f, t, text[f:t]
 
 
-def grep(config):
-    dir = os.path.abspath(os.path.expanduser(config.directory))
-    files = _walk(dir, config.filenames, config.tree)
-    regex = config.get_regex()
+def grep(option, target):
+    dir = os.path.abspath(os.path.expanduser(option.directory))
+    files = _walk(dir, option.filenames, option.tree)
+    regex = option.get_regex()
     
+    if not target:
+        buf = document.Buffer()
+        doc = document.Document(buf)
+        mode = GrepMode()
+        doc.setmode(mode)
+    else:
+        doc = target.document
+        doc.delete(0, doc.endpos())
+        mode = doc.mode
 
-    buf = document.Buffer()
-    doc = document.Document(buf)
-    mode = GrepMode()
-    doc.setmode(mode)
+    mode.grepoption = option.clone()
 
     style_default = mode.get_styleid('default')
     style_filename = mode.get_styleid('grep-filename')
@@ -180,7 +193,6 @@ def grep(config):
     
     kaa.app.show_doc(doc)
     
-    
 GrepThemes = {
     'default':
         Theme([
@@ -192,20 +204,21 @@ GrepThemes = {
 
 
 grep_keys = {
-    '\r': ('grepdlg.field.next'),
-    '\n': ('grepdlg.field.next'),
+    '\r': ('grep.showmatch'),
+    '\n': ('grep.showmatch'),
 }
 
 
 
 class GrepMode(defaultmode.DefaultMode):
     MODENAME = 'Grep'
+    DOCUMENT_MODE = False
     USE_UNDO = False
 
     GREP_KEY_BINDS = [
         grep_keys,
     ]
-
+    
     def init_themes(self):
         super().init_themes()
         self.themes.append(GrepThemes)
@@ -216,3 +229,90 @@ class GrepMode(defaultmode.DefaultMode):
 
     def init_tokenizers(self):
         self.tokenizers = []
+    
+        
+    def _locate_doc(self, wnd, doc, lineno):
+        wnd.show_doc(doc)
+
+        pos = doc.get_lineno_pos(lineno)
+        tol = doc.gettol(pos)
+        wnd.cursor.setpos(wnd.cursor.adjust_nextpos(wnd.cursor.pos, tol))
+        wnd.activate()
+
+    @command('grep.showmatch')
+    @norec
+    @norerun
+    def show_hit(self, wnd):
+        pos = wnd.cursor.pos
+        tol = self.document.gettol(pos)
+        eol, line = self.document.getline(tol)
+
+        try:
+            filename, lineno, line = line.split(':', 2)
+        except ValueError:
+            return
+
+        if not filename:
+            return
+
+        try:
+            lineno = int(lineno)
+        except ValueError:
+            lineno = 1
+
+        filename = os.path.abspath(filename)
+        doc = document.Document.find_filename(filename)
+        if not doc:
+            doc = kaa.app.storage.openfile(filename)
+
+        buddy = wnd.splitter.get_buddy()
+        if not buddy:
+            buddy = wnd.splitter.split(vert=False, doc=doc)
+            self._locate_doc(buddy.wnd, doc, lineno)
+        else:
+            if buddy.wnd and buddy.wnd.document is doc:
+                self._locate_doc(buddy.wnd, doc, lineno)
+                return
+                
+            def callback():
+                buddy.show_doc(doc)
+                self._locate_doc(buddy.wnd, doc, lineno)
+                
+            self.app_commands.save_splitterdocs(wnd, buddy, callback)
+            
+    def on_global_prev(self, wnd):
+        if kaa.app.focus in self.document.wnds:
+            self.show_hit(kaa.app.focus)
+            return
+            
+        pos = wnd.cursor.pos
+        eol = self.document.gettol(pos)
+        if eol:
+            tol = self.document.gettol(eol-1)
+        else:
+            eol = self.document.endpos()
+            tol = self.document.gettol(eol)
+
+        eol, line = self.document.getline(tol)
+        if line.strip():
+            wnd.cursor.setpos(tol)
+            self.show_hit(wnd)
+        elif eol:
+            wnd.cursor.setpos(self.document.gettol(eol-1))
+            self.document.wnds[0].activate()
+        
+    def on_global_next(self, wnd):
+        if kaa.app.focus in self.document.wnds:
+            self.show_hit(kaa.app.focus)
+            return
+            
+        pos = wnd.cursor.pos
+        tol = self.document.geteol(pos)
+
+        eol, line = self.document.getline(tol)
+        if line.strip():
+            wnd.cursor.setpos(tol)
+            self.show_hit(wnd)
+        elif eol == self.document.endpos():
+            wnd.cursor.setpos(0)
+            self.document.wnds[0].activate()

@@ -64,6 +64,36 @@ class ApplicationCommands(Commands):
         doc = mainmenumode.WindowMenuMode.build(wnd)
         kaa.app.show_menu(wnd, doc, root=False)
 
+
+    def _walk_all_wnds(self, wnd):
+        yield wnd
+        curframe = wnd.get_label('frame')
+        if curframe:
+            for w in curframe.get_editors():
+                if w is not wnd:
+                    yield w
+        
+        for frame in kaa.app.get_frames():
+            if frame is not curframe:
+                for w in frame.get_editors():
+                    yield w
+        
+    @command('app.global.prev')
+    @norec
+    @norerun
+    def global_prev(self, wnd):
+        for w in self._walk_all_wnds(wnd):
+            if w.document.mode.on_global_prev(w):
+                return
+
+    @command('app.global.next')
+    @norec
+    @norerun
+    def global_next(self, wnd):
+        for w in self._walk_all_wnds(wnd):
+            if w.document.mode.on_global_next(w):
+                return
+        
     # todo: move following methods somewhere else
 
     @command('app.show-framelist')
@@ -124,6 +154,18 @@ class ApplicationCommands(Commands):
                 n = len(wnds)-1
             wnds[n].activate()
 
+    def save_splitterdocs(self, wnd, splitter, callback):
+        wnds = set()
+        docs = set()
+        for child, w in splitter.walk():
+            if w:
+                wnds.add(w)
+                docs.add(w.document)
+
+        saves = [doc for doc in docs if wnds.issuperset(doc.wnds)]
+
+        wnd.document.mode.file_commands.save_documents(wnd, saves, callback)
+
     @command('editor.joinwindow')
     @norec
     def editor_joinwindow(self, wnd):
@@ -132,18 +174,10 @@ class ApplicationCommands(Commands):
             if not buddy:
                 return   # not split
 
-            wnds = set()
-            docs = set()
-            for splitter, w in buddy.walk():
-                if w:
-                    wnds.add(w)
-                    docs.add(w.document)
-
-            saves = [doc for doc in docs if wnds.issuperset(doc.wnds)]
             def saved():
                 wnd.splitter.parent.join(wnd)
 
-            wnd.document.mode.file_commands.save_documents(wnd, saves, saved)
+            self.save_splitterdocs(wnd, buddy, saved)
 
     @command('editor.switchfile')
     @norec
