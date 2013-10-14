@@ -20,6 +20,8 @@ Kaa is a easy yet powerful text editor for console user interface, providing num
 
 - Syntax highlighting.
 
+- Grep
+
 - Open source software(MIT)
 
 - More to come!
@@ -43,7 +45,7 @@ Requirements
 
 * Headers and libraries for Python and ncurses with wide character support. Consult documentation of your platform for details. For Debian/Ubuntu, you can install ncurses library by ::
 
-  $ sudo apt-get install python3-dev libncurses5-dev 
+  $ sudo apt-get install python3-dev libncursesw5-dev 
 
 * UTF-8 locales
 
@@ -188,6 +190,9 @@ Paste lines
 Shell command
    Execute external shell command and insert the output.
 
+Grep
+   Search text from disk.
+
 Window menu
 +++++++++++
 
@@ -324,6 +329,16 @@ Alt-M v
 Ctrl+u Alt+!
     Execute command and insert the output.
 
+
+
+Grep dialog
+------------
+
+Grep dialog has three input field. `Search` is a plain text or regular expression string to search. `Directory` is a directory to start searching. If `Tree` button was checked, files are searched recursively. `Filenames` is space separeted list of file spec in shell-style wildcards (e.g., `*.txt *.py *.doc`). Up arrow key displays history of each input field.
+
+In the grep result window, use F9 and F10 key to traverse hits forward/backward. 
+
+
 Customization
 ==================
 
@@ -374,6 +389,11 @@ Links
 
 Version history
 =================
+
+0.1.0 - 2013.10.14
+------------------
+
+- Grep
 
 0.0.4 - 2013.10.11
 ------------------
