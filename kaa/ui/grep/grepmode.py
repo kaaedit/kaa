@@ -59,7 +59,7 @@ DIRS_IGNORE = [
 
 
 def _build_fnre(filenames):
-    res = [fnmatch.translate(name) for name in filenames.split(':')]
+    res = [fnmatch.translate(name) for name in filenames.split(' ')]
     return re.compile('|'.join(res))
     
 def _walk(dirname, filenames, tree):
