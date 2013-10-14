@@ -163,13 +163,16 @@ class Document:
         else:
             self.undo = None
 
+    def set_title(self, title):
+        self.title = title
+        
     def get_title(self):
         title = '<untitled>'
 
-        if self.fileinfo and self.fileinfo.filename:
-            title = self.fileinfo.filename
-        elif self.title:
+        if self.title:
             title = self.title
+        elif self.fileinfo and self.fileinfo.filename:
+            title = self.fileinfo.filename
 
         return title
 

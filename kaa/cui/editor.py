@@ -229,6 +229,9 @@ class TextEditorWindow(Window):
 
     def on_document_updated(self, pos, inslen, dellen):
         self.screen.on_document_updated(pos, inslen, dellen)
+        endpos = self.document.endpos()
+        if self.cursor.pos > endpos:
+            self.cursor.pos = endpos
 
     def style_updated(self, posfrom, posto):
         f, t = self.screen.get_visible_range()

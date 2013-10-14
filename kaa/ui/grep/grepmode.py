@@ -133,7 +133,8 @@ def grep(option, target):
         doc = target.document
         doc.delete(0, doc.endpos())
         mode = doc.mode
-
+        
+    doc.set_title('<grep>')
     mode.grepoption = option.clone()
 
     style_default = mode.get_styleid('default')
@@ -191,7 +192,10 @@ def grep(option, target):
         if matches:
             add_hit()
     
-    kaa.app.show_doc(doc)
+    if not target:
+        kaa.app.show_doc(doc)
+    else:
+        target.activate()
     
 GrepThemes = {
     'default':
