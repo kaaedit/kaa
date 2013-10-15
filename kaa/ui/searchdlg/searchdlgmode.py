@@ -58,20 +58,6 @@ class SearchCommands(editorcommand.EditCommands):
     def _show_histdlg(self, wnd, title, candidates, callback):
         filterlist.show_listdlg(title, candidates, callback)
         
-        
-#        doc = filterlist.FilterListInputDlgMode.build(
-#                title, callback)
-#        dlg = kaa.app.show_dialog(doc)
-#    
-#        filterlistdoc = filterlist.FilterListMode.build()
-#        dlg.add_doc('dlg_filterlist', 0, filterlistdoc)
-#        
-#        filterlistdoc.mode.set_candidates(candidates)
-#    
-#        list = dlg.get_label('dlg_filterlist')
-#        filterlistdoc.mode.set_query(list, '')
-#        dlg.on_console_resized()
-        
     @command('searchdlg.history')
     @norec
     @norerun
@@ -271,7 +257,10 @@ class SearchDlgMode(dialogmode.DialogMode):
     def on_edited(self, wnd):
         self.lastsearch = None
         self.lasthit = None
-        self._search_next(wnd)
+        if not self._search_next(wnd):
+            self.lastsearch = -1
+            self._search_next(wnd)
+            
 
     def _show_searchresult(self, hit):
         if hit:
@@ -285,7 +274,9 @@ class SearchDlgMode(dialogmode.DialogMode):
 
     def _search_next(self, wnd):
         self.option.text = self.get_search_str()
-        if self.option.text:
+        if not self.option.text:
+            self.target.screen.selection.clear()
+        else:
             if self.lasthit is self.lastsearch is None:
                 # initial search
                 if self.initialrange:
@@ -351,13 +342,6 @@ class SearchDlgMode(dialogmode.DialogMode):
         self.target.activate()
         self.target = None
         wnd.get_label('popup').destroy()
-
-    def on_document_updated(self, pos, inslen, dellen):
-        super().on_document_updated(pos, inslen, dellen)
-        if self.lastsearch:
-            newstr = self.get_search_str()
-            if newstr != self.option.text:
-                self.lastsearch = None
 
 
 class ReplaceCommands(SearchCommands):
