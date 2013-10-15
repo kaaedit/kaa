@@ -168,14 +168,16 @@ class TextEditorWindow(Window):
             lineno_color = self.document.mode.theme.get_style('lineno').cui_colorattr
             lineno_width = screen.calc_lineno_width(self.screen)
             lineno = self.document.buf.lineno.lineno(self.screen.pos)
-
+        
+        _, cursorrow = self.screen.getrow(self.cursor.pos)
         for n, row in enumerate(rows):
             if n > h:
                 break
             if drawn.get(row) == (n, cur_sel):
                 # The raw was already drawn.
                 continue
-
+            
+            is_cursorline = row is cursorrow
             updated = True
             s = 0
 
@@ -203,6 +205,9 @@ class TextEditorWindow(Window):
 
             rjust = False
             for (attr, attr_rjust), group in itertools.groupby(self._getcharattrs(row)):
+                if is_cursorline and self.document.mode.HIGHLIGHT_CURSORLINE:
+                    attr |= curses.A_BOLD
+                    
                 if not rjust and attr_rjust:
                     rjust = True
 

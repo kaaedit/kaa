@@ -144,9 +144,10 @@ def grep(option, target):
     
     def add_hit():
         doc.append(path, style_filename)
-        doc.append(':', style_default)
+        doc.append(':', style_filename)
         doc.append(str(cur_lineno), style_lineno)
-        doc.append(': ', style_default)
+        doc.append(':', style_lineno)
+        doc.append(' ', style_default)
         
         linefrom, lineto = linerange
         pos = f = t = 0
@@ -200,8 +201,8 @@ def grep(option, target):
 GrepThemes = {
     'default':
         Theme([
-            Style('grep-filename', 'blue', 'default', bold=True),
-            Style('grep-lineno', 'Magenta', 'default'),
+            Style('grep-filename', 'White', 'Blue'),
+            Style('grep-lineno', 'White', 'Blue'),
             Style('grep-match', 'Red', 'default'),
         ])
 }
@@ -218,6 +219,7 @@ class GrepMode(defaultmode.DefaultMode):
     MODENAME = 'Grep'
     DOCUMENT_MODE = False
     USE_UNDO = False
+    HIGHLIGHT_CURSORLINE = True
 
     GREP_KEY_BINDS = [
         grep_keys,

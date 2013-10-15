@@ -49,6 +49,7 @@ class ModeBase:
     SHOW_LINENO = False
     USE_UNDO = True
     DOCUMENT = False
+    HIGHLIGHT_CURSORLINE = False
 
     tab_width = 8
     indent_width = 4
