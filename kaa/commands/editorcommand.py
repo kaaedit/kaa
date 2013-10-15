@@ -395,7 +395,7 @@ class EditCommands(Commands):
 
     @command('edit.indent')
     def indent(self, wnd):
-        if not wnd.screen.selection.is_started():
+        if not wnd.screen.selection.is_selected():
             self._indent_line(wnd, wnd.cursor.pos)
             return
 
@@ -419,8 +419,27 @@ class EditCommands(Commands):
         finally:
             wnd.document.undo.endblock()
 
+        wnd.cursor.setpos(wnd.screen.selection.start)
+        wnd.cursor.savecol()
+
+    def _dedent_line(self, wnd, pos):
+        mode = wnd.document.mode
+        f, t = mode.get_indent_range(pos)
+        _trace(f, t)
+        if f != t:
+            cols = mode.calc_cols(f, t)
+        else:
+            cols = 0
+
+        s = mode.build_indent_str(max(0, cols-mode.indent_width))
+        self.replace_string(wnd, f, t, s, True)
+
     @command('edit.dedent')
     def dedent(self, wnd):
+        if not wnd.screen.selection.is_selected():
+            self._dedent_line(wnd, wnd.cursor.pos)
+            return
+
         doc = wnd.document
         tol, eol = self._get_line_sel(wnd)
         wnd.screen.selection.set_range(tol, eol)

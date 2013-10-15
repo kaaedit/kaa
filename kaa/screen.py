@@ -201,7 +201,14 @@ class Selection:
         """Return True if range was selected"""
 
         return self.start is not None
-
+    
+    def is_selected(self):
+        if self.is_started():
+            sel = self.get_range()
+            if sel:
+                f, t, = sel
+                return f != t
+                
     def start_selection(self, pos):
         """Start range selection if it was not started"""
 

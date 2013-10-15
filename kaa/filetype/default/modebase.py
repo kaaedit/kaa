@@ -356,7 +356,7 @@ class ModeBase:
         pos = wnd.cursor.pos
         f, t = self.get_indent_range(pos)
         indent = self.document.gettext(f, min(pos, t))
-        if t == pos:
+        if pos <= t:
             self.edit_commands.insert_string(wnd, f, '\n', 
                     update_cursor=False)
             wnd.cursor.setpos(wnd.cursor.pos+1)
