@@ -114,6 +114,11 @@ class FileOpenDlgCommands(Commands):
         if d and f:
             filename = self._build_filename(wnd)
             self.show_filename(wnd, filename)
+        else:
+            d, f = os.path.split(d)
+            if d and f:
+                filename = self._build_filename(wnd)
+                self.show_filename(wnd, filename)
             
     @command('fileopendlg.next')
     @norec
@@ -146,6 +151,9 @@ class FileOpenDlgCommands(Commands):
         if not os.path.isabs(filename):
             filelist = wnd.get_label('filelist')
             filename = os.path.join(filelist.document.mode.dirname, filename)
+
+            if os.path.isdir(filename):
+                filename += os.path.sep
 
         return filename
 
