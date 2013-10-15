@@ -54,7 +54,7 @@ Requirements
 Installation
 ============
 
-1. Use easy_install3 or pip3 to install kaa from PyPI ::
+Use easy_install3 or pip3 to install kaa from PyPI ::
 
    $ easy_install3 kaaedit
 
@@ -336,7 +336,7 @@ Grep dialog
 
 Grep dialog has three input field. `Search` is a plain text or regular expression string to search. `Directory` is a directory to start searching. If `Tree` button was checked, files are searched recursively. `Filenames` is space separeted list of file spec in shell-style wildcards (e.g., `*.txt *.py *.doc`). Up arrow key displays history of each input field.
 
-In the grep result window, use F9 and F10 key to traverse hits forward/backward. 
+In the grep result window, use F9 and F10 key to traverse matches forward/backward. 
 
 
 Customization
@@ -394,6 +394,8 @@ Version history
 ------------------
 
 - Grep
+
+- Various improvements.
 
 0.0.4 - 2013.10.11
 ------------------
