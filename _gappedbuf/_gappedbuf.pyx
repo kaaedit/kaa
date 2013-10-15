@@ -81,7 +81,8 @@ cdef class GappedBuffer:
     cdef _insert(self, Py_ssize_t index, unicode s):
         cdef Py_ssize_t size = len(s)
         if not (0 <= index <= self.numelems):
-            raise ValueError('Invalid index value')
+            raise ValueError('Invalid index value: %d, %d' % (
+                                index, self.numelems))
 
         if size:
             self._move_gap(index)
@@ -101,7 +102,8 @@ cdef class GappedBuffer:
 
     cdef _delete(self, Py_ssize_t begin, Py_ssize_t end):
         if not (0 <= begin <= end <= self.numelems):
-            raise ValueError('Invalid range')
+            raise ValueError('Invalid range: %d, %d, %d' % (
+                                begin, end, self.numelems))
         
         cdef Py_ssize_t size = end-begin
         if not size:
@@ -186,7 +188,8 @@ cdef class GappedBuffer:
 
     cpdef get(self, Py_ssize_t begin, Py_ssize_t end):
         if not (0 <= begin <= end <= self.numelems):
-            raise IndexError('index out of range')
+            raise IndexError('Invalid range: %d, %d, %d' % (
+                                begin, end, self.numelems))
 
         cdef Py_ssize_t n = end - begin
         cdef Py_UCS4 maxchar = self._get_max(begin, end)
@@ -223,7 +226,8 @@ cdef class GappedBuffer:
             if f[0] < 0:
                 f[0] += self.numelems
             if not (0 <= f[0] < self.numelems):
-                raise IndexError('index out of range')
+                raise IndexError('Invalid index value: %d, %d' % (
+                                    f[0], self.numelems))
             return 0
 
     def __getitem__(self, object item):
@@ -241,7 +245,7 @@ cdef class GappedBuffer:
             self.replace(start, stop, value)
         else:
             if len(value) != 1:
-                raise ValueError('Invalid string length.')
+                raise ValueError('Invalid string length: %d' % len(value))
             
             start = start+(0 if start < self.gap else self.gapsize)
             self.buf[start] = <Py_UCS4>value
@@ -259,7 +263,8 @@ cdef class GappedBuffer:
         cdef Py_ssize_t size, b, e, p
 
         if not (0 <= begin <= end <= self.numelems):
-            raise ValueError('Invalid range')
+            raise ValueError('Invalid range: %d, %d, %d' % (
+                                begin, end, self.numelems))
         
         chars = rtdef.PyUnicode_AsUCS4Copy(c)
         try:
@@ -287,7 +292,8 @@ cdef class GappedBuffer:
         cdef Py_ssize_t size, b, e, p
 
         if not (0 <= begin <= end <= self.numelems):
-            raise ValueError('Invalid range')
+            raise ValueError('Invalid range: %d, %d, %d' % (
+                                begin, end, self.numelems))
         
         chars = rtdef.PyUnicode_AsUCS4Copy(c)
         try:
@@ -312,7 +318,8 @@ cdef class GappedBuffer:
     
     cpdef getint(self, Py_ssize_t pos):
         if not (0 <= pos < self.numelems):
-            raise ValueError('Invalid range')
+            raise ValueError('Invalid index value: %d, %d' % (
+                                pos, self.numelems))
         if pos < self.gap:
             return <unsigned long>self.buf[pos]
         else:
@@ -325,7 +332,8 @@ cdef class GappedBuffer:
         cdef object v
 
         if not (0 <= begin <= end <= self.numelems):
-            raise ValueError('Invalid range')
+            raise ValueError('Invalid range: %d, %d, %d' % (
+                                begin, end, self.numelems))
         
         ret = PyList_New(end-begin)
         n = 0 
@@ -351,7 +359,8 @@ cdef class GappedBuffer:
 
         cdef Py_ssize_t size = len(s)
         if not (0 <= index <= self.numelems):
-            raise ValueError('Invalid index value')
+            raise ValueError('Invalid index value: %d, %d' % (
+                                index, self.numelems))
 
         if size:
             self._move_gap(index)
@@ -380,7 +389,8 @@ cdef class GappedBuffer:
         cdef Py_ssize_t b, e, p
 
         if not (0 <= begin <= end <= self.numelems):
-            raise ValueError('Invalid range')
+            raise ValueError('Invalid range: %d, %d, %d' % (
+                                begin, end, self.numelems))
 
         n = 0
         # replace before gap
@@ -399,7 +409,8 @@ cdef class GappedBuffer:
         cdef Py_ssize_t size, b, e, p
 
         if not (0 <= begin <= end <= self.numelems):
-            raise ValueError('Invalid range')
+            raise ValueError('Invalid range: %d, %d, %d' % (
+                                begin, end, self.numelems))
 
         size = len(nums)
         longs = <unsigned long *>mem.PyMem_Malloc(
@@ -450,7 +461,8 @@ cdef class GappedBuffer:
         cdef Py_ssize_t size, b, e, p
 
         if not (0 <= begin <= end <= self.numelems):
-            raise ValueError('Invalid range')
+            raise ValueError('Invalid range: %d, %d, %d' % (
+                                begin, end, self.numelems))
 
         size = len(nums)
         longs = <unsigned long *>mem.PyMem_Malloc(

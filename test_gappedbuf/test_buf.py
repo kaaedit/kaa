@@ -102,6 +102,9 @@ class TestGappedBuf:
         
         assert buf[:] == ''
 
+        with pytest.raises(ValueError):
+            buf.delete(0, 1)
+
     def test_shrink(self):
         buf = _gappedbuf.GappedBuffer()
         buf.insert(0, '1'*8192)
@@ -125,6 +128,8 @@ class TestGappedBuf:
         assert buf[-2] == 'b'
         assert buf[-1] == 'c'
         
+        with pytest.raises(IndexError):
+            buf[1:0]
         with pytest.raises(IndexError):
             buf[3]
         with pytest.raises(IndexError):
@@ -173,6 +178,11 @@ class TestGappedBuf:
         s = ''.join(chr(c) for c in range(0x100000, 0x10000a))
         self._test_slice(s)
 
+        buf = _gappedbuf.GappedBuffer()
+        buf[:] = 'abcdefg'
+        with pytest.raises(IndexError):
+            buf[7]
+            
     def test_setitem(self):
         buf = _gappedbuf.GappedBuffer()
         buf[:] = 'abcdefg'
@@ -209,6 +219,9 @@ class TestGappedBuf:
         assert buf.findchr("Ag", 0, 17) == 16
         assert buf.findchr("A", 0, 17) == -1
 
+        with pytest.raises(ValueError):
+            buf.findchr('0', 0, 100)
+
     def test_rfindchr(self):
         buf = _gappedbuf.GappedBuffer()
         buf[:] = 'abcdefg'
@@ -220,6 +233,9 @@ class TestGappedBuf:
         assert buf.rfindchr("0", 0, 17) == 0
         assert buf.rfindchr("Ag", 0, 17) == 16
         assert buf.rfindchr("A", 0, 17) == -1
+
+        with pytest.raises(ValueError):
+            buf.rfindchr('0', 0, 100)
 
     def test_getints(self):
         buf = _gappedbuf.GappedBuffer()
@@ -234,6 +250,9 @@ class TestGappedBuf:
         for i in range(100000):
             buf.getints(0, 17) 
 
+        with pytest.raises(ValueError):
+            buf.getints(100, 0)
+
     def test_insertint(self):
         buf = _gappedbuf.GappedBuffer()
         buf.insertints(0, (0,1,2,3,4,5,6,7,8,9))
@@ -244,6 +263,9 @@ class TestGappedBuf:
         assert buf.gap == 10
         assert buf.gapsize == 4086
         assert buf.numelems == 10
+
+        with pytest.raises(ValueError):
+            buf.insertints(11, (0,1,2,3,4,5,6,7,8,9))
 
     def test_appendint(self):
         buf = _gappedbuf.GappedBuffer()
@@ -265,6 +287,9 @@ class TestGappedBuf:
 
         assert buf.getints(0, 10) == [0,255,255,255,255,255,255,255,255,9]
 
+        with pytest.raises(ValueError):
+            buf.setints(0, 11, 255)
+
     def test_findint(self):
         buf = _gappedbuf.GappedBuffer()
         buf.appendints((0,1,2,3,4,5,6,7,8,9))
@@ -275,6 +300,9 @@ class TestGappedBuf:
         assert buf.findint([0, 20], 0, 20, False) == 10
         assert buf.findint([20, 9], 0, 20, False) == 19
         assert buf.findint([20, 21], 0, 20, False) == -1
+
+        with pytest.raises(ValueError):
+            buf.findint([20, 21], 0, 21, False)
 
     def test_findint_ne(self):
         buf = _gappedbuf.GappedBuffer()
@@ -301,6 +329,9 @@ class TestGappedBuf:
         assert buf.rfindint([200, 109], 0, 20, False) == 9
         assert buf.rfindint([0, 200], 0, 20, False) == 10
         assert buf.rfindint([200, 9], 0, 20, False) == 19
+
+        with pytest.raises(ValueError):
+            buf.rfindint([20, 21], 0, 21, False)
 
     def test_rfindint_ne(self):
         buf = _gappedbuf.GappedBuffer()
