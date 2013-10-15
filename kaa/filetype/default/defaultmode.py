@@ -1,7 +1,9 @@
 from collections import defaultdict
 import kaa
-from kaa.commands import appcommand, filecommand, editorcommand, editmodecommand
-from . import keybind, theme, modebase
+from kaa.commands import (appcommand, filecommand, editorcommand, 
+    editmodecommand)
+    
+from . import keybind, theme, modebase, menu
 
 from kaa import highlight
 
@@ -9,11 +11,12 @@ class DefaultMode(modebase.ModeBase):
     DOCUMENT = True
     MODENAME = 'default'
     SHOW_LINENO = False
+    MENU = menu.MENUS
     KEY_BINDS = [
         keybind.app_keys,
         keybind.cursor_keys,
         keybind.edit_command_keys,
-            keybind.addtional_edit_command_keys,
+        keybind.addtional_edit_command_keys,
         keybind.emacs_keys,
         keybind.search_command_keys,
         keybind.macro_command_keys,

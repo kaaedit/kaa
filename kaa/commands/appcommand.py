@@ -3,7 +3,7 @@ from kaa.command import Commands, command, is_enable, norec, norerun
 from kaa import document
 
 #todo: following imports should be defered
-from kaa.ui.mainmenu import mainmenumode
+from kaa.ui.mainmenu import mainmenumode, menumode
 from kaa.ui.itemlist import itemlistmode
 from kaa.ui.moveseparator import moveseparatormode
 
@@ -12,58 +12,13 @@ class ApplicationCommands(Commands):
     @norec
     @norerun
     def show_mainmenu(self, wnd):
-        doc = mainmenumode.MainMenuMode.build(wnd)
-        kaa.app.show_menu(wnd, doc, root=True)
-
-    @command('menu.file')
-    @norec
-    @norerun
-    def show_filemenu(self, wnd):
-        doc = mainmenumode.FileMenuMode.build(wnd)
-        kaa.app.show_menu(wnd, doc, root=False)
-
-    @command('menu.recently-used-files')
-    @norec
-    @norerun
-    def show_recentfilesmenu(self, wnd):
-        doc = mainmenumode.RecentlyUsedFileMenuMode.build(wnd)
-        kaa.app.show_menu(wnd, doc, root=False)
-
-    @command('menu.edit')
-    @norec
-    @norerun
-    def show_editmenu(self, wnd):
-        doc = mainmenumode.EditMenuMode.build(wnd)
-        kaa.app.show_menu(wnd, doc, root=False)
+        menumode.MenuMode.show_menu(wnd, 'MAIN')
 
     @command('menu.edit.convert')
     @norec
     @norerun
     def show_editmenuconvert(self, wnd):
-        doc = mainmenumode.EditMenuConvertMode.build(wnd)
-        kaa.app.show_menu(wnd, doc, root=False)
-
-    @command('menu.macro')
-    @norerun
-    @norec
-    def show_macromenu(self, wnd):
-        doc = mainmenumode.MacroMenuMode.build(wnd)
-        kaa.app.show_menu(wnd, doc, root=False)
-
-    @command('menu.tools')
-    @norec
-    @norerun
-    def show_toolsmenu(self, wnd):
-        doc = mainmenumode.ToolsMenuMode.build(wnd)
-        kaa.app.show_menu(wnd, doc, root=False)
-
-    @command('menu.window')
-    @norec
-    @norerun
-    def show_windowmenu(self, wnd):
-        doc = mainmenumode.WindowMenuMode.build(wnd)
-        kaa.app.show_menu(wnd, doc, root=False)
-
+        menumode.MenuMode.show_menu(wnd, 'EDIT-CONVERT')
 
     def _walk_all_wnds(self, wnd):
         yield wnd
@@ -77,7 +32,7 @@ class ApplicationCommands(Commands):
             if frame is not curframe:
                 for w in frame.get_editors():
                     yield w
-        
+
     @command('app.global.prev')
     @norec
     @norerun

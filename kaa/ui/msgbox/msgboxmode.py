@@ -51,15 +51,15 @@ class MsgBoxMode(dialogmode.DialogMode):
                 return
 
     def on_shortcut(self, wnd, c):
-        # Destroy popup window
-        popup = wnd.get_label('popup')
-        if popup:
-            popup.destroy()
-
         # return value
         if c:
             c = c.lower()
         self._runcallback(c)
+
+        # Destroy popup window
+        popup = wnd.get_label('popup')
+        if popup:
+            popup.destroy()
 
     def _runcallback(self, c):
         self.callback(c)
