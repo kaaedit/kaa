@@ -129,8 +129,8 @@ class Window(kaa.context.Context):
             keys = [keydef.KeyEvent(self, k, no_trailing_char)
                     for k in keydef.convert_registered_key(c)]
 
-        for k in keys:
-            log.debug('{!r}'.format(k))
+#        for k in keys:
+#            _trace('{!r}'.format(k))
         return keys
 
     def add_str(self, letters, attr):

@@ -68,7 +68,6 @@ class TextEditorWindow(Window):
         self.statusbar = statusbar
 
     def bring_top(self):
-        self._update_activeframe()
         if curses.panel.top_panel() is not self._panel:
             super().bring_top()
 
@@ -88,7 +87,7 @@ class TextEditorWindow(Window):
     def _update_activeframe(self):
         frame = self.get_label('frame')
         if frame:
-            self.mainframe.set_activeframe(frame)
+            frame.bring_top()
             frame.set_active_editor(self)
 
     def on_focus(self):

@@ -200,4 +200,5 @@ class CuiApp:
                 kaa.log.error('Unhandled exception', exc_info=True)
                 kaa.app.messagebar.set_message(str(e))
 
+                nonblocking = False
 
