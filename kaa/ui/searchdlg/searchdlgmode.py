@@ -118,6 +118,12 @@ class SearchDlgMode(dialogmode.DialogMode):
         self.lasthit = None
         self.option = modebase.SearchOption.LAST_SEARCH
 
+        if target and target.screen.selection.is_selected():
+            f, t = target.screen.selection.get_range()
+            s = target.document.gettext(f, t).split('\n')
+            if s:
+                self.option.text = s[0].strip()
+
     def close(self):
         super().close()
         self.target = None

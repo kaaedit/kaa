@@ -130,9 +130,16 @@ class GrepDlgMode(dialogmode.DialogMode):
             self.target = wnd
         else:
             config = kaa.app.config
+
             if config.hist_grepstr:
                 GrepOption.LASTOPTION.text = config.hist_grepstr[0]
                     
+            if wnd and wnd.screen.selection.is_selected():
+                f, t = wnd.screen.selection.get_range()
+                s = wnd.document.gettext(f, t).split('\n')
+                if s:
+                    GrepOption.LASTOPTION.text = s[0].strip()
+
             if config.hist_grepdir:
                 GrepOption.LASTOPTION.directory = config.hist_grepdir[0]
                     
