@@ -358,13 +358,7 @@ class EditCommands(Commands):
             return
 
         wnd.screen.selection.clear()
-
-        pos = wnd.cursor.pos
-        indent = wnd.document.mode.get_auto_indent(pos)
-        self.insert_string(wnd, pos, indent, update_cursor=False)
-
-        wnd.cursor.setpos(pos+len(indent))
-        wnd.cursor.savecol()
+        indent = wnd.document.mode.on_auto_indent(wnd)
 
     def _get_line_sel(self, wnd):
         doc = wnd.document

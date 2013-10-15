@@ -37,16 +37,20 @@ class PythonMode(defaultmode.DefaultMode):
         ])]
 
     RE_BEGIN_NEWBLOCK = gre.compile(r"[^#]*\:\s*(#.*)?$", gre.M)
-    def get_auto_indent(self, pos):
+    def on_auto_indent(self, wnd):
+        pos = wnd.cursor.pos
         tol = self.document.gettol(pos)
         m = self.RE_BEGIN_NEWBLOCK.match(self.document.buf, tol, pos)
         if not m:
-            return super().get_auto_indent(pos)
+            super().on_auto_indent(wnd)
         else:
             f, t = self.get_indent_range(pos)
             t = min(t, pos)
             cols = self.calc_cols(f, t)
             indent = self.build_indent_str(cols+self.indent_width)
-            return '\n'+indent
-
-
+            indent = '\n'+indent
+            self.edit_commands.insert_string(wnd, pos, indent, 
+                    update_cursor=False)
+            wnd.cursor.setpos(pos+len(indent))
+            
+            wnd.cursor.savecol()

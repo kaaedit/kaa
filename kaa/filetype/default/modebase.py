@@ -351,10 +351,21 @@ class ModeBase:
         else:
             return ' ' * col
 
-    def get_auto_indent(self, pos):
+    def on_auto_indent(self, wnd):
+        pos = wnd.cursor.pos
         f, t = self.get_indent_range(pos)
         indent = self.document.gettext(f, min(pos, t))
-        return '\n'+indent
+        if t == pos:
+            self.edit_commands.insert_string(wnd, f, '\n', 
+                    update_cursor=False)
+            wnd.cursor.setpos(wnd.cursor.pos+1)
+        else:
+            indent = '\n'+indent
+            self.edit_commands.insert_string(wnd, pos, indent, 
+                    update_cursor=False)
+            wnd.cursor.setpos(pos+len(indent))
+        
+        wnd.cursor.savecol()
 
     def calc_cols(self, f, t):
         chars = self.document.gettext(f, t)
