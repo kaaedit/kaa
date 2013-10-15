@@ -16,7 +16,6 @@ class CuiApp:
         self._idleprocs = None
         self.colors = color.Colors()
         self.lastcommands = ()
-        self.menus = []
         self.focus = None
         self.clipboard = ''
         self._quit = False
@@ -143,25 +142,6 @@ class CuiApp:
         dlg = dialog.DialogWnd(parent=self.mainframe, doc=doc)
         self.mainframe.show_dialog(dlg)
         return dlg
-
-    def show_menu(self, wnd, doc, root):
-        if root:
-            self.menus = [doc]
-        else:
-            self.menus.append(doc)
-        return self.show_dialog(doc)
-
-    def pop_menu(self):
-        if self.menus:
-            menu = self.menus.pop()
-            menu.close()
-
-        if self.menus:
-            doc = self.menus[-1]
-            self.show_dialog(doc)
-
-    def clear_menu(self):
-        self.menus = []
 
     def get_frames(self):
         return self.mainframe.childframes[:]
