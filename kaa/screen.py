@@ -82,7 +82,7 @@ def translate_chars(posfrom, chars, tab_width):
 
 MIN_WRAPCOLS = 10
 
-def col_splitter(maxcol, tol, dispchrs, dispcols, positions, intervals, styles, stylemap, nowrap=False):
+def col_splitter(maxcol, tol, dispchrs, dispcols, positions, intervals, styles, stylemap, nowrap=False, nowrapindent=False):
     """Split string by column"""
 
     if nowrap:
@@ -152,7 +152,7 @@ def col_splitter(maxcol, tol, dispchrs, dispcols, positions, intervals, styles, 
                 posfrom = row.posto
 
                 # set wrap-indent width after second row
-                if len(ret) == 1:
+                if not nowrapindent and len(ret) == 1:
                     wrapindent = re.match(r' *', dispchrs).end()
                     if wrapindent + MIN_WRAPCOLS > maxcol:
                         wrapindent = max(0, maxcol-MIN_WRAPCOLS)
@@ -311,10 +311,11 @@ class Screen:
             linenowidth = calc_lineno_width(self)
         else:
             linenowidth = 0
-
+        
+        nowrapindent = self.document.mode.NO_WRAPINDENT
         width = max(2, self.width-linenowidth)
         return col_splitter(width, pos, dispchrs, dispcols,
-                positions, intervals, styles, self.document.mode.stylemap, nowrap=self.nowrap)
+                positions, intervals, styles, self.document.mode.stylemap, nowrap=self.nowrap, nowrapindent=nowrapindent)
 
     def _set_rowport(self):
 

@@ -37,6 +37,7 @@ def MarkRange(mark):
     return lambda cursor:_MarkRange(mark, cursor)
 
 class DialogMode(modebase.ModeBase):
+    NO_WRAPINDENT = False
     autoshrink = False
     min_height = 1
 

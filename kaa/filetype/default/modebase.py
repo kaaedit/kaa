@@ -44,6 +44,7 @@ class ModeBase:
     CLOSE_ON_DEL_WINDOW = True
 
     SCREEN_NOWRAP = False
+    NO_WRAPINDENT = False
     SCREEN_BUILD_ENTIRE_ROWS = False
     SHOW_LINENO = False
     USE_UNDO = True
