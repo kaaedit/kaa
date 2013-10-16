@@ -36,6 +36,7 @@ class Cursor:
         else:
             idx -= 1
         pos = self.wnd.screen.get_pos_above(idx, self.preferred_col)
+        pos = self.adjust_nextpos(self.pos, pos)
         self.setpos(pos)
         return True
 
@@ -57,6 +58,7 @@ class Cursor:
             idx += 1
 
         pos = self.wnd.screen.get_pos_under(idx, self.preferred_col)
+        pos = self.adjust_nextpos(self.pos, pos)
         self.setpos(pos)
 
         return True
