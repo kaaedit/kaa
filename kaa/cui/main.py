@@ -13,6 +13,10 @@ CURSES_MOUSEINTERVAL = 200
 CURSES_ESCDELAY = '50'
 
 def _init(stdscr):
+    if not hasattr(stdscr, 'get_wch'):
+        raise RuntimeError(
+                'Kaa requires curses library with wide charater support.')
+        
     curses.start_color()
     curses.use_default_colors()
 
