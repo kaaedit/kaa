@@ -6,7 +6,6 @@ from kaa import options, version, consts, config
 from . import app, keydef, frame
 
 from .. import document
-#from kaa.filetype.default import defaultmode
 from kaa import fileio
 
 CURSES_MOUSEINTERVAL = 200
@@ -26,6 +25,7 @@ def _init(stdscr):
 #    curses.mousemask(curses.ALL_MOUSE_EVENTS)
 #    curses.mouseinterval(CURSES_MOUSEINTERVAL)
 
+
 def _restore():
     curses.noraw()
     curses.nl()
@@ -42,6 +42,7 @@ def run_userinit():
         exec(code, module.__dict__)
 
         sys.modules['__kaa__'] = module
+
 
 def main(stdscr):
     conf = config.Config()
@@ -97,6 +98,8 @@ def main(stdscr):
     finally:
         _restore()
         _trace('end')
+
+
 def run():
     if sys.version_info[:2] < (3, 3):
         raise RuntimeError('kaa requires Python 3.3 or later')
