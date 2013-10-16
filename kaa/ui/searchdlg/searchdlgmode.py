@@ -122,7 +122,9 @@ class SearchDlgMode(dialogmode.DialogMode):
             f, t = target.screen.selection.get_range()
             s = target.document.gettext(f, t).split('\n')
             if s:
-                self.option.text = s[0].strip()
+                s = s[0].strip()
+                if s:
+                    self.option.text = s
 
     def close(self):
         super().close()
