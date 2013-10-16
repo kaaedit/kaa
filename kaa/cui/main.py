@@ -1,5 +1,4 @@
 import curses, os, sys, types
-import setproctitle
 import kaa.tools
 import kaa.log
 from kaa import options, version, consts, config
@@ -104,7 +103,10 @@ def run():
     if sys.version_info[:2] < (3, 3):
         raise RuntimeError('kaa requires Python 3.3 or later')
         
-    setproctitle.setproctitle('kaa')
+    if not getattr(__builtins__, 'kaa_freeze', False):
+        import setproctitle
+        setproctitle.setproctitle('kaa')
+        
     parser = options.build_parser()
 
     global opt
