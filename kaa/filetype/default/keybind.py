@@ -41,8 +41,6 @@ cursor_keys = {
     (shift, ctrl, home): ('screen.selection.begin', 'cursor.top-of-file', 'screen.selection.set-end'),
     (shift, ctrl, end): ('screen.selection.begin', 'cursor.end-of-file', 'screen.selection.set-end'),
 
-    (ctrl, 'g'): ('screen.selection.clear', 'cursor.go-to-line'),
-
     (alt, 'a'): 'screen.selection.all',
 
     (ctrl, 'c'): 'screen.selection.expand_sel',
@@ -74,6 +72,8 @@ edit_command_keys = {
 }
 
 addtional_edit_command_keys = {
+    (ctrl, 'g'): ('screen.selection.clear', 'cursor.go-to-line'),
+
     tab: 'edit.indent',
     (shift, tab): 'edit.dedent',
 
