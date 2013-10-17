@@ -193,7 +193,7 @@ class FileCommands(Commands):
             pass
         
         docs = self.get_current_documents(wnd)
-        docs = [doc for doc in docs if doc.undo.is_dirty()]
+        docs = [doc for doc in docs if doc.undo and doc.undo.is_dirty()]
         if docs:
             self.save_documents(wnd, docs, saved, force=True)
 

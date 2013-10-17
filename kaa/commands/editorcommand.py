@@ -425,7 +425,6 @@ class EditCommands(Commands):
     def _dedent_line(self, wnd, pos):
         mode = wnd.document.mode
         f, t = mode.get_indent_range(pos)
-        _trace(f, t)
         if f != t:
             cols = mode.calc_cols(f, t)
         else:

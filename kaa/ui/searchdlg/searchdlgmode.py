@@ -107,7 +107,7 @@ class SearchDlgMode(dialogmode.DialogMode):
         keybind.emacs_keys,
         keybind.macro_command_keys,
     ]
-
+    _last_searchstr = ''
     def __init__(self, target):
         super().__init__()
 
@@ -265,10 +265,12 @@ class SearchDlgMode(dialogmode.DialogMode):
     def on_edited(self, wnd):
         self.lastsearch = None
         self.lasthit = None
-        if not self._search_next(wnd):
-            self.lastsearch = -1
-            self._search_next(wnd)
-            
+        s = self.get_search_str()
+        if s != self._last_searchstr:
+            if not self._search_next(wnd):
+                self.lastsearch = -1
+                self._search_next(wnd)
+        self._last_searchstr = s
 
     def _show_searchresult(self, hit):
         if hit:
@@ -309,7 +311,9 @@ class SearchDlgMode(dialogmode.DialogMode):
             return ret
 
     def _save_searchstr(self):
-        kaa.app.config.hist_searchstr.add(self.get_search_str())
+        s = self.get_search_str()
+        if s:
+            kaa.app.config.hist_searchstr.add(s)
         
     def search_next(self, wnd):
         self._save_searchstr()
