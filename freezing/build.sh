@@ -8,7 +8,7 @@ rm -rf build
 
 mkdir dist
 
-$PYTHONBIN $PYTHON/Tools/freeze/freeze.py -X setproctitle -o build  kaa_freeze.py
+$PYTHONBIN $PYTHON/Tools/freeze/freeze.py -m -X setproctitle -o build kaa_freeze.py kaa.filetype.html kaa.filetype.html.htmlmode  kaa.filetype.javascript kaa.filetype.javascript.javascriptmode  kaa.filetype.css kaa.filetype.css.cssmode  kaa.filetype.python kaa.filetype.python.pythonmode  
 
 cd build
 make

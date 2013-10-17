@@ -123,4 +123,6 @@ import encodings.zlib_codec
 import kaa.cui.main
 
 __builtins__.kaa_freeze = True
+import sys
+del sys.path[:]
 kaa.cui.main.run()
