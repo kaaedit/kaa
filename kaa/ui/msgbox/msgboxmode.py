@@ -57,9 +57,10 @@ class MsgBoxMode(dialogmode.DialogMode):
         self._runcallback(c)
 
         # Destroy popup window
-        popup = wnd.get_label('popup')
-        if popup:
-            popup.destroy()
+        if wnd:
+            popup = wnd.get_label('popup')
+            if popup:
+                popup.destroy()
 
     def _runcallback(self, c):
         self.callback(c)

@@ -69,7 +69,7 @@ class SearchCommands(editorcommand.EditCommands):
                 wnd.cursor.setpos(f)
             
         self._show_histdlg(wnd, 'Recent searches', 
-                kaa.app.config.hist_searchstr, callback)
+                kaa.app.config.hist_searchstr.get(), callback)
         
     @command('searchdlg.toggle.ignorecase')
     @norec
@@ -375,7 +375,7 @@ class ReplaceCommands(SearchCommands):
                 wnd.cursor.setpos(f)
                 
         self._show_histdlg(wnd, 'Recent replace strings', 
-                kaa.app.config.hist_replstr, callback)
+                kaa.app.config.hist_replstr.get(), callback)
 
     @command('replacedlg.history')
     @norec

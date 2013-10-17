@@ -99,6 +99,18 @@ def main(stdscr):
         _trace('end')
 
 
+def _init_term():
+    # http://fedoraproject.org/wiki/Features/256_Color_Terminals
+    term = os.environ.get('TERM')
+    if term in ('xterm', 'screen', 'Eterm'):
+        term = term+'-256color'
+        os.environ['TERM'] = term
+
+    if os.environ.get('TERM', '') == 'screen-256color':
+        termcap = os.environ.get('TERMCAP')
+        if termcap:
+            os.environ['TERMCAP'] = termcap.replace('Co#8', 'Co#256')
+    
 def run():
     if sys.version_info[:2] < (3, 3):
         raise RuntimeError('kaa requires Python 3.3 or later')
@@ -119,6 +131,7 @@ def run():
     if not os.environ.get('ESCDELAY'):
         os.environ['ESCDELAY'] = CURSES_ESCDELAY
 
+    _init_term()
     curses.wrapper(main)
 
 

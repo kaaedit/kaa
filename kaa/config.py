@@ -1,43 +1,69 @@
-import os, importlib, json
+import os, importlib, sqlite3
 import kaa
 from kaa import consts
 
-class History(list):
-    MAX_HISTORY = 999
-
+class KaaHistoryStorage:
     def __init__(self, filename):
         self.filename = filename
+        self.conn = sqlite3.connect(filename)
+        
+    def close(self):
+        self.conn.close()
+        
+    def add_history(self, history):
+        history.set_storage(self)
 
-    def load(self):
-        del self[:]
-        if os.path.exists(self.filename):
-            try:
-                with open(self.filename) as f:
-                    items = json.load(f)
-                    self.extend(items)
+    
 
-            except Exception as e:
-                kaa.log.exception('History file load error:')
-                return
+class History:
+    MAX_HISTORY = 999
 
-    def save(self):
-        try:
-            with open(self.filename, 'w', encoding='utf-8') as f:
-                json.dump(list(self), f)
+    def __init__(self, name, storage):
+        self.name = name
+        self.table_name = 'hist_'+self.name
+        self.storage = None
 
-        except Exception as e:
-            kaa.log.exception('History file load error:')
+        storage.add_history(self)
+        
+    def close(self):
+        ret = self.storage.conn.execute('''
+            SELECT id FROM {} ORDER BY id DESC LIMIT ?
+            '''.format(self.table_name), (self.MAX_HISTORY, ))
+        recs =[value for value in ret]
+        if recs:
+            last, = recs[-1]
+            self.storage.conn.execute('''
+                DELETE FROM {} WHERE id < ?
+                '''.format(self.table_name), (last,))
+            self.storage.conn.commit()
+            
+    def set_storage(self, storage):
+        storage.conn.execute('''
+            CREATE TABLE IF NOT EXISTS {}
+                (id INTEGER PRIMARY KEY,
+                value TEXT)'''.format(self.table_name))
+        self.storage = storage
+
+    def add(self, value):
+        if not value:
             return
 
-    def add(self, item):
-        if not item:
-            return
-        if item in self:
-            self.remove(item)
+        ret = self.storage.conn.execute('''
+            DELETE FROM {} WHERE value = ?'''.format(self.table_name),
+            (value, ))
 
-        self.insert(0, item)
-        del self[self.MAX_HISTORY:]
+        self.storage.conn.execute('''
+            INSERT INTO {}(value) VALUES(?)'''.format(self.table_name),
+            (value,))
 
+        self.storage.conn.commit()
+
+    def get(self):
+        ret = self.storage.conn.execute('''
+            SELECT value FROM {} ORDER BY id DESC LIMIT ?
+            '''.format(self.table_name),
+            (self.MAX_HISTORY,))
+        return [value for value, in ret]
 
 class Config:
     FILETYPES = [
@@ -75,20 +101,17 @@ class Config:
         self.LOGDIR = logdir
         self.HISTDIR = histdir
 
-        self.hist_files = History(
-            os.path.join(self.HISTDIR, consts.HIST_FILENAME))
-        self.hist_dirs = History(
-            os.path.join(self.HISTDIR, consts.HIST_DIRNAME))
-        self.hist_searchstr = History(
-            os.path.join(self.HISTDIR, consts.HIST_SEARCH))
-        self.hist_replstr = History(
-            os.path.join(self.HISTDIR, consts.HIST_REPLACE))
-        self.hist_grepstr = History(
-            os.path.join(self.HISTDIR, consts.HIST_GREPSTR))
-        self.hist_grepdir = History(
-            os.path.join(self.HISTDIR, consts.HIST_GREPDIR))
-        self.hist_grepfiles = History(
-            os.path.join(self.HISTDIR, consts.HIST_GREPFILES))
+    def init_history(self):
+        self.hist_storage = KaaHistoryStorage(
+            os.path.join(self.HISTDIR, consts.HIST_DBNAME))
+
+        self.hist_files = History('files', self.hist_storage)
+        self.hist_dirs = History('dirs', self.hist_storage)
+        self.hist_searchstr = History('searchstr', self.hist_storage)
+        self.hist_replstr = History('replstr', self.hist_storage)
+        self.hist_grepstr = History('grepstr', self.hist_storage)
+        self.hist_grepdir = History('grepdir', self.hist_storage)
+        self.hist_grepfiles = History('grepfiles', self.hist_storage)
 
     def get_mode_packages(self):
         for pkgname in self.FILETYPES:
@@ -98,3 +121,4 @@ class Config:
                 kaa.log.exception('Error loading filetype: '+repr(pkgname))
             else:
                 yield pkg
+   

@@ -128,5 +128,5 @@ class TestEdit(kaa_testutils._TestScreenBase):
         wnd.cursor.setpos(4)
         cmd.newline(wnd)
 
-        assert wnd.document.gettext(0, 5) == '    \n'
-        assert wnd.document.gettext(5, 15) == '      abc'
+        assert wnd.document.gettext(0, 5) == '\n    '
+        assert wnd.document.gettext(5, 15) == '  abc'

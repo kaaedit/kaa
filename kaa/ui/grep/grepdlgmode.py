@@ -80,7 +80,7 @@ class GrepCommands(editorcommand.EditCommands):
                     wnd.cursor.setpos(f)
        
             filterlist.show_listdlg('Recent searches', 
-                kaa.app.config.hist_grepstr, callback)
+                kaa.app.config.hist_grepstr.get(), callback)
 
         elif dirfrom <= wnd.cursor.pos <= dirto:
             def callback(result):
@@ -90,7 +90,7 @@ class GrepCommands(editorcommand.EditCommands):
                     wnd.cursor.setpos(f)
        
             filterlist.show_listdlg('Recent directories', 
-                kaa.app.config.hist_grepdir, callback)
+                kaa.app.config.hist_grepdir.get(), callback)
 
         else:
             def callback(result):
@@ -100,7 +100,7 @@ class GrepCommands(editorcommand.EditCommands):
                     wnd.cursor.setpos(f)
                     
             filterlist.show_listdlg('Recent filenames', 
-                kaa.app.config.hist_grepfiles, callback)
+                kaa.app.config.hist_grepfiles.get(), callback)
         
 
 
@@ -139,11 +139,13 @@ class GrepDlgMode(dialogmode.DialogMode):
                     if s:
                         GrepOption.LASTOPTION.text = s
 
-            if config.hist_grepdir:
-                GrepOption.LASTOPTION.directory = config.hist_grepdir[0]
-                    
-            if config.hist_grepfiles:
-                GrepOption.LASTOPTION.filenames = config.hist_grepfiles[0]
+            grepdir = config.hist_grepdir.get()
+            if grepdir:
+                GrepOption.LASTOPTION.directory = grepdir[0]
+
+            grepfiles = config.hist_grepfiles.get()
+            if grepfiles:
+                GrepOption.LASTOPTION.filenames = grepfiles[0]
                     
         self.option = GrepOption.LASTOPTION
         

@@ -23,6 +23,8 @@ class CuiApp:
         self.last_dir = '.'
 
     def init(self, mainframe):
+        self.config.init_history()
+        
         self.messagebar = messagebarmode.MessageBarMode()
 
         buf = document.Buffer()
@@ -37,24 +39,15 @@ class CuiApp:
         self.mainframe.on_console_resized()
         self.messagebar.set_message(self.SHOW_MENU_MESSAGE)
 
-        self.config.hist_files.load()
-        self.config.hist_dirs.load()
-        self.config.hist_searchstr.load()
-        self.config.hist_replstr.load()
-
-        self.config.hist_grepstr.load()
-        self.config.hist_grepdir.load()
-        self.config.hist_grepfiles.load()
-
     def on_shutdown(self):
-        self.config.hist_files.save()
-        self.config.hist_dirs.save()
-        self.config.hist_searchstr.save()
-        self.config.hist_replstr.save()
+        self.config.hist_files.close()
+        self.config.hist_dirs.close()
+        self.config.hist_searchstr.close()
+        self.config.hist_replstr.close()
 
-        self.config.hist_grepstr.save()
-        self.config.hist_grepdir.save()
-        self.config.hist_grepfiles.save()
+        self.config.hist_grepstr.close()
+        self.config.hist_grepdir.close()
+        self.config.hist_grepfiles.close()
 
     def get_current_theme(self):
         return self._theme_name
