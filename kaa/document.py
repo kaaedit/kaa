@@ -388,6 +388,7 @@ class Undo:
         if not block.can_undo():
             # Nothing happend
             del self._actions[-1]
+            self._next_undo = len(self._actions)
         else:
             block._closed = True
 
