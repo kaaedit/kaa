@@ -51,11 +51,11 @@ MENUS = {
          
     'WINDOW':
         [['&Frame list', None, 'app.show-framelist'],
+         ['&Switch file', None, 'editor.switchfile'],
          ['Split &vert', None, 'editor.splitvert'],
          ['Split &horz', None, 'editor.splithorz'],
          ['&Move separator', None, 'editor.moveseparator'],
          ['&Next window', None, 'editor.nextwindow'],
          ['&Prev window', None, 'editor.prevwindow'],
-         ['&Join window', None, 'editor.joinwindow'],
-         ['&Switch file', None, 'editor.switchfile']]
+         ['&Join window', None, 'editor.joinwindow']]
 }
