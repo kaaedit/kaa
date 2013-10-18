@@ -502,6 +502,7 @@ class ReplaceDlgMode(SearchDlgMode):
         if not self.get_search_str():
             return
 
+        self.option.replace_to = self.get_replace_str()
         self._save_searchstr()
         self._save_replstr()
         
@@ -534,6 +535,7 @@ class ReplaceDlgMode(SearchDlgMode):
         if not self.get_search_str():
             return
 
+        self.option.replace_to = self.get_replace_str()
         self._save_searchstr()
         self._save_replstr()
 
@@ -557,7 +559,12 @@ class ReplaceDlgMode(SearchDlgMode):
         self.search_prev(wnd)
 
     def replace_all(self, wnd):
+        self.option.replace_to = self.get_replace_str()
         self.option.text = self.get_search_str()
+
+        self._save_searchstr()
+        self._save_replstr()
+
         if not self.option.text:
             return
         self.lastsearch = None
@@ -585,3 +592,7 @@ class ReplaceDlgMode(SearchDlgMode):
             self.target.cursor.setpos(self.lastsearch[0])
 
         kaa.app.messagebar.set_message('Replaced {} time(s)'.format(n))
+
+    def on_esc_pressed(self, wnd, event):
+        self._save_replstr()
+        super().on_esc_pressed(wnd, event)
