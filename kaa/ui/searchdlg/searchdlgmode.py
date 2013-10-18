@@ -24,22 +24,6 @@ SearchThemes = {
 
 class SearchCommands(editorcommand.EditCommands):
 
-    @command('edit.backspace')
-    @norec
-    @norerun
-    def backspace(self, wnd):
-        pos = wnd.cursor.pos
-        if pos > wnd.document.marks['searchtext'][0]:
-            super().backspace(wnd)
-
-    @command('edit.delete')
-    @norec
-    @norerun
-    def delete(self, wnd):
-        pos = wnd.cursor.pos
-        if pos < wnd.document.marks['searchtext'][1]:
-            super().delete(wnd)
-
     @command('searchdlg.search.next')
     @norec
     @norerun
@@ -306,7 +290,7 @@ class SearchDlgMode(dialogmode.DialogMode):
                 # resume from top
                 pos = 0
 
-            ret = self.target.document.mode.search_next(self.target, pos, self.option)
+            ret = self.target.document.mode.search_next(pos, self.option)
             self._show_searchresult(ret)
 
             self.lastsearch = pos
@@ -342,7 +326,7 @@ class SearchDlgMode(dialogmode.DialogMode):
                 # resume from end
                 pos = self.target.document.endpos()
 
-            ret = self.target.document.mode.search_prev(self.target, pos, self.option)
+            ret = self.target.document.mode.search_prev(pos, self.option)
             self._show_searchresult(ret)
 
             self.lastsearch = pos
@@ -575,7 +559,7 @@ class ReplaceDlgMode(SearchDlgMode):
         n = 0
         try:
             while True:
-                ret = self.target.document.mode.search_next(self.target, pos, self.option)
+                ret = self.target.document.mode.search_next(pos, self.option)
                 if ret:
                     f, t = ret.span()
                     self.target.document.mode.edit_commands.replace_string(

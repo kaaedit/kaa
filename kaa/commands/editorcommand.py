@@ -303,8 +303,7 @@ class EditCommands(Commands):
             return
 
         pos = wnd.cursor.pos
-        wnd.cursor.end()
-        nextpos = wnd.cursor.pos
+        nextpos = wnd.cursor.adjust_nextpos(pos, wnd.document.find_newline(pos))
         if pos < nextpos:
             self.delete_string(wnd, pos, nextpos)
 
@@ -701,12 +700,12 @@ class SearchCommands(Commands):
         else:
             start =  wnd.cursor.pos
 
-        ret = wnd.document.mode.search_next(wnd, start, modebase.SearchOption.LAST_SEARCH)
+        ret = wnd.document.mode.search_next(start, modebase.SearchOption.LAST_SEARCH)
         self._show_searchresult(wnd, ret)
 
         if not ret:
             if start != 0:
-                ret = wnd.document.mode.search_next(wnd, 0, modebase.SearchOption.LAST_SEARCH)
+                ret = wnd.document.mode.search_next(0, modebase.SearchOption.LAST_SEARCH)
                 self._show_searchresult(wnd, ret)
 
     @command('search.prev')
@@ -722,12 +721,12 @@ class SearchCommands(Commands):
         else:
             start =  wnd.cursor.pos
 
-        ret = wnd.document.mode.search_prev(wnd, start, modebase.SearchOption.LAST_SEARCH)
+        ret = wnd.document.mode.search_prev(start, modebase.SearchOption.LAST_SEARCH)
         self._show_searchresult(wnd, ret)
 
         if not ret:
             if start != wnd.document.endpos():
-                ret = wnd.document.mode.search_prev(wnd, wnd.document.endpos(),
+                ret = wnd.document.mode.search_prev(wnd.document.endpos(),
                                                     modebase.SearchOption.LAST_SEARCH)
                 self._show_searchresult(wnd, ret)
 

@@ -321,13 +321,13 @@ class ModeBase:
 
         return tol, self.document.geteol(tol)
 
-    def search_next(self, wnd, pos, searchinfo):
+    def search_next(self, pos, searchinfo):
         regex = searchinfo.get_regex()
         pos = min(max(0, pos), self.document.endpos())
         m = regex.search(self.document.buf, pos)
         return m
 
-    def search_prev(self, wnd, pos, searchinfo):
+    def search_prev(self, pos, searchinfo):
         regex = searchinfo.get_regex()
         last = None
         for m in regex.finditer(self.document.buf, 0):
