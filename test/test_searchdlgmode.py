@@ -13,6 +13,8 @@ class TestSearchDlgMode(kaa_testutils._TestDocBase):
     @patch('kaa.app', create=True)
     def test_searchdlg(self, mock):
         doc = self._getdoc('')
+        doc.mode.option.text = ''
+
         doc.mode.build_document()
         ignorecase = doc.mode.option.ignorecase
         word = doc.mode.option.word
@@ -56,7 +58,9 @@ class TestReplaceDlg(kaa_testutils._TestDocBase):
 
     @patch('kaa.app', create=True)
     def test_replacedlg(self, mock):
+
         doc = self._getdoc('')
+        doc.mode.option.text = ''
         doc.mode.build_document()
 
         ignorecase = doc.mode.option.ignorecase
@@ -81,6 +85,7 @@ class TestReplaceDlg(kaa_testutils._TestDocBase):
         kaa.app.DEFAULT_THEME = 'default'
 
         doc = self._getdoc('')
+        doc.mode.option.text = ''
         doc.mode.build_document()
 
         option = doc.mode.option

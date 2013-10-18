@@ -67,7 +67,7 @@ class TestDefaultMode(kaa_testutils._TestScreenBase):
         opt.regex = False
 
         endpos = w.document.endpos()
-        ret = w.document.mode.search_prev(w, endpos, opt)
+        ret = w.document.mode.search_prev(w, endpos, opt).span()
         assert ret == (19, 22)
 
         opt.text = r'[EFG]+'
