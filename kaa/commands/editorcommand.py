@@ -680,9 +680,10 @@ class SearchCommands(Commands):
 
     def _show_searchresult(self, wnd, hit):
         if hit:
-            wnd.cursor.setpos(hit[0])
-            wnd.screen.selection.start = hit[0]
-            wnd.screen.selection.end = hit[1]
+            f, t = hit.span()
+            wnd.cursor.setpos(f)
+            wnd.screen.selection.start = f
+            wnd.screen.selection.end = t
             kaa.app.messagebar.set_message('found')
         else:
             kaa.app.messagebar.set_message('not found')

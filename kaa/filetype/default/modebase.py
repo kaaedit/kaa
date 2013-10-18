@@ -12,6 +12,7 @@ class SearchOption:
     RE = gappedbuf.re
     def __init__(self):
         self.text = ''
+        self.replace_to = ''
         self.ignorecase = True
         self.word = False
         self.regex = False
@@ -19,6 +20,7 @@ class SearchOption:
     def clone(self):
         ret = self.__class__()
         ret.text = self.text
+        ret.replace_to = self.replace_to
         ret.ignorecase = self.ignorecase
         ret.word = self.word
         ret.regex = self.regex
@@ -323,8 +325,7 @@ class ModeBase:
         regex = searchinfo.get_regex()
         pos = min(max(0, pos), self.document.endpos())
         m = regex.search(self.document.buf, pos)
-        if m:
-            return m.span()
+        return m
 
     def search_prev(self, wnd, pos, searchinfo):
         regex = searchinfo.get_regex()
@@ -333,7 +334,7 @@ class ModeBase:
             span = m.span()
             if span[1] >= pos:
                 break
-            last = span
+            last = m
         return last
 
     def get_indent_range(self, pos):

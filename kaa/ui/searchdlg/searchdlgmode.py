@@ -116,6 +116,7 @@ class SearchDlgMode(dialogmode.DialogMode):
         self.initialrange = target.screen.selection.get_range()
         self.lastsearch = None
         self.lasthit = None
+        self.lastmatch = None
         self.option = modebase.SearchOption.LAST_SEARCH
 
         if target and target.screen.selection.is_selected():
@@ -165,8 +166,6 @@ class SearchDlgMode(dialogmode.DialogMode):
 
         wnd.set_cursor(self.create_cursor(wnd))
         if self.option.text:
-            self.document.insert(
-                self.document.marks['searchtext'][0], self.option.text)
             wnd.screen.selection.set_range(*self.document.marks['searchtext'])
         wnd.cursor.setpos(self.document.marks['searchtext'][1])
 
@@ -211,6 +210,9 @@ class SearchDlgMode(dialogmode.DialogMode):
         self._build_input(f)
         self._build_buttons(f)
         self._build_options(f)
+
+        self.document.insert(
+            self.document.marks['searchtext'][0], self.option.text)
 
         self.update_option_style()
         kaa.app.messagebar.set_message("Hit alt+N/alt+P to search Next/Prev. Hit up to show history.")
@@ -265,6 +267,7 @@ class SearchDlgMode(dialogmode.DialogMode):
     def on_edited(self, wnd):
         self.lastsearch = None
         self.lasthit = None
+        self.lastmatch = None
         s = self.get_search_str()
         if s != self._last_searchstr:
             if not self._search_next(wnd):
@@ -274,9 +277,10 @@ class SearchDlgMode(dialogmode.DialogMode):
 
     def _show_searchresult(self, hit):
         if hit:
-            self.target.cursor.setpos(hit[0])
-            self.target.screen.selection.start = hit[0]
-            self.target.screen.selection.end = hit[1]
+            f, t = hit.span()
+            self.target.cursor.setpos(f)
+            self.target.screen.selection.start = f
+            self.target.screen.selection.end = t
             kaa.app.messagebar.set_message('found')
         else:
             self.target.screen.selection.clear()
@@ -306,7 +310,8 @@ class SearchDlgMode(dialogmode.DialogMode):
             self._show_searchresult(ret)
 
             self.lastsearch = pos
-            self.lasthit = ret
+            self.lasthit = ret.span() if ret else None
+            self.lastmatch = ret
 
             return ret
 
@@ -341,7 +346,8 @@ class SearchDlgMode(dialogmode.DialogMode):
             self._show_searchresult(ret)
 
             self.lastsearch = pos
-            self.lasthit = ret
+            self.lasthit = ret.span() if ret else None
+            self.lastmatch = ret
 
             return ret
 
@@ -449,6 +455,12 @@ class ReplaceDlgMode(SearchDlgMode):
         self._build_input(f)
         self._build_buttons(f)
         self._build_options(f)
+
+        self.document.insert(
+            self.document.marks['searchtext'][0], self.option.text)
+
+        self.document.insert(
+            self.document.marks['replacetext'][0], self.option.replace_to)
 
         self.update_option_style()
         kaa.app.messagebar.set_message("Hit enter to move field. Hit up to show history.`")
@@ -558,7 +570,7 @@ class ReplaceDlgMode(SearchDlgMode):
             while True:
                 ret = self.target.document.mode.search_next(self.target, pos, self.option)
                 if ret:
-                    f, t = ret
+                    f, t = ret.span()
                     self.target.document.mode.edit_commands.replace_string(
                         self.target, f, t, newstr, update_cursor=False)
                     self.lastsearch = (f, f+len(newstr))
