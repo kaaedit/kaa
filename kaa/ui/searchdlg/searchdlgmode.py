@@ -7,6 +7,7 @@ from kaa.ui.msgbox import msgboxmode
 from kaa.command import command, Commands, norec, norerun
 from kaa.commands import editorcommand
 from kaa.ui.selectlist import filterlist
+from gappedbuf.sre_constants import error as gre_error
 
 SearchThemes = {
     'default':
@@ -23,7 +24,7 @@ SearchThemes = {
 
 
 class SearchCommands(editorcommand.EditCommands):
-
+    # todo: move commands to mode class
     @command('searchdlg.search.next')
     @norec
     @norerun
@@ -253,11 +254,16 @@ class SearchDlgMode(dialogmode.DialogMode):
         self.lasthit = None
         self.lastmatch = None
         s = self.get_search_str()
-        if s != self._last_searchstr:
-            if not self._search_next(wnd):
-                self.lastsearch = -1
-                self._search_next(wnd)
-        self._last_searchstr = s
+
+        try:
+            if s != self._last_searchstr:
+                if not self._search_next(wnd):
+                    self.lastsearch = -1
+                    self._search_next(wnd)
+            self._last_searchstr = s
+        except gre_error as e:
+            kaa.app.messagebar.set_message(str(e))
+            
 
     def _show_searchresult(self, hit):
         if hit:
@@ -347,6 +353,8 @@ class SearchDlgMode(dialogmode.DialogMode):
 
 
 class ReplaceCommands(SearchCommands):
+    # todo: move commands to mode class
+
     @command('replacedlg.field.next')
     @norec
     @norerun
@@ -473,11 +481,11 @@ class ReplaceDlgMode(SearchDlgMode):
     def _show_search_again(self, wnd, on_y):
         def cb(c):
             wnd.activate()
-            if c == 'y':
+            if c == 'r':
                 on_y(wnd)
 
         msgdoc = msgboxmode.MsgBoxMode.show_msgbox(
-            'Search failed. Resume again?', ['&Yes', '&Cancel'], cb)
+            'Search failed. Resume again?', ['&Resume', '&Cancel'], cb)
 
     def _save_replstr(self):
         kaa.app.config.hist_replstr.add(self.get_replace_str())
@@ -490,9 +498,6 @@ class ReplaceDlgMode(SearchDlgMode):
         self._save_searchstr()
         self._save_replstr()
         
-        kaa.app.config.hist_searchstr.add(self.get_search_str())
-        
-
         if self.lastsearch is None:
             self._search_next(wnd)
 
@@ -501,13 +506,30 @@ class ReplaceDlgMode(SearchDlgMode):
         else:
             self._show_search_again(wnd, self.skip_and_next)
 
-    def replace_and_next(self, wnd):
-        f, t = self.lasthit
-        newstr = self.get_replace_str()
-        self.target.document.mode.edit_commands.replace_string(
-            self.target, f, t, newstr)
+    _metachars = [
+        (r"\\", "\\"),
+        (r"\a", "\a"),
+        (r"\b", "\b"),
+        (r"\f", "\f"),
+        (r"\n", "\n"),
+        (r"\r", "\r"),
+        (r"\t", "\t"),
+    ]
 
-        self.lasthit = (f, f+len(newstr))
+    def _repl_str(self, update_cursor):
+        f, t = self.lasthit
+        if self.option.regex:
+            s = self.lastmatch.expand(self.option.replace_to)
+        else:
+            s = self.option.replace_to
+            
+        self.target.document.mode.edit_commands.replace_string(
+            self.target, f, t, s, update_cursor=update_cursor)
+
+        self.lasthit = (f, f+len(s))
+
+    def replace_and_next(self, wnd):
+        self._repl_str(update_cursor=True)
         self._search_next(wnd)
         self.search_next(wnd)
 
@@ -531,12 +553,7 @@ class ReplaceDlgMode(SearchDlgMode):
             self._show_search_again(wnd, self.skip_and_prev)
 
     def replace_and_prev(self, wnd):
-        f, t = self.lasthit
-        newstr = self.get_replace_str()
-        self.target.document.mode.edit_commands.replace_string(
-            self.target, f, t, newstr)
-
-        self.lasthit = (f, f+len(newstr))
+        self._repl_str(update_cursor=True)
         self.search_prev(wnd)
 
     def skip_and_prev(self, wnd):
@@ -557,23 +574,24 @@ class ReplaceDlgMode(SearchDlgMode):
         self.target.document.undo.beginblock()
         pos = 0
         n = 0
+        lastpos = None
         try:
             while True:
                 ret = self.target.document.mode.search_next(pos, self.option)
+                self.lasthit = ret.span() if ret else None
+                self.lastmatch = ret
+
                 if ret:
-                    f, t = ret.span()
-                    self.target.document.mode.edit_commands.replace_string(
-                        self.target, f, t, newstr, update_cursor=False)
-                    self.lastsearch = (f, f+len(newstr))
-                    pos = self.lastsearch[1]
+                    self._repl_str(update_cursor=False)
+                    pos = lastpos = self.lasthit[1]
                     n += 1
                 else:
                     break
         finally:
             self.target.document.undo.endblock()
 
-        if self.lastsearch:
-            self.target.cursor.setpos(self.lastsearch[0])
+        if lastpos is not None:
+            self.target.cursor.setpos(lastpos)
 
         kaa.app.messagebar.set_message('Replaced {} time(s)'.format(n))
 
