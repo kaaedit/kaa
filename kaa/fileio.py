@@ -77,14 +77,23 @@ class FileStorage:
             self._save_hist(filename)
         return openfile(filename, encoding, newline)
 
-    def save_document(self, filename, doc):
+    def save_document(self, doc, filename, encoding=None, newline=None):
         self._save_hist(filename)
 
-        if doc.fileinfo.encoding is None:
-            doc.fileinfo.encoding = kaa.app.config.DEFAULT_ENCODING
+        if not doc.fileinfo:
+            fileinfo = kaa.app.storage.get_fileinfo(filename, encoding, newline)
+        else:
+            if encoding is not None:
+                doc.fileinfo.encoding = encoding
 
-        if doc.fileinfo.newline is None:
-            doc.fileinfo.newline = kaa.app.config.DEFAULT_NEWLINE
+            if doc.fileinfo.encoding is None:
+                doc.fileinfo.encoding = kaa.app.config.DEFAULT_ENCODING
+
+            if newline is not None:
+                doc.fileinfo.newline = newline
+                
+            if doc.fileinfo.newline is None:
+                doc.fileinfo.newline = kaa.app.config.DEFAULT_NEWLINE
 
         with open(filename, 'w', encoding=doc.fileinfo.encoding,
                  newline=consts.NEWLINE_CHARS[doc.fileinfo.newline],

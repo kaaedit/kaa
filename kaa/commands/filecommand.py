@@ -58,16 +58,11 @@ class FileCommands(Commands):
         try:
             if not document:
                 document=wnd.document
-            if not filename and document.fileinfo:
-                filename = document.fileinfo.fullpathname
-
-            if encoding:
-                document.fileinfo.encoding = encoding
-            if newline:
-                document.fileinfo.newline = newline
+            if not filename:
+                filename = document.get_filename()
 
             if filename:
-                kaa.app.storage.save_document(filename, document)
+                kaa.app.storage.save_document(document, filename, encoding, newline)
                 # notify file saved
                 if saved:
                     saved()
@@ -96,9 +91,15 @@ class FileCommands(Commands):
             document = wnd.document
 
         from kaa.ui.selectfile import selectfile
-        selectfile.show_filesaveas(document.fileinfo.fullpathname,
-                                        document.fileinfo.newline,
-                                        document.fileinfo.encoding, cb)
+
+        filename = document.get_filename()
+        if document.fileinfo:
+            newline = document.fileinfo.newline
+            encoding = document.fileinfo.encoding
+        else:
+            newline = encoding = None
+            
+        selectfile.show_filesaveas(document.get_filename(), newline, encoding, cb)
 
     def ask_doc_close(self, wnd, document, callback, msg):
         def saved():
