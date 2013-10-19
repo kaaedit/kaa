@@ -29,35 +29,35 @@ class TestDefaultMode(kaa_testutils._TestScreenBase):
     def test_search_next(self):
         w = self._getwnd('abcdefgabcdefg/efg/EFG')
 
-        opt = defaultmode.SearchOption()
+        opt = modebase.SearchOption()
         opt.text = 'EFG'
         opt.ignorecase = True
         opt.word = False
         opt.regex = False
 
-        ret = w.document.mode.search_next(w, 0, opt)
-        assert ret == (4, 7)
+        ret = w.document.mode.search_next(0, opt)
+        assert ret.span() == (4, 7)
 
         opt.word = True
-        ret = w.document.mode.search_next(w, 0, opt)
-        assert ret == (15, 18)
+        ret = w.document.mode.search_next(0, opt)
+        assert ret.span() == (15, 18)
 
         opt.ignorecase = False
-        ret = w.document.mode.search_next(w, 0, opt)
-        assert ret == (19, 22)
+        ret = w.document.mode.search_next(0, opt)
+        assert ret.span() == (19, 22)
 
         opt.text = r'[EFG]+'
         opt.regex = True
-        ret = w.document.mode.search_next(w, 0, opt)
-        assert ret == (19, 22)
+        ret = w.document.mode.search_next(0, opt)
+        assert ret.span() == (19, 22)
 
         opt.text = r'[EFG]+'
         opt.regex = False
-        ret = w.document.mode.search_next(w, 0, opt)
+        ret = w.document.mode.search_next(0, opt)
         assert ret is None
 
 
-    def test_search_next(self):
+    def test_search_prev(self):
         w = self._getwnd('abcdefgabcdefg/efg/EFG01234567890')
 
         opt = modebase.SearchOption()
@@ -67,12 +67,12 @@ class TestDefaultMode(kaa_testutils._TestScreenBase):
         opt.regex = False
 
         endpos = w.document.endpos()
-        ret = w.document.mode.search_prev(w, endpos, opt).span()
+        ret = w.document.mode.search_prev(endpos, opt).span()
         assert ret == (19, 22)
 
         opt.text = r'[EFG]+'
         opt.regex = False
-        ret = w.document.mode.search_prev(w, endpos, opt)
+        ret = w.document.mode.search_prev(endpos, opt)
         assert ret is None
 
 
