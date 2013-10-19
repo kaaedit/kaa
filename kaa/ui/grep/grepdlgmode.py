@@ -1,4 +1,4 @@
-import re
+import re, os
 import kaa
 from kaa.keyboard import *
 from kaa.ui.dialog import dialogmode
@@ -207,6 +207,12 @@ class GrepDlgMode(dialogmode.DialogMode):
         f.append_text('caption', 'Filenames:')
         f.append_text('default', ' ')
         f.append_text('default', self.option.filenames, mark_pair='filenames')
+        f.append_text('default', '\n')
+
+        # working directory
+        f.append_text('default', '(current dir)')
+        f.append_text('default', ' ')
+        f.append_text('default', os.getcwd())
         f.append_text('default', ' ')
 
         # buttons
