@@ -6,6 +6,7 @@ import kaa
 from kaa.command import Commands, command, is_enable, norec, norerun
 from kaa import document
 from kaa.filetype.default import modebase
+from gappedbuf import re as gre
 
 
 class CursorCommands(Commands):
@@ -359,7 +360,7 @@ class EditCommands(Commands):
         wnd.screen.selection.clear()
         indent = wnd.document.mode.on_auto_indent(wnd)
 
-    def _get_line_sel(self, wnd):
+    def get_line_sel(self, wnd):
         doc = wnd.document
         sel = wnd.screen.selection.get_range()
         if not sel:
@@ -399,7 +400,7 @@ class EditCommands(Commands):
             return
 
         doc = wnd.document
-        tol, eol = self._get_line_sel(wnd)
+        tol, eol = doc.mode.get_line_sel(wnd)
         wnd.screen.selection.set_range(tol, eol)
 
         wnd.document.undo.beginblock()
@@ -439,7 +440,7 @@ class EditCommands(Commands):
             return
 
         doc = wnd.document
-        tol, eol = self._get_line_sel(wnd)
+        tol, eol = doc.mode.get_line_sel(wnd)
         wnd.screen.selection.set_range(tol, eol)
 
         wnd.document.undo.beginblock()
@@ -610,6 +611,70 @@ class EditCommands(Commands):
 
         kaa.app.show_dialog(doc)
 
+
+class CodeCommands(Commands):
+    @command('code.region.linecomment')
+    def linecomment(self, wnd):
+        if not wnd.screen.selection.is_selected():
+            tol = wnd.document.gettol(wnd.cursor.pos)
+            wnd.document.mode.edit_commands.insert_string(
+                    wnd, tol, wnd.document.mode.LINE_COMMENT, 
+                    update_cursor=False)
+            wnd.cursor.setpos(tol)
+            wnd.cursor.savecol()
+            return
+        else:
+            tol, eol = wnd.document.mode.get_line_sel(wnd)
+            wnd.screen.selection.set_range(tol, eol)
+    
+            wnd.document.undo.beginblock()
+            try:
+                mode = wnd.document.mode
+                while tol < wnd.screen.selection.end:
+                    wnd.document.mode.edit_commands.insert_string(
+                        wnd, tol, wnd.document.mode.LINE_COMMENT, 
+                        update_cursor=False)
+                    tol = wnd.document.geteol(tol)
+            finally:
+                wnd.document.undo.endblock()
+    
+            wnd.cursor.setpos(wnd.screen.selection.start)
+            wnd.cursor.savecol()
+
+    def _is_comment_line(self, wnd, pos):
+        reobj = gre.compile(r'[ \t]*({})'.format(
+                    gre.escape(wnd.document.mode.LINE_COMMENT)))
+        return reobj.match(wnd.document.buf, pos)
+        
+    @command('code.region.unlinecomment')
+    def uncomment(self, wnd):
+        if not wnd.screen.selection.is_selected():
+            tol = wnd.document.gettol(wnd.cursor.pos)
+            m = self._is_comment_line(wnd, tol)
+            if m:
+                f, t = m.span(1)
+                wnd.document.mode.edit_commands.delete_string(
+                    wnd, f, t)
+            return
+        else:
+            tol, eol = wnd.document.mode.get_line_sel(wnd)
+            wnd.screen.selection.set_range(tol, eol)
+    
+            wnd.document.undo.beginblock()
+            try:
+                mode = wnd.document.mode
+                while tol < wnd.screen.selection.end:
+                    m = self._is_comment_line(wnd, tol)
+                    if m:
+                        f, t = m.span(1)
+                        wnd.document.mode.edit_commands.delete_string(
+                            wnd, f, t, update_cursor=False)
+                    tol = wnd.document.geteol(tol)
+            finally:
+                wnd.document.undo.endblock()
+    
+            wnd.cursor.setpos(wnd.screen.selection.start)
+            wnd.cursor.savecol()
 
 class MacroCommands(Commands):
     @command('macro.start-record')

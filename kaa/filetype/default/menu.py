@@ -3,6 +3,7 @@ MENUS = {
     'MAIN':
         [['[&File]', 'FILE', None],
          ['[&Edit]', 'EDIT', None],
+         ['[&Code]', 'CODE', None],
          ['[&Macro]', 'MACRO', None],
          ['[&Tools]', 'TOOLS', None],
          ['[&Window]', 'WINDOW', None]],
@@ -56,6 +57,6 @@ MENUS = {
          ['Split &horz', None, 'editor.splithorz'],
          ['&Move separator', None, 'editor.moveseparator'],
          ['&Next window', None, 'editor.nextwindow'],
-         ['&Prev window', None, 'editor.prevwindow'],
+         ['&Prev window', None, 'editor.prevwindow'],		
          ['&Join window', None, 'editor.joinwindow']]
 }

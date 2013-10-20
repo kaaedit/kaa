@@ -1,17 +1,16 @@
+import copy
 from collections import defaultdict
 import kaa
 from kaa.commands import (appcommand, filecommand, editorcommand, 
     editmodecommand)
-    
 from . import keybind, theme, modebase, menu
-
 from kaa import highlight
+
 
 class DefaultMode(modebase.ModeBase):
     DOCUMENT = True
     MODENAME = 'default'
     SHOW_LINENO = False
-    MENU = menu.MENUS
     KEY_BINDS = [
         keybind.app_keys,
         keybind.cursor_keys,
@@ -58,6 +57,9 @@ class DefaultMode(modebase.ModeBase):
         self.edit_commands = editorcommand.EditCommands()
         self.register_command(self.edit_commands)
 
+        self.code_commands = editorcommand.CodeCommands()
+        self.register_command(self.code_commands)
+
         self.screen_commands = editorcommand.ScreenCommands()
         self.register_command(self.screen_commands)
 
@@ -72,6 +74,9 @@ class DefaultMode(modebase.ModeBase):
 
         self.mode_commands = editmodecommand.EditModeCommands()
         self.register_command(self.mode_commands)
+
+    def init_menu(self):
+        self.menu = copy.deepcopy(menu.MENUS)
 
     def init_themes(self):
         super().init_themes()
@@ -179,4 +184,4 @@ class DefaultMode(modebase.ModeBase):
                 kaa.app.messagebar.set_message(kaa.app.SHOW_MENU_MESSAGE)
 
         return super().on_keypressed(wnd, event, s, commands, candidate)
-
+            

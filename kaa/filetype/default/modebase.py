@@ -65,20 +65,21 @@ class ModeBase:
     def __init__(self):
         self.commands = {}
         self.is_availables = {}
+
         self.keybind = keyboard.KeyBind()
         self.keybind_vi_commandmode = keyboard.KeyBind()
         self.keybind_vi_visualmode = keyboard.KeyBind()
         self.keybind_vi_visuallinewisemode = keyboard.KeyBind()
-
-        self.themes = []
-
         self.init_keybind()
 
         self.init_commands()
-        self.init_themes()
+        self.init_menu()
 
+        self.themes = []
+        self.init_themes()
         self._build_theme()
         kaa.app.translate_theme(self.theme)
+        
         self.tokenizers = []
         self.init_tokenizers()
         self.stylemap = {}
@@ -141,6 +142,9 @@ class ModeBase:
             if hasattr(attr, 'COMMAND_ID') and callable(attr):
                 self.commands[getattr(attr, 'COMMAND_ID')] = attr
 
+    def init_menu(self):
+        pass
+        
     def init_themes(self):
         pass
 
@@ -201,6 +205,9 @@ class ModeBase:
             ret = self.theme.get_style('default')
         return ret
 
+    def get_menu(self, itemname):
+        return self.menu.get(itemname, None)
+        
     def get_cursor_visibility(self):
         return 1   # normal
 
@@ -336,6 +343,24 @@ class ModeBase:
                 break
             last = m
         return last
+
+    def get_line_sel(self, wnd):
+        doc = wnd.document
+        sel = wnd.screen.selection.get_range()
+        if not sel:
+            f = t = wnd.cursor.pos
+        else:
+            f, t = sel
+
+        tol =  doc.gettol(f)
+
+        t_tol =  doc.gettol(t)
+        if t != t_tol:
+            eol = doc.geteol(t)
+        else:
+            eol = t
+
+        return tol, eol
 
     def get_indent_range(self, pos):
         tol =  self.document.gettol(pos)

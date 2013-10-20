@@ -1,8 +1,10 @@
-import keyword
+import keyword, copy
 from kaa.filetype.default import defaultmode, theme
 from kaa.highlight import Tokenizer, Keywords, Span
 from kaa.theme import Theme, Style
 from gappedbuf import re as gre
+from kaa.command import Commands, command, norec, norerun
+from kaa.keyboard import *
 
 PythonThemes = {
     'default':
@@ -11,9 +13,27 @@ PythonThemes = {
         ])
 }
 
+PYTHONMENU = [
+    ['&Comment', None, 'code.region.linecomment'],
+    ['&Uncomment', None, 'code.region.unlinecomment'],
+]
+
+python_code_keys = {
+    ((alt, 'm'), ('c')): 'menu.python.code',
+}
+
 class PythonMode(defaultmode.DefaultMode):
     MODENAME = 'Python'
     re_begin_block = gre.compile(r"[^#]*:\s*(#.*)?$")
+    LINE_COMMENT = '#'
+    
+    def init_keybind(self):
+        super().init_keybind()
+        self.register_keys(self.keybind, [python_code_keys])
+
+    def init_menu(self):
+        super().init_menu()
+        self.menu['CODE'] = copy.deepcopy(PYTHONMENU)
 
     def init_themes(self):
         super().init_themes()
@@ -54,3 +74,4 @@ class PythonMode(defaultmode.DefaultMode):
             wnd.cursor.setpos(pos+len(indent))
             
             wnd.cursor.savecol()
+
