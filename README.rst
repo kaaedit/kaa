@@ -86,6 +86,25 @@ Usage
 
 Using kaa is intuitive. Typing alphabet keys will update file as you expected. Functional keys like arrow or delete keys also works.
 
+Kaa uses an alt keys for keyboard shortcut like alt+W for copy to clipboard. On recent Windows or Linux terminal, alt key works just fine. But on Mac OS X, Terminal app should be configured:
+
+1. Select Preferences menu.
+2. Open the Settings tab.
+3. Open the keyboard tab.
+4.  Check `Use option as meta key`.
+
+If you use iTerm on Mac, you should configure:
+
+1. Select Preferences menu.
+2. Open the Profiles tab.
+3. Open the Keys tab.
+4. Check `Left option Key acts as: +Esc.` button.
+
+If you use Gnome terminal and wishes to access menu by F1 key, you should configure:
+
+1. Select Edit | Keyboard shortcuts menu.
+2. Scroll to the Help/Contents shortcut and change key from F1 to some another key.
+ 
 
 Using menu
 -----------
