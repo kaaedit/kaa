@@ -1,5 +1,6 @@
 #!/bin/zsh
-PYTHON=~/python332
+# check issue 11824 and issue 16047 to use freeze.
+PYTHON=~/src/cpython.kaa
 PYTHONBIN=$PYTHON/bin/python3.3
 export PYTHONPATH=..
 
@@ -13,7 +14,7 @@ $PYTHONBIN $PYTHON/Tools/freeze/freeze.py -m -X setproctitle -o build kaa_freeze
 cd build
 make
 cd ..
-mv build/kaa_freeze.bin dist/kaa
+mv build/kaa_freeze dist/kaa
 cp ../README.rst dist/
 
-find /Users/ishimoto/python332/lib -name '*.so' -exec cp {} dist/ \;
+find $PYTHON/lib -name '*.so' -exec cp {} dist/ \;
