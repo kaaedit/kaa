@@ -340,7 +340,8 @@ class Highlighter:
         finally:
             if doc.endpos() == 0 or updated and (updatefrom != updateto):
                 doc.style_updated(updatefrom, updateto)
-
+                self.updatepos = updateto
+                
     def highlight(self, doc, pos):
         if not self.tokenizers:
             return
@@ -393,5 +394,6 @@ class Highlighter:
         return token.resume_pos(self, tokenizer, doc, pos)
 
     def updated(self, doc, pos, inslen, dellen):
-        self.updatepos = self.get_resume_pos(doc, pos)
-        self._highlighter = None
+        if pos <= self.updatepos:
+            self.updatepos = self.get_resume_pos(doc, pos)
+            self._highlighter = None
