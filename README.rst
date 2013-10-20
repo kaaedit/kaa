@@ -2,7 +2,7 @@
 Kaa - console text editor
 ============================
 
-Kaa is a small and easy text editor for console environment.
+Kaa is a small and easy CUI text editor for console/terminal emulator environments.
 
 .. contents::
 
@@ -20,9 +20,9 @@ Kaa is a easy yet powerful text editor for console user interface, providing num
 
 - Syntax highlighting.
 
-- Grep
+- Grep.
 
-- Open source software(MIT)
+- Open source software(MIT).
 
 - More to come!
 
@@ -30,12 +30,21 @@ Kaa is a easy yet powerful text editor for console user interface, providing num
 Kaa is easy!
 ------------
 
-Kaa is very easy to learn in spite of its rich functions. Only thing you need to remember is "*To display menu, hit F1 key or alt+'/' key*". Most of basic feartures could be accessed from fancy menus by hitting underlined character in the menu items. You can use Kaa as easy as you are with Notepad on MS-Windows.
+Kaa is very easy to learn in spite of its rich functions. Only thing you need to remember is "*To display menu, hit F1 key or alt+'/' key*". Most of basic feartures could be accessed from fancy menus by hitting underlined character in the menu items. You can use kaa as easy as you are with Notepad on MS-Windows.
 
-Customisable
+
+Customizable
 ------------
 
-Kaa is written in `Python <http://www.python.org/>`_. So, you can easily customise many aspects of kaa with simple Python scripts.
+Kaa is written in `Python <http://www.python.org/>`_. So, you can easily customize many aspects of kaa through simple Python scripts.
+
+
+Supported environment
+---------------------
+
+Kaa is a CUI editor that runs on most of modern UN*X flavor operating systems like Linux or Mac OS X. Kaa requires Unicode friendly environment both platform running kaa and terminal emulator/console to interact with kaa.
+
+Cygwin environment on Windows platform is not supported at this time, but will be tested after they provide Python 3.3 package.
 
 
 Requirements
@@ -51,12 +60,14 @@ Requirements
 
 * (optional) Cython
 
+
 Installation
 ============
 
 Use easy_install3 or pip3 to install kaa from PyPI ::
 
    $ easy_install3 kaaedit
+
 
 Command line options
 ====================
@@ -69,10 +80,12 @@ To start kaa, type ::
      -h, --help  show this help message and exit
      --version show version info and exit
       
+
 Usage
 =====
 
 Using kaa is intuitive. Typing alphabet keys will update file as you expected. Functional keys like arrow or delete keys also works.
+
 
 Using menu
 -----------
@@ -80,6 +93,7 @@ Using menu
 To display menu, type F1 key or alt+/ (type slash key with alt key). Each items in the menu has one underlined character. The menu item is execused by typing the underlined key.
 
 Typing escape key hides menu.
+
 
 File menu
 ++++++++++
@@ -123,6 +137,7 @@ Recently used files
 
 Recently used dirs.
     Show list of recently used directories.
+
 
 Edit menu
 +++++++++
@@ -168,6 +183,16 @@ Full-width
     Convert alphabet and numbers in the selected text to full-width character.
 
 
+Code memu
++++++++++
+
+Comment
+    Insert line comment character at top of lines in selected regin.
+    
+Uncomment
+    Delete line comment character at top of lines in selected regin.
+
+
 Macro menu
 ++++++++++
 
@@ -192,6 +217,7 @@ Shell command
 
 Grep
    Search text from disk.
+
 
 Window menu
 +++++++++++
@@ -330,6 +356,11 @@ Ctrl+u Alt+!
     Execute command and insert the output.
 
 
+Replace dialog
+--------------
+
+When `regex` button is checked, `Replace` string is also regular expression string. In this case, special characters like `\t` or `\n` are converted to tab character and newline character. Also, backreference character will be replaced to substring matched group in the search string. For example, when search string is `'(a+)(b+)'` and replace string is `\2\1`,  matched string `aabb` will be replaced to `bbaa`.
+
 
 Grep dialog
 ------------
@@ -338,11 +369,11 @@ Grep dialog has three input field. `Search` is a plain text or regular expressio
 
 In the grep result window, use F9 and F10 key to traverse matches forward/backward. 
 
-
 Customization
 ==================
 
-Kaa executes a Python script file at `~/.kaa/__kaa__.py` on startup. You can write Python script to customize Kaa as you like.
+Kaa executes a Python script file at `~/.kaa/__kaa__.py` on startup. You can write Python script to customize kaa as you like.
+
 
 Sample - Show line numbers
 ----------------------------------
@@ -390,12 +421,23 @@ Links
 Version history
 =================
 
+0.2.0 - 2013.10.20
+------------------
+
+- Comment/Uncomment region.
+
+- In replace dialog, replace-to text is now treated as regular expression text.
+
+- A lot of bugs fixed.
+
+
 0.1.0 - 2013.10.14
 ------------------
 
 - Grep
 
 - Various improvements.
+
 
 0.0.4 - 2013.10.11
 ------------------
