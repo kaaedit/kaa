@@ -30,7 +30,7 @@ Kaa is a easy yet powerful text editor for console user interface, providing num
 Kaa is easy!
 ------------
 
-Kaa is very easy to learn in spite of its rich functions. Only thing you need to remember is "*To display menu, hit F1 key or alt+'/' key*". Most of basic feartures could be accessed from fancy menus by hitting underlined character in the menu items. You can use kaa as easy as you are with Notepad on MS-Windows.
+Kaa is very easy to learn in spite of its rich functions. Only thing you need to remember is **"To display menu, hit F1 key or alt+'/' key"**. Most of basic feartures could be accessed from fancy menus by hitting underlined character in the menu items. You can use kaa as easy as you are with Notepad on MS-Windows.
 
 
 Customizable
@@ -359,7 +359,7 @@ Ctrl+u Alt+!
 Replace dialog
 --------------
 
-When `regex` button is checked, `Replace` string is also regular expression string. In this case, special characters like `\t` or `\n` are converted to tab character and newline character. Also, backreference character will be replaced to substring matched group in the search string. For example, when search string is `'(a+)(b+)'` and replace string is `\2\1`,  matched string `aabb` will be replaced to `bbaa`.
+When `regex` button is checked, `Replace` string is also regular expression string. In this case, special characters like `\\t` or `\\n` are converted to tab character and newline character. Also, backreference character will be replaced to substring matched group in the search string. For example, when search string is `'(a+)(b+)'` and replace string is `\2\1`,  matched string `aabb` will be replaced to `bbaa`.
 
 
 Grep dialog
