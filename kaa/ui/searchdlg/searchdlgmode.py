@@ -269,8 +269,7 @@ class SearchDlgMode(dialogmode.DialogMode):
         if hit:
             f, t = hit.span()
             self.target.cursor.setpos(f)
-            self.target.screen.selection.start = f
-            self.target.screen.selection.end = t
+            self.target.screen.selection.set_range(f, t)
             kaa.app.messagebar.set_message('found')
         else:
             self.target.screen.selection.clear()

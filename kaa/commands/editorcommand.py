@@ -105,20 +105,20 @@ class CursorCommands(Commands):
 
 
 class ScreenCommands(Commands):
-    @command('screen.selection.begin')
+    @command('selection.begin-cursor')
     @norerun
     def selection_begin(self, wnd):
-        wnd.screen.selection.start_selection(wnd.cursor.pos)
+        wnd.screen.selection.begin_cursor(wnd.cursor.pos)
 
-    @command('screen.selection.set-end')
+    @command('selection.set-to')
     @norerun
     def selection_set_end(self, wnd):
-        wnd.screen.selection.set_end(wnd.cursor.pos)
+        wnd.screen.selection.set_to(wnd.cursor.pos)
 
-    @command('screen.selection.clear')
+    @command('selection.end-cursor')
     @norerun
     def selection_clear(self, wnd):
-        wnd.screen.selection.clear()
+        wnd.screen.selection.end_cursor()
 
     @command('screen.selection.all')
     @norerun
@@ -176,12 +176,12 @@ class ScreenCommands(Commands):
     @norerun
     def lineselection_begin(self, wnd):
         tol = wnd.cursor.adjust_nextpos(wnd.document.gettol(wnd.cursor.pos))
-        wnd.screen.selection.start_selection(tol)
+        wnd.screen.selection.begin_cursor(tol)
 
     @command('screen.lineselection.set-end')
     @norerun
     def lineselection_set_end(self, wnd):
-        f = wnd.screen.selection.start
+        f = wnd.screen.get_start()
         if f is None:
             self.select_cur_line(wnd)
         else:
@@ -360,24 +360,6 @@ class EditCommands(Commands):
         wnd.screen.selection.clear()
         indent = wnd.document.mode.on_auto_indent(wnd)
 
-    def get_line_sel(self, wnd):
-        doc = wnd.document
-        sel = wnd.screen.selection.get_range()
-        if not sel:
-            f = t = wnd.cursor.pos
-        else:
-            f, t = sel
-
-        tol =  doc.gettol(f)
-
-        t_tol =  doc.gettol(t)
-        if t != t_tol:
-            eol = doc.geteol(t)
-        else:
-            eol = t
-
-        return tol, eol
-
     def _indent_line(self, wnd, pos):
         mode = wnd.document.mode
         f, t = mode.get_indent_range(pos)
@@ -406,7 +388,7 @@ class EditCommands(Commands):
         wnd.document.undo.beginblock()
         try:
             mode = wnd.document.mode
-            while tol < wnd.screen.selection.end:
+            while tol < wnd.screen.selection.get_end():
                 f, t = mode.get_indent_range(tol)
                 if f != t:
                     cols = mode.calc_cols(f, t)
@@ -419,7 +401,7 @@ class EditCommands(Commands):
         finally:
             wnd.document.undo.endblock()
 
-        wnd.cursor.setpos(wnd.screen.selection.start)
+        wnd.cursor.setpos(wnd.screen.selection.get_start())
         wnd.cursor.savecol()
 
     def _dedent_line(self, wnd, pos):
@@ -446,7 +428,7 @@ class EditCommands(Commands):
         wnd.document.undo.beginblock()
         try:
             mode = wnd.document.mode
-            while tol < wnd.screen.selection.end:
+            while tol < wnd.screen.selection.get_end():
                 f, t = mode.get_indent_range(tol)
                 if f != t:
                     cols = mode.calc_cols(f, t)
@@ -460,7 +442,7 @@ class EditCommands(Commands):
                 tol = doc.geteol(tol)
         finally:
             wnd.document.undo.endblock()
-        wnd.cursor.setpos(wnd.screen.selection.start)
+        wnd.cursor.setpos(wnd.screen.selection.get_start())
         wnd.cursor.savecol()
 
     def _undo(self, wnd, rec):
@@ -630,7 +612,7 @@ class CodeCommands(Commands):
             wnd.document.undo.beginblock()
             try:
                 mode = wnd.document.mode
-                while tol < wnd.screen.selection.end:
+                while tol < wnd.screen.selection.get_end():
                     wnd.document.mode.edit_commands.insert_string(
                         wnd, tol, wnd.document.mode.LINE_COMMENT, 
                         update_cursor=False)
@@ -638,7 +620,7 @@ class CodeCommands(Commands):
             finally:
                 wnd.document.undo.endblock()
     
-            wnd.cursor.setpos(wnd.screen.selection.start)
+            wnd.cursor.setpos(wnd.screen.selection.get_start())
             wnd.cursor.savecol()
 
     def _is_comment_line(self, wnd, pos):
@@ -663,7 +645,7 @@ class CodeCommands(Commands):
             wnd.document.undo.beginblock()
             try:
                 mode = wnd.document.mode
-                while tol < wnd.screen.selection.end:
+                while tol < wnd.screen.selection.get_end():
                     m = self._is_comment_line(wnd, tol)
                     if m:
                         f, t = m.span(1)
@@ -673,7 +655,7 @@ class CodeCommands(Commands):
             finally:
                 wnd.document.undo.endblock()
     
-            wnd.cursor.setpos(wnd.screen.selection.start)
+            wnd.cursor.setpos(wnd.screen.selection.get_start())
             wnd.cursor.savecol()
 
 class MacroCommands(Commands):
@@ -746,8 +728,7 @@ class SearchCommands(Commands):
         if hit:
             f, t = hit.span()
             wnd.cursor.setpos(f)
-            wnd.screen.selection.start = f
-            wnd.screen.selection.end = t
+            wnd.screen.selection.set_range(f, t)
             kaa.app.messagebar.set_message('found')
         else:
             kaa.app.messagebar.set_message('not found')

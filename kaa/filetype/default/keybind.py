@@ -10,40 +10,42 @@ app_keys = {
 
 # default cursor commands
 cursor_keys = {
-    left: ('screen.selection.clear', 'cursor.left'),
-    right:('screen.selection.clear', 'cursor.right'),
-    up: ('screen.selection.clear', 'cursor.up'),
-    down: ('screen.selection.clear', 'cursor.down'),
+    left: ('selection.end-cursor', 'cursor.left', 'selection.set-to'),
+    right:('selection.end-cursor', 'cursor.right', 'selection.set-to'),
+    up: ('selection.end-cursor', 'cursor.up', 'selection.set-to'),
+    down: ('selection.end-cursor', 'cursor.down', 'selection.set-to'),
 
-    (ctrl, left): ('screen.selection.clear', 'cursor.word-left'),
-    (ctrl, right):('screen.selection.clear', 'cursor.word-right'),
+    (ctrl, left): ('selection.end-cursor', 'cursor.word-left', 'selection.set-to'),
+    (ctrl, right):('selection.end-cursor', 'cursor.word-right', 'selection.set-to'),
 
-    pagedown:('screen.selection.clear', 'cursor.pagedown'),
-    pageup:('screen.selection.clear', 'cursor.pageup'),
+    pagedown:('selection.end-cursor', 'cursor.pagedown', 'selection.set-to'),
+    pageup:('selection.end-cursor', 'cursor.pageup', 'selection.set-to'),
 
-    (shift, left): ('screen.selection.begin', 'cursor.left', 'screen.selection.set-end'),
-    (shift, right): ('screen.selection.begin', 'cursor.right', 'screen.selection.set-end'),
-    (shift, up): ('screen.selection.begin', 'cursor.up', 'screen.selection.set-end'),
-    (shift, down): ('screen.selection.begin', 'cursor.down', 'screen.selection.set-end'),
+    (shift, left): ('selection.begin-cursor', 'cursor.left', 'selection.set-to'),
+    (shift, right): ('selection.begin-cursor', 'cursor.right', 'selection.set-to'),
+    (shift, up): ('selection.begin-cursor', 'cursor.up', 'selection.set-to'),
+    (shift, down): ('selection.begin-cursor', 'cursor.down', 'selection.set-to'),
 
-    (shift, ctrl, left): ('screen.selection.begin', 'cursor.word-left', 'screen.selection.set-end'),
-    (shift, ctrl, right):('screen.selection.begin', 'cursor.word-right', 'screen.selection.set-end'),
+    (shift, ctrl, left): ('selection.begin-cursor', 'cursor.word-left', 'selection.set-to'),
+    (shift, ctrl, right):('selection.begin-cursor', 'cursor.word-right', 'selection.set-to'),
 
-    home: ('screen.selection.clear', 'cursor.home'),
-    end: ('screen.selection.clear', 'cursor.end'),
+    home: ('selection.end-cursor', 'cursor.home', 'selection.set-to'),
+    end: ('selection.end-cursor', 'cursor.end', 'selection.set-to'),
 
-    (shift, home): ('screen.selection.begin', 'cursor.home', 'screen.selection.set-end'),
-    (shift, end): ('screen.selection.begin', 'cursor.end', 'screen.selection.set-end'),
+    (shift, home): ('selection.begin-cursor', 'cursor.home', 'selection.set-to'),
+    (shift, end): ('selection.begin-cursor', 'cursor.end', 'selection.set-to'),
 
-    (ctrl, home): ('screen.selection.clear', 'cursor.top-of-file'),
-    (ctrl, end): ('screen.selection.clear', 'cursor.end-of-file'),
+    (ctrl, home): ('selection.end-cursor', 'cursor.top-of-file', 'selection.set-to'),
+    (ctrl, end): ('selection.end-cursor', 'cursor.end-of-file', 'selection.set-to'),
 
-    (shift, ctrl, home): ('screen.selection.begin', 'cursor.top-of-file', 'screen.selection.set-end'),
-    (shift, ctrl, end): ('screen.selection.begin', 'cursor.end-of-file', 'screen.selection.set-end'),
+    (shift, ctrl, home): ('selection.begin-cursor', 'cursor.top-of-file', 'selection.set-to'),
+    (shift, ctrl, end): ('selection.begin-cursor', 'cursor.end-of-file', 'selection.set-to'),
 
     (alt, 'a'): 'screen.selection.all',
 
     (ctrl, 'c'): 'screen.selection.expand_sel',
+
+    (ctrl, '@'): 'screen.selection.setmark',
 }
 
 
@@ -72,7 +74,7 @@ edit_command_keys = {
 }
 
 addtional_edit_command_keys = {
-    (ctrl, 'g'): ('screen.selection.clear', 'cursor.go-to-line'),
+    (ctrl, 'g'): ('selection.end-cursor', 'cursor.go-to-line', 'selection.set-to'),
 
     tab: 'edit.indent',
     (shift, tab): 'edit.dedent',
@@ -104,22 +106,22 @@ search_command_keys = {
 
 # emacs like keys
 emacs_keys = {
-    (ctrl, 'b'): ('cursor.left', 'screen.selection.set-end'),
-    (ctrl, 'f'): ('cursor.right', 'screen.selection.set-end'),
-    (ctrl, 'p'): ('cursor.up', 'screen.selection.set-end'),
-    (ctrl, 'n'): ('cursor.down', 'screen.selection.set-end'),
+    (ctrl, 'b'): ('cursor.left', 'selection.set-to'),
+    (ctrl, 'f'): ('cursor.right', 'selection.set-to'),
+    (ctrl, 'p'): ('cursor.up', 'selection.set-to'),
+    (ctrl, 'n'): ('cursor.down', 'selection.set-to'),
 
-    (alt, 'b'): ('cursor.word-left', 'screen.selection.set-end'),
-    (alt, 'f'): ('cursor.word-right', 'screen.selection.set-end'),
+    (alt, 'b'): ('cursor.word-left', 'selection.set-to'),
+    (alt, 'f'): ('cursor.word-right', 'selection.set-to'),
 
     (ctrl, 'a'): ('cursor.home'),
     (ctrl, 'e'): ('cursor.end'),
 
-    (ctrl, 'v'): ('cursor.pagedown', 'screen.selection.set-end'),
-    (alt, 'v'): ('cursor.pageup', 'screen.selection.set-end'),
+    (ctrl, 'v'): ('cursor.pagedown', 'selection.set-to'),
+    (alt, 'v'): ('cursor.pageup', 'selection.set-to'),
 
-    (alt, '<'): ('cursor.top-of-file', 'screen.selection.set-end'),
-    (alt, '>'): ('cursor.end-of-file', 'screen.selection.set-end'),
+    (alt, '<'): ('cursor.top-of-file', 'selection.set-to'),
+    (alt, '>'): ('cursor.end-of-file', 'selection.set-to'),
 }
 
 
@@ -147,21 +149,21 @@ command_mode_keys = {
 }
 
 visual_mode_keys = {
-    left: ('screen.selection.begin', 'cursor.left', 'screen.selection.set-end'),
-    right: ('screen.selection.begin', 'cursor.right', 'screen.selection.set-end'),
-    up: ('screen.selection.begin', 'cursor.up', 'screen.selection.set-end'),
-    down: ('screen.selection.begin', 'cursor.down', 'screen.selection.set-end'),
+    left: ('selection.begin-cursor', 'cursor.left', 'selection.set-to'),
+    right: ('selection.begin-cursor', 'cursor.right', 'selection.set-to'),
+    up: ('selection.begin-cursor', 'cursor.up', 'selection.set-to'),
+    down: ('selection.begin-cursor', 'cursor.down', 'selection.set-to'),
 
-    pagedown:('screen.selection.begin', 'cursor.pagedown', 'screen.selection.set-end'),
-    pageup:('screen.selection.begin', 'cursor.pageup', 'screen.selection.set-end'),
+    pagedown:('selection.begin-cursor', 'cursor.pagedown', 'selection.set-to'),
+    pageup:('selection.begin-cursor', 'cursor.pageup', 'selection.set-to'),
 
-    'h': ('screen.selection.begin', 'cursor.left', 'screen.selection.set-end'),
-    'l': ('screen.selection.begin', 'cursor.right', 'screen.selection.set-end'),
-    'k': ('screen.selection.begin', 'cursor.up', 'screen.selection.set-end'),
-    'j': ('screen.selection.begin', 'cursor.down', 'screen.selection.set-end'),
+    'h': ('selection.begin-cursor', 'cursor.left', 'selection.set-to'),
+    'l': ('selection.begin-cursor', 'cursor.right', 'selection.set-to'),
+    'k': ('selection.begin-cursor', 'cursor.up', 'selection.set-to'),
+    'j': ('selection.begin-cursor', 'cursor.down', 'selection.set-to'),
 
-    'gg': ('screen.selection.begin', 'cursor.top-of-file', 'screen.selection.set-end'),
-    'G': ('screen.selection.begin', 'cursor.end-of-file', 'screen.selection.set-end'),
+    'gg': ('selection.begin-cursor', 'cursor.top-of-file', 'selection.set-to'),
+    'G': ('selection.begin-cursor', 'cursor.end-of-file', 'selection.set-to'),
 
 }
 
