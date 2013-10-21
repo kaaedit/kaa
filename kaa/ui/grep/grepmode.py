@@ -289,7 +289,7 @@ class GrepMode(defaultmode.DefaultMode):
     def on_global_prev(self, wnd):
         if kaa.app.focus in self.document.wnds:
             self.show_hit(kaa.app.focus)
-            return
+            return True
             
         pos = wnd.cursor.pos
         eol = self.document.gettol(pos)
@@ -306,11 +306,13 @@ class GrepMode(defaultmode.DefaultMode):
         elif eol:
             wnd.cursor.setpos(self.document.gettol(eol-1))
             self.document.wnds[0].activate()
+
+        return True
         
     def on_global_next(self, wnd):
         if kaa.app.focus in self.document.wnds:
             self.show_hit(kaa.app.focus)
-            return
+            return True
             
         pos = wnd.cursor.pos
         tol = self.document.geteol(pos)
@@ -322,3 +324,5 @@ class GrepMode(defaultmode.DefaultMode):
         elif eol == self.document.endpos():
             wnd.cursor.setpos(0)
             self.document.wnds[0].activate()
+
+        return True
