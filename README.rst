@@ -86,7 +86,7 @@ Terminal setting
 For Mac OS X
 -------------
 
-Kaa uses alt keys for keyboard shortcut like `alt+W` for copy to clipboard. On most of recent Windows or Linux terminal, alt key works just fine. But on Mac OS X, Terminal app should be configured:
+Kaa uses alt key for keyboard shortcut like `alt+W` for copy to clipboard. On most of recent Windows or Linux terminal, alt key works just fine. But on Mac OS X, Terminal app should be configured:
 
 1. Select Preferences menu.
 2. Open the Settings tab.
