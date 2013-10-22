@@ -36,8 +36,10 @@ class Splitter:
             self.wnd.activate()
         elif self.left:
             self.left.activate()
+            self.right.activate()
         elif self.above:
             self.above.activate()
+            self.below.activate()
 
     def set_rect(self, l, t, r, b):
         self.rect = (l, t, r, b)

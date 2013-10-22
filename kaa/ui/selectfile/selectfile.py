@@ -421,5 +421,4 @@ def show_filesaveas(filename, encoding, newline, callback):
     doc.mode.fileopendlg_commands.show_filename(
         dlg.get_label('editor'), filename)
 
-
     return doc

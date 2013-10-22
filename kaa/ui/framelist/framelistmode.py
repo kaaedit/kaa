@@ -69,6 +69,7 @@ class FrameListCommands(Commands):
     @norec
     @norerun
     def close(self, wnd):
+        # bring the frame a top of frame list.
         if wnd.document.mode._activated_frame:
             wnd.mainframe.register_childframe(
                 wnd.document.mode._activated_frame)

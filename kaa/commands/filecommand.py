@@ -86,7 +86,9 @@ class FileCommands(Commands):
             if filename:
                 self.file_save(wnd, filename, saved=saved, document=document,
                                encoding=enc, newline=newline)
-
+            else:
+                saved()
+                
         if not document:
             document = wnd.document
 
@@ -123,12 +125,24 @@ class FileCommands(Commands):
                        msg='Save file before close?', force=False):
 
         docs = list(docs)
+        activeframe = kaa.app.get_activeframe()
+
         def _save_documents():
+            _trace(force, docs)
             if not docs:
+                if activeframe and not activeframe.closed:
+                    
+                    kaa.app.set_focus(activeframe)
+                    
                 if callback:
                     callback()
             else:
                 doc = docs.pop()
+                if doc.wnds:
+                    w = doc.wnds[0]
+                    if w and not w.closed:
+                        w.activate()
+                        
                 if force:
                     self.file_save(wnd, saved=_save_documents, document=doc)
                 else:
