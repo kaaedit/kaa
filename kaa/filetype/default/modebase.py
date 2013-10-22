@@ -262,7 +262,8 @@ class ModeBase:
             self.current_lastcommands = None
 
     def on_esc_pressed(self, wnd, event):
-        pass
+        # cancel mark
+        wnd.screen.selection.set_mark(None)
 
     def on_cursor_located(self, wnd, pos, y, x):
         pass

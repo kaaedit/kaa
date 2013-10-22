@@ -64,6 +64,7 @@ class InputlineMode(dialogmode.DialogMode):
         wnd.cursor.setpos(self.document.marks['inputtext'][0])
 
     def on_esc_pressed(self, wnd, event):
+        super().on_esc_pressed(wnd, event)
         popup = wnd.get_label('popup')
         popup.destroy()
         kaa.app.messagebar.set_message("Canceled")

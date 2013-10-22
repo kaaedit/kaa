@@ -329,5 +329,6 @@ class GrepDlgMode(dialogmode.DialogMode):
         wnd.get_label('popup').destroy()
 
     def on_esc_pressed(self, wnd, event):
+        super().on_esc_pressed(wnd, event)
         wnd.get_label('popup').destroy()
 

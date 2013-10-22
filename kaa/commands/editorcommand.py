@@ -616,17 +616,20 @@ class EditCommands(Commands):
 
             self.on_edited(wnd)
 
-    @command('edit.copy')
-    def copy(self, wnd):
+    def _copy_sel(self, wnd):
         sel = wnd.screen.selection.get_range()
         if sel:
             f, t = sel
             kaa.app.clipboard = wnd.document.gettext(f, t)
-            wnd.screen.selection.set_mark(None)
+        
+    @command('edit.copy')
+    def copy(self, wnd):
+        self._copy_sel(wnd)
+        wnd.screen.selection.set_mark(None)
 
     @command('edit.cut')
     def cut(self, wnd):
-        self.copy(wnd)
+        self._copy_sel(wnd)
         self.delete_sel(wnd)
         wnd.screen.selection.clear()
 

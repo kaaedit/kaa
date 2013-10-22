@@ -170,7 +170,9 @@ class DefaultMode(modebase.ModeBase):
         return self.highlight.update_style(self.document, batch=self.HIGHLIGHTBATCH)
 
     def on_esc_pressed(self, wnd, event):
+        super().on_esc_pressed(wnd, event)
         return
+
         # Pressing esc key starts command mode.
         is_available, command = self.get_command('editmode.command')
         if command:

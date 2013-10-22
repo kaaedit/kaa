@@ -136,6 +136,7 @@ class ItemListMode(dialogmode.DialogMode):
         return 0   # hide cursor
 
     def on_esc_pressed(self, wnd, event):
+        super().on_esc_pressed(wnd, event)
         self.cursel = None
         self.itemlist_commands.close(wnd)
 

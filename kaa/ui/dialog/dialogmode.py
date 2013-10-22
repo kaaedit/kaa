@@ -76,9 +76,6 @@ class DialogMode(modebase.ModeBase):
     def on_start(self, wnd):
         pass
 
-    def on_esc_pressed(self, wnd, event):
-        pass
-
     def on_document_updated(self, pos, inslen, dellen):
         super().on_document_updated(pos, inslen, dellen)
 

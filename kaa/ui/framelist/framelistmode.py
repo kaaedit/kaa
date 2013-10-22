@@ -137,6 +137,7 @@ class FrameListMode(dialogmode.DialogMode):
         return 0   # hide cursor
 
     def on_esc_pressed(self, wnd, event):
+        super().on_esc_pressed(wnd, event)
         self.framelist_commands.close(wnd)
 
     def on_str(self, wnd, s):

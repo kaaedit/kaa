@@ -345,6 +345,7 @@ class SearchDlgMode(dialogmode.DialogMode):
         return self._search_prev(wnd)
 
     def on_esc_pressed(self, wnd, event):
+        super().on_esc_pressed(wnd, event)
         self._save_searchstr()
         self.target.activate()
         self.target = None

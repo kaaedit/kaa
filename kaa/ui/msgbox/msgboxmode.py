@@ -66,6 +66,7 @@ class MsgBoxMode(dialogmode.DialogMode):
         self.callback(c)
 
     def on_esc_pressed(self, wnd, event):
+        super().on_esc_pressed(wnd, event)
         self.on_shortcut(wnd, None)
 
     def _show_window(self):
