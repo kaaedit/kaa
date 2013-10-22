@@ -151,6 +151,20 @@ class CursorCommands(Commands):
         wnd.cursor.end()
         wnd.screen.selection.set_to(wnd.cursor.pos)
 
+    @command('cursor.top-of-line')
+    @norerun
+    def tol(self, wnd):
+        wnd.screen.selection.end_cursor()
+        wnd.cursor.tol(wnd.cursor.pos)
+        wnd.screen.selection.set_to(wnd.cursor.pos)
+
+    @command('cursor.end-of-line')
+    @norerun
+    def eol(self, wnd):
+        wnd.screen.selection.end_cursor()
+        wnd.cursor.eol(wnd.cursor.pos)
+        wnd.screen.selection.set_to(wnd.cursor.pos)
+
     @command('cursor.top-of-file')
     @norerun
     def top(self, wnd):

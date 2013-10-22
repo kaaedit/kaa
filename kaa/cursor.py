@@ -198,6 +198,20 @@ class Cursor:
         self.setpos(nextpos)
         self.savecol()
 
+    def tol(self, pos):
+        tol = self.wnd.document.gettol(pos)
+        nextpos = self.adjust_nextpos(self.pos, tol)
+        self.wnd.screen.locate(nextpos, middle=True)
+        self.setpos(nextpos)
+        self.savecol()
+
+    def eol(self, pos):
+        eol = self.wnd.document.geteol(pos)
+        nextpos = self.adjust_nextpos(self.pos, eol)
+        self.wnd.screen.locate(nextpos, middle=True)
+        self.setpos(nextpos)
+        self.savecol()
+
     def tof(self):
         self.wnd.screen.locate(0, top=True)
         nextpos = self.adjust_nextpos(self.pos, 0)

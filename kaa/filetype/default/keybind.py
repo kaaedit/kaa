@@ -114,8 +114,8 @@ emacs_keys = {
     (alt, 'b'): 'cursor.word-left',
     (alt, 'f'): 'cursor.word-right',
 
-    (ctrl, 'a'): 'cursor.home',
-    (ctrl, 'e'): 'cursor.end',
+    (ctrl, 'a'): 'cursor.top-of-line',
+    (ctrl, 'e'): 'cursor.end-of-line',
 
     (ctrl, 'v'): 'cursor.pagedown',
     (alt, 'v'): 'cursor.pageup',
