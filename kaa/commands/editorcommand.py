@@ -13,11 +13,25 @@ class CursorCommands(Commands):
     @command('cursor.right')
     @norerun
     def right(self, wnd):
+        if wnd.screen.selection.is_selected():
+            f, t = wnd.screen.selection.get_range()
+            if wnd.cursor.pos <= t:
+                wnd.cursor.setpos(wnd.cursor.adjust_nextpos(wnd.cursor.pos, t))
+                wnd.cursor.savecol()
+                return
+                
         wnd.cursor.right()
 
     @command('cursor.left')
     @norerun
     def left(self, wnd):
+        if wnd.screen.selection.is_selected():
+            f, t = wnd.screen.selection.get_range()
+            if f <= wnd.cursor.pos:
+                wnd.cursor.setpos(wnd.cursor.adjust_nextpos(wnd.cursor.pos, f))
+                wnd.cursor.savecol()
+                return
+
         wnd.cursor.left()
 
     @command('cursor.up')

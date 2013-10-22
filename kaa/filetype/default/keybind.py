@@ -10,16 +10,16 @@ app_keys = {
 
 # default cursor commands
 cursor_keys = {
-    left: ('selection.end-cursor', 'cursor.left', 'selection.set-to'),
-    right:('selection.end-cursor', 'cursor.right', 'selection.set-to'),
-    up: ('selection.end-cursor', 'cursor.up', 'selection.set-to'),
-    down: ('selection.end-cursor', 'cursor.down', 'selection.set-to'),
+    left: ('cursor.left', 'selection.end-cursor', 'selection.set-to'),
+    right:('cursor.right', 'selection.end-cursor', 'selection.set-to'),
+    up: ('cursor.up', 'selection.end-cursor', 'selection.set-to'),
+    down: ('cursor.down', 'selection.end-cursor', 'selection.set-to'),
 
-    (ctrl, left): ('selection.end-cursor', 'cursor.word-left', 'selection.set-to'),
-    (ctrl, right):('selection.end-cursor', 'cursor.word-right', 'selection.set-to'),
+    (ctrl, left): ('cursor.word-left', 'selection.end-cursor', 'selection.set-to'),
+    (ctrl, right):('cursor.word-right', 'selection.end-cursor', 'selection.set-to'),
 
-    pagedown:('selection.end-cursor', 'cursor.pagedown', 'selection.set-to'),
-    pageup:('selection.end-cursor', 'cursor.pageup', 'selection.set-to'),
+    pagedown:('cursor.pagedown', 'selection.end-cursor', 'selection.set-to'),
+    pageup:('cursor.pageup', 'selection.end-cursor', 'selection.set-to'),
 
     (shift, left): ('selection.begin-cursor', 'cursor.left', 'selection.set-to'),
     (shift, right): ('selection.begin-cursor', 'cursor.right', 'selection.set-to'),
@@ -29,14 +29,14 @@ cursor_keys = {
     (shift, ctrl, left): ('selection.begin-cursor', 'cursor.word-left', 'selection.set-to'),
     (shift, ctrl, right):('selection.begin-cursor', 'cursor.word-right', 'selection.set-to'),
 
-    home: ('selection.end-cursor', 'cursor.home', 'selection.set-to'),
-    end: ('selection.end-cursor', 'cursor.end', 'selection.set-to'),
+    home: ('cursor.home', 'selection.end-cursor', 'selection.set-to'),
+    end: ('cursor.end', 'selection.end-cursor', 'selection.set-to'),
 
     (shift, home): ('selection.begin-cursor', 'cursor.home', 'selection.set-to'),
     (shift, end): ('selection.begin-cursor', 'cursor.end', 'selection.set-to'),
 
-    (ctrl, home): ('selection.end-cursor', 'cursor.top-of-file', 'selection.set-to'),
-    (ctrl, end): ('selection.end-cursor', 'cursor.end-of-file', 'selection.set-to'),
+    (ctrl, home): ('cursor.top-of-file', 'selection.end-cursor', 'selection.set-to'),
+    (ctrl, end): ('cursor.end-of-file', 'selection.end-cursor', 'selection.set-to'),
 
     (shift, ctrl, home): ('selection.begin-cursor', 'cursor.top-of-file', 'selection.set-to'),
     (shift, ctrl, end): ('selection.begin-cursor', 'cursor.end-of-file', 'selection.set-to'),
@@ -74,7 +74,7 @@ edit_command_keys = {
 }
 
 addtional_edit_command_keys = {
-    (ctrl, 'g'): ('selection.end-cursor', 'cursor.go-to-line', 'selection.set-to'),
+    (ctrl, 'g'): ('cursor.go-to-line', 'selection.end-cursor', 'selection.set-to'),
 
     tab: 'edit.indent',
     (shift, tab): 'edit.dedent',
