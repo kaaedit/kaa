@@ -120,14 +120,14 @@ class ScreenCommands(Commands):
     def selection_clear(self, wnd):
         wnd.screen.selection.end_cursor()
 
-    @command('screen.selection.all')
+    @command('selection.all')
     @norerun
     def select_all(self, wnd):
         f = wnd.cursor.adjust_nextpos(wnd.cursor.pos, 0)
         t = wnd.cursor.adjust_nextpos(wnd.cursor.pos, wnd.document.endpos())
         wnd.screen.selection.set_range(f, t)
 
-    @command('screen.selection.curline')
+    @command('selection.curline')
     @norerun
     def select_cur_line(self, wnd):
         tol = wnd.cursor.adjust_nextpos(
@@ -139,7 +139,7 @@ class ScreenCommands(Commands):
 
         wnd.screen.selection.set_range(tol, eol)
 
-    @command('screen.selection.curword')
+    @command('selection.curword')
     @norerun
     def select_cur_word(self, wnd):
         f, t = wnd.document.mode.get_word_at(wnd.cursor.pos)
@@ -149,7 +149,7 @@ class ScreenCommands(Commands):
 
         wnd.screen.selection.set_range(f, t)
 
-    @command('screen.selection.expand_sel')
+    @command('selection.expand_sel')
     @norerun
     @norec
     def expand_sel(self, wnd):

@@ -41,11 +41,11 @@ cursor_keys = {
     (shift, ctrl, home): ('selection.begin-cursor', 'cursor.top-of-file', 'selection.set-to'),
     (shift, ctrl, end): ('selection.begin-cursor', 'cursor.end-of-file', 'selection.set-to'),
 
-    (alt, 'a'): 'screen.selection.all',
+    (alt, 'a'): 'selection.all',
 
-    (ctrl, 'c'): 'screen.selection.expand_sel',
+    (ctrl, 'c'): 'selection.expand_sel',
 
-    (ctrl, '@'): 'screen.selection.setmark',
+    (ctrl, '@'): 'selection.setmark',
 }
 
 
