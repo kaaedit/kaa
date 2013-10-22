@@ -173,54 +173,77 @@ class Selection:
         self._marks = document.Marks()
         self.screen = screen
 
-    def get_start(self):
+    def _get_cursor_start(self):
         return self._marks.get('start', None)
 
-    def _set_start(self, pos):
+    def _set_cursor_start(self, pos):
         self._marks['start'] = pos
         
-    def get_end(self):
+    def _is_cursor_started(self):
+        """Return True if range was selected"""
+
+        return self._get_cursor_start() is not None
+    
+    def _get_end(self):
         return self._marks.get('end', None)
 
     def _set_end(self, pos):
         self._marks['end'] = pos
-        
-    def _is_started(self):
-        """Return True if range was selected"""
 
-        return self.get_start() is not None
-    
+    def _set_mark(self, pos):
+        self._marks['mark'] = pos
+        
+    def _get_mark(self):
+        return self._marks.get('mark', None)
+        
+    def _has_mark(self):
+        return self._get_mark() is not None
+        
     def is_selected(self):
-        if self._is_started():
+        if self._is_cursor_started() or self._has_mark():
             sel = self.get_range()
             if sel:
                 f, t, = sel
                 return f != t
-                
+
+    def set_mark(self, pos):
+        cur = self.get_range()
+
+        self._set_mark(pos)
+        if pos is not None:
+            self._set_cursor_start(None)
+        if cur != self.get_range():
+            self.screen.style_updated()
+            
     def begin_cursor(self, pos):
         """Start cursor range selection if it was not started"""
-
-        if not self._is_started():
-            self._set_start(pos)
-            self._set_end(pos)
+        
+        if self._has_mark():
+            return
+        
+        if self._is_cursor_started():
+            return
+            
+        self._set_cursor_start(pos)
+        self._set_end(pos)
 
     def set_to(self, pos):
         """Update where selection to."""
 
-        if not self._is_started():
+        if not self._has_mark() and not self._is_cursor_started():
             return
-        
-        changed = self.get_end() != pos
+        changed = self._get_end() != pos
         self._set_end(pos)
 
         if changed:
             self.screen.style_updated()
-
+        
     def end_cursor(self):
         """Clear selection"""
 
-        changed = self._is_started()
-        self._set_start(None)
+        changed = self._is_cursor_started()
+        
+        self._set_cursor_start(None)
         self._set_end(None)
 
         if changed:
@@ -229,27 +252,35 @@ class Selection:
     def clear(self):
         """Clear selection"""
 
-        changed = self._is_started()
-        self._set_start(None)
+        changed = self._is_cursor_started() is not None
+        if not changed:
+            changed =  self._get_mark() is not None
+            
+        self._set_cursor_start(None)
         self._set_end(None)
+        self._set_mark(None)
 
         if changed:
             self.screen.style_updated()
 
     def get_range(self):
-        start = self.get_start()
-        end = self.get_end()
+        start = self._get_cursor_start()
+        if start is None:
+            start = self._get_mark()
+            
+        end = self._get_end()
         if start is None or end is None or (start == end):
             return None
 
         return tuple(sorted((start, end)))
 
     def set_range(self, f, t):
-        start = self.get_start()
-        end = self.get_end()
+        start = self._get_cursor_start()
+        end = self._get_end()
         if (start, end) != (f, t):
-            self._set_start(f)
+            self._set_cursor_start(f)
             self._set_end(t)
+            self._set_mark(None)
             self.screen.style_updated()
 
     def on_document_updated(self, pos, inslen, dellen):

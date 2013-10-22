@@ -43,9 +43,9 @@ cursor_keys = {
 
     (alt, 'a'): 'selection.all',
 
-    (ctrl, 'c'): 'selection.expand_sel',
+    (ctrl, 'c'): 'selection.expand-sel',
 
-    (ctrl, '@'): 'selection.setmark',
+    (ctrl, '@'): 'selection.set-mark',
 }
 
 

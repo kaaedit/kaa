@@ -233,7 +233,7 @@ class ScreenCommands(Commands):
     @command('selection.set-mark')
     @norerun
     def selection_set_mark(self, wnd):
-        wnd.screen.selection.set_mark()
+        wnd.screen.selection.set_mark(wnd.cursor.pos)
 
     @command('selection.all')
     @norerun
@@ -264,7 +264,7 @@ class ScreenCommands(Commands):
 
         wnd.screen.selection.set_range(f, t)
 
-    @command('selection.expand_sel')
+    @command('selection.expand-sel')
     @norerun
     @norec
     def expand_sel(self, wnd):
@@ -415,9 +415,6 @@ class EditCommands(Commands):
 
     @command('edit.delete.line')
     def delete_line(self, wnd):
-        if self.delete_sel(wnd):
-            return
-
         pos = wnd.cursor.pos
         nextpos = wnd.cursor.adjust_nextpos(pos, wnd.document.find_newline(pos))
         if pos < nextpos:
@@ -425,9 +422,6 @@ class EditCommands(Commands):
 
     @command('edit.delete.currentline')
     def delete_currentline(self, wnd):
-        if self.delete_sel(wnd):
-            return
-
         pos = wnd.cursor.pos
         f = wnd.cursor.adjust_nextpos(pos, wnd.document.gettol(pos))
         t = wnd.cursor.adjust_nextpos(pos, wnd.document.geteol(f))
@@ -628,6 +622,7 @@ class EditCommands(Commands):
         if sel:
             f, t = sel
             kaa.app.clipboard = wnd.document.gettext(f, t)
+            wnd.screen.selection.set_mark(None)
 
     @command('edit.cut')
     def cut(self, wnd):
