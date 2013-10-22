@@ -128,7 +128,6 @@ class FileCommands(Commands):
         activeframe = kaa.app.get_activeframe()
 
         def _save_documents():
-            _trace(force, docs)
             if not docs:
                 if activeframe and not activeframe.closed:
                     

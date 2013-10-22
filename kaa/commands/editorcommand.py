@@ -10,79 +10,174 @@ from gappedbuf import re as gre
 
 
 class CursorCommands(Commands):
+    
     @command('cursor.right')
     @norerun
     def right(self, wnd):
-        if wnd.screen.selection.is_selected():
-            f, t = wnd.screen.selection.get_range()
-            if wnd.cursor.pos <= t:
-                wnd.cursor.setpos(wnd.cursor.adjust_nextpos(wnd.cursor.pos, t))
-                wnd.cursor.savecol()
-                return
-                
+        wnd.screen.selection.end_cursor()
         wnd.cursor.right()
+        wnd.screen.selection.set_to(wnd.cursor.pos)
+
+    @command('cursor.right.select')
+    @norerun
+    def right_select(self, wnd):
+        wnd.screen.selection.begin_cursor(wnd.cursor.pos)
+        wnd.cursor.right()
+        wnd.screen.selection.set_to(wnd.cursor.pos)
 
     @command('cursor.left')
     @norerun
     def left(self, wnd):
-        if wnd.screen.selection.is_selected():
-            f, t = wnd.screen.selection.get_range()
-            if f <= wnd.cursor.pos:
-                wnd.cursor.setpos(wnd.cursor.adjust_nextpos(wnd.cursor.pos, f))
-                wnd.cursor.savecol()
-                return
-
+        wnd.screen.selection.end_cursor()
         wnd.cursor.left()
+        wnd.screen.selection.set_to(wnd.cursor.pos)
+
+    @command('cursor.left.select')
+    @norerun
+    def left_select(self, wnd):
+        wnd.screen.selection.begin_cursor(wnd.cursor.pos)
+        wnd.cursor.left()
+        wnd.screen.selection.set_to(wnd.cursor.pos)
 
     @command('cursor.up')
     @norerun
     def up(self, wnd):
+        wnd.screen.selection.end_cursor()
         wnd.cursor.up()
+        wnd.screen.selection.set_to(wnd.cursor.pos)
+
+    @command('cursor.up.select')
+    @norerun
+    def up_select(self, wnd):
+        wnd.screen.selection.begin_cursor(wnd.cursor.pos)
+        wnd.cursor.up()
+        wnd.screen.selection.set_to(wnd.cursor.pos)
 
     @command('cursor.down')
     @norerun
     def down(self, wnd):
+        wnd.screen.selection.end_cursor()
         wnd.cursor.down()
+        wnd.screen.selection.set_to(wnd.cursor.pos)
+
+    @command('cursor.down.select')
+    @norerun
+    def down_select(self, wnd):
+        wnd.screen.selection.begin_cursor(wnd.cursor.pos)
+        wnd.cursor.down()
+        wnd.screen.selection.set_to(wnd.cursor.pos)
 
     @command('cursor.word-right')
     @norerun
     def word_right(self, wnd):
+        wnd.screen.selection.end_cursor()
         wnd.cursor.right(word=True)
+        wnd.screen.selection.set_to(wnd.cursor.pos)
+
+    @command('cursor.word-right.select')
+    @norerun
+    def word_right_select(self, wnd):
+        wnd.screen.selection.begin_cursor(wnd.cursor.pos)
+        wnd.cursor.right(word=True)
+        wnd.screen.selection.set_to(wnd.cursor.pos)
 
     @command('cursor.word-left')
     @norerun
     def word_left(self, wnd):
+        wnd.screen.selection.end_cursor()
         wnd.cursor.left(word=True)
+        wnd.screen.selection.set_to(wnd.cursor.pos)
+
+    @command('cursor.word-left.select')
+    @norerun
+    def word_left_select(self, wnd):
+        wnd.screen.selection.begin_cursor(wnd.cursor.pos)
+        wnd.cursor.left(word=True)
+        wnd.screen.selection.set_to(wnd.cursor.pos)
 
     @command('cursor.pagedown')
     @norerun
     def pagedown(self, wnd):
+        wnd.screen.selection.end_cursor()
         wnd.cursor.pagedown()
+        wnd.screen.selection.set_to(wnd.cursor.pos)
+
+    @command('cursor.pagedown.select')
+    @norerun
+    def pagedown_select(self, wnd):
+        wnd.screen.selection.begin_cursor(wnd.cursor.pos)
+        wnd.cursor.pagedown()
+        wnd.screen.selection.set_to(wnd.cursor.pos)
 
     @command('cursor.pageup')
     @norerun
     def pageup(self, wnd):
+        wnd.screen.selection.end_cursor()
         wnd.cursor.pageup()
+        wnd.screen.selection.set_to(wnd.cursor.pos)
+
+    @command('cursor.pageup.select')
+    @norerun
+    def pageup_select(self, wnd):
+        wnd.screen.selection.begin_cursor(wnd.cursor.pos)
+        wnd.cursor.pageup()
+        wnd.screen.selection.set_to(wnd.cursor.pos)
 
     @command('cursor.home')
     @norerun
     def home(self, wnd):
+        wnd.screen.selection.end_cursor()
         wnd.cursor.home()
+        wnd.screen.selection.set_to(wnd.cursor.pos)
+
+    @command('cursor.home.select')
+    @norerun
+    def home_select(self, wnd):
+        wnd.screen.selection.begin_cursor(wnd.cursor.pos)
+        wnd.cursor.home()
+        wnd.screen.selection.set_to(wnd.cursor.pos)
 
     @command('cursor.end')
     @norerun
     def end(self, wnd):
+        wnd.screen.selection.end_cursor()
         wnd.cursor.end()
+        wnd.screen.selection.set_to(wnd.cursor.pos)
+
+    @command('cursor.end.select')
+    @norerun
+    def end_select(self, wnd):
+        wnd.screen.selection.begin_cursor(wnd.cursor.pos)
+        wnd.cursor.end()
+        wnd.screen.selection.set_to(wnd.cursor.pos)
 
     @command('cursor.top-of-file')
     @norerun
     def top(self, wnd):
+        wnd.screen.selection.end_cursor()
         wnd.cursor.tof()
+        wnd.screen.selection.set_to(wnd.cursor.pos)
+
+    @command('cursor.top-of-file.select')
+    @norerun
+    def top_select(self, wnd):
+        wnd.screen.selection.begin_cursor(wnd.cursor.pos)
+        wnd.cursor.tof()
+        wnd.screen.selection.set_to(wnd.cursor.pos)
 
     @command('cursor.end-of-file')
     @norerun
     def last(self, wnd):
+        wnd.screen.selection.end_cursor()
         wnd.cursor.eof()
+        wnd.screen.selection.set_to(wnd.cursor.pos)
+
+    @command('cursor.end-of-file.select')
+    @norerun
+    def last_select(self, wnd):
+        wnd.screen.selection.begin_cursor(wnd.cursor.pos)
+        wnd.cursor.eof()
+        wnd.screen.selection.set_to(wnd.cursor.pos)
 
     @command('cursor.go-to-line')
     @norerun
@@ -100,13 +195,14 @@ class CursorCommands(Commands):
                 kaa.app.messagebar.set_message('Enter valid line number.')
                 return
 
+            wnd.screen.selection.end_cursor()
+            
             pos = wnd.document.get_lineno_pos(lineno)
             tol = wnd.document.gettol(pos)
             wnd.cursor.setpos(wnd.cursor.adjust_nextpos(wnd.cursor.pos, tol))
 
             popup = w.get_label('popup')
             popup.destroy()
-
 
         def filter(wnd, s):
             return re.match(r'\d*', s).group()
@@ -133,6 +229,11 @@ class ScreenCommands(Commands):
     @norerun
     def selection_clear(self, wnd):
         wnd.screen.selection.end_cursor()
+
+    @command('selection.set-mark')
+    @norerun
+    def selection_set_mark(self, wnd):
+        wnd.screen.selection.set_mark()
 
     @command('selection.all')
     @norerun
@@ -414,7 +515,7 @@ class EditCommands(Commands):
                 tol = doc.geteol(tol)
         finally:
             wnd.document.undo.endblock()
-
+        f, t = wnd.screen.selection.get_range()
         wnd.cursor.setpos(wnd.screen.selection.get_start())
         wnd.cursor.savecol()
 

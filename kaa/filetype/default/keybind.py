@@ -10,36 +10,36 @@ app_keys = {
 
 # default cursor commands
 cursor_keys = {
-    left: ('cursor.left', 'selection.end-cursor', 'selection.set-to'),
-    right:('cursor.right', 'selection.end-cursor', 'selection.set-to'),
-    up: ('cursor.up', 'selection.end-cursor', 'selection.set-to'),
-    down: ('cursor.down', 'selection.end-cursor', 'selection.set-to'),
+    left: 'cursor.left',
+    right: 'cursor.right',
+    up: 'cursor.up',
+    down: 'cursor.down',
 
-    (ctrl, left): ('cursor.word-left', 'selection.end-cursor', 'selection.set-to'),
-    (ctrl, right):('cursor.word-right', 'selection.end-cursor', 'selection.set-to'),
+    (ctrl, left): 'cursor.word-left',
+    (ctrl, right): 'cursor.word-right',
 
-    pagedown:('cursor.pagedown', 'selection.end-cursor', 'selection.set-to'),
-    pageup:('cursor.pageup', 'selection.end-cursor', 'selection.set-to'),
+    pagedown: 'cursor.pagedown',
+    pageup: 'cursor.pageup',
 
-    (shift, left): ('selection.begin-cursor', 'cursor.left', 'selection.set-to'),
-    (shift, right): ('selection.begin-cursor', 'cursor.right', 'selection.set-to'),
-    (shift, up): ('selection.begin-cursor', 'cursor.up', 'selection.set-to'),
-    (shift, down): ('selection.begin-cursor', 'cursor.down', 'selection.set-to'),
+    (shift, left): 'cursor.left.select',
+    (shift, right): 'cursor.right.select',
+    (shift, up): 'cursor.up.select',
+    (shift, down): 'cursor.down.select',
 
-    (shift, ctrl, left): ('selection.begin-cursor', 'cursor.word-left', 'selection.set-to'),
-    (shift, ctrl, right):('selection.begin-cursor', 'cursor.word-right', 'selection.set-to'),
+    (shift, ctrl, left): 'cursor.word-left.select',
+    (shift, ctrl, right):'cursor.word-right.select',
 
-    home: ('cursor.home', 'selection.end-cursor', 'selection.set-to'),
-    end: ('cursor.end', 'selection.end-cursor', 'selection.set-to'),
+    home: ('cursor.home'),
+    end: ('cursor.end'),
 
-    (shift, home): ('selection.begin-cursor', 'cursor.home', 'selection.set-to'),
-    (shift, end): ('selection.begin-cursor', 'cursor.end', 'selection.set-to'),
+    (shift, home): 'cursor.home.select',
+    (shift, end): 'cursor.end.select',
 
-    (ctrl, home): ('cursor.top-of-file', 'selection.end-cursor', 'selection.set-to'),
-    (ctrl, end): ('cursor.end-of-file', 'selection.end-cursor', 'selection.set-to'),
+    (ctrl, home): 'cursor.top-of-file',
+    (ctrl, end): 'cursor.end-of-file',
 
-    (shift, ctrl, home): ('selection.begin-cursor', 'cursor.top-of-file', 'selection.set-to'),
-    (shift, ctrl, end): ('selection.begin-cursor', 'cursor.end-of-file', 'selection.set-to'),
+    (shift, ctrl, home): 'cursor.top-of-file.select',
+    (shift, ctrl, end): 'cursor.end-of-file.select',
 
     (alt, 'a'): 'selection.all',
 
@@ -74,7 +74,7 @@ edit_command_keys = {
 }
 
 addtional_edit_command_keys = {
-    (ctrl, 'g'): ('cursor.go-to-line', 'selection.end-cursor', 'selection.set-to'),
+    (ctrl, 'g'): 'cursor.go-to-line',
 
     tab: 'edit.indent',
     (shift, tab): 'edit.dedent',
@@ -106,22 +106,22 @@ search_command_keys = {
 
 # emacs like keys
 emacs_keys = {
-    (ctrl, 'b'): ('cursor.left', 'selection.set-to'),
-    (ctrl, 'f'): ('cursor.right', 'selection.set-to'),
-    (ctrl, 'p'): ('cursor.up', 'selection.set-to'),
-    (ctrl, 'n'): ('cursor.down', 'selection.set-to'),
+    (ctrl, 'b'): 'cursor.left',
+    (ctrl, 'f'): 'cursor.right',
+    (ctrl, 'p'): 'cursor.up',
+    (ctrl, 'n'): 'cursor.down',
 
-    (alt, 'b'): ('cursor.word-left', 'selection.set-to'),
-    (alt, 'f'): ('cursor.word-right', 'selection.set-to'),
+    (alt, 'b'): 'cursor.word-left',
+    (alt, 'f'): 'cursor.word-right',
 
-    (ctrl, 'a'): ('cursor.home'),
-    (ctrl, 'e'): ('cursor.end'),
+    (ctrl, 'a'): 'cursor.home',
+    (ctrl, 'e'): 'cursor.end',
 
-    (ctrl, 'v'): ('cursor.pagedown', 'selection.set-to'),
-    (alt, 'v'): ('cursor.pageup', 'selection.set-to'),
+    (ctrl, 'v'): 'cursor.pagedown',
+    (alt, 'v'): 'cursor.pageup',
 
-    (alt, '<'): ('cursor.top-of-file', 'selection.set-to'),
-    (alt, '>'): ('cursor.end-of-file', 'selection.set-to'),
+    (alt, '<'): 'cursor.top-of-file',
+    (alt, '>'): 'cursor.end-of-file',
 }
 
 
@@ -149,21 +149,21 @@ command_mode_keys = {
 }
 
 visual_mode_keys = {
-    left: ('selection.begin-cursor', 'cursor.left', 'selection.set-to'),
-    right: ('selection.begin-cursor', 'cursor.right', 'selection.set-to'),
-    up: ('selection.begin-cursor', 'cursor.up', 'selection.set-to'),
-    down: ('selection.begin-cursor', 'cursor.down', 'selection.set-to'),
+    left: 'cursor.left',
+    right: 'cursor.right',
+    up: 'cursor.up',
+    down: 'cursor.down',
 
-    pagedown:('selection.begin-cursor', 'cursor.pagedown', 'selection.set-to'),
-    pageup:('selection.begin-cursor', 'cursor.pageup', 'selection.set-to'),
+    pagedown:'cursor.pagedown',
+    pageup:'cursor.pageup',
 
-    'h': ('selection.begin-cursor', 'cursor.left', 'selection.set-to'),
-    'l': ('selection.begin-cursor', 'cursor.right', 'selection.set-to'),
-    'k': ('selection.begin-cursor', 'cursor.up', 'selection.set-to'),
-    'j': ('selection.begin-cursor', 'cursor.down', 'selection.set-to'),
+    'h': 'cursor.left',
+    'l': 'cursor.right',
+    'k': 'cursor.up',
+    'j': 'cursor.down',
 
-    'gg': ('selection.begin-cursor', 'cursor.top-of-file', 'selection.set-to'),
-    'G': ('selection.begin-cursor', 'cursor.end-of-file', 'selection.set-to'),
+    'gg': 'cursor.top-of-file',
+    'G': 'cursor.end-of-file',
 
 }
 
