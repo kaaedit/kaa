@@ -78,7 +78,9 @@ class GrepCommands(editorcommand.EditCommands):
                     f, t = wnd.document.marks['searchtext']
                     wnd.document.replace(f, t, result)
                     wnd.cursor.setpos(f)
-       
+                    f, t = wnd.document.marks['searchtext']
+                    wnd.screen.selection.set_range(f, t)
+                    
             filterlist.show_listdlg('Recent searches', 
                 kaa.app.config.hist_grepstr.get(), callback)
 
@@ -88,6 +90,8 @@ class GrepCommands(editorcommand.EditCommands):
                     f, t = wnd.document.marks['directory']
                     wnd.document.replace(f, t, result)
                     wnd.cursor.setpos(f)
+                    f, t = wnd.document.marks['directory']
+                    wnd.screen.selection.set_range(f, t)
        
             filterlist.show_listdlg('Recent directories', 
                 kaa.app.config.hist_grepdir.get(), callback)
@@ -98,10 +102,11 @@ class GrepCommands(editorcommand.EditCommands):
                     f, t = wnd.document.marks['filenames']
                     wnd.document.replace(f, t, result)
                     wnd.cursor.setpos(f)
+                    f, t = wnd.document.marks['filenames']
+                    wnd.screen.selection.set_range(f, t)
                     
             filterlist.show_listdlg('Recent filenames', 
                 kaa.app.config.hist_grepfiles.get(), callback)
-        
 
 
 grepdlg_keys = {
@@ -185,8 +190,10 @@ class GrepDlgMode(dialogmode.DialogMode):
                     dialogmode.MarkRange('directory'), 
                     dialogmode.MarkRange('filenames')])
         wnd.set_cursor(cursor)
-        wnd.cursor.setpos(self.document.marks['searchtext'][1])
-
+        f, t = self.document.marks['searchtext']
+        wnd.cursor.setpos(f)
+        wnd.screen.selection.set_range(f, t)
+        
     def build_document(self):
         f = dialogmode.FormBuilder(self.document)
 
