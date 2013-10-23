@@ -296,7 +296,7 @@ Control+b, Control+f, Control+p, Control+n
 Alt+b, Alt+f
    Move cursor to next/prev word boundary.
 
-Control+v, Alt+v
+Alt+n, Alt+p
     Page down/up
 
 Home, Shift+Home
@@ -338,19 +338,19 @@ Control+k
 Alt+k
    Delete the current line.
 
-Control+y
+Control+v
    Paste
 
-Control+w
+Control+x
    Cut selection
 
-Alt+w
+Control+c
    Copy selection
 
-Control+u
+Control+z
    Undo last change.
 
-Alt+u
+Control+y
    Redo last undo.
 
 F6

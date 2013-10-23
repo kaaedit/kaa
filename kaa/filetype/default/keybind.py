@@ -43,7 +43,7 @@ cursor_keys = {
 
     (alt, 'a'): 'selection.all',
 
-    (ctrl, 'c'): 'selection.expand-sel',
+    (alt, 'c'): 'selection.expand-sel',
 
     (ctrl, '@'): 'selection.set-mark',
 }
@@ -65,11 +65,11 @@ edit_command_keys = {
     '\r': 'edit.newline',
     '\n': 'edit.newline',
 
-    (ctrl, 'w'): 'edit.cut',
-    (alt, 'w'): 'edit.copy',
-    (ctrl, 'y'): 'edit.paste',
-    (ctrl, 'u'): 'edit.undo',
-    (alt, 'u'): 'edit.redo',
+    (ctrl, 'x'): 'edit.cut',
+    (alt, 'c'): 'edit.copy',
+    (ctrl, 'v'): 'edit.paste',
+    (ctrl, 'z'): 'edit.undo',
+    (ctrl, 'y'): 'edit.redo',
 
 }
 
@@ -117,8 +117,8 @@ emacs_keys = {
     (ctrl, 'a'): 'cursor.top-of-line',
     (ctrl, 'e'): 'cursor.end-of-line',
 
-    (ctrl, 'v'): 'cursor.pagedown',
-    (alt, 'v'): 'cursor.pageup',
+    (alt, 'n'): 'cursor.pagedown',
+    (alt, 'p'): 'cursor.pageup',
 
     (alt, '<'): 'cursor.top-of-file',
     (alt, '>'): 'cursor.end-of-file',
@@ -185,4 +185,3 @@ visual_linewise_mode_keys = {
     'G': ('screen.lineselection.begin', 'cursor.end-of-file', 'screen.lineselection.set-end'),
 
 }
-
