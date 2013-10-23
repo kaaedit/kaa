@@ -524,7 +524,7 @@ class EditCommands(Commands):
         finally:
             wnd.document.undo.endblock()
         f, t = wnd.screen.selection.get_range()
-        wnd.cursor.setpos(wnd.screen.selection.get_start())
+        wnd.cursor.setpos(f)
         wnd.cursor.savecol()
 
     def _dedent_line(self, wnd, pos):
@@ -565,7 +565,8 @@ class EditCommands(Commands):
                 tol = doc.geteol(tol)
         finally:
             wnd.document.undo.endblock()
-        wnd.cursor.setpos(wnd.screen.selection.get_start())
+        f, t = wnd.screen.selection.get_range()
+        wnd.cursor.setpos(f)
         wnd.cursor.savecol()
 
     def _undo(self, wnd, rec):
@@ -746,8 +747,9 @@ class CodeCommands(Commands):
                     tol = wnd.document.geteol(tol)
             finally:
                 wnd.document.undo.endblock()
-    
-            wnd.cursor.setpos(wnd.screen.selection.get_start())
+
+            f, t = wnd.screen.selection.get_range()
+            wnd.cursor.setpos(f)
             wnd.cursor.savecol()
 
     def _is_comment_line(self, wnd, pos):
@@ -781,8 +783,9 @@ class CodeCommands(Commands):
                     tol = wnd.document.geteol(tol)
             finally:
                 wnd.document.undo.endblock()
-    
-            wnd.cursor.setpos(wnd.screen.selection.get_start())
+
+            f, t = wnd.screen.selection.get_range()
+            wnd.cursor.setpos(f)
             wnd.cursor.savecol()
 
 class MacroCommands(Commands):

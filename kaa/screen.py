@@ -184,7 +184,7 @@ class Selection:
 
         return self._get_cursor_start() is not None
     
-    def _get_end(self):
+    def get_end(self):
         return self._marks.get('end', None)
 
     def _set_end(self, pos):
@@ -232,7 +232,7 @@ class Selection:
 
         if not self._has_mark() and not self._is_cursor_started():
             return
-        changed = self._get_end() != pos
+        changed = self.get_end() != pos
         self._set_end(pos)
 
         if changed:
@@ -268,7 +268,7 @@ class Selection:
         if start is None:
             start = self._get_mark()
             
-        end = self._get_end()
+        end = self.get_end()
         if start is None or end is None or (start == end):
             return None
 
@@ -276,7 +276,7 @@ class Selection:
 
     def set_range(self, f, t):
         start = self._get_cursor_start()
-        end = self._get_end()
+        end = self.get_end()
         if (start, end) != (f, t):
             self._set_cursor_start(f)
             self._set_end(t)
@@ -601,6 +601,13 @@ class Screen:
 
         return True
 
+    def locate_col(self, tol, col, top=False, middle=False, bottom=False,
+               align_always=False, refresh=False):
+
+        self.locate(tol, top=top, middle=middle, bottom=bottom, 
+                    align_always=align_always, refresh=refresh)
+        
+        
     def vert_align(self, rowidx, top=False, middle=False, bottom=False):
         assert top or middle or bottom
         # move the row to middle or bottom
