@@ -65,7 +65,7 @@ class FileCommands(Commands):
                 kaa.app.storage.save_document(document, filename, encoding, newline)
                 # notify file saved
                 if saved:
-                    saved()
+                    saved(canceled=False)
             else:
                 # no file name. Show save_as dialog.
                 self.file_saveas(wnd, saved=saved, document=document)
@@ -74,7 +74,7 @@ class FileCommands(Commands):
             kaa.log.exception('File write error:')
             msgboxmode.MsgBoxMode.show_msgbox(
                 'File write error: '+str(e), ['&Ok'],
-                lambda c:self.file_saveas(wnd),
+                lambda c:saved(canceled=True) if saved else None,
                 keys=['\r', '\n'])
 
     @command('file.saveas')
@@ -87,7 +87,8 @@ class FileCommands(Commands):
                 self.file_save(wnd, filename, saved=saved, document=document,
                                encoding=enc, newline=newline)
             else:
-                saved()
+                if saved:
+                    saved(canceled=True)
                 
         if not document:
             document = wnd.document
@@ -104,14 +105,11 @@ class FileCommands(Commands):
         selectfile.show_filesaveas(document.get_filename(), newline, encoding, cb)
 
     def ask_doc_close(self, wnd, document, callback, msg):
-        def saved():
-           callback()
-
         def choice(c):
             if c == 'y':
-                self.file_save(wnd, saved=saved, document=document)
+                self.file_save(wnd, saved=callback, document=document)
             elif c == 'n':
-                callback()
+                callback(canceled=False)
 
         if document.undo and document.undo.is_dirty():
             msgboxmode.MsgBoxMode.show_msgbox(
@@ -119,7 +117,7 @@ class FileCommands(Commands):
                     msg, document.get_title()),
                 ['&Yes', '&No', '&Cancel'], choice)
         else:
-            callback()
+            callback(canceled=False)
 
     def save_documents(self, wnd, docs, callback, 
                        msg='Save file before close?', force=False):
@@ -127,14 +125,17 @@ class FileCommands(Commands):
         docs = list(docs)
         activeframe = kaa.app.get_activeframe()
 
-        def _save_documents():
+        def _save_documents(canceled):
+            if canceled:
+                callback(canceled=True)
+                return
+                
             if not docs:
                 if activeframe and not activeframe.closed:
-                    
                     kaa.app.set_focus(activeframe)
                     
                 if callback:
-                    callback()
+                    callback(canceled=False)
             else:
                 doc = docs.pop()
                 if doc.wnds:
@@ -147,7 +148,7 @@ class FileCommands(Commands):
                 else:
                     self.ask_doc_close(wnd, doc, _save_documents, msg)
 
-        _save_documents()
+        _save_documents(canceled=False)
 
 
     def get_closed_docs(self, editors):
@@ -165,9 +166,10 @@ class FileCommands(Commands):
         editors = {e for e in frame.get_editors()}
         docs = self.get_closed_docs(editors)
 
-        def cb():
-            frame.destroy()
-            callback()
+        def cb(canceled):
+            if not canceled:
+                frame.destroy()
+                callback(canceled=False)
     
         self.save_documents(frame, docs, cb, 'Save file before close?')
 
@@ -180,7 +182,10 @@ class FileCommands(Commands):
         import kaa.fileio
 
         frame = wnd.get_label('frame')
-        def saved():
+        def saved(canceled):
+            if canceled:
+                return 
+                
             if frame.mainframe.childframes:
                 f = frame.mainframe.childframes[0]
                 f.bring_top()
@@ -203,7 +208,7 @@ class FileCommands(Commands):
     @norerun
     def file_saveall(self, wnd):
 
-        def saved():
+        def saved(canceled):
             pass
         
         docs = self.get_current_documents(wnd)
@@ -216,7 +221,10 @@ class FileCommands(Commands):
     @norerun
     def file_closeall(self, wnd):
 
-        def callback():
+        def callback(canceled):
+            if canceled:
+                return
+                
             import kaa.fileio
             if frames:
                 f = frames.pop()
@@ -269,8 +277,9 @@ class FileCommands(Commands):
     @norerun
     def file_quit(self, wnd):
 
-        def saved():
-            kaa.app.quit()
+        def saved(canceled):
+            if not canceled:
+                kaa.app.quit()
         
         docs = self.get_current_documents(wnd)
         self.save_documents(wnd, docs, saved, 'Save file before close?')

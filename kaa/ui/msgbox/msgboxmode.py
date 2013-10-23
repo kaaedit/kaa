@@ -63,7 +63,8 @@ class MsgBoxMode(dialogmode.DialogMode):
                 popup.destroy()
 
     def _runcallback(self, c):
-        self.callback(c)
+        if self.callback:
+            self.callback(c)
 
     def on_esc_pressed(self, wnd, event):
         super().on_esc_pressed(wnd, event)
