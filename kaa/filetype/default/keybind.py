@@ -66,7 +66,7 @@ edit_command_keys = {
     '\n': 'edit.newline',
 
     (ctrl, 'x'): 'edit.cut',
-    (alt, 'c'): 'edit.copy',
+    (ctrl, 'c'): 'edit.copy',
     (ctrl, 'v'): 'edit.paste',
     (ctrl, 'z'): 'edit.undo',
     (ctrl, 'y'): 'edit.redo',
