@@ -341,6 +341,9 @@ Control+k
 Alt+k
    Delete the current line.
 
+Control+Space, Control+@
+   Set mark to select text region. Hit control+Space, control+@  or ESC to unset mark.
+   
 Control+v
    Paste
 
@@ -383,7 +386,7 @@ Tab, Shift+Tab
 Alt-M v
     Show text conversion menu.
 
-Ctrl+u Alt+!
+Control+u Alt+!
     Execute command and insert the output.
 
 

@@ -39,7 +39,8 @@ class SelectItemList(dialogmode.DialogMode):
         return 0, top, wnd.mainframe.width, top+height
 
     def update_doc(self, items):
-        self.items = items
+        self.items = list(collections.OrderedDict((i, 1) for i in items).keys())
+            
         self.cursel = None
 
         self.document.marks.clear()

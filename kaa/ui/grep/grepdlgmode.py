@@ -93,8 +93,13 @@ class GrepCommands(editorcommand.EditCommands):
                     f, t = wnd.document.marks['directory']
                     wnd.screen.selection.set_range(f, t)
        
+            hist = []
+            for p in kaa.app.config.hist_grepdir.get():
+                path = os.path.relpath(p)
+                hist.append(path if len(path) < len(p) else p)
+                
             filterlist.show_listdlg('Recent directories', 
-                kaa.app.config.hist_grepdir.get(), callback)
+                hist, callback)
 
         else:
             def callback(result):
@@ -206,8 +211,12 @@ class GrepDlgMode(dialogmode.DialogMode):
         # directory
         f.append_text('caption', 'Directory:')
         f.append_text('default', ' ')
-        f.append_text('default', self.option.directory,
-                        mark_pair='directory')
+
+        path = self.option.directory
+        if path:
+            p = os.path.relpath(path)
+            path = p if len(p) < len(path) else path
+        f.append_text('default', path, mark_pair='directory')
         f.append_text('default', '\n')
 
         # filename
@@ -328,7 +337,8 @@ class GrepDlgMode(dialogmode.DialogMode):
                 self.option.filenames):
 
             kaa.app.config.hist_grepstr.add(self.option.text)
-            kaa.app.config.hist_grepdir.add(self.option.directory)
+            path = os.path.abspath(self.option.directory)
+            kaa.app.config.hist_grepdir.add(path)
             kaa.app.config.hist_grepfiles.add(self.option.filenames)
             
             grepmode.grep(self.option, self.target)
