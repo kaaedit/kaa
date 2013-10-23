@@ -108,8 +108,8 @@ search_command_keys = {
 emacs_keys = {
     (ctrl, 'b'): 'cursor.left',
     (ctrl, 'f'): 'cursor.right',
-    (ctrl, 'p'): 'cursor.up',
-    (ctrl, 'n'): 'cursor.down',
+    (ctrl, 'p'): 'cursor.prev-line',
+    (ctrl, 'n'): 'cursor.next-line',
 
     (alt, 'b'): 'cursor.word-left',
     (alt, 'f'): 'cursor.word-right',

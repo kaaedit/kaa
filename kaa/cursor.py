@@ -3,6 +3,7 @@ class Cursor:
         self.wnd = wnd
         self.pos = 0
         self.preferred_col = 0
+        self.preferred_linecol = 0
 
     def refresh(self, top=None, middle=None, bottom=None):
         self.pos, y, x = self.wnd.locate_cursor(self.pos, top=top, middle=middle, bottom=bottom)
@@ -19,7 +20,8 @@ class Cursor:
 
         y, x = self.wnd.screen.getrowcol(self.pos)
         self.preferred_col = x
-
+        self.preferred_linecol = self.wnd.screen.get_cursorcol(self.pos)
+        
     def up(self):
         # Ensure current position is displayed
         self.wnd.screen.locate(self.pos, middle=True, align_always=False)
@@ -62,6 +64,31 @@ class Cursor:
         self.setpos(pos)
 
         return True
+
+    def prev_line(self):
+        tol = self.wnd.document.gettol(self.pos)
+        if tol != 0:
+            self.wnd.screen.locate(tol-1, top=True)
+
+            prev = self.wnd.document.gettol(tol-1)
+            pos = self.wnd.screen.get_pos_at_cols(prev, self.preferred_linecol)
+            pos = self.adjust_nextpos(self.pos, pos)
+            self.wnd.screen.locate(pos, top=True)
+            
+            self.setpos(pos)
+            return True
+
+    def next_line(self):
+        next = self.wnd.document.gettol(self.wnd.document.geteol(self.pos))
+        if self.pos < next:
+            self.wnd.screen.locate(next, bottom=True)
+
+            pos = self.wnd.screen.get_pos_at_cols(next, self.preferred_linecol)
+            pos = self.adjust_nextpos(self.pos, pos)
+            self.wnd.screen.locate(pos, bottom=True)
+            
+            self.setpos(pos)
+            return True
 
     def adjust_nextpos(self, curpos, nextpos):
         return nextpos

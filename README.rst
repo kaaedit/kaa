@@ -91,7 +91,7 @@ Kaa uses alt key for keyboard shortcut like `alt+W` for copy to clipboard. On mo
 1. Select Preferences menu.
 2. Open the Settings tab.
 3. Open the keyboard tab.
-4.  Check `Use option as meta key`.
+4. Check `Use option as meta key`.
 
 Or, if you use iTerm on Mac, you should configure:
 
@@ -290,8 +290,11 @@ Shift+arrow keys
 Control+left/right arrow keys
    Move cursor to next/prev word boundary.
 
-Control+b, Control+f, Control+p, Control+n
-   Move cursor to left/right/up/down.
+Control+b, Control+f
+   Move cursor to left/right.
+
+Control+p, Control+n
+   Move cursor to previous/next physical line.
 
 Alt+b, Alt+f
    Move cursor to next/prev word boundary.
@@ -317,7 +320,7 @@ Control+g
 Alt+a
    Select all text.
 
-Ctrl+c
+Alt+c
    Select current word for first press, current line for second time and entire text for third time.
 
 Backspace, Control+h

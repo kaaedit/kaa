@@ -67,6 +67,20 @@ class CursorCommands(Commands):
         wnd.cursor.down()
         wnd.screen.selection.set_to(wnd.cursor.pos)
 
+    @command('cursor.prev-line')
+    @norerun
+    def prev_line(self, wnd):
+        wnd.screen.selection.end_cursor()
+        wnd.cursor.prev_line()
+        wnd.screen.selection.set_to(wnd.cursor.pos)
+
+    @command('cursor.next-line')
+    @norerun
+    def next_line(self, wnd):
+        wnd.screen.selection.end_cursor()
+        wnd.cursor.next_line()
+        wnd.screen.selection.set_to(wnd.cursor.pos)
+
     @command('cursor.word-right')
     @norerun
     def word_right(self, wnd):

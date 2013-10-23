@@ -278,6 +278,11 @@ class TestScreen(kaa_testutils._TestScreenBase):
         scrn = self._getscreen('\t'*2 + '01234567890', width=9)
         assert scrn.getpos_fromrowcol(0, 7) == 1
 
+    def test_get_pos_at_cols(self):
+        scrn = self._getscreen("012345\nabcdef", width=4, height=3)
+        ret = scrn.get_pos_at_cols(7,4)
+        assert ret == 11
+        
     def test_newline(self):
         scrn = self._getscreen("abc\n")
         

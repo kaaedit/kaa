@@ -492,8 +492,7 @@ class Screen:
 
         p = 0
         col = col - row.wrapindent
-        for pos, charcols, c, i in zip(row.positions, row.cols,
-                                       row.chars, row.intervals):
+        for pos, charcols, c in zip(row.positions, row.cols, row.chars):
             if (p + charcols > col) or (c == '\n'):
                 return pos
             p += charcols
@@ -548,6 +547,24 @@ class Screen:
 
         return cols
 
+    def get_pos_at_cols(self, tol, cols):
+        posidx, row = self.getrow(tol)
+        if not row:
+            return tol
+
+        p = 0
+        for n in range(posidx, len(self.rows)):
+            row = self.rows[n]
+            if row.tol != tol:
+                break
+
+            for pos, charcols, c in zip(row.positions, row.cols, row.chars):
+                if p + charcols > cols:
+                    return pos
+                p += charcols
+
+        return self.document.find_newline(tol)
+        
     def _fillscreen(self):
         while True:
             bottomrow = self.rows[-1]
@@ -601,13 +618,6 @@ class Screen:
 
         return True
 
-    def locate_col(self, tol, col, top=False, middle=False, bottom=False,
-               align_always=False, refresh=False):
-
-        self.locate(tol, top=top, middle=middle, bottom=bottom, 
-                    align_always=align_always, refresh=refresh)
-        
-        
     def vert_align(self, rowidx, top=False, middle=False, bottom=False):
         assert top or middle or bottom
         # move the row to middle or bottom
