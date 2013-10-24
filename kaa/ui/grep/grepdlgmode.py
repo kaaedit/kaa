@@ -161,7 +161,6 @@ class GrepDlgMode(dialogmode.DialogMode):
         
     def close(self):
         super().close()
-        kaa.app.messagebar.set_message("")
 
     def init_keybind(self):
         super().init_keybind()
@@ -348,4 +347,5 @@ class GrepDlgMode(dialogmode.DialogMode):
     def on_esc_pressed(self, wnd, event):
         super().on_esc_pressed(wnd, event)
         wnd.get_label('popup').destroy()
+        kaa.app.messagebar.set_message("")
 

@@ -124,9 +124,11 @@ class FileCommands(Commands):
 
         docs = list(docs)
         activeframe = kaa.app.get_activeframe()
-
+    
         def _save_documents(canceled):
             if canceled:
+                if activeframe and not activeframe.closed:
+                    kaa.app.set_focus(activeframe)
                 callback(canceled=True)
                 return
                 

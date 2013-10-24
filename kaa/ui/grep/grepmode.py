@@ -119,24 +119,8 @@ def _grep(filename, regex):
         yield lineno, linefrom, lineto, line, f, t, text[f:t]
 
 
-def grep(option, target):
-    dir = os.path.abspath(os.path.expanduser(option.directory))
-    files = _walk(dir, option.filenames, option.tree)
-    regex = option.get_regex()
-    
-    if not target:
-        buf = document.Buffer()
-        doc = document.Document(buf)
-        mode = GrepMode()
-        doc.setmode(mode)
-    else:
-        doc = target.document
-        doc.delete(0, doc.endpos())
-        mode = doc.mode
-        
-    doc.set_title('<grep>')
-    mode.grepoption = option.clone()
-
+def _search(dir, option, doc):
+    mode = doc.mode
     style_default = mode.get_styleid('default')
     style_filename = mode.get_styleid('grep-filename')
     style_lineno = mode.get_styleid('grep-lineno')
@@ -164,9 +148,18 @@ def grep(option, target):
             doc.append(cur_line[t:], style_default)
 
         doc.append('\n', style_default)
-        
+
+
+    files = _walk(dir, option.filenames, option.tree)
+    regex = option.get_regex()
+    
+    nfiles = 0
+    nhits = 0
+    
     # todo: use raw mode to accept ^C
     for fname in files:
+        nfiles += 1
+        
         cur_lineno = None
         matches = []
         
@@ -175,6 +168,8 @@ def grep(option, target):
             path = fname
             
         for lineno, linefrom, lineto, line, f, t, match in _grep(fname, regex):
+            nhits += 1
+            
             line = line.rstrip('\n')
             if cur_lineno is None:
                 cur_lineno = lineno
@@ -192,6 +187,40 @@ def grep(option, target):
         
         if matches:
             add_hit()
+    return nfiles, nhits
+    
+def grep(option, target):
+
+    if not target:
+        buf = document.Buffer()
+        doc = document.Document(buf)
+        mode = GrepMode()
+        doc.setmode(mode)
+    else:
+        doc = target.document
+        doc.delete(0, doc.endpos())
+        mode = doc.mode
+        
+    doc.set_title('<grep>')
+    mode.grepoption = option.clone()
+
+        
+    dir = os.path.abspath(os.path.expanduser(option.directory))
+    if not os.path.isdir(dir):
+        s = 'Cannot find directory `{}`.'.format(dir)
+        doc.append(s)
+    else:
+        nfiles, nhits = _search(dir, option, doc)
+        if not nfiles:
+            s = 'Cannot find file `{}`.'.format(option.filenames)
+            doc.append(s)
+        elif not nhits:
+            s = 'Cannot find `{}`.'.format(option.text)
+            doc.append(s)
+        else:
+            s = 'Found {} times in {} files'.format(nhits, nfiles)
+
+    kaa.app.messagebar.set_message(s)
     
     if not target:
         kaa.app.show_doc(doc)
@@ -280,9 +309,10 @@ class GrepMode(defaultmode.DefaultMode):
                 self._locate_doc(buddy.wnd, doc, lineno)
                 return
                 
-            def callback():
-                buddy.show_doc(doc)
-                self._locate_doc(buddy.wnd, doc, lineno)
+            def callback(canceled):
+                if not canceled:
+                    buddy.show_doc(doc)
+                    self._locate_doc(buddy.wnd, doc, lineno)
                 
             self.app_commands.save_splitterdocs(wnd, buddy, callback)
             
