@@ -46,9 +46,11 @@ MENUS = {
          ['&Run Macro', None, 'macro.run']],
         
     'TOOLS':
-        [['&Paste lines', None, 'edit.paste-lines'],
+        [['&Python console', None, 'python.console'],
+         ['&Grep', None, 'search.showgrep'],
+         ['Paste &Lines', None, 'edit.paste-lines'],
          ['&Shell command', None, 'tools.execute-shell-command'],
-         ['&Grep', None, 'search.showgrep']],
+         ],
          
     'WINDOW':
         [['&Frame list', None, 'app.show-framelist'],

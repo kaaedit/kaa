@@ -2,7 +2,7 @@ import copy
 from collections import defaultdict
 import kaa
 from kaa.commands import (appcommand, filecommand, editorcommand, 
-    editmodecommand)
+    editmodecommand, toolcommand)
 from . import keybind, theme, modebase, menu
 from kaa import highlight
 
@@ -69,8 +69,11 @@ class DefaultMode(modebase.ModeBase):
         self.search_commands = editorcommand.SearchCommands()
         self.register_command(self.search_commands)
 
-        self.rerun_commands = editorcommand.RerunCommand()
-        self.register_command(self.rerun_commands)
+        self.tools_commands = toolcommand.ToolCommands()
+        self.register_command(self.tools_commands)
+
+#        self.rerun_commands = editorcommand.RerunCommand()
+#        self.register_command(self.rerun_commands)
 
         self.mode_commands = editmodecommand.EditModeCommands()
         self.register_command(self.mode_commands)
