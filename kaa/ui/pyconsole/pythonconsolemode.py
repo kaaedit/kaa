@@ -58,7 +58,7 @@ class PythonConsoleMode(pythonmode.PythonMode):
             import __main__
             ret = eval(comp, __main__.__dict__, __main__.__dict__)
             if ret is not None:
-                print(str(ret))
+                print(repr(ret))
         except Exception:
             traceback.print_exc()
             return True

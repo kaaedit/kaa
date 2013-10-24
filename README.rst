@@ -237,14 +237,17 @@ Run macro
 Tools menu
 ++++++++++
 
+Python console
+    Execute Python script.
+
+Grep
+   Search text from disk.
+
 Paste lines
    Insert lines of text without auto indentation.
 
 Shell command
    Execute external shell command and insert the output.
-
-Grep
-   Search text from disk.
 
 
 Window menu
@@ -403,6 +406,15 @@ Grep dialog has three input field. `Search` is a plain text or regular expressio
 
 In the grep result window, use F9 and F10 key to traverse matches forward/backward. 
 
+
+Python console
+--------------
+
+Unlike Python's interactive console, Python console in kaa does not execute Python script until you hit alt+Enter key. Until then you can edit Python script as if you are with editors without worrying about newlines and indentations.
+
+When alt+Enter key was hit, all text in the window is executed as Python script and the value of the expression is printed out to console window. If the script contains print expression, the text will also be printed out to console window. If a part of text in the console window is selected, only text in the selected region will be execused.
+
+
 Customization
 ==================
 
@@ -454,6 +466,18 @@ Links
 
 Version history
 =================
+
+0.3.0 - 2013.10.24
+------------------
+
+- Python console window.
+
+- Emacs style region selection. Now you can select region by ctrl+SPACE or ctrl+'@'key.
+
+- Changed some default keyboard binding.
+
+- A lot of bugs fixed.
+
 
 0.2.0 - 2013.10.20
 ------------------
