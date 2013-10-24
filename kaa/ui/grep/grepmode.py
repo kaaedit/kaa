@@ -262,10 +262,6 @@ class GrepMode(defaultmode.DefaultMode):
         super().init_keybind()
         self.register_keys(self.keybind, self.GREP_KEY_BINDS)
 
-    def init_tokenizers(self):
-        self.tokenizers = []
-    
-        
     def _locate_doc(self, wnd, doc, lineno):
         wnd.show_doc(doc)
 

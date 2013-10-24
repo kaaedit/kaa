@@ -120,11 +120,11 @@ class CuiApp:
         if wnd:
             wnd.on_focus()
 
-    def show_doc(self, docs):
+    def show_doc(self, doc):
         '''
         Create new window for the doc and show it.
         '''
-        self.mainframe.show_doc(docs)
+        return self.mainframe.show_doc(doc)
 
     def show_inputline(self, doc):
         dlg = dialog.DialogWnd(parent=self.mainframe, doc=doc)

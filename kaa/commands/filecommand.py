@@ -111,7 +111,10 @@ class FileCommands(Commands):
             elif c == 'n':
                 callback(canceled=False)
 
-        if document.undo and document.undo.is_dirty():
+        if (document.mode.DOCUMENT_MODE 
+            and document.undo
+            and document.undo.is_dirty()):
+                
             msgboxmode.MsgBoxMode.show_msgbox(
                 '{} [{}]: '.format(
                     msg, document.get_title()),
@@ -202,7 +205,7 @@ class FileCommands(Commands):
         docs = set()
         for frame in wnd.mainframe.childframes:
             editors = {e for e in frame.get_editors()}
-            docs |= {e.document for e in editors if e.document.mode.DOCUMENT}
+            docs |= {e.document for e in editors if e.document.mode.DOCUMENT_MODE}
         return docs
         
     @command('file.save.all')

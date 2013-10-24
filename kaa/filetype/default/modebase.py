@@ -50,7 +50,7 @@ class ModeBase:
     SCREEN_BUILD_ENTIRE_ROWS = False
     SHOW_LINENO = False
     USE_UNDO = True
-    DOCUMENT = False
+    DOCUMENT_MODE = False
     HIGHLIGHT_CURSORLINE = False
 
     tab_width = 8

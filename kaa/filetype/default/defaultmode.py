@@ -8,7 +8,7 @@ from kaa import highlight
 
 
 class DefaultMode(modebase.ModeBase):
-    DOCUMENT = True
+    DOCUMENT_MODE = True
     MODENAME = 'default'
     SHOW_LINENO = False
     KEY_BINDS = [
@@ -72,9 +72,6 @@ class DefaultMode(modebase.ModeBase):
         self.tools_commands = toolcommand.ToolCommands()
         self.register_command(self.tools_commands)
 
-#        self.rerun_commands = editorcommand.RerunCommand()
-#        self.register_command(self.rerun_commands)
-
         self.mode_commands = editmodecommand.EditModeCommands()
         self.register_command(self.mode_commands)
 
@@ -84,12 +81,6 @@ class DefaultMode(modebase.ModeBase):
     def init_themes(self):
         super().init_themes()
         self.themes.append(theme.DefaultThemes)
-
-    def init_tokenizers(self):
-        self.tokenizers = [highlight.Tokenizer([])]
-
-    def on_set_document(self, document):
-        super().on_set_document(document)
 
     def close(self):
         super().close()
