@@ -232,6 +232,10 @@ class CursorCommands(Commands):
             popup.destroy()
 
         def filter(wnd, s):
+            if s == '0':
+                t = wnd.document.mode.get_input_text().strip()
+                if not t or int(t) == 0:
+                    return ''
             return re.match(r'\d*', s).group()
 
         from kaa.ui.inputline import inputlinemode
