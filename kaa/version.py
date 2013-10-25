@@ -1,5 +1,5 @@
 import sys
-KAA_VERSION = (0, 3, 0)
+KAA_VERSION = (0, 3, 1)
 
 def version_info():
     return '''\

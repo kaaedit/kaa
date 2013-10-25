@@ -26,6 +26,10 @@ Kaa is a easy yet powerful text editor for console user interface, providing num
 
 - More to come!
 
+.. image:: http://kaaedit.github.io/screenshots/kaa_multiwindow.png
+
+See http://kaaedit.github.io for more screen shots.
+
 
 Kaa is easy!
 ------------
@@ -466,6 +470,16 @@ Links
 
 Version history
 =================
+
+0.3.1 - 2013.10.25
+------------------
+
+- Python console window now works with Gnome terminal.
+
+- `Window|Switch file` menu caused error.
+
+- ^G (Goto line number) dialog shouldn't accept '0' if field is empty.
+
 
 0.3.0 - 2013.10.24
 ------------------
