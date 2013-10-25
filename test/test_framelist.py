@@ -9,11 +9,10 @@ class _frame:
     def get_title(self):
         return 'title'
 
+@patch('kaa.app', new=kaa_testutils.DmyApp(), create=True)
 class TestFrameList(kaa_testutils._TestDocBase):
 
-    @patch('kaa.app', create=True)
-    def test_framelist(self, mock1):
-        kaa.app.DEFAULT_THEME = 'default'
+    def test_framelist(self):
         with ExitStack() as st:
             frames = [_frame(), _frame()]
             st.enter_context(patch('kaa.app.get_frames',

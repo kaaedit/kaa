@@ -43,7 +43,19 @@ class _DmyWnd(context.Context):
 class DmyApp:
     config = kaa.config.Config()
 
+    def translate_key(self, mod, char):
+        return ()
+
+    def get_current_theme(self):
+        return 'default'
+
+    def translate_theme(self, theme):
+        pass
+
 class _TestDocBase:
+    def get_title(self):
+        return repr(self)
+
     def _getdoc(self, s=''):
         import kaa
         if not hasattr(kaa, 'app'):

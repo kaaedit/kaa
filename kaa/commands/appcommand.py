@@ -159,7 +159,10 @@ class ApplicationCommands(Commands):
             doc = docs[n]
             wnd.show_doc(doc)
 
-        def saved():
+        def saved(canceled):
+            if canceled:
+                return
+                
             curdoc.mode.CLOSE_ON_DEL_WINDOW = False
             n = docs.index(wnd.document)
             doc = itemlistmode.ItemListMode.build('', titles, n, callback, selchanged)
@@ -169,6 +172,6 @@ class ApplicationCommands(Commands):
             wnd.document.mode.file_commands.ask_doc_close(
                 wnd, wnd.document, saved, 'Save file before close?')
         else:
-            saved()
+            saved(False)
 
 
