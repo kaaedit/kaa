@@ -9,6 +9,7 @@ from kaa.command import command, Commands, norec, norerun
 
 pythonconsole_keys = {
     (alt, '\r'): ('python.exec'),
+    (alt, '\n'): ('python.exec'),
 }
 
 class PythonConsoleMode(pythonmode.PythonMode):
