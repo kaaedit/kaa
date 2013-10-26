@@ -99,18 +99,22 @@ class TextEditorWindow(Window):
             # relocate cursor
             self.cursor.setpos(self.cursor.pos)
 
-    def _getcharattrs(self, row):
+    def _getcharattrs(self, row, rectangular, selfrom, selto, colfrom, colto):
         # returns character attributes of each characters in row.
-
-        selrange = self.screen.selection.get_range()
-        if selrange:
-            selfrom, selto = selrange
-        else:
-            selfrom = selto = -1
-
-        for pos in row.positions:
+        ncols = row.colfrom
+        for pos, cols in zip(row.positions, row.cols):
             attr = 0
+            sel = False
             if selfrom <= pos < selto:
+                if rectangular:
+                    if colfrom <= ncols < colto:
+                        sel = True
+                    else:
+                        sel = False
+                else:
+                    sel = True
+
+            if sel:
                 attr = curses.A_REVERSE
 
             color = kaa.app.colors.get_color(
@@ -130,6 +134,8 @@ class TextEditorWindow(Window):
 
             yield (color + attr, style.rjust)
 
+            ncols += cols
+            
     def draw_screen(self, force=False):
         try:
             self._draw_screen(force=force)
@@ -170,6 +176,20 @@ class TextEditorWindow(Window):
             lineno = self.document.buf.lineno.lineno(self.screen.pos)
         
         _, cursorrow = self.screen.getrow(self.cursor.pos)
+
+
+        rectangular = self.screen.selection.rectangular
+        selfrom = selto = colfrom = colto = -1
+
+        if not rectangular:
+            selrange = self.screen.selection.get_range()
+            if selrange:
+                selfrom, selto = selrange
+        else:
+            selrect = self.screen.selection.get_rect_range()
+            if selrect:
+                selfrom, selto, colfrom, colto = selrect
+        
         for n, row in enumerate(rows):
             if n > h:
                 break
@@ -202,9 +222,11 @@ class TextEditorWindow(Window):
 
             # move cursor to top of row
             self._cwnd.move(n, row.wrapindent+lineno_width)
-
             rjust = False
-            for (attr, attr_rjust), group in itertools.groupby(self._getcharattrs(row)):
+
+            for (attr, attr_rjust), group in itertools.groupby(
+                    self._getcharattrs(row, rectangular, selfrom, selto, colfrom, colto)):
+
                 if is_cursorline and self.document.mode.HIGHLIGHT_CURSORLINE:
                     attr |= curses.A_BOLD
                     

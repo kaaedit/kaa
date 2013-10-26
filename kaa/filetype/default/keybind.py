@@ -46,6 +46,7 @@ cursor_keys = {
     (alt, 'c'): 'selection.expand-sel',
 
     (ctrl, '@'): 'selection.set-mark',
+    (alt, '#'): 'selection.set-rectangle-mark',
 }
 
 

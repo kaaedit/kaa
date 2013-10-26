@@ -10,7 +10,7 @@ Kaa is a small and easy CUI text editor for console/terminal emulator environmen
 Overview
 ============
 
-Kaa is a easy yet powerful text editor for console user interface, providing numerous features like 
+Kaa is an easy yet powerful text editor for console user interface, providing numerous features like 
 
 - Macro recording.
 

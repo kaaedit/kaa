@@ -16,10 +16,11 @@ def calc_lineno_width(screen):
 class Row:
     height = 1
     bgcolor = None
-    def __init__(self, posfrom, tol, wrapindent, chars, cols, 
+    def __init__(self, posfrom, tol, colfrom, wrapindent, chars, cols, 
             positions, intervals):
         self.posfrom = posfrom
         self.posto = positions[-1]+1 if positions else posfrom
+        self.colfrom = colfrom
         self.tol = tol
         self.wrapindent = wrapindent
         self.chars = chars
@@ -86,7 +87,7 @@ def col_splitter(maxcol, tol, dispchrs, dispcols, positions, intervals, styles, 
     """Split string by column"""
 
     if nowrap:
-        return [Row(tol, tol, 0, dispchrs, dispcols, positions, intervals)]
+        return [Row(tol, tol, 0, 0, dispchrs, dispcols, positions, intervals)]
 
     assert maxcol >= 2
     rowfrom = rowto = 0
@@ -95,6 +96,7 @@ def col_splitter(maxcol, tol, dispchrs, dispcols, positions, intervals, styles, 
     sumcols_at_wrappos = 0
 
     posfrom = tol
+    colfrom = 0
     wrapindent = 0
 
     ret = []
@@ -137,15 +139,16 @@ def col_splitter(maxcol, tol, dispchrs, dispcols, positions, intervals, styles, 
                     sumcols_at_wrappos = sumcols
 
                 assert rowfrom != wrappos
-                row = Row(posfrom, tol, wrapindent, dispchrs[rowfrom:wrappos],
+                row = Row(posfrom, tol, colfrom, wrapindent, dispchrs[rowfrom:wrappos],
                         dispcols[rowfrom:wrappos], positions[rowfrom:wrappos],
                         intervals[rowfrom:wrappos])
-
+                        
                 ret.append(row)
+                colfrom += sum(dispcols[rowfrom:wrappos])
 
                 rowfrom = wrappos
                 sumcols = sumcols - sumcols_at_wrappos
-
+            
                 wrappos = None
                 sumcols_at_wrappos = None
 
@@ -161,7 +164,7 @@ def col_splitter(maxcol, tol, dispchrs, dispcols, positions, intervals, styles, 
         rowto += 1
 
     if rowfrom != len(dispcols) or not dispchrs:
-        row = Row(posfrom, tol, wrapindent, dispchrs[rowfrom:], dispcols[rowfrom:],
+        row = Row(posfrom, tol, colfrom, wrapindent, dispchrs[rowfrom:], dispcols[rowfrom:],
                 positions[rowfrom:], intervals[rowfrom:])
         ret.append(row)
 
@@ -172,6 +175,7 @@ class Selection:
     def __init__(self, screen):
         self._marks = document.Marks()
         self.screen = screen
+        self.rectangular = False
 
     def _get_cursor_start(self):
         return self._marks.get('start', None)
@@ -208,12 +212,18 @@ class Selection:
 
     def set_mark(self, pos):
         cur = self.get_range()
+        self.rectangular = False
 
         self._set_mark(pos)
         if pos is not None:
             self._set_cursor_start(None)
         if cur != self.get_range():
             self.screen.style_updated()
+            return True
+            
+    def set_rectangle_mark(self, pos):
+        ret = self.set_mark(pos)
+        self.rectangular = True
             
     def begin_cursor(self, pos):
         """Start cursor range selection if it was not started"""
@@ -224,6 +234,7 @@ class Selection:
         if self._is_cursor_started():
             return
             
+        self.rectangular = False
         self._set_cursor_start(pos)
         self._set_end(pos)
 
@@ -275,6 +286,7 @@ class Selection:
         return tuple(sorted((start, end)))
 
     def set_range(self, f, t):
+        self.rectangular = False
         start = self._get_cursor_start()
         end = self.get_end()
         if (start, end) != (f, t):
@@ -283,6 +295,28 @@ class Selection:
             self._set_mark(None)
             self.screen.style_updated()
 
+    def _calc_col(self, pos):
+        tol = self.screen.document.gettol(pos)
+        eol, s = self.screen.document.getline(tol)
+        (dispchrs, dispcols, positions, intervals) = translate_chars(
+            tol, s, self.screen.document.mode.tab_width)
+
+        if pos < eol:
+            n = positions.index(pos)
+        else:
+            n = len(dispcols)
+        return tol, eol, sum(dispcols[0:n])
+
+    def get_rect_range(self):
+        sel = self.get_range()
+        if not sel:
+            return
+        posfrom, _, col1 = self._calc_col(sel[0])
+        _, posto, col2 = self._calc_col(sel[1])
+        colfrom, colto = (col1, col2) if (col1 < col2) else (col2, col1)
+        
+        return posfrom, posto, colfrom, colto
+        
     def on_document_updated(self, pos, inslen, dellen):
         self._marks.updated(pos, inslen, dellen)
 

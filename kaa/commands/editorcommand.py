@@ -266,6 +266,11 @@ class ScreenCommands(Commands):
     def selection_set_mark(self, wnd):
         wnd.screen.selection.set_mark(wnd.cursor.pos)
 
+    @command('selection.set-rectangle-mark')
+    @norerun
+    def selection_set_rectangle_mark(self, wnd):
+        wnd.screen.selection.set_rectangle_mark(wnd.cursor.pos)
+
     @command('selection.all')
     @norerun
     def select_all(self, wnd):
