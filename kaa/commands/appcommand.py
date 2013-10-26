@@ -129,8 +129,9 @@ class ApplicationCommands(Commands):
             if not buddy:
                 return   # not split
 
-            def saved():
-                wnd.splitter.parent.join(wnd)
+            def saved(canceled):
+                if not canceled:
+                    wnd.splitter.parent.join(wnd)
 
             self.save_splitterdocs(wnd, buddy, saved)
 
