@@ -239,7 +239,7 @@ class FileCommands(Commands):
                 kaa.app.show_doc(doc)
                 
         frames = wnd.mainframe.childframes[:]
-        callback()
+        callback(False)
 
     @command('file.recently-used-files')
     @norec
