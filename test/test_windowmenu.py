@@ -4,13 +4,8 @@ from unittest.mock import patch
 import kaa
 import kaa_testutils
 
-class _frame:
-    def get_title(self):
-        return 'title'
-        
-    def get_documents(self):
-        return self.docs
-        
+
+
 @patch('kaa.app', new=kaa_testutils.DmyApp(), create=True)
 class TestSwitchSource(kaa_testutils._TestScreenBase):
 
@@ -21,7 +16,7 @@ class TestSwitchSource(kaa_testutils._TestScreenBase):
             wnd = self._getwnd('')
             ec(patch.object(wnd, 'show_doc', create=True))
             
-            frame = _frame()
+            frame = kaa_testutils.DmyFrame()
             frame.docs = [wnd.document]
 
             ec(patch('kaa.app.get_frames',
@@ -35,3 +30,21 @@ class TestSwitchSource(kaa_testutils._TestScreenBase):
 
             args, kwargs = wnd.show_doc.call_args
             assert args[0] is wnd.document
+
+
+@patch('kaa.app', new=kaa_testutils.DmyApp(), create=True)
+class TestJoinWindow(kaa_testutils._TestScreenBase):
+
+    def test_joinwindow(self):
+        with ExitStack() as st:
+            ec = st.enter_context
+            
+            wnd = self._getwnd('')
+            ec(patch.object(wnd, 'splitter', create=True))
+            ec(patch.object(kaa.app, 'get_activeframe', create=True))
+            ec(patch.object(wnd, 'show_doc', create=True))
+
+            wnd.document.mode.app_commands.editor_joinwindow(wnd)
+
+            args, kwargs = wnd.splitter.parent.join.call_args
+            assert args[0] is wnd

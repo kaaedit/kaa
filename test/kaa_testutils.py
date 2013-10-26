@@ -6,10 +6,14 @@ from kaa import screen, document, cursor, context, editmode
 from kaa.filetype.default import defaultmode
 
 class _DmyWnd(context.Context):
+    closed = False
     def __init__(self, scrn):
         self.screen = scrn
         self.cursor = cursor.Cursor(self)
 
+    def activate(self):
+        pass
+        
     def set_editmode(self, editmode):
         self.editmode = editmode
 
@@ -40,9 +44,20 @@ class _DmyWnd(context.Context):
     def pageup(self):
         return self.screen.pageup()
 
+
+class DmyFrame:
+    closed = False
+    def get_title(self):
+        return 'title'
+        
+    def get_documents(self):
+        return self.docs
+        
+
+
 class DmyApp:
     config = kaa.config.Config()
-
+    last_dir = ''
     def translate_key(self, mod, char):
         return ()
 
@@ -52,6 +67,9 @@ class DmyApp:
     def translate_theme(self, theme):
         pass
 
+    def set_focus(self, wnd):
+        pass
+        
 class _TestDocBase:
     def get_title(self):
         return repr(self)
