@@ -47,7 +47,7 @@ class TestSearchDlgMode(kaa_testutils._TestDocBase):
 
         doc.mode.target.document.append('012345test string')
         doc.mode.search_next(None)
-        assert doc.mode.target.screen.selection.get_range() == (6, 17)
+        assert doc.mode.target.screen.selection.get_selrange() == (6, 17)
 
 
 class TestReplaceDlg(kaa_testutils._TestDocBase):
@@ -97,5 +97,5 @@ class TestReplaceDlg(kaa_testutils._TestDocBase):
 
         doc.mode.target.document.append('012345test string')
         doc.mode.search_next(None)
-        assert doc.mode.target.screen.selection.get_range() == (6, 17)
+        assert doc.mode.target.screen.selection.get_selrange() == (6, 17)
 
