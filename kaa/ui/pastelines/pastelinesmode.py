@@ -84,6 +84,8 @@ class PasteLinesMode(dialogmode.DialogMode):
         s = self.document.gettext(f, t)
 
         self.target.document.mode.edit_commands.put_string(self.target, s)
+        w.screen.selection.clear()
+
         kaa.app.messagebar.set_message("{} letters inserted".format(t-f))
 
         popup = w.get_label('popup')

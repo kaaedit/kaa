@@ -155,7 +155,7 @@ class TextEditorWindow(Window):
         h, w = self._cwnd.getmaxyx()
 
         rows = list(self.screen.get_visible_rows())
-        cur_sel = self.screen.selection.get_range()
+        cur_sel = self.screen.selection.get_selrange()
 
         theme = self.document.mode.theme
         defaultcolor = theme.get_style('default').cui_colorattr
@@ -178,11 +178,11 @@ class TextEditorWindow(Window):
         _, cursorrow = self.screen.getrow(self.cursor.pos)
 
 
-        rectangular = self.screen.selection.rectangular
+        rectangular = self.screen.selection.is_rectangular()
         selfrom = selto = colfrom = colto = -1
 
         if not rectangular:
-            selrange = self.screen.selection.get_range()
+            selrange = self.screen.selection.get_selrange()
             if selrange:
                 selfrom, selto = selrange
         else:

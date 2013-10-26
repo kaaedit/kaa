@@ -43,6 +43,8 @@ class ToolCommands(Commands):
                     universal_newlines=True)
 
                 wnd.document.mode.edit_commands.put_string(wnd, ret)
+                wnd.screen.selection.clear()
+                
                 kaa.app.messagebar.set_message(
                     "{} letters inserted".format(len(ret)))
 

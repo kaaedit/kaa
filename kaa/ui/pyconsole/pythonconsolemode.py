@@ -87,7 +87,7 @@ class PythonConsoleMode(pythonmode.PythonMode):
     @norerun
     def exec_script(self, wnd):
         if wnd.screen.selection.is_selected():
-            f, t = wnd.screen.selection.get_range()
+            f, t = wnd.screen.selection.get_selrange()
             s = wnd.document.gettext(f, t)
         else:
             s = wnd.document.gettext(0, wnd.document.endpos())

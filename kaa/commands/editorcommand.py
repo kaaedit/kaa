@@ -1,3 +1,4 @@
+import itertools
 import re
 import unicodedata
 import pyjf3
@@ -264,12 +265,19 @@ class ScreenCommands(Commands):
     @command('selection.set-mark')
     @norerun
     def selection_set_mark(self, wnd):
-        wnd.screen.selection.set_mark(wnd.cursor.pos)
+        if not wnd.screen.selection.has_mark():
+            wnd.screen.selection.set_mark(wnd.cursor.pos)
+        else:
+            wnd.screen.selection.set_mark(None)
 
     @command('selection.set-rectangle-mark')
     @norerun
     def selection_set_rectangle_mark(self, wnd):
-        wnd.screen.selection.set_rectangle_mark(wnd.cursor.pos)
+        if not wnd.screen.selection.has_mark():
+            wnd.screen.selection.set_rectangle_mark(wnd.cursor.pos)
+        else:
+            wnd.screen.selection.set_rectangle_mark(None)
+            
 
     @command('selection.all')
     @norerun
@@ -408,24 +416,80 @@ class EditCommands(Commands):
                                       cur_pos, wnd.cursor.pos)
             self.on_edited(wnd)
 
+    def replace_rect(self, wnd, repto):
+        if wnd.document.undo:
+            wnd.document.undo.beginblock()
+        try:
+            (posfrom, posto, colfrom, colto
+                ) = wnd.screen.selection.get_rect_range()
+
+            for s in repto:
+                if posto <= posfrom:
+                    break
+                    
+                sel = wnd.screen.selection.get_rect_selection(posfrom)
+                if sel:
+                    f, t, org = sel
+                    if org.endswith('\n'):
+                        t = max(f, t-1)
+                    self.replace_string(wnd, f, t, s)
+                    posto += (len(s) - (t-f))
+                posfrom = wnd.document.geteol(posfrom)
+        finally:
+            if wnd.document.undo:
+                wnd.document.undo.endblock()
+            
     def put_string(self, wnd, s):
         s = wnd.document.mode.filter_string(wnd, s)
 
-        sel = wnd.screen.selection.get_range()
-        wnd.screen.selection.clear()
-        if sel:
-            f, t = sel
-            self.replace_string(wnd, f, t, s)
+        if wnd.screen.selection.is_selected():
+            if wnd.screen.selection.is_rectangular():
+                if '\n' not in s:
+                    self.replace_rect(wnd, itertools.repeat(s))
+                else:
+                    self.replace_rect(wnd, s.split('\n'))
+                    
+            else:
+                sel = wnd.screen.selection.get_selrange()
+                f, t = sel
+                self.replace_string(wnd, f, t, s)
         else:
             self.insert_string(wnd, wnd.cursor.pos, s)
 
+
     def delete_sel(self, wnd):
-        sel = wnd.screen.selection.get_range()
-        wnd.screen.selection.clear()
-        if sel:
-            f, t = sel
-            self.delete_string(wnd, f, t)
+        if wnd.screen.selection.is_selected():
+            if not wnd.screen.selection.is_rectangular():
+                sel = wnd.screen.selection.get_selrange()
+                wnd.screen.selection.clear()
+                if sel:
+                    f, t = sel
+                    self.delete_string(wnd, f, t)
+                    return True
+            else:
+                return self._delete_rect_sel(wnd)
+
+    def _delete_rect_sel(self, wnd):
+        if wnd.document.undo:
+            wnd.document.undo.beginblock()
+        try:
+            (posfrom, posto, colfrom, colto
+                ) = wnd.screen.selection.get_rect_range()
+
+            while posfrom < posto:
+                sel = wnd.screen.selection.get_rect_selection(posfrom)
+                if sel:
+                    f, t, org = sel
+                    if org.endswith('\n'):
+                        t = max(f, t-1)
+                    self.delete_string(wnd, f, t)
+                    posto -= (t-f)
+                posfrom = wnd.document.geteol(posfrom)
+                
             return True
+        finally:
+            if wnd.document.undo:
+                wnd.document.undo.endblock()
 
     @command('edit.delete')
     def delete(self, wnd):
@@ -500,6 +564,7 @@ class EditCommands(Commands):
     def newline(self, wnd):
         if not wnd.document.mode.auto_indent:
             self.put_string(wnd, '\n')
+            wnd.screen.selection.clear()
             return
 
         wnd.screen.selection.clear()
@@ -510,6 +575,7 @@ class EditCommands(Commands):
         f, t = mode.get_indent_range(pos)
         if pos > t:
             self.put_string(wnd, '\t')
+            wnd.screen.selection.clear()
             return
 
         if f != t:
@@ -530,7 +596,8 @@ class EditCommands(Commands):
         tol, eol = doc.mode.get_line_sel(wnd)
         wnd.screen.selection.set_range(tol, eol)
 
-        wnd.document.undo.beginblock()
+        if wnd.document.undo:
+            wnd.document.undo.beginblock()
         try:
             mode = wnd.document.mode
             while tol < wnd.screen.selection.get_end():
@@ -544,8 +611,10 @@ class EditCommands(Commands):
                 self.replace_string(wnd, f, t, s, False)
                 tol = doc.geteol(tol)
         finally:
-            wnd.document.undo.endblock()
-        f, t = wnd.screen.selection.get_range()
+            if wnd.document.undo:
+                wnd.document.undo.endblock()
+                
+        f, t = wnd.screen.selection.get_selrange()
         wnd.cursor.setpos(f)
         wnd.cursor.savecol()
 
@@ -570,7 +639,8 @@ class EditCommands(Commands):
         tol, eol = doc.mode.get_line_sel(wnd)
         wnd.screen.selection.set_range(tol, eol)
 
-        wnd.document.undo.beginblock()
+        if wnd.document.undo:
+            wnd.document.undo.beginblock()
         try:
             mode = wnd.document.mode
             while tol < wnd.screen.selection.get_end():
@@ -586,8 +656,10 @@ class EditCommands(Commands):
 
                 tol = doc.geteol(tol)
         finally:
-            wnd.document.undo.endblock()
-        f, t = wnd.screen.selection.get_range()
+            if wnd.document.undo:
+                wnd.document.undo.endblock()
+                
+        f, t = wnd.screen.selection.get_selrange()
         wnd.cursor.setpos(f)
         wnd.cursor.savecol()
 
@@ -653,11 +725,29 @@ class EditCommands(Commands):
 
             self.on_edited(wnd)
 
+    def _get_sel(self, wnd):
+        if wnd.screen.selection.is_selected():
+            if not wnd.screen.selection.is_rectangular():
+                f, t =wnd.screen.selection.get_selrange()
+                return wnd.document.gettext(f, t)
+            else:
+                s = []
+                (posfrom, posto, colfrom, colto
+                    ) = wnd.screen.selection.get_rect_range()
+    
+                while posfrom < posto:
+                    sel = wnd.screen.selection.get_rect_selection(posfrom)
+                    if sel:
+                        f, t, org = sel
+                        s.append(org.rstrip('\n'))
+                    else:
+                        s.append('')
+                    posfrom = wnd.document.geteol(posfrom)
+
+                return '\n'.join(s)
+
     def _copy_sel(self, wnd):
-        sel = wnd.screen.selection.get_range()
-        if sel:
-            f, t = sel
-            kaa.app.clipboard = wnd.document.gettext(f, t)
+        kaa.app.clipboard = self._get_sel(wnd)
         
     @command('edit.copy')
     def copy(self, wnd):
@@ -678,37 +768,30 @@ class EditCommands(Commands):
 
     @command('edit.conv.upper')
     def conv_upper(self, wnd):
-        sel = wnd.screen.selection.get_range()
-        if sel:
-            f, t = sel
-            self.put_string(wnd, wnd.document.gettext(f, t).upper())
+        s = self._get_sel(wnd)
+        if s:
+            self.put_string(wnd, s.upper())
             wnd.screen.selection.clear()
 
     @command('edit.conv.lower')
     def conv_lower(self, wnd):
-        sel = wnd.screen.selection.get_range()
-        if sel:
-            f, t = sel
-            self.put_string(wnd, wnd.document.gettext(f, t).lower())
+        s = self._get_sel(wnd)
+        if s:
+            self.put_string(wnd, s.lower())
             wnd.screen.selection.clear()
 
     @command('edit.conv.nfkc')
     def conv_nfkc(self, wnd):
-        sel = wnd.screen.selection.get_range()
-        if sel:
-            f, t = sel
-            text = unicodedata.normalize('NFKC',
-                         wnd.document.gettext(f, t).lower())
-            self.put_string(wnd, text)
+        s = self._get_sel(wnd)
+        if s:
+            self.put_string(wnd, unicodedata.normalize('NFKC', s))
             wnd.screen.selection.clear()
 
     @command('edit.conv.full-width')
     def conv_fullwidth(self, wnd):
-        sel = wnd.screen.selection.get_range()
-        if sel:
-            f, t = sel
-            text = pyjf3.tofull(wnd.document.gettext(f, t).lower())
-            self.put_string(wnd, text)
+        s = self._get_sel(wnd)
+        if s:
+            self.put_string(wnd, pyjf3.tofull(s))
             wnd.screen.selection.clear()
 
 
@@ -727,7 +810,8 @@ class CodeCommands(Commands):
             tol, eol = wnd.document.mode.get_line_sel(wnd)
             wnd.screen.selection.set_range(tol, eol)
     
-            wnd.document.undo.beginblock()
+            if wnd.document.undo:
+                wnd.document.undo.beginblock()
             try:
                 mode = wnd.document.mode
                 while tol < wnd.screen.selection.get_end():
@@ -736,9 +820,10 @@ class CodeCommands(Commands):
                         update_cursor=False)
                     tol = wnd.document.geteol(tol)
             finally:
-                wnd.document.undo.endblock()
+                if wnd.document.undo:
+                    wnd.document.undo.endblock()
 
-            f, t = wnd.screen.selection.get_range()
+            f, t = wnd.screen.selection.get_selrange()
             wnd.cursor.setpos(f)
             wnd.cursor.savecol()
 
@@ -761,7 +846,8 @@ class CodeCommands(Commands):
             tol, eol = wnd.document.mode.get_line_sel(wnd)
             wnd.screen.selection.set_range(tol, eol)
     
-            wnd.document.undo.beginblock()
+            if wnd.document.undo:
+                wnd.document.undo.beginblock()
             try:
                 mode = wnd.document.mode
                 while tol < wnd.screen.selection.get_end():
@@ -772,9 +858,10 @@ class CodeCommands(Commands):
                             wnd, f, t, update_cursor=False)
                     tol = wnd.document.geteol(tol)
             finally:
-                wnd.document.undo.endblock()
+                if wnd.document.undo:
+                    wnd.document.undo.endblock()
 
-            f, t = wnd.screen.selection.get_range()
+            f, t = wnd.screen.selection.get_selrange()
             wnd.cursor.setpos(f)
             wnd.cursor.savecol()
 
@@ -808,11 +895,13 @@ class MacroCommands(Commands):
         if not kaa.app.macro.get_commands():
             return
 
-        wnd.document.undo.beginblock()
+        if wnd.document.undo:
+            wnd.document.undo.beginblock()
         try:
             kaa.app.macro.run(wnd)
         finally:
-            wnd.document.undo.endblock()
+            if wnd.document.undo:
+                wnd.document.undo.endblock()
 
 
 class SearchCommands(Commands):
@@ -860,7 +949,7 @@ class SearchCommands(Commands):
             return
         if not modebase.SearchOption.LAST_SEARCH.text:
             return
-        range = wnd.screen.selection.get_range()
+        range = wnd.screen.selection.get_selrange()
         if range:
             start = range[0]+1
         else:
@@ -881,7 +970,7 @@ class SearchCommands(Commands):
             return
         if not modebase.SearchOption.LAST_SEARCH.text:
             return
-        range = wnd.screen.selection.get_range()
+        range = wnd.screen.selection.get_selrange()
         if range:
             start = range[1]-1
         else:

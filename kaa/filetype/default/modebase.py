@@ -222,6 +222,8 @@ class ModeBase:
 
     def on_str(self, wnd, s):
         self.edit_commands.put_string(wnd, s)
+        wnd.screen.selection.clear()
+
         if kaa.app.macro.is_recording():
             kaa.app.macro.record_string(s)
         if self.highlight:
@@ -347,7 +349,7 @@ class ModeBase:
 
     def get_line_sel(self, wnd):
         doc = wnd.document
-        sel = wnd.screen.selection.get_range()
+        sel = wnd.screen.selection.get_selrange()
         if not sel:
             f = t = wnd.cursor.pos
         else:

@@ -349,8 +349,11 @@ Alt+k
    Delete the current line.
 
 Control+Space, Control+@
-   Set mark to select text region. Hit control+Space, control+@  or ESC to unset mark.
-   
+   Set mark to select text region. Hit control+Space, control+@ or ESC to unset mark.
+
+Alt+#
+   Set mark to select text rectangularly.
+
 Control+v
    Paste
 

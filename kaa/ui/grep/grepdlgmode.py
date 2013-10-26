@@ -142,7 +142,7 @@ class GrepDlgMode(dialogmode.DialogMode):
             config = kaa.app.config
 
             if wnd and wnd.screen.selection.is_selected():
-                f, t = wnd.screen.selection.get_range()
+                f, t = wnd.screen.selection.get_selrange()
                 s = wnd.document.gettext(f, t).split('\n')
                 if s:
                     s = s[0].strip()

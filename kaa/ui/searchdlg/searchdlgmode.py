@@ -98,14 +98,14 @@ class SearchDlgMode(dialogmode.DialogMode):
 
         self.target = target
         self.initialpos = target.cursor.pos
-        self.initialrange = target.screen.selection.get_range()
+        self.initialrange = target.screen.selection.get_selrange()
         self.lastsearch = None
         self.lasthit = None
         self.lastmatch = None
         self.option = modebase.SearchOption.LAST_SEARCH
 
         if target and target.screen.selection.is_selected():
-            f, t = target.screen.selection.get_range()
+            f, t = target.screen.selection.get_selrange()
             s = target.document.gettext(f, t).split('\n')
             if s:
                 s = s[0].strip()
@@ -571,7 +571,8 @@ class ReplaceDlgMode(SearchDlgMode):
         self.lastsearch = None
         newstr = self.get_replace_str()
 
-        self.target.document.undo.beginblock()
+        if self.target.document.undo:
+            self.target.document.undo.beginblock()
         pos = 0
         n = 0
         lastpos = None
@@ -588,7 +589,8 @@ class ReplaceDlgMode(SearchDlgMode):
                 else:
                     break
         finally:
-            self.target.document.undo.endblock()
+            if self.target.document.undo:
+                self.target.document.undo.endblock()
 
         if lastpos is not None:
             self.target.cursor.setpos(lastpos)

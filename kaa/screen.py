@@ -175,7 +175,7 @@ class Selection:
     def __init__(self, screen):
         self._marks = document.Marks()
         self.screen = screen
-        self.rectangular = False
+        self._rectangular = False
 
     def _get_cursor_start(self):
         return self._marks.get('start', None)
@@ -200,48 +200,50 @@ class Selection:
     def _get_mark(self):
         return self._marks.get('mark', None)
         
-    def _has_mark(self):
+    def has_mark(self):
         return self._get_mark() is not None
         
     def is_selected(self):
-        if self._is_cursor_started() or self._has_mark():
-            sel = self.get_range()
+        if self._is_cursor_started() or self.has_mark():
+            sel = self.get_selrange()
             if sel:
                 f, t, = sel
                 return f != t
-
+    def is_rectangular(self):
+        return self._rectangular
+        
     def set_mark(self, pos):
-        cur = self.get_range()
-        self.rectangular = False
+        cur = self.get_selrange()
+        self._rectangular = False
 
         self._set_mark(pos)
         if pos is not None:
             self._set_cursor_start(None)
-        if cur != self.get_range():
+        if cur != self.get_selrange():
             self.screen.style_updated()
             return True
             
     def set_rectangle_mark(self, pos):
         ret = self.set_mark(pos)
-        self.rectangular = True
+        self._rectangular = True
             
     def begin_cursor(self, pos):
         """Start cursor range selection if it was not started"""
         
-        if self._has_mark():
+        if self.has_mark():
             return
         
         if self._is_cursor_started():
             return
             
-        self.rectangular = False
+        self._rectangular = False
         self._set_cursor_start(pos)
         self._set_end(pos)
 
     def set_to(self, pos):
         """Update where selection to."""
 
-        if not self._has_mark() and not self._is_cursor_started():
+        if not self.has_mark() and not self._is_cursor_started():
             return
         changed = self.get_end() != pos
         self._set_end(pos)
@@ -274,7 +276,7 @@ class Selection:
         if changed:
             self.screen.style_updated()
 
-    def get_range(self):
+    def get_selrange(self):
         start = self._get_cursor_start()
         if start is None:
             start = self._get_mark()
@@ -286,7 +288,7 @@ class Selection:
         return tuple(sorted((start, end)))
 
     def set_range(self, f, t):
-        self.rectangular = False
+        self._rectangular = False
         start = self._get_cursor_start()
         end = self.get_end()
         if (start, end) != (f, t):
@@ -308,7 +310,7 @@ class Selection:
         return tol, eol, sum(dispcols[0:n])
 
     def get_rect_range(self):
-        sel = self.get_range()
+        sel = self.get_selrange()
         if not sel:
             return
         posfrom, _, col1 = self._calc_col(sel[0])
@@ -316,6 +318,41 @@ class Selection:
         colfrom, colto = (col1, col2) if (col1 < col2) else (col2, col1)
         
         return posfrom, posto, colfrom, colto
+        
+    def get_rect_selection(self, tol):
+        if not self.is_selected() or not self.is_rectangular():
+            return
+
+        posfrom, posto, colfrom, colto = self.get_rect_range()
+
+        if not (posfrom <= tol < posto):
+            return
+
+        eol, s = self.screen.document.getline(tol)
+        (dispchrs, dispcols, positions, intervals) = translate_chars(
+            tol, s, self.screen.document.mode.tab_width)
+
+        col = 0
+        for top, c in enumerate(dispcols):
+            if colfrom <= col:
+                top -= intervals[top]
+                break
+            col += c
+        else:
+            return
+
+        for end, c in enumerate(dispcols[top:]):
+            if colto <= col:
+                end = top + end
+                end -= intervals[end]
+                break
+            col += c
+        else:
+            end = len(dispcols)
+
+        toppos = positions[top] if top < len(dispcols) else eol
+        endpos = positions[end] if end < len(dispcols) else eol
+        return toppos, endpos, s[toppos-tol:endpos-tol]
         
     def on_document_updated(self, pos, inslen, dellen):
         self._marks.updated(pos, inslen, dellen)
