@@ -474,6 +474,16 @@ Links
 Version history
 =================
 
+0.4 - 2013.10.xx
+------------------
+
+- Start rectangular selection by Alt+'#' key.
+
+- `Window|Join` menu caused error.
+
+- `File|Save all` caused error.
+
+
 0.3.1 - 2013.10.25
 ------------------
 
