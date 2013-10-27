@@ -474,10 +474,10 @@ Links
 Version history
 =================
 
-0.4 - 2013.10.xx
-------------------
+0.4 - 2013.10.27
+-----------------
 
-- Start rectangular selection by Alt+'#' key.
+- Rectangular selection can be started by Alt+'#' key.
 
 - `Window|Join` menu caused error.
 
