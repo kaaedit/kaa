@@ -145,7 +145,6 @@ class FileInfo:
             info['pos'] = pos
             kaa.app.config.hist_filedisp.add(
                 self.fullpathname, info)
-            _trace(kaa.app.config.hist_filedisp.add)
 
 def select_mode(filename):
     ext = os.path.splitext(filename)[1].lower()
