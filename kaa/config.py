@@ -1,4 +1,4 @@
-import os, importlib, sqlite3
+import os, importlib, sqlite3, json
 import kaa
 from kaa import consts
 
@@ -41,10 +41,11 @@ class History:
         storage.conn.execute('''
             CREATE TABLE IF NOT EXISTS {}
                 (id INTEGER PRIMARY KEY,
-                value TEXT)'''.format(self.table_name))
+                value TEXT,
+                info  TEXT)'''.format(self.table_name))
         self.storage = storage
 
-    def add(self, value):
+    def add(self, value, info=None):
         if not value:
             return
 
@@ -53,17 +54,17 @@ class History:
             (value, ))
 
         self.storage.conn.execute('''
-            INSERT INTO {}(value) VALUES(?)'''.format(self.table_name),
-            (value,))
+            INSERT INTO {}(value, info) VALUES(?, ?)
+            '''.format(self.table_name), (value, json.dumps(info)))
 
         self.storage.conn.commit()
 
     def get(self):
         ret = self.storage.conn.execute('''
-            SELECT value FROM {} ORDER BY id DESC LIMIT ?
+            SELECT value, info FROM {} ORDER BY id DESC LIMIT ?
             '''.format(self.table_name),
             (self.MAX_HISTORY,))
-        return [value for value, in ret]
+        return [(value, json.loads(info)) for value,info in ret]
 
 class Config:
     FILETYPES = [
@@ -105,13 +106,13 @@ class Config:
         self.hist_storage = KaaHistoryStorage(
             os.path.join(self.HISTDIR, consts.HIST_DBNAME))
 
-        self.hist_files = History('files', self.hist_storage)
-        self.hist_dirs = History('dirs', self.hist_storage)
-        self.hist_searchstr = History('searchstr', self.hist_storage)
-        self.hist_replstr = History('replstr', self.hist_storage)
-        self.hist_grepstr = History('grepstr', self.hist_storage)
-        self.hist_grepdir = History('grepdir', self.hist_storage)
-        self.hist_grepfiles = History('grepfiles', self.hist_storage)
+        self.hist_files = History('filename', self.hist_storage)
+        self.hist_dirs = History('dirname', self.hist_storage)
+        self.hist_searchstr = History('search_text', self.hist_storage)
+        self.hist_replstr = History('repl_text', self.hist_storage)
+        self.hist_grepstr = History('grep_text', self.hist_storage)
+        self.hist_grepdir = History('grep_dir', self.hist_storage)
+        self.hist_grepfiles = History('grep_filename', self.hist_storage)
 
     def get_mode_packages(self):
         for pkgname in self.FILETYPES:

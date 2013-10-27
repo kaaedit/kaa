@@ -251,7 +251,7 @@ class FileCommands(Commands):
                 self.file_open(wnd, filename)
 
         files = []
-        for p in kaa.app.config.hist_files.get():
+        for p, info in kaa.app.config.hist_files.get():
             path = os.path.relpath(p)
             files.append(path if len(path) < len(p) else p)
 
@@ -269,7 +269,7 @@ class FileCommands(Commands):
                 self.file_open(wnd, filename)
 
         files = []
-        for p in kaa.app.config.hist_dirs.get():
+        for p, info in kaa.app.config.hist_dirs.get():
             path = os.path.relpath(p)
             files.append(path if len(path) < len(p) else p)
 
