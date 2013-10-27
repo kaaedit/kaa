@@ -123,7 +123,7 @@ def show_console():
 
     cons.mode.output = output
 
-    frame = kaa.app.show_doc(cons)
+    frame = kaa.app.show_doc(cons).get_label('frame')
     frame.splitter.split(vert=False, doc=output)
 
     kaa.app.messagebar.set_message('Hit alt+Enter to execute script.')

@@ -129,6 +129,11 @@ class ModeBase:
     def on_add_window(self, wnd):
         self.editmode_insert(wnd)
 
+    def on_del_window(self, wnd):
+        if len(self.document.wnds) == 1:
+            if self.DOCUMENT_MODE and self.document.fileinfo:
+                self.document.fileinfo.save_screenloc(wnd.screen.pos)
+
     def register_keys(self, keybind, keys):
         for d in keys:
             keybind.add_keybind(d)

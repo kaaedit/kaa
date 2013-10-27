@@ -137,6 +137,16 @@ class FileInfo:
         self.encoding = kaa.app.config.DEFAULT_ENCODING
         self.newline= kaa.app.config.DEFAULT_NEWLINE
 
+    def save_screenloc(self, pos):
+        if self.fullpathname:
+            info = kaa.app.config.hist_filedisp.find(self.fullpathname)
+            if not info:
+                info = {}
+            info['pos'] = pos
+            kaa.app.config.hist_filedisp.add(
+                self.fullpathname, info)
+            _trace(kaa.app.config.hist_filedisp.add)
+
 def select_mode(filename):
     ext = os.path.splitext(filename)[1].lower()
 

@@ -1,5 +1,19 @@
-import os
+import os, functools
 
+
+def ignore_errors(f):
+    @functools.wraps(f)
+    def wrapper(*args, **kwargs):
+        try:
+            return f(*args, **kwargs)
+        except Exception:
+            try:
+                kaa.log.exception('')
+            except Exception:
+                # Ignore error completely...
+                pass
+    return wrapper
+    
 def split_existing_dirs(path):
     path, p = os.path.split(path)
     rights = [p]

@@ -1,6 +1,6 @@
 import os, importlib, sqlite3, json
 import kaa
-from kaa import consts
+from kaa import consts, utils
 
 class KaaHistoryStorage:
     def __init__(self, filename):
@@ -25,6 +25,7 @@ class History:
 
         storage.add_history(self)
         
+    @utils.ignore_errors
     def close(self):
         ret = self.storage.conn.execute('''
             SELECT id FROM {} ORDER BY id DESC LIMIT ?
@@ -45,6 +46,7 @@ class History:
                 info  TEXT)'''.format(self.table_name))
         self.storage = storage
 
+    @utils.ignore_errors
     def add(self, value, info=None):
         if not value:
             return
@@ -66,6 +68,16 @@ class History:
             (self.MAX_HISTORY,))
         return [(value, json.loads(info)) for value,info in ret]
 
+    @utils.ignore_errors
+    def find(self, value):
+        ret = self.storage.conn.execute('''
+            SELECT info FROM {} WHERE value=?
+            '''.format(self.table_name),
+            (value,))
+
+        for info, in ret:
+            return json.loads(info)
+        
 class Config:
     FILETYPES = [
         'kaa.filetype.default',
@@ -107,6 +119,7 @@ class Config:
             os.path.join(self.HISTDIR, consts.HIST_DBNAME))
 
         self.hist_files = History('filename', self.hist_storage)
+        self.hist_filedisp = History('filedisp', self.hist_storage)
         self.hist_dirs = History('dirname', self.hist_storage)
         self.hist_searchstr = History('search_text', self.hist_storage)
         self.hist_replstr = History('repl_text', self.hist_storage)

@@ -178,7 +178,7 @@ class MainFrame(Window, kaa.context.ContextRoot):
         self.set_activeframe(frame)
         self.on_console_resized()
 
-        return frame
+        return editorwnd
 
     def set_activeframe(self, frame):
         self.activeframe = frame

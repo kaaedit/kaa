@@ -31,13 +31,22 @@ class FileCommands(Commands):
 
                         MAX_FILENAMEMSG_LEN = 50
                         if len(filename) > MAX_FILENAMEMSG_LEN:
-                            filename = '...{}'.format(filename[MAX_FILENAMEMSG_LEN*-1:])
+                            filename = '...{}'.format(
+                                filename[MAX_FILENAMEMSG_LEN*-1:])
 
-                        kaa.app.messagebar.set_message("`{}` is already opened.".format(filename))
+                        kaa.app.messagebar.set_message(
+                            "`{}` is already opened.".format(filename))
                         return
 
             doc = kaa.app.storage.openfile(filename, encoding, newline)
-            kaa.app.show_doc(doc)
+            editor = kaa.app.show_doc(doc)
+            if doc.fileinfo:
+                disp = kaa.app.config.hist_filedisp.find(
+                        doc.fileinfo.fullpathname)
+                if disp:
+                    loc = disp.get('pos', 0)
+                    loc = min(loc, doc.endpos())
+                    editor.cursor.setpos(loc, top=True)
 
         from kaa.ui.selectfile import selectfile
         selectfile.show_fileopen(filename, cb)
@@ -284,6 +293,11 @@ class FileCommands(Commands):
 
         def saved(canceled):
             if not canceled:
+                try:
+                    for frame in wnd.mainframe.childframes:
+                        frame.destroy()
+                except Exception:
+                    kaa.log.exception('Error in file.quit:')
                 kaa.app.quit()
         
         docs = self.get_current_documents(wnd)

@@ -138,6 +138,7 @@ class Document:
         self.mode.on_add_window(wnd)
 
     def del_window(self, wnd):
+        self.mode.on_del_window(wnd)
         self.wnds.remove(wnd)
         if self.mode.CLOSE_ON_DEL_WINDOW:
             if not self.wnds:
