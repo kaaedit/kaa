@@ -95,7 +95,12 @@ class TextEditorWindow(Window):
         self._update_activeframe()
 
         if self.document:
-            curses.curs_set(self.document.mode.get_cursor_visibility())
+            try:
+                curses.curs_set(self.document.mode.get_cursor_visibility())
+            except curses.error:
+                # curses.curs_set() occasionally fails if $TERM=xterm-color
+                pass
+
             # relocate cursor
             self.cursor.setpos(self.cursor.pos)
 
