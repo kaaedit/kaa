@@ -68,8 +68,8 @@ class KeyBind:
                     kaa.app.translate_key(mod, c) for mod, c in keys))
                 self.keylist.insert(0, (keys, commands))
 
-            except KaaError:
-                log.warning('Failed to load key', exc_info=True)
+            except KaaError as e:
+                log.warning('Failed to load key: {}'.format(e))
 
     def get_command(self, keys):
         for cmdkeys, commands in self.get_candidates(keys):
