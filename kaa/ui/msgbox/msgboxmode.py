@@ -8,12 +8,13 @@ from kaa.ui.dialog import dialogmode
 MsgBoxThemes = {
     'default':
         Theme([
-            Style('default', 'Base3', 'Blue'),
-            Style('underline', 'Base3', 'Blue', underline=True),
-            Style('caption', 'Base3', 'Blue'),
-            Style('button', 'Base3', 'Blue', nowrap=True),
-            Style('button.shortcut', 'Base3', 'Violet', underline=True,
-                  bold=True, nowrap=True),
+            Style('default', 'Base3', 'Base02'),
+            Style('underline', 'Base3', 'Base02', underline=True),
+            Style('caption', 'Base3', 'Base02'),
+            Style('separator', 'Blue', 'Base02', nowrap=True),
+            Style('button', 'Blue', 'Base02', nowrap=True),
+            Style('button.shortcut', 'Blue', 'Base02', underline=True,
+                   bold=True, nowrap=True),
         ])
 }
 
@@ -102,7 +103,7 @@ class MsgBoxMode(dialogmode.DialogMode):
                           shortcut_style='button.shortcut')
 
             if n < len(options)-1:
-                f.append_text('default', cls.SEPARATOR)
+                f.append_text('separator', cls.SEPARATOR)
 
         f.append_text('default', ' ')
         f.append_text('underline', ' ')

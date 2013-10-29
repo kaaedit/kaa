@@ -230,8 +230,8 @@ def grep(option, target):
 GrepThemes = {
     'default':
         Theme([
-            Style('grep-filename', 'Base03', 'Cyan'),
-            Style('grep-lineno', 'Base03', 'Cyan'),
+            Style('grep-filename', 'Base02', 'Cyan'),
+            Style('grep-lineno', 'Base02', 'Cyan'),
             Style('grep-match', 'Base3', 'Blue'),
         ])
 }

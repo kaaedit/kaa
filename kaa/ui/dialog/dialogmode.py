@@ -6,7 +6,7 @@ from kaa.theme import Theme, Style
 DialogThemes = {
     'default':
         Theme([
-            Style('default', 'base03', 'base2', False, False),
+            Style('default', 'base3', 'base02', False, False),
     ])
 }
 

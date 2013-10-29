@@ -1,6 +1,6 @@
 import keyword, copy
 from kaa.filetype.default import defaultmode, theme
-from kaa.highlight import Tokenizer, Keywords, Span
+from kaa.highlight import Tokenizer, Keywords, Span, SingleToken
 from kaa.theme import Theme, Style
 from gappedbuf import re as gre
 from kaa.command import Commands, command, norec, norerun
@@ -42,9 +42,9 @@ class PythonMode(defaultmode.DefaultMode):
     def init_tokenizers(self):
         self.tokenizers = [Tokenizer([
             Keywords('python-statement', 'keyword', keyword.kwlist),
-
+            SingleToken('python-numeric', 'number',
+                         [r'\b[0-9]+(\.[0-9]*)*\b', r'\b\.[0-9]+\b']), 
             Span('python-comment', 'comment', r'\#', '$', escape='\\'),
-
             Span('python-string31', 'string', 'r?"""', '"""', escape='\\'),
             Span('python-string32', 'string', "r?'''", "'''", escape='\\'),
             Span('python-string11', 'string', 'r?"', '"', escape='\\'),

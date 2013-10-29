@@ -11,5 +11,6 @@ DefaultThemes = {
             Style('keyword', 'Magenta', 'default'),
             Style('comment', 'blue', 'default'),
             Style('string', 'Green', 'default'),
+            Style('number', 'Yellow', 'default'),
         ])
 }

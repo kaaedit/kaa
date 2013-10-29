@@ -12,7 +12,7 @@ HTMLThemes = {
         Theme([
             Style('html-decl', 'Red', 'default'),
             Style('html-tag', 'Magenta', 'default'),
-            Style('html-attrname', 'blue', 'default', bold=True),
+            Style('html-attrname', 'green', 'default'),
             Style('html-attrvalue', 'yellow', 'default'),
         ])
 }

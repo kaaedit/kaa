@@ -10,7 +10,7 @@ FileInfoThemes = {
     'default':
         Theme([
             Style('default', 'Base3', 'Blue'),
-            Style('caption', 'Base3', 'Cyan', bold=True),
+            Style('caption', 'Base02', 'Violet'),
             Style('button', 'Base3', 'Blue'),
             Style('shortcut', 'Base3', 'Orange', bold=True,
                   underline=True, nowrap=True),

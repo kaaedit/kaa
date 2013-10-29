@@ -12,8 +12,8 @@ from gappedbuf.sre_constants import error as gre_error
 SearchThemes = {
     'default':
         Theme([
-            Style('default', 'Base03', 'Base2'),
-            Style('caption', 'Base3', 'Blue'),
+            Style('default', 'Base3', 'Base02'),
+            Style('caption', 'Base3', 'Violet'),
             Style('button', 'Base3', 'Base01', rjust=True, nowrap=True),
             Style('button.shortcut', 'Base3', 'Base01', underline=True,
                     rjust=True, nowrap=True),

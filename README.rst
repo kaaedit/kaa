@@ -474,6 +474,18 @@ Links
 Version history
 =================
 
+0.5 - 2013.10.
+-----------------
+
+- Locate position of opend file where the file located last time.
+
+- Changed history database scheme. By this change, old history will be deleted.
+
+- Changed default color setting.
+
+- Kaa didn't run if $TERM is 'xterm-color' on Mac.
+
+
 0.4 - 2013.10.27
 -----------------
 
