@@ -9,8 +9,8 @@ from kaa.keyboard import *
 InputlineThemes = {
     'default':
         Theme([
-            Style('default', 'Base03', 'Base3'),
-            Style('caption', 'Base3', 'Violet', bold=True),
+            Style('default', 'Base03', 'Base2'),
+            Style('caption', 'Base3', 'Red'),
         ])
 }
 

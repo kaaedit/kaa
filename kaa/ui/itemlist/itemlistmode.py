@@ -8,7 +8,7 @@ ItemListThemes = {
     'default':
         Theme([
             Style('default', 'Base3', 'Cyan'),
-            Style('caption', 'Base3', 'Violet', bold=True),
+            Style('caption', 'Base3', 'Red'),
             Style('activemark', 'Base3', 'Yellow', nowrap=True, bold=True),
             Style('nonactivemark', 'Base3', 'Cyan', nowrap=True, bold=True),
         ])

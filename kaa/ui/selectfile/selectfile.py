@@ -78,11 +78,11 @@ class DirFileListMode(selectlist.SelectItemList):
 FileNameDlgThemes = {
     'default':
         Theme([
-            Style('default', 'Base03', 'Base3'),
-            Style('caption', 'Base3', 'Violet', bold=True),
+            Style('default', 'Base03', 'Base2'),
+            Style('caption', 'Base3', 'Red'),
 
             Style('option', 'Base3', 'Base01', rjust=True, nowrap=True),
-            Style('option.shortcut', 'Base3', 'Orange', underline=True,
+            Style('option.shortcut', 'Base3', 'Base01', underline=True,
                   bold=True, rjust=True, nowrap=True),
         ])
 }

@@ -31,13 +31,15 @@ GrepOption.LASTOPTION = GrepOption()
 GrepThemes = {
     'default':
         Theme([
-            Style('default', 'Base03', 'Base3'),
-            Style('caption', 'Base3', 'Violet', bold=True),
+            Style('default', 'Base03', 'Base2'),
+            Style('caption', 'Base3', 'Red'),
             Style('checkbox', 'Base3', 'Base01', rjust=True, nowrap=True),
             Style('checkbox.checked', 'Base3', 'Orange', rjust=True,
                   nowrap=True),
-            Style('checkbox.shortcut', 'Base3', 'Orange', underline=True,
+            Style('checkbox.shortcut', 'Base3', 'Base01', underline=True,
                   rjust=True, nowrap=True),
+            Style('checkbox.shortcut.checked', 'Base3', 'Orange', 
+                  underline=True, rjust=True, nowrap=True),
         ])
 }
 
@@ -276,26 +278,26 @@ class GrepDlgMode(dialogmode.DialogMode):
 
     def _get_optionstylename(self, f):
         if f:
-            return 'checkbox.checked'
+            return '.checked'
         else:
-            return 'checkbox'
+            return ''
 
     def update_option_style(self):
         style = self._get_optionstylename(self.option.tree)
-        self._set_option_style('search-tree', style, 'shortcut-t',
-                               'checkbox.shortcut')
+        self._set_option_style('search-tree', 'checkbox'+style, 'shortcut-t',
+                               'checkbox.shortcut'+style)
 
         style = self._get_optionstylename(self.option.ignorecase)
-        self._set_option_style('ignore-case', style, 'shortcut-i',
-                               'checkbox.shortcut')
+        self._set_option_style('ignore-case', 'checkbox'+style, 'shortcut-i',
+                               'checkbox.shortcut'+style)
 
         style = self._get_optionstylename(self.option.word)
-        self._set_option_style('word', style, 'shortcut-w',
-                               'checkbox.shortcut')
+        self._set_option_style('word', 'checkbox'+style, 'shortcut-w',
+                               'checkbox.shortcut'+style)
 
         style = self._get_optionstylename(self.option.regex)
-        self._set_option_style('regex', style, 'shortcut-r',
-                               'checkbox.shortcut')
+        self._set_option_style('regex', 'checkbox'+style, 'shortcut-r',
+                               'checkbox.shortcut'+style)
 
     def _option_updated(self):
         self.update_option_style()

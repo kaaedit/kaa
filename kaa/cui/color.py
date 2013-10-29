@@ -328,6 +328,18 @@ class SolarizedColorName(ColorName):
         self.COLOR256_TO_16[self.YELLOW] = curses.COLOR_YELLOW
         self.COLOR256_TO_16[self.WHITE] = curses.COLOR_WHITE
 
+        if self.num_colors < 256:
+            self.DEFAULT = -1
+            self.BLACK = curses.COLOR_BLACK
+            self.BLUE = curses.COLOR_BLUE
+            self.CYAN = curses.COLOR_CYAN
+            self.GREEN = curses.COLOR_GREEN
+            self.MAGENTA = curses.COLOR_MAGENTA
+            self.RED = curses.COLOR_RED
+            self.WHITE = curses.COLOR_WHITE
+            self.YELLOW = curses.COLOR_YELLOW
+
+
 class Colors:
     
     def __init__(self):
