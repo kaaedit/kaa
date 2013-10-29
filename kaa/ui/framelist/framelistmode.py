@@ -9,7 +9,7 @@ FrameListThemes = {
     'default':
         Theme([
             Style('default', 'Base3', 'Cyan'),
-            Style('caption', 'red', 'Cyan'),
+            Style('caption', 'Blue', 'Cyan'),
             Style('activemark', 'Base3', 'Yellow', nowrap=True),
             Style('nonactivemark', 'Base3', 'Cyan', nowrap=True),
         ])

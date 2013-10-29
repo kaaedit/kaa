@@ -58,7 +58,7 @@ FilterListInputDlgThemes = {
     'default':
         Theme([
             Style('default', 'Base03', 'Base2'),
-            Style('caption', 'Base3', 'Red'),
+            Style('caption', 'Base3', 'Blue'),
         ])
 }
 

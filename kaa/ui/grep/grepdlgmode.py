@@ -32,7 +32,7 @@ GrepThemes = {
     'default':
         Theme([
             Style('default', 'Base03', 'Base2'),
-            Style('caption', 'Base3', 'Red'),
+            Style('caption', 'Base3', 'Blue'),
             Style('checkbox', 'Base3', 'Base01', rjust=True, nowrap=True),
             Style('checkbox.checked', 'Base3', 'Orange', rjust=True,
                   nowrap=True),
