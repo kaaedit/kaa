@@ -5,8 +5,8 @@ from kaa.theme import Theme, Style
 MessageBarThemes = {
     'default':
         Theme([
-            Style('default', 'red', 'default', bold=True),
-            Style('rec', 'white', 'red'),
+            Style('default', 'Base3', 'Base03'),
+            Style('rec', 'Base3', 'red'),
         ])
 }
 

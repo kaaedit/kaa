@@ -36,10 +36,10 @@ class StatusInfo:
 StatusBarThemes = {
     'default':
         Theme([
-            Style('default', 'red', 'cyan', False, False),
-            Style('filename', 'red', 'cyan'),
-            Style('msg', 'default', 'default'),
-            Style('modename', 'magenta', 'green', rjust=True),
+            Style('default', 'Base3', 'cyan', bold=True),
+            Style('filename', 'Base3', 'cyan', bold=True),
+            Style('msg', 'Base3', 'Cyan', bold=True),
+            Style('modename', 'Base3', 'Blue', rjust=True),
         ])
 }
 

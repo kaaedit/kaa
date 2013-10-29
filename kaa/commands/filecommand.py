@@ -265,7 +265,7 @@ class FileCommands(Commands):
             files.append(path if len(path) < len(p) else p)
 
         from kaa.ui.selectlist import filterlist
-        filterlist.show_listdlg('Recently used files', 
+        filterlist.show_listdlg('Recently used files:', 
             files, cb)
 
     @command('file.recently-used-directories')
@@ -283,7 +283,7 @@ class FileCommands(Commands):
             files.append(path if len(path) < len(p) else p)
 
         from kaa.ui.selectlist import filterlist
-        filterlist.show_listdlg('Recently used directories', 
+        filterlist.show_listdlg('Recently used directories:', 
             files, cb)
 
     @command('file.quit')

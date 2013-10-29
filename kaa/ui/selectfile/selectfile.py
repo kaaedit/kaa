@@ -17,12 +17,12 @@ import kaa.filetype.default.keybind
 FileOpenDlgThemes = {
     'default':
         Theme([
-            Style('default', 'default', 'Blue'),
-            Style('caption', 'Red', 'Yellow'),
-            Style('dirname', 'Green', 'Blue', nowrap=True),
-            Style('dirname-active', 'White', 'Red', nowrap=True),
-            Style('filename', 'Yellow', 'Blue', nowrap=True),
-            Style('filename-active', 'Yellow', 'Red', nowrap=True),
+            Style('default', 'Base03', 'Cyan'),
+            Style('caption', 'Base3', 'Violet', bold=True),
+            Style('dirname', 'Base3', 'Cyan', nowrap=True, bold=True),
+            Style('dirname-active', 'Base3', 'Yellow', nowrap=True, bold=True),
+            Style('filename', 'Base3', 'Cyan', nowrap=True, bold=True),
+            Style('filename-active', 'Base3', 'Yellow', nowrap=True, bold=True),
         ])
 }
 
@@ -78,11 +78,11 @@ class DirFileListMode(selectlist.SelectItemList):
 FileNameDlgThemes = {
     'default':
         Theme([
-            Style('default', 'Red', 'Cyan'),
-            Style('caption', 'Red', 'Yellow'),
+            Style('default', 'Base03', 'Base3'),
+            Style('caption', 'Base3', 'Violet', bold=True),
 
-            Style('option', 'default', 'magenta', rjust=True, nowrap=True),
-            Style('option.shortcut', 'green', 'magenta', underline=True,
+            Style('option', 'Base3', 'Base01', rjust=True, nowrap=True),
+            Style('option.shortcut', 'Base3', 'Orange', underline=True,
                   bold=True, rjust=True, nowrap=True),
         ])
 }

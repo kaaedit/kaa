@@ -96,20 +96,29 @@ def main(stdscr):
 
     finally:
         _restore()
-        _trace('end')
 
+COLOR_ENVS = ('COLORTERM', 'XTERM_VERSION', 'ROXTERM_ID',
+             'KONSOLE_DBUS_SESSION')
 
 def _init_term():
     # http://fedoraproject.org/wiki/Features/256_Color_Terminals
-    term = os.environ.get('TERM')
-    if term in ('xterm', 'screen', 'Eterm'):
-        term = term+'-256color'
-        os.environ['TERM'] = term
-
-    if os.environ.get('TERM', '') == 'screen-256color':
-        termcap = os.environ.get('TERMCAP')
-        if termcap:
-            os.environ['TERMCAP'] = termcap.replace('Co#8', 'Co#256')
+    for env in COLOR_ENVS:
+        if os.environ.get(env):
+            has_color = True
+            break
+    else:
+        has_color = False
+        
+    if has_color:
+        term = os.environ.get('TERM')
+        if term in ('xterm', 'screen', 'Eterm'):
+            term = term+'-256color'
+            os.environ['TERM'] = term
+    
+        if os.environ.get('TERM', '') == 'screen-256color':
+            termcap = os.environ.get('TERMCAP')
+            if termcap:
+                os.environ['TERMCAP'] = termcap.replace('Co#8', 'Co#256')
     
 def run():
     if sys.version_info[:2] < (3, 3):

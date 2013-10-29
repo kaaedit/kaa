@@ -3,13 +3,13 @@ from kaa.theme import Theme, Style
 DefaultThemes = {
     'default':
         Theme([
-            Style('default', 'default', 'default', False, False),
-            Style('lineno', 'White', 'Blue', False, False),
-            Style('parenthesis_cur', 'White', 'Blue', False, False),
-            Style('parenthesis_match', 'Red', 'Yellow', False, False),
+            Style('default', 'default', 'default'),
+            Style('lineno', 'White', 'Blue'),
+            Style('parenthesis_cur', 'White', 'Blue'),
+            Style('parenthesis_match', 'Red', 'Yellow'),
 
-            Style('keyword', 'red', 'default'),
-            Style('comment', 'cyan', 'default'),
-            Style('string', 'green', 'default'),
+            Style('keyword', 'Magenta', 'default'),
+            Style('comment', 'blue', 'default'),
+            Style('string', 'Green', 'default'),
         ])
 }

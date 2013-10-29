@@ -8,10 +8,10 @@ from kaa.keyboard import *
 FrameListThemes = {
     'default':
         Theme([
-            Style('default', 'default', 'Blue'),
-            Style('caption', 'red', 'Blue'),
-            Style('activemark', 'default', 'red', nowrap=True),
-            Style('nonactivemark', 'default', 'Blue', nowrap=True),
+            Style('default', 'Base3', 'Cyan'),
+            Style('caption', 'red', 'Cyan'),
+            Style('activemark', 'Base3', 'Yellow', nowrap=True),
+            Style('nonactivemark', 'Base3', 'Cyan', nowrap=True),
         ])
 }
 

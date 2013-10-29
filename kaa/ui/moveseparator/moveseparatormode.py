@@ -7,7 +7,7 @@ from kaa.keyboard import *
 MoveSeparatorThemes = {
     'default':
         Theme([
-            Style('default', 'default', 'Blue'),
+            Style('default', 'Base3', 'Blue'),
         ])
 }
 

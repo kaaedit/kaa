@@ -12,13 +12,13 @@ from gappedbuf.sre_constants import error as gre_error
 SearchThemes = {
     'default':
         Theme([
-            Style('default', 'default', 'Blue'),
-            Style('caption', 'default', 'magenta'),
-            Style('checkbox', 'default', 'magenta', rjust=True, nowrap=True),
-            Style('checkbox.checked', 'yellow', 'red', bold=True, rjust=True,
+            Style('default', 'Base03', 'Base3'),
+            Style('caption', 'Base3', 'Violet', bold=True),
+            Style('checkbox', 'Base03', 'Base3', rjust=True, nowrap=True),
+            Style('checkbox.checked', 'Base3', 'Red', rjust=True,
                   nowrap=True),
-            Style('checkbox.shortcut', 'green', 'magenta', underline=True,
-                  bold=True, rjust=True, nowrap=True),
+            Style('checkbox.shortcut', 'Base3', 'Red', underline=True,
+                  rjust=True, nowrap=True),
         ])
 }
 

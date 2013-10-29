@@ -72,8 +72,8 @@ class CuiApp:
 
     def translate_theme(self, theme):
         for style in theme.styles.values():
-            fg, bg = (color.ColorName.get(style.fgcolor.upper()),
-                      color.ColorName.get(style.bgcolor.upper()))
+            fg, bg = (self.colors.colornames.get(style.fgcolor.upper()),
+                      self.colors.colornames.get(style.bgcolor.upper()))
             attr = self.colors.get_color(fg, bg)
             style.cui_colorattr = attr
 

@@ -14,10 +14,10 @@ import kaa.filetype.default.keybind
 FilterListThemes = {
     'default':
         Theme([
-            Style('default', 'default', 'Blue'),
-            Style('caption', 'Red', 'Yellow'),
-            Style('item', 'Yellow', 'Blue', nowrap=True),
-            Style('item-active', 'Yellow', 'Red', nowrap=True),
+            Style('default', 'Base3', 'Cyan'),
+            Style('caption', 'Base3', 'Cyan', bold=True),
+            Style('item', 'Base3', 'Cyan', nowrap=True, bold=True),
+            Style('item-active', 'Base3', 'Yellow', nowrap=True, bold=True),
         ])
 }
 
@@ -57,8 +57,8 @@ class FilterListMode(selectlist.SelectItemList):
 FilterListInputDlgThemes = {
     'default':
         Theme([
-            Style('default', 'Red', 'Cyan'),
-            Style('caption', 'Red', 'Yellow'),
+            Style('default', 'Base03', 'Base3'),
+            Style('caption', 'Base3', 'Violet', bold=True),
         ])
 }
 

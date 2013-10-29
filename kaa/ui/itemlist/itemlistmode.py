@@ -7,10 +7,10 @@ from kaa.keyboard import *
 ItemListThemes = {
     'default':
         Theme([
-            Style('default', 'default', 'Cyan'),
-            Style('caption', 'Magenta', 'Yellow'),
-            Style('activemark', 'black', 'Red', nowrap=True),
-            Style('nonactivemark', 'Red', 'Cyan', nowrap=True),
+            Style('default', 'Base3', 'Cyan'),
+            Style('caption', 'Base3', 'Violet', bold=True),
+            Style('activemark', 'Base3', 'Yellow', nowrap=True, bold=True),
+            Style('nonactivemark', 'Base3', 'Cyan', nowrap=True, bold=True),
         ])
 }
 

@@ -9,10 +9,10 @@ from kaa.ui.itemlist import itemlistmode
 FileInfoThemes = {
     'default':
         Theme([
-            Style('default', 'default', 'Blue'),
-            Style('caption', 'default', 'magenta'),
-            Style('button', 'yellow', 'red'),
-            Style('shortcut', 'green', 'red', bold=True,
+            Style('default', 'Base3', 'Blue'),
+            Style('caption', 'Base3', 'Cyan', bold=True),
+            Style('button', 'Base3', 'Blue'),
+            Style('shortcut', 'Base3', 'Orange', bold=True,
                   underline=True, nowrap=True),
         ])
 }
