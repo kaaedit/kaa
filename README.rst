@@ -87,8 +87,8 @@ To start kaa, type ::
 Terminal setting
 ================
 
-For Mac OS X
--------------
+Keyboard setting
+----------------
 
 Kaa uses alt key for keyboard shortcut like `alt+k`. On most of recent Windows or Linux terminal, alt key works just fine. But on Mac OS X, Terminal app should be configured:
 
@@ -104,13 +104,34 @@ Or, if you use iTerm2 on Mac, you should configure:
 3. Open the Keys tab.
 4. Check `Left option Key acts as: +Esc.` button.
 
-For Gnome Terminal(Ubuntu, etc.,)
-----------------------------------
-
 If you use Gnome terminal and wishes to access menu by F1 key, you should configure:
 
 1. Select Edit | Keyboard shortcuts menu.
 2. Scroll to the Help/Contents shortcut and change key from F1 to some another key.
+
+Color setting
+-------------
+
+Kaa looks better with 256 color mode of terminal emulator. With Terminal.app you can set 256 color mode:
+
+1. Select Preferences menu.
+2. Open the Settings tab.
+3. Select `xterm-256color` for `"Declare terminal as"` field.
+
+For iTerm2, you can:
+
+1. Select Preferences menu.
+2. Open the Profiles tab.
+3. Open the Terminal  tab.
+4. Select `xterm-256color` for `"Report terminal type"` field.
+
+Otherwise, you should manually update terminal setting. e.g., If you use bash, add following line to `~/.bashrc` file:
+
+.. code:: sh
+
+    export TERM=xterm-256color
+
+For detail, see http://www.pixelbeat.org/docs/terminal_colours/#256 to enable 256 color on your terminal.
 
 
 Usage
@@ -474,7 +495,7 @@ Links
 Version history
 =================
 
-0.5 - 2013.10.
+0.5 - 2013.10.30
 -----------------
 
 - Locate position of opend file where the file located last time.
@@ -483,7 +504,7 @@ Version history
 
 - Changed default color setting.
 
-- Kaa didn't run if $TERM is 'xterm-color' on Mac.
+- Kaa didn't run if $TERM is 'xterm-color'.
 
 
 0.4 - 2013.10.27
