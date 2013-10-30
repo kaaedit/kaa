@@ -1,4 +1,4 @@
-import os, re, collections
+import os, collections, fnmatch
 import kaa
 from kaa import document, encodingdef, utils, consts
 from kaa.ui.dialog import dialogmode
@@ -49,12 +49,9 @@ class DirFileListMode(selectlist.SelectItemList):
         self.dirs = [name+'/' for name in self.dirs]
 
     def set_filename(self, filename):
-        if filename:
-            try:
-                self.filterfunc = re.compile(filename, re.I).search
-            except re.error:
-                upper = filename.upper()
-                self.filterfunc = lambda s:s.upper() in upper
+        if filename.strip():
+            upper = filename.strip().upper()
+            self.filterfunc = lambda s:upper in s.upper()
         else:
             self.filterfunc = None
 
@@ -177,6 +174,9 @@ class FileOpenDlgCommands(Commands):
         if os.path.isdir(filename):
             if not filename.endswith(os.path.sep):
                 filename += os.path.sep
+        else:
+            kaa.app.messagebar.set_message('{} is not found.'.format(filename))
+            
         self.show_filename(wnd, filename)
 
 class FilenameEditCommands(editorcommand.EditCommands):
