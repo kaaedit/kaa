@@ -332,19 +332,13 @@ class ModeBase:
         tol = self.document.gettol(pos)
         ret = None
         for f, t, s in self.split_word(tol):
-            if s and s[0] in string.whitespace:
-                if pos < t:
-                    break
-                continue
-                
-            ret = (f, t)
-            if (pos <= f) or (pos < t):
-                if not ret:
-                    ret = (f, t)
-                break
-
-        if ret:
-            return ret
+            if pos <= t:
+                if s and s[0] not in string.whitespace:
+                    return f, t
+                else:
+                    # select next word after current whitespace.
+                    if pos < t:
+                        return
 
     def search_next(self, pos, searchinfo):
         regex = searchinfo.get_regex()
