@@ -498,7 +498,7 @@ Version history
 0.5 - 2013.10.30
 -----------------
 
-- Locate position of opend file where the file located last time.
+- Locate position of opened file where the file located last time.
 
 - Changed history database scheme. By this change, old history will be deleted.
 
