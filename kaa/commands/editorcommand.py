@@ -14,8 +14,19 @@ class CursorCommands(Commands):
     @command('cursor.right')
     @norerun
     def right(self, wnd):
+        if wnd.screen.selection.has_mark():
+            wnd.cursor.right()
+        elif wnd.screen.selection.is_selected():
+            range = wnd.screen.selection.get_selrange()
+            if wnd.cursor.pos >= range[1]:
+                wnd.cursor.right()
+            else:
+                wnd.cursor.setpos(wnd.cursor.adjust_nextpos(
+                                    wnd.cursor.pos, range[1]))
+        else:
+            wnd.cursor.right()
+            
         wnd.screen.selection.end_cursor()
-        wnd.cursor.right()
         wnd.screen.selection.set_to(wnd.cursor.pos)
 
     @command('cursor.right.select')
@@ -28,9 +39,21 @@ class CursorCommands(Commands):
     @command('cursor.left')
     @norerun
     def left(self, wnd):
+        if wnd.screen.selection.has_mark():
+            wnd.cursor.left()
+        elif wnd.screen.selection.is_selected():
+            range = wnd.screen.selection.get_selrange()
+            if wnd.cursor.pos <= range[0]:
+                wnd.cursor.left()
+            else:
+                wnd.cursor.setpos(wnd.cursor.adjust_nextpos(
+                                    wnd.cursor.pos, range[0]))
+        else:
+            wnd.cursor.left()
+            
         wnd.screen.selection.end_cursor()
-        wnd.cursor.left()
         wnd.screen.selection.set_to(wnd.cursor.pos)
+
 
     @command('cursor.left.select')
     @norerun
