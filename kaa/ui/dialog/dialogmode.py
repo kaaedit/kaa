@@ -25,8 +25,8 @@ DialogThemes = {
             Style('checkbox.shortcut.checked', 'Menu3', 'Menu2', 
                   underline=True, rjust=True, nowrap=True),
 
-            Style('selectitem', 'Yellow', 'Base02', nowrap=True),
-            Style('selectitem2', 'Cyan', 'Base02', nowrap=True),
+            Style('selectitem', 'Blue', 'Base02', nowrap=True),
+            Style('selectitem2', 'Yellow', 'Base02', nowrap=True),
             Style('selectitem-active', 'Base02', 'Yellow', nowrap=True),
     ])
 }

@@ -61,7 +61,7 @@ class SelectItemList(dialogmode.DialogMode):
             return
 
         if activate:
-            style = item.style+'-active'
+            style = item.activestyle
         else:
             style = item.style
 
