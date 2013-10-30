@@ -291,7 +291,6 @@ class ColorName:
     def __init__(self):
         self.COLOR256_TO_16 = self._COLOR256_TO_16[:]
         self.num_colors = curses.tigetnum('colors')
-        _trace(self.num_colors)
         
     def get(self, name):
         ret = getattr(self, name.upper())
@@ -329,6 +328,7 @@ class SolarizedColorName(ColorName):
         self.COLOR256_TO_16[self.WHITE] = curses.COLOR_WHITE
 
         if self.num_colors < 256:
+            # todo:
             self.DEFAULT = -1
             self.BLACK = curses.COLOR_BLACK
             self.BLUE = curses.COLOR_BLUE
@@ -339,6 +339,15 @@ class SolarizedColorName(ColorName):
             self.WHITE = curses.COLOR_WHITE
             self.YELLOW = curses.COLOR_YELLOW
 
+            self.ORANGE = curses.COLOR_MAGENTA
+            self.BASE02 = curses.COLOR_BLUE
+            self.MENU1 = curses.COLOR_CYAN
+            self.MENU2 = curses.COLOR_YELLOW
+            self.MENU3 = curses.COLOR_BLACK
+        else:
+            self.MENU1 = self.BLUE
+            self.MENU2 = self.ORANGE
+            self.MENU3 = self.BASE3
 
 class Colors:
     

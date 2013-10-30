@@ -14,10 +14,6 @@ import kaa.filetype.default.keybind
 FilterListThemes = {
     'default':
         Theme([
-            Style('default', 'Base02', 'Cyan'),
-            Style('caption', 'Base02', 'Cyan'),
-            Style('item', 'Base02', 'Cyan', nowrap=True),
-            Style('item-active', 'Base02', 'Yellow', nowrap=True),
         ])
 }
 
@@ -48,7 +44,7 @@ class FilterListMode(selectlist.SelectItemList):
         else:
             items = self.candidates[:]
 
-        items = [selectlist.SelectItem('item', s, s) for s in items]
+        items = [selectlist.SelectItem('selectitem', 'selectitem-active', s, s) for s in items]
         self.update_doc(items)
         if items:
             self.update_sel(wnd, items[0])
@@ -57,8 +53,6 @@ class FilterListMode(selectlist.SelectItemList):
 FilterListInputDlgThemes = {
     'default':
         Theme([
-            Style('default', 'Base3', 'Base02'),
-            Style('caption', 'Base3', 'Violet'),
         ])
 }
 

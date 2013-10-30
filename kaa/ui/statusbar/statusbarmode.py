@@ -8,10 +8,10 @@ class StatusInfo:
         self.infos = {
             'filename':'',
             'modified':'',
-            'modename': '',
             'lineno': 1,
             'linecount': 1,
             'col': 1,
+            'editmode': '',
         }
 
     def set_info(self, **values):
@@ -36,10 +36,10 @@ class StatusInfo:
 StatusBarThemes = {
     'default':
         Theme([
-            Style('default', 'Red', 'Violet'),
-            Style('filename', 'Base3', 'Violet'),
-            Style('msg', 'Red', 'Blue'),
-            Style('modename', 'Base3', 'Blue', rjust=True),
+            Style('default', 'Red', 'Base02'),
+            Style('filename', 'Menu1', 'Base02'),
+            Style('msg', 'Red', 'Base02'),
+            Style('editmode', 'Green', 'Base02', rjust=True),
         ])
 }
 
@@ -66,7 +66,7 @@ class StatusBarMode(modebase.ModeBase):
         self.document.delete(0, self.document.endpos())
         style_default = self.get_styleid('default')
         style_filename = self.get_styleid('filename')
-        style_modename = self.get_styleid('modename')
+        style_editmode = self.get_styleid('editmode')
 
         if d['filename']:
             self.document.append(d['filename'], style_filename)
@@ -77,7 +77,7 @@ class StatusBarMode(modebase.ModeBase):
         self.document.append(' ', style_default)
         self.document.append('[{lineno}:{col}] {linecount}'.format(**d), style_filename)
 
-        self.document.append(d['modename'], style_modename)
+        self.document.append(d['editmode'], style_editmode)
 
     def set_info(self, **values):
         ret = self.statusinfo.set_info(**values)

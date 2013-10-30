@@ -7,7 +7,6 @@ from kaa.keyboard import *
 MoveSeparatorThemes = {
     'default':
         Theme([
-            Style('default', 'Base3', 'Blue'),
         ])
 }
 
@@ -62,7 +61,7 @@ class MoveSeparatorMode(dialogmode.DialogMode):
         mode.target = target.splitter.parent
 
         f = dialogmode.FormBuilder(doc)
-        f.append_text('default', 'Hit cursor left/right key to resize window.')
+        f.append_text('caption', 'Hit cursor left/right key to resize window.')
         return doc
 
     def init_keybind(self):

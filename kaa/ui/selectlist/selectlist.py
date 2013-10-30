@@ -4,7 +4,7 @@ from kaa.ui.dialog import dialogmode
 
 
 SelectItem = collections.namedtuple(
-    'SelectItem', ['style', 'text', 'value'])
+    'SelectItem', ['style', 'activestyle', 'text', 'value'])
 
 class SelectItemList(dialogmode.DialogMode):
     USE_UNDO = False

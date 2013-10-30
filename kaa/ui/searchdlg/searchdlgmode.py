@@ -12,18 +12,6 @@ from gappedbuf.sre_constants import error as gre_error
 SearchThemes = {
     'default':
         Theme([
-            Style('default', 'Base3', 'Base02'),
-            Style('caption', 'Base3', 'Violet'),
-            Style('button', 'Base3', 'Base01', rjust=True, nowrap=True),
-            Style('button.shortcut', 'Base3', 'Base01', underline=True,
-                    rjust=True, nowrap=True),
-            Style('checkbox', 'Base3', 'Base01', rjust=True, nowrap=True),
-            Style('checkbox.checked', 'Base3', 'Orange', rjust=True,
-                  nowrap=True),
-            Style('checkbox.shortcut', 'Base3', 'Base01', underline=True,
-                  rjust=True, nowrap=True),
-            Style('checkbox.shortcut.checked', 'Base3', 'Orange', 
-                  underline=True,rjust=True, nowrap=True),
         ])
 }
 
@@ -162,7 +150,7 @@ class SearchDlgMode(dialogmode.DialogMode):
 
     def _build_input(self, f):
         # search text
-        f.append_text('caption', 'Search:')
+        f.append_text('caption', ' Search:')
         f.append_text('default', ' ')
         f.append_text('default', '', mark_pair='searchtext')
         f.append_text('default', ' ')

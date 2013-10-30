@@ -17,12 +17,6 @@ import kaa.filetype.default.keybind
 FileOpenDlgThemes = {
     'default':
         Theme([
-            Style('default', 'Base02', 'Cyan'),
-            Style('caption', 'Base3', 'Violet'),
-            Style('dirname', 'Base02', 'Cyan', nowrap=True),
-            Style('dirname-active', 'Base02', 'Yellow', nowrap=True),
-            Style('filename', 'Base02', 'Cyan', nowrap=True),
-            Style('filename-active', 'Base02', 'Yellow', nowrap=True),
         ])
 }
 
@@ -66,9 +60,9 @@ class DirFileListMode(selectlist.SelectItemList):
 
     def show_files(self, wnd):
         self.cursel = None
-        dirs = [selectlist.SelectItem('dirname', name, name)
+        dirs = [selectlist.SelectItem('selectitem', 'selectitem-active', name, name)
                     for name in self.dirs]
-        files = [selectlist.SelectItem('filename', name, name)
+        files = [selectlist.SelectItem('selectitem', 'selectitem-active', name, name)
                     for name in self.files]
         items = dirs + files
         if self.filterfunc:
@@ -78,12 +72,6 @@ class DirFileListMode(selectlist.SelectItemList):
 FileNameDlgThemes = {
     'default':
         Theme([
-            Style('default', 'Base3', 'Base02'),
-            Style('caption', 'Base3', 'Violet'),
-
-            Style('option', 'Base3', 'Base01', rjust=True, nowrap=True),
-            Style('option.shortcut', 'Base3', 'Base01', underline=True,
-                  bold=True, rjust=True, nowrap=True),
         ])
 }
 
@@ -222,12 +210,12 @@ class OpenFilenameDlgMode(dialogmode.DialogMode):
         f.append_text('default', filename, mark_pair='filename')
         f.append_text('default', ' ')
 
-        f.append_text('option', '[&Encoding:{}]'.format(mode.encoding), mark_pair='enc',
-                      shortcut_style='option.shortcut',
+        f.append_text('checkbox', '[&Encoding:{}]'.format(mode.encoding), mark_pair='enc',
+                      shortcut_style='checkbox.shortcut',
                       on_shortcut=lambda wnd:wnd.document.mode.select_encoding(wnd))
 
-        f.append_text('option', '[&Newline:{}]'.format(mode.newline), mark_pair='newline',
-                      shortcut_style='option.shortcut',
+        f.append_text('checkbox', '[&Newline:{}]'.format(mode.newline), mark_pair='newline',
+                      shortcut_style='checkbox.shortcut',
                       on_shortcut=lambda wnd:wnd.document.mode.select_newline(wnd))
 
         return doc

@@ -8,12 +8,10 @@ from kaa.ui.dialog import dialogmode
 MsgBoxThemes = {
     'default':
         Theme([
-            Style('default', 'Base3', 'Base02'),
             Style('underline', 'Base3', 'Base02', underline=True),
-            Style('caption', 'Base3', 'Base02'),
-            Style('separator', 'Blue', 'Base02', nowrap=True),
-            Style('button', 'Blue', 'Base02', nowrap=True),
-            Style('button.shortcut', 'Blue', 'Base02', underline=True,
+            Style('separator', 'Menu1', 'Base02', nowrap=True),
+            Style('button', 'Menu1', 'Base02', nowrap=True),
+            Style('button.shortcut', 'Menu1', 'Base02', underline=True,
                    bold=True, nowrap=True),
         ])
 }

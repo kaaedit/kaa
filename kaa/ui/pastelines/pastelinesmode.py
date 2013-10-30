@@ -9,8 +9,6 @@ from kaa.keyboard import *
 PasteLinesThemes = {
     'default':
         Theme([
-            Style('default', 'Base3', 'Base02'),
-            Style('caption', 'Base3', 'Violet'),
         ])
 }
 

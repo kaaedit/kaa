@@ -31,15 +31,6 @@ GrepOption.LASTOPTION = GrepOption()
 GrepThemes = {
     'default':
         Theme([
-            Style('default', 'Base3', 'Base02'),
-            Style('caption', 'Base3', 'Violet'),
-            Style('checkbox', 'Base3', 'Base01', rjust=True, nowrap=True),
-            Style('checkbox.checked', 'Base3', 'Orange', rjust=True,
-                  nowrap=True),
-            Style('checkbox.shortcut', 'Base3', 'Base01', underline=True,
-                  rjust=True, nowrap=True),
-            Style('checkbox.shortcut.checked', 'Base3', 'Orange', 
-                  underline=True, rjust=True, nowrap=True),
         ])
 }
 

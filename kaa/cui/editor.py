@@ -380,7 +380,7 @@ class TextEditorWindow(Window):
                 lineno=lineno,
                 col=col+1,
                 linecount=linecount,
-                modename=self.editmode.MODENAME,
+                editmode=self.editmode.MODENAME,
             )
 
             return updated
