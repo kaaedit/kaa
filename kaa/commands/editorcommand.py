@@ -324,12 +324,13 @@ class ScreenCommands(Commands):
     @command('selection.curword')
     @norerun
     def select_cur_word(self, wnd):
-        f, t = wnd.document.mode.get_word_at(wnd.cursor.pos)
+        ret = wnd.document.mode.get_word_at(wnd.cursor.pos)
+        if ret:
+            f, t = ret
+            f = wnd.cursor.adjust_nextpos(wnd.cursor.pos, f)
+            t = wnd.cursor.adjust_nextpos(wnd.cursor.pos, t)
 
-        f = wnd.cursor.adjust_nextpos(wnd.cursor.pos, f)
-        t = wnd.cursor.adjust_nextpos(wnd.cursor.pos, t)
-
-        wnd.screen.selection.set_range(f, t)
+            wnd.screen.selection.set_range(f, t)
 
     @command('selection.expand-sel')
     @norerun

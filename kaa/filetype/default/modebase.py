@@ -1,4 +1,4 @@
-import itertools, unicodedata
+import itertools, unicodedata, string
 
 import gappedbuf.re
 import kaa
@@ -330,11 +330,21 @@ class ModeBase:
 
     def get_word_at(self, pos):
         tol = self.document.gettol(pos)
+        ret = None
         for f, t, s in self.split_word(tol):
+            if s and s[0] in string.whitespace:
+                if pos < t:
+                    break
+                continue
+                
+            ret = (f, t)
             if (pos <= f) or (pos < t):
-                return f, t
+                if not ret:
+                    ret = (f, t)
+                break
 
-        return tol, self.document.geteol(tol)
+        if ret:
+            return ret
 
     def search_next(self, pos, searchinfo):
         regex = searchinfo.get_regex()
