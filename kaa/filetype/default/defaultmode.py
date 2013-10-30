@@ -152,7 +152,14 @@ class DefaultMode(modebase.ModeBase):
                 matchpos = self.find_match_parenthesis(pos)
                 if matchpos is not None:
                     d[matchpos] = self.get_styleid('parenthesis_match')
-
+            elif 1 < pos:
+                c = self.document.buf[pos-1]
+                if c in self.PARENTHESIS_CLOSE:
+                    d[pos-1] = self.get_styleid('parenthesis_cur')
+                    matchpos = self.find_match_parenthesis(pos-1)
+                    if matchpos is not None:
+                        d[matchpos] = self.get_styleid('parenthesis_match')
+                    
         if d != wnd.charattrs:
             wnd.charattrs = d
             wnd.screen.style_updated()
