@@ -60,10 +60,10 @@ class DirFileListMode(selectlist.SelectItemList):
 
     def show_files(self, wnd):
         self.cursel = None
-        dirs = [selectlist.SelectItem('selectitem', 'selectitem-active', name, name)
-                    for name in self.dirs]
-        files = [selectlist.SelectItem('selectitem', 'selectitem-active', name, name)
-                    for name in self.files]
+        dirs = [selectlist.SelectItem(
+                    'selectitem', 'selectitem-active', name, name) for name in self.dirs]
+        files = [selectlist.SelectItem(
+                    'selectitem2', 'selectitem-active', name, name) for name in self.files]
         items = dirs + files
         if self.filterfunc:
             items = [item for item in items if self.filterfunc(item.text)]
