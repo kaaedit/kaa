@@ -97,7 +97,7 @@ class Cursor:
         # Get next word break
         nextpos = self.wnd.document.endpos()
         for word in self.wnd.document.mode.split_word(pos):
-            f, t, chars = word
+            f, t, chars, cg = word
             nextpos = t
             if f == pos: # first word
                 # get next word
@@ -113,7 +113,7 @@ class Cursor:
         if pos == prevpos:
             prevpos -= 1
         else:
-            for f, t, chars in self.wnd.document.mode.split_word(tol):
+            for f, t, chars, cg in self.wnd.document.mode.split_word(tol):
                 #  This word is at after cursor pos
                 if pos <= f:
                     break

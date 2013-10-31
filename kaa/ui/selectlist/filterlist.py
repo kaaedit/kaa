@@ -30,7 +30,7 @@ class FilterListMode(selectlist.SelectItemList):
     def set_candidates(self, candidates):
         self.candidates = candidates[:]
 
-    def set_query(self, wnd, query):
+    def _filter_items(self, query):
         query = [f.upper() for f in query.split()]
         if query:
             items = []
@@ -44,7 +44,12 @@ class FilterListMode(selectlist.SelectItemList):
         else:
             items = self.candidates[:]
 
-        items = [selectlist.SelectItem('selectitem', 'selectitem-active', s, s) for s in items]
+        return items
+
+    def set_query(self, wnd, query):
+        items = self._filter_items(query)
+        items = [selectlist.SelectItem('selectitem', 'selectitem-active', s, s)
+                     for s in items]
         self.update_doc(items)
         if items:
             self.update_sel(wnd, items[0])
@@ -66,7 +71,9 @@ filterlistinputdlg_keys = {
 
 class FilterListInputDlgMode(dialogmode.DialogMode):
     MAX_INPUT_HEIGHT = 4
-
+    callback = None
+    INITIAL_MESSAGE = "Hit up/down to select item."
+    
     @classmethod
     def build(cls, caption, callback):
         buf = document.Buffer()
@@ -115,7 +122,7 @@ class FilterListInputDlgMode(dialogmode.DialogMode):
         wnd.set_cursor(cursor)
         wnd.cursor.setpos(self.document.marks['query'][1])
         wnd.set_label('query_field', self)
-        kaa.app.messagebar.set_message("Hit up/down to select item.")
+        kaa.app.messagebar.set_message(self.INITIAL_MESSAGE)
 
     def calc_position(self, wnd):
         w, h = wnd.getsize()
@@ -129,7 +136,8 @@ class FilterListInputDlgMode(dialogmode.DialogMode):
         popup = wnd.get_label('popup')
         popup.destroy()
         kaa.app.messagebar.set_message("")
-        self.callback(None)
+        if self.callback:
+            self.callback(None)
 
     def on_edited(self, wnd):
         filterlist = wnd.get_label('filterlist')
@@ -139,6 +147,12 @@ class FilterListInputDlgMode(dialogmode.DialogMode):
     def get_query(self):
         f, t = self.document.marks['query']
         return self.document.gettext(f, t)
+
+    def set_query(self, wnd, s):
+        wnd.screen.selection.clear()
+        f, t = self.document.marks['query']
+        self.document.replace(f, t, s)
+        wnd.cursor.setpos(f+len(s))
 
     @command('filterlistdlg.next')
     @norec
@@ -165,8 +179,8 @@ class FilterListInputDlgMode(dialogmode.DialogMode):
             popup = wnd.get_label('popup')
             popup.destroy()
 
-            self.callback(cur.value)
-
+            if self.callback:
+                self.callback(cur.value)
 
 
 def show_listdlg(title, candidates, callback):
@@ -175,11 +189,9 @@ def show_listdlg(title, candidates, callback):
     dlg = kaa.app.show_dialog(doc)
 
     filterlistdoc = FilterListMode.build()
-    dlg.add_doc('dlg_filterlist', 0, filterlistdoc)
+    list = dlg.add_doc('dlg_filterlist', 0, filterlistdoc)
     
     filterlistdoc.mode.set_candidates(candidates)
-
-    list = dlg.get_label('dlg_filterlist')
     filterlistdoc.mode.set_query(list, '')
     dlg.on_console_resized()
     

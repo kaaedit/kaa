@@ -107,4 +107,4 @@ class DialogWnd(_dialogwnd):
         self.set_label(label, input)
         input.show_doc(doc)
         self.inputs.insert(pos, input)
-
+        return input

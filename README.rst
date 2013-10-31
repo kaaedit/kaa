@@ -412,7 +412,10 @@ F3
     Search next
 
 Tab, Shift+Tab
-   Indent/dedent selection
+   Indent/dedent selection.
+
+Control+o
+     Word completion.
 
 Alt-M v
     Show text conversion menu.
@@ -424,7 +427,7 @@ Control+u Alt+!
 Replace dialog
 --------------
 
-When `regex` button is checked, `Replace` string is also regular expression string. In this case, special characters like `\\t` or `\\n` are converted to tab character and newline character. Also, backreference character will be replaced to substring matched group in the search string. For example, when search string is `'(a+)(b+)'` and replace string is `\2\1`,  matched string `aabb` will be replaced to `bbaa`.
+When `regex` button is checked, `Replace` string is also regular expression string. In this case, special characters like `\\t` or `\\n` are converted to tab character and newline character. Also, backreference character will be replaced to substring matched group in the search string. For example, when search string is `'(a+)(b+)'` and replace string is `'\\2\\1'`,  matched string `aabb` will be replaced to `bbaa`.
 
 
 Grep dialog
@@ -494,6 +497,14 @@ Links
 
 Version history
 =================
+
+0.6 - 2013.
+-----------------
+
+- Basic word completion wit ctrl+o.
+
+- Various minor changes.
+
 
 0.5 - 2013.10.30
 -----------------

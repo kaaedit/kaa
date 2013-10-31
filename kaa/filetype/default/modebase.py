@@ -1,4 +1,4 @@
-import itertools, unicodedata, string
+import itertools, unicodedata, collections
 
 import gappedbuf.re
 import kaa
@@ -298,19 +298,19 @@ class ModeBase:
         for key, chars in itertools.groupby(s, unicodedata.category):
             chars = ''.join(chars)
             end = begin + len(chars)
-            yield begin, end, chars
+            yield begin, end, chars, key
             begin = end
 
-    RE_WORDCHAR = r"(?P<WORDCHAR>[a-zA-Z0-9_]+)"
-    RE_WHITESPACE = r"(?P<WHITESPACE>[\t ]+)"
-    RE_LF = r"(?P<LF>\n)"
-    RE_HIRAGANA = r"(?P<HIRAGANA>[\u3040-\u309f\u30fc]+)"
-    RE_KATAKANA = r"(?P<KATAKANA>[\u30a0-\u30ff\u30fc]+)"
+    RE_WORDCHAR = r"(?P<_WORDCHAR>[a-zA-Z0-9_]+)"
+    RE_WHITESPACE = r"(?P<_WHITESPACE>[\t ]+)"
+    RE_LF = r"(?P<_LF>\n)"
+    RE_HIRAGANA = r"(?P<_HIRAGANA>[\u3040-\u309f\u30fc]+)"
+    RE_KATAKANA = r"(?P<_KATAKANA>[\u30a0-\u30ff\u30fc]+)"
 
     RE_SPLITWORD = gappedbuf.re.compile('|'.join((
         RE_WORDCHAR, RE_WHITESPACE, RE_LF, RE_HIRAGANA, RE_KATAKANA)))
 
-    def split_word(self, begin):
+    def split_word(self, begin, all=False):
         """yield word in the document until line ends"""
 
         for m in self.RE_SPLITWORD.finditer(self.document.buf, pos=begin):
@@ -320,10 +320,10 @@ class ModeBase:
                 yield from self._split_chars(begin, f)
             begin = t
 
-            yield (f, t, m.group())
+            yield (f, t, m.group(), m.lastgroup)
 
             # finish if we reach '\n'
-            if m.lastgroup == 'LF':
+            if not all and m.lastgroup == '_LF':
                 return
 
         yield from self._split_chars(begin, self.document.endpos())
@@ -331,14 +331,32 @@ class ModeBase:
     def get_word_at(self, pos):
         tol = self.document.gettol(pos)
         ret = None
-        for f, t, s in self.split_word(tol):
-            if pos <= t:
-                if s and s[0] not in string.whitespace:
-                    return f, t
-                else:
-                    # select next word after current whitespace.
-                    if pos < t:
+        for f, t, s, cg in self.split_word(tol):
+            if t <= pos:
+                if cg != '_WHITESPACE':
+                    ret = (f, t, cg)
+            elif cg == '_LF':
+                break
+            else:
+                if cg == '_WHITESPACE':
+                    if f == pos:
+                        return ret
+                    else:
                         return
+                return (f, t, cg)
+
+        if ret and ret[1] == pos:
+            return ret
+
+    def get_word_list(self):
+        words = collections.OrderedDict()
+        for f, t, s, cg in self.split_word(0, all=True):
+            if cg in {'_WHITESPACE', '_LF'}:
+                continue
+            if cg[0] in '_LMN': # Letter, Mark, Number
+                if len(s) > 2:
+                    words[s] = None
+        return list(words.keys())
 
     def search_next(self, pos, searchinfo):
         regex = searchinfo.get_regex()

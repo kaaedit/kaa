@@ -1,6 +1,8 @@
 import collections
 from kaa import document
 from kaa.ui.dialog import dialogmode
+from kaa.keyboard import *
+from kaa.command import command, norec, norerun
 
 
 SelectItem = collections.namedtuple(
@@ -22,9 +24,6 @@ class SelectItemList(dialogmode.DialogMode):
         doc.setmode(mode)
 
         return doc
-
-    def init_keybind(self):
-        pass
 
     def get_cursor_visibility(self):
         return 0   # hide cursor
@@ -122,3 +121,4 @@ class SelectItemList(dialogmode.DialogMode):
 
         self.update_sel(wnd, newsel, bottom=bottom)
         return newsel
+

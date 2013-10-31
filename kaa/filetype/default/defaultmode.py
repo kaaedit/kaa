@@ -88,6 +88,56 @@ class DefaultMode(modebase.ModeBase):
         self.keybind_vi_visualmode.clear()
         self.keybind_vi_visuallinewisemode.clear()
 
+
+
+    HIGHLIGHTBATCH = 300
+    def run_highlight(self):
+        return self.highlight.update_style(self.document, batch=self.HIGHLIGHTBATCH)
+
+    def on_esc_pressed(self, wnd, event):
+        super().on_esc_pressed(wnd, event)
+        return
+
+        # Pressing esc key starts command mode.
+        is_available, command = self.get_command('editmode.command')
+        if command:
+            command(wnd)
+            if kaa.app.macro.is_recording():
+                kaa.app.macro.record(command)
+
+    def on_keypressed(self, wnd, event, s, commands, candidate):
+        if not commands and not candidate:
+            if not s or s[0] < ' ':
+                kaa.app.messagebar.set_message(kaa.app.SHOW_MENU_MESSAGE)
+
+        return super().on_keypressed(wnd, event, s, commands, candidate)
+
+    def _show_parenthesis(self, charattrs, pos):
+        charattrs[pos] = self.get_styleid('parenthesis_cur')
+        matchpos = self.find_match_parenthesis(pos)
+        if matchpos is not None:
+            charattrs[matchpos] = self.get_styleid('parenthesis_match')
+        
+    def update_charattr(self, wnd):
+        pos = wnd.cursor.pos
+        d = {}
+        c = ''
+        if pos < self.document.endpos():
+            c = self.document.buf[pos]
+
+        if c and (c in self.PARENTHESIS):
+            self._show_parenthesis(d, pos)
+        elif 1 < pos:
+            c = self.document.buf[pos-1]
+            if c in self.PARENTHESIS_CLOSE:
+                self._show_parenthesis(d, pos-1)
+                    
+        if d != wnd.charattrs:
+            wnd.charattrs = d
+            wnd.screen.style_updated()
+            return True
+
+
     PARENTHESIS_OPEN = '({['
     PARENTHESIS_CLOSE = ')}]'
     PARENTHESIS = PARENTHESIS_OPEN + PARENTHESIS_CLOSE
@@ -142,49 +192,4 @@ class DefaultMode(modebase.ModeBase):
             if d.get(key) == 0:
                 return pos
 
-    def update_charattr(self, wnd):
-        pos = wnd.cursor.pos
-        d = {}
-        if pos < self.document.endpos():
-            c = self.document.buf[pos]
-            if c in self.PARENTHESIS:
-                d[pos] = self.get_styleid('parenthesis_cur')
-                matchpos = self.find_match_parenthesis(pos)
-                if matchpos is not None:
-                    d[matchpos] = self.get_styleid('parenthesis_match')
-            elif 1 < pos:
-                c = self.document.buf[pos-1]
-                if c in self.PARENTHESIS_CLOSE:
-                    d[pos-1] = self.get_styleid('parenthesis_cur')
-                    matchpos = self.find_match_parenthesis(pos-1)
-                    if matchpos is not None:
-                        d[matchpos] = self.get_styleid('parenthesis_match')
-                    
-        if d != wnd.charattrs:
-            wnd.charattrs = d
-            wnd.screen.style_updated()
-            return True
-
-
-    HIGHLIGHTBATCH = 300
-    def run_highlight(self):
-        return self.highlight.update_style(self.document, batch=self.HIGHLIGHTBATCH)
-
-    def on_esc_pressed(self, wnd, event):
-        super().on_esc_pressed(wnd, event)
-        return
-
-        # Pressing esc key starts command mode.
-        is_available, command = self.get_command('editmode.command')
-        if command:
-            command(wnd)
-            if kaa.app.macro.is_recording():
-                kaa.app.macro.record(command)
-
-    def on_keypressed(self, wnd, event, s, commands, candidate):
-        if not commands and not candidate:
-            if not s or s[0] < ' ':
-                kaa.app.messagebar.set_message(kaa.app.SHOW_MENU_MESSAGE)
-
-        return super().on_keypressed(wnd, event, s, commands, candidate)
             

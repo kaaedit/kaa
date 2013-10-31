@@ -326,7 +326,7 @@ class ScreenCommands(Commands):
     def select_cur_word(self, wnd):
         ret = wnd.document.mode.get_word_at(wnd.cursor.pos)
         if ret:
-            f, t = ret
+            f, t, cg = ret
             f = wnd.cursor.adjust_nextpos(wnd.cursor.pos, f)
             t = wnd.cursor.adjust_nextpos(wnd.cursor.pos, t)
 
@@ -818,6 +818,12 @@ class EditCommands(Commands):
             self.put_string(wnd, pyjf3.tofull(s))
             wnd.screen.selection.clear()
 
+    @command('edit.word-complete')
+    @norec
+    @norerun
+    def complete(self, wnd):
+        from kaa.ui.wordcomplete import wordcompletemode
+        wordcompletemode.show_wordlist(wnd)
 
 class CodeCommands(Commands):
     @command('code.region.linecomment')

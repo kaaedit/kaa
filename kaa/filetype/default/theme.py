@@ -10,7 +10,7 @@ DefaultThemes = {
 
             Style('keyword', 'Red', 'default'),
             Style('comment', 'Cyan', 'default'),
-            Style('string', 'Green', 'default'),
-            Style('number', 'Yellow', 'default'),
+            Style('string', 'Blue', 'default'),
+            Style('number', 'Green', 'default'),
         ])
 }

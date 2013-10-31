@@ -82,6 +82,8 @@ addtional_edit_command_keys = {
 
     ((alt, 'm'), ('v')): 'menu.edit.convert',
     ((ctrl, 'u'), (alt, '!')): 'tools.execute-shell-command',
+
+    (ctrl, 'o'): 'edit.word-complete',
 }
 
 # macro commands
