@@ -300,6 +300,11 @@ class TextEditorWindow(Window):
         self.document.mode.on_cursor_located(self, retpos, y, x)
         return retpos, y, x
 
+    def get_cursor_loc(self):
+        y, x = self._cwnd.getyx()
+        u, l = self._cwnd.getbegyx()
+        return u+y, x+l
+        
     def linedown(self):
         if self.screen.linedown():
             self.draw_screen()

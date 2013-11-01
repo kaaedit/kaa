@@ -65,8 +65,8 @@ FilterListInputDlgThemes = {
 filterlistinputdlg_keys = {
     down: 'filterlistdlg.next',
     up: 'filterlistdlg.prev',
-    '\r': 'filterlistdlg.openfile',
-    '\n': 'filterlistdlg.openfile',
+    '\r': 'filterlistdlg.select',
+    '\n': 'filterlistdlg.select',
 }
 
 class FilterListInputDlgMode(dialogmode.DialogMode):
@@ -169,19 +169,23 @@ class FilterListInputDlgMode(dialogmode.DialogMode):
         filterlist = wnd.get_label('filterlist')
         filterlist.document.mode.sel_prev(filterlist)
 
-    @command('filterlistdlg.openfile')
+    def _selected(self, wnd, value):
+        popup = wnd.get_label('popup')
+        popup.destroy()
+
+        if self.callback:
+            self.callback(value)
+        
+    @command('filterlistdlg.select')
     @norec
     @norerun
-    def on_open(self, wnd):
+    def on_select(self, wnd):
         filterlist = wnd.get_label('filterlist')
         cur = filterlist.document.mode.cursel
         if cur:
-            popup = wnd.get_label('popup')
-            popup.destroy()
-
-            if self.callback:
-                self.callback(cur.value)
-
+            self._selected(wnd, cur.value)
+            return True
+        
 
 def show_listdlg(title, candidates, callback):
     doc = FilterListInputDlgMode.build(

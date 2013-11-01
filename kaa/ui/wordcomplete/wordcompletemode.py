@@ -29,6 +29,8 @@ workcomplete_keys = {
     (shift, tab): 'filterlistdlg.prev',
     '\r': 'wordcomplete.select',
     '\n': 'wordcomplete.select',
+    (alt, '\r'): 'wordcomplete.force_input',
+    (alt, '\n'): 'wordcomplete.force_input',
 }
 
 class WordCompleteInputMode(filterlist.FilterListInputDlgMode):
@@ -54,21 +56,37 @@ class WordCompleteInputMode(filterlist.FilterListInputDlgMode):
         super().init_keybind()
         self.keybind.add_keybind(workcomplete_keys)
     
+    def calc_position(self, wnd):
+        w, h = wnd.getsize()
+        height = self.calc_height(wnd)
+        height = min(height, self.MAX_INPUT_HEIGHT)
+
+        cury, curx = self.orgloc
+        if self.stack_upper:
+            top = max(0, cury-height)
+        else:
+            top = cury + 1
+
+        return 0, top, wnd.mainframe.width, top+height
+
     def start(self, list):
         words = self.target.document.mode.get_word_list()
         words.sort(key=lambda v:v.upper())
-        pos = self.target.cursor.pos
-        word = self.target.document.mode.get_word_at(pos)
+        self.orgpos = self.target.cursor.pos
 
-        self.wordpos = (pos, pos)
+        word = self.target.document.mode.get_word_at(self.orgpos)
+
+        self.wordpos = (self.orgpos, self.orgpos)
+        wnd = self.document.wnds[0]
         if word:
             f, t, cg = word
             if cg[0] in 'LMN': # Letter, Mark, Number
                 self.wordpos = (f, t)
+                
                 s = self.target.document.gettext(f, t)
                 if s:
-                    words = [w for w in words if w != s]
-                    self.set_query(self.document.wnds[0], s)
+                    self.target.screen.selection.set_range(f, t)
+                    self.set_query(wnd, s)
 
         list.document.mode.set_candidates(words)
         self.on_edited(self.document.wnds[0])
@@ -78,17 +96,44 @@ class WordCompleteInputMode(filterlist.FilterListInputDlgMode):
     @norec
     @norerun
     def selected(self, wnd):
+        self.target.screen.selection.clear()
         list = wnd.get_label('dlg_filterlist')
         sel = list.document.mode.cursel
         if sel:
-            wnd.document.mode.edit_commands.replace_string(
-                self.target, self.wordpos[0], self.wordpos[1], 
-                sel.text, update_cursor=True)
-            wnd.get_label('popup').destroy()
-        
+            s = sel.text
+        else:
+            s = self.get_query()
+            
+        wnd.document.mode.edit_commands.replace_string(
+            self.target, self.wordpos[0], self.wordpos[1], 
+            s, update_cursor=True)
+        wnd.get_label('popup').destroy()
+            
+    @command('wordcomplete.force_input')
+    @norec
+    @norerun
+    def force_input(self, wnd):
+        self.target.screen.selection.clear()
+        s = self.get_query()
+        wnd.document.mode.edit_commands.replace_string(
+            self.target, self.wordpos[0], self.wordpos[1], 
+            s, update_cursor=True)
+        self.target.screen.selection.clear()
+        wnd.get_label('popup').destroy()
+            
+    def on_esc_pressed(self, wnd, event):
+        self.target.screen.selection.clear()
+        super().on_esc_pressed(wnd, event)
 
 def show_wordlist(wnd):
     doc = WordCompleteInputMode.build(wnd)
+    doc.mode.orgloc = wnd.get_cursor_loc()
+
+    if doc.mode.orgloc[0] > (wnd.mainframe.height//2):
+        doc.mode.stack_upper = True
+    else:
+        doc.mode.stack_upper = False
+
     dlg = kaa.app.show_dialog(doc)
 
     filterlistdoc = WordCompleteList.build()

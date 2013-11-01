@@ -82,19 +82,16 @@ class DialogWnd(_dialogwnd):
     def on_console_resized(self):
         """Resize wnds"""
 
-        rects = [w.document.mode.calc_position(w) for w in self.inputs]
-        heights = [b-t for (l, t, r, b) in rects]
-
-        rc_input = self.input.document.mode.calc_position(self.input)
-
+        rc_input, rects = self.input.document.mode.resize_inputs(
+                                                self.input, self.inputs)
         l, t, r, b = rc_input
-        t = t - sum(heights)
+        if rects:
+            t = min(t, rects[0][1])
+            b = max(b, rects[-1][3])
         self.set_rect(l, t, r, b)
-
-        for w, (wl, wt, wr, wb) in zip(self.inputs, rects):
-            b = t + (wb - wt)
+        
+        for w, (l, t, r, b) in zip(self.inputs, rects):
             w.set_rect(l, t, r, b)
-            t = b + 1
 
         self.input.set_rect(*rc_input)
 

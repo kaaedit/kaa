@@ -60,8 +60,10 @@ def MarkRange(mark):
 class DialogMode(modebase.ModeBase):
     NO_WRAPINDENT = False
     autoshrink = False
-    min_height = 1
+    stack_upper = True
 
+    min_height = 1
+    
     def init_themes(self):
         super().init_themes()
         self.themes.append(DialogThemes)
@@ -94,6 +96,27 @@ class DialogMode(modebase.ModeBase):
 
         return 0, top, wnd.mainframe.width, top+height
 
+    def resize_inputs(self, wnd, inputs):
+        rects = [w.document.mode.calc_position(w) for w in inputs]
+        rc_input = self.calc_position(wnd)
+
+        heights = [b-t for (l, t, r, b) in rects]
+
+        l, t, r, b = rc_input
+
+        if self.stack_upper:
+            t = t - sum(heights)
+        else:
+            t = b
+
+        positions = []
+        for w, (wl, wt, wr, wb) in zip(inputs, rects):
+            b = t + (wb - wt)
+            positions.append((l, t, r, b))
+            t = b + 1
+
+        return rc_input, positions
+        
     def on_start(self, wnd):
         pass
 
