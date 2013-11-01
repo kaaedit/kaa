@@ -13,7 +13,6 @@ JavaScriptThemes = {
 def build_tokenizer(stop=None, terminates=None):
     JSTOKENS = namedtuple('jstokens', ['keywords', 'number', 'comment1', 'comment2',
                        'string1', 'string2', 'stop'])
-    build_tokenizer()
     keywords=Keywords('javasctipt-keyword', 'keyword',
          ["break", "case", "catch", "continue", "debugger", "default", "delete",
           "do", "else", "finally", "for", "function", "if", "in", "instanceof",

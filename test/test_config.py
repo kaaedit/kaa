@@ -14,7 +14,7 @@ class TestHistory:
             hist.add('1')
             hist.add('2')
 
-            assert hist.get() == ['2', '1']
+            assert hist.get() == [('2', None), ('1', None)]
             hist.close()
         finally:
             storage.close()

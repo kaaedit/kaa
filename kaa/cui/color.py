@@ -290,8 +290,11 @@ class ColorName:
 
     def __init__(self):
         self.COLOR256_TO_16 = self._COLOR256_TO_16[:]
-        self.num_colors = curses.tigetnum('colors')
-        
+        try:
+            self.num_colors = curses.tigetnum('colors')
+        except curses.error:
+            self.num_colors = 8
+
     def get(self, name):
         ret = getattr(self, name.upper())
         if ret < 0:   # name is 'default'

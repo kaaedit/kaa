@@ -9,21 +9,21 @@ class TestDefaultMode(kaa_testutils._TestScreenBase):
         doc.setmode(mode)
 
         assert (
-            (0, 4, '0123'),
-            (4, 8, '   \t'),
-            (8, 11, 'abc'),
-            (11, 12, ' '),
-            (12, 16, '::::'),
-            (16, 21, 'あいうえお'),
-            (21, 26, 'カキクケコ'),
-            (26, 28, '[[')) == tuple(mode.split_word(0))
+            (0, 4, '0123', '_WORDCHAR'),
+            (4, 8, '   \t', '_WHITESPACE'),
+            (8, 11, 'abc', '_WORDCHAR'),
+            (11, 12, ' ', '_WHITESPACE'),
+            (12, 16, '::::', 'Po'),
+            (16, 21, 'あいうえお', '_HIRAGANA'),
+            (21, 26, 'カキクケコ', '_KATAKANA'),
+            (26, 28, '[[', 'Ps'),) == tuple(mode.split_word(0))
 
         mode = self._getmode()
         doc = self._getdoc('\n\n')
         doc.setmode(mode)
 
         assert (
-            (0, 1, '\n'),
+            (0, 1, '\n', '_LF'),
         ) == tuple(mode.split_word(0))
 
     def test_search_next(self):
