@@ -247,6 +247,11 @@ class TextEditorWindow(Window):
                 self.add_str(letters, attr)
                 s += slen
 
+            if row.chars == '\n':
+                if selfrom <= row.posfrom < selto:
+                    if not rectangular or (colfrom == 0):
+                        self.add_str(' ', curses.A_REVERSE)
+            
             self._drawn_rows[row] = (n, cur_sel)
 
         if len(rows) < h:

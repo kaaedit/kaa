@@ -150,7 +150,7 @@ class SearchDlgMode(dialogmode.DialogMode):
 
     def _build_input(self, f):
         # search text
-        f.append_text('caption', ' Search:')
+        f.append_text('caption', 'Search:')
         f.append_text('default', ' ')
         f.append_text('default', '', mark_pair='searchtext')
         f.append_text('default', ' ')
@@ -420,7 +420,7 @@ class ReplaceDlgMode(SearchDlgMode):
 
     def _build_input(self, f):
         # search text
-        f.append_text('caption', 'Search:')
+        f.append_text('caption', 'Search: ')
         f.append_text('default', ' ')
         f.append_text('default', '', mark_pair='searchtext')
         f.append_text('default', '\n')
