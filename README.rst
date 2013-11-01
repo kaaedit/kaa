@@ -498,10 +498,12 @@ Links
 Version history
 =================
 
-0.6 - 2013.
------------------
+0.6 - 2013.11.1
+---------------
 
-- Basic word completion wit ctrl+o.
+- Basic word completion with ctrl+o.
+
+- Display blank line if the line is selected.
 
 - Various minor changes.
 
