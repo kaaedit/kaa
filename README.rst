@@ -90,7 +90,7 @@ Terminal setting
 Keyboard setting
 ----------------
 
-Kaa uses alt key for keyboard shortcut like `alt+k`. On most of recent Windows or Linux terminal, alt key works just fine. But on Mac OS X, Terminal app should be configured:
+Kaa uses alt key for keyboard shortcut like `alt+k`. On most of recent Windows or Linux terminal, alt key works out of box. But on Mac OS X, Terminal app should be configured:
 
 1. Select Preferences menu.
 2. Open the Settings tab.
@@ -427,7 +427,7 @@ Control+u Alt+!
 Replace dialog
 --------------
 
-When `regex` button is checked, `Replace` string is also regular expression string. In this case, special characters like `\\t` or `\\n` are converted to tab character and newline character. Also, backreference character will be replaced to substring matched group in the search string. For example, when search string is `'(a+)(b+)'` and replace string is `'\\2\\1'`,  matched string `aabb` will be replaced to `bbaa`.
+When `regex` button is checked, `Replace` string is also regular expression string. In this case, special characters like `\\t` or `\\n` are converted to tab character and newline character. Also, backreference character will be replaced to substring matched group in the search string. For example, when search string is `'(a+)(b+)'` and replace string is `'\\2\\1'`,  matched string `'aabb'` will be replaced. to `'bbaa'`.
 
 
 Grep dialog

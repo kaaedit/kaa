@@ -63,7 +63,7 @@ class WordCompleteInputMode(filterlist.FilterListInputDlgMode):
         self.wordpos = (pos, pos)
         if word:
             f, t, cg = word
-            if cg[0] in '_LMN': # Letter, Mark, Number
+            if cg[0] in 'LMN': # Letter, Mark, Number
                 self.wordpos = (f, t)
                 s = self.target.document.gettext(f, t)
                 if s:

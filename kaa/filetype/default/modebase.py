@@ -301,11 +301,11 @@ class ModeBase:
             yield begin, end, chars, key
             begin = end
 
-    RE_WORDCHAR = r"(?P<_WORDCHAR>[a-zA-Z0-9_]+)"
-    RE_WHITESPACE = r"(?P<_WHITESPACE>[\t ]+)"
+    RE_WORDCHAR = r"(?P<L_WORDCHAR>[a-zA-Z0-9_]+)"
+    RE_WHITESPACE = r"(?P<Z_WHITESPACE>[\t ]+)"
     RE_LF = r"(?P<_LF>\n)"
-    RE_HIRAGANA = r"(?P<_HIRAGANA>[\u3040-\u309f\u30fc]+)"
-    RE_KATAKANA = r"(?P<_KATAKANA>[\u30a0-\u30ff\u30fc]+)"
+    RE_HIRAGANA = r"(?P<L_HIRAGANA>[\u3040-\u309f\u30fc]+)"
+    RE_KATAKANA = r"(?P<L_KATAKANA>[\u30a0-\u30ff\u30fc]+)"
 
     RE_SPLITWORD = gappedbuf.re.compile('|'.join((
         RE_WORDCHAR, RE_WHITESPACE, RE_LF, RE_HIRAGANA, RE_KATAKANA)))
@@ -333,12 +333,15 @@ class ModeBase:
         ret = None
         for f, t, s, cg in self.split_word(tol):
             if t <= pos:
-                if cg != '_WHITESPACE':
-                    ret = (f, t, cg)
+                if cg != 'Z_WHITESPACE':
+                    if t==pos and cg[0] == 'L':
+                        return (f, t, cg)
+                    else:
+                        ret = (f, t, cg)
             elif cg == '_LF':
                 break
             else:
-                if cg == '_WHITESPACE':
+                if cg == 'Z_WHITESPACE':
                     if f == pos:
                         return ret
                     else:
@@ -351,9 +354,9 @@ class ModeBase:
     def get_word_list(self):
         words = collections.OrderedDict()
         for f, t, s, cg in self.split_word(0, all=True):
-            if cg in {'_WHITESPACE', '_LF'}:
+            if cg in {'Z_WHITESPACE', '_LF'}:
                 continue
-            if cg[0] in '_LMN': # Letter, Mark, Number
+            if cg[0] in 'LMN': # Letter, Mark, Number
                 if len(s) > 2:
                     words[s] = None
         return list(words.keys())

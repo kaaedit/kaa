@@ -9,13 +9,13 @@ class TestDefaultMode(kaa_testutils._TestScreenBase):
         doc.setmode(mode)
 
         assert (
-            (0, 4, '0123', '_WORDCHAR'),
-            (4, 8, '   \t', '_WHITESPACE'),
-            (8, 11, 'abc', '_WORDCHAR'),
-            (11, 12, ' ', '_WHITESPACE'),
+            (0, 4, '0123', 'L_WORDCHAR'),
+            (4, 8, '   \t', 'Z_WHITESPACE'),
+            (8, 11, 'abc', 'L_WORDCHAR'),
+            (11, 12, ' ', 'Z_WHITESPACE'),
             (12, 16, '::::', 'Po'),
-            (16, 21, 'あいうえお', '_HIRAGANA'),
-            (21, 26, 'カキクケコ', '_KATAKANA'),
+            (16, 21, 'あいうえお', 'L_HIRAGANA'),
+            (21, 26, 'カキクケコ', 'L_KATAKANA'),
             (26, 28, '[[', 'Ps'),) == tuple(mode.split_word(0))
 
         mode = self._getmode()
