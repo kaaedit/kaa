@@ -20,6 +20,8 @@ FilterListThemes = {
 
 class FilterListMode(selectlist.SelectItemList):
     SEP = '\n'
+    MAX_CAPTION_LEN = None
+
     def init_themes(self):
         super().init_themes()
         self.themes.append(FilterListThemes)
@@ -32,12 +34,26 @@ class FilterListMode(selectlist.SelectItemList):
         ws = re.compile(r'\s')
         self.candidates = []
         for c in candidates:
-            if not ws.search(c):
+            phrase = False
+            caption = c
+            if ws.search(caption):
+                phrase = True
+                caption = ' '.join(caption.split('\n'))
+                caption = caption.strip()
+                if not caption:
+                    caption = '(...)'
+
+            if self.MAX_CAPTION_LEN is not None:
+                if len(caption) > self.MAX_CAPTION_LEN:
+                    caption = caption[:self.MAX_CAPTION_LEN] + '...'
+                    phrase = True
+
+            if not phrase:
                 c = selectlist.SelectItem(
-                        'selectitem', 'selectitem-active', c, c)
+                        'selectitem', 'selectitem-active', caption, c)
             else:
                 c = selectlist.SelectItem(
-                        'selectphrase', 'selectphrase-active', c, c)
+                        'selectphrase', 'selectphrase-active', caption, c)
             self.candidates.append(c)
 
     def _filter_items(self, query):

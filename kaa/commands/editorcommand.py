@@ -771,7 +771,10 @@ class EditCommands(Commands):
                 return '\n'.join(s)
 
     def _copy_sel(self, wnd):
-        kaa.app.set_clipboard(self._get_sel(wnd))
+        sel = self._get_sel(wnd)
+        if sel:
+            kaa.app.set_clipboard(sel)
+        return sel
         
     @command('edit.copy')
     def copy(self, wnd):
@@ -780,8 +783,8 @@ class EditCommands(Commands):
 
     @command('edit.cut')
     def cut(self, wnd):
-        self._copy_sel(wnd)
-        self.delete_sel(wnd)
+        if self._copy_sel(wnd):
+            self.delete_sel(wnd)
         wnd.screen.selection.clear()
 
     @command('edit.paste')

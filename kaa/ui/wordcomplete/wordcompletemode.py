@@ -7,16 +7,15 @@ from kaa.keyboard import *
 
 
 class WordCompleteList(filterlist.FilterListMode):
+    MAX_CAPTION_LEN = 30
+
     def _filter_items(self, query):
-        query = [f.upper() for f in query.split()]
         if query:
+            query = query.upper()
             items = []
             for s in self.candidates:
                 u = s.text.upper()
-                for q in query:
-                    if not u.startswith(q):
-                        break
-                else:
+                if u.startswith(query):
                     items.append(s)
         else:
             items = self.candidates[:]
@@ -30,6 +29,7 @@ workcomplete_keys = {
     '\r': 'wordcomplete.select',
     '\n': 'wordcomplete.select',
 }
+
 
 class WordCompleteInputMode(filterlist.FilterListInputDlgMode):
     MAX_INPUT_HEIGHT = 4
@@ -75,7 +75,7 @@ class WordCompleteInputMode(filterlist.FilterListInputDlgMode):
         list = wnd.get_label('dlg_filterlist')
         sel = list.document.mode.cursel
         if sel:
-            s = sel.text
+            s = sel.value
         else:
             s = self.get_query()
             
@@ -114,13 +114,13 @@ class WordCompleteInputMode(filterlist.FilterListInputDlgMode):
                     self.set_query(wnd, s)
 
         words = self.target.document.mode.get_word_list()
-        for s in kaa.app.get_clipboards():
-            s = s.split('\n')[0]
-            words.append(s)
-
-        words.sort(key=lambda v:v.upper())
+        words.extend(kaa.app.get_clipboards())
 
         list.document.mode.set_candidates(words)
+        list.document.mode.candidates.sort(key=lambda v:v.text.upper())
+
+
+
         self.on_edited(self.document.wnds[0])
 
         list.get_label('popup').on_console_resized()

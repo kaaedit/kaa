@@ -29,8 +29,8 @@ DialogThemes = {
             Style('selectitem2', 'Yellow', 'Base02', nowrap=True),
             Style('selectitem-active', 'Base02', 'Yellow', nowrap=True),
 
-            Style('selectphrase', 'white', 'Blue', nowrap=True),
-            Style('selectphrase2', 'Yellow', 'Blue', nowrap=True),
+            Style('selectphrase', 'Black', 'Cyan', nowrap=True),
+            Style('selectphrase2', 'Yellow', 'Base02', nowrap=True),
             Style('selectphrase-active', 'Base02', 'Yellow', nowrap=True),
     ])
 }
