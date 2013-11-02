@@ -10,6 +10,7 @@ SelectItem = collections.namedtuple(
 
 class SelectItemList(dialogmode.DialogMode):
     USE_UNDO = False
+    NO_WRAPINDENT = False
     items = ()
     cursel = None
     filterfunc = None

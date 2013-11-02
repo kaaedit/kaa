@@ -97,6 +97,7 @@ class FilterListInputDlgMode(dialogmode.DialogMode):
     MAX_INPUT_HEIGHT = 4
     callback = None
     INITIAL_MESSAGE = "Hit up/down to select item."
+    NO_WRAPINDENT = False
     
     @classmethod
     def build(cls, caption, callback):
