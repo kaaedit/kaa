@@ -151,277 +151,298 @@ Typing escape key hides menu.
 File menu
 ++++++++++
 
-New
-   Create new file.
++------------+----------------------------------------------------+
+| New        | Create new file.                                   |
++------------+----------------------------------------------------+
+| Open       | Open existing file.                                |
++------------+----------------------------------------------------+
+| File info  | Show file information. Also update per file editor |
+|            | settings of tab/indentation.                       |
++------------+----------------------------------------------------+
+| Save       | Save current file.                                 |
++------------+----------------------------------------------------+
+| Save As    | Save current file as new file.                     |
++------------+----------------------------------------------------+
+| Close      | Close current frame.                               |
++------------+----------------------------------------------------+
+| Save All   | Save all current files.                            |
++------------+----------------------------------------------------+
+| Close All  | Close all frames.                                  |
++------------+----------------------------------------------------+
+| Recently   | Show recently used files menu.                     |
++------------+----------------------------------------------------+
+| Quit       | Terminate kaa.                                     |
++------------+----------------------------------------------------+
 
-Open
-   Open existing file.
-
-File info
-   Show file information. Also update per file editor settings of tab/indentation.
-
-Save
-   Save current file.
-
-Save As
-   Save current file as new file.
-
-Close
-   Close current frame.
-
-Save All
-   Save all current files.
-
-Close All
-   Close all frames.
-
-Recently
-    Show recently used files menu.
-
-Quit
-   Terminate kaa.
 
 
 Recently used files memu
 ~~~~~~~~~~~~~~~~~~~~~~~~
 
-Recently used files
-    Show list of recently used files.
-
-Recently used dirs.
-    Show list of recently used directories.
-
++---------------------+-----------------------------------------+
+| Recently used files | Show list of recently used files.       |
++---------------------+-----------------------------------------+
+| Recently used dirs  | Show list of recently used directories. |
++---------------------+-----------------------------------------+
 
 Edit menu
 +++++++++
 
-Cut
-   Cut selected text.
-
-Copy
-   Copy selected text.
-   
-Paste
-   Paste from clipboard.
-
-Undo
-   Undo last modification.
-
-Redo
-   Redo last undo.
-
-Search
-    Search text.
-    
-Replace
-    Replace text.
-
-Convert
-    Show text convert menu
-
++---------------------+-----------------------------------------+
+| Cut                 | Cut selected text.                      |
++---------------------+-----------------------------------------+
+| Copy                | Copy selected text.                     |
++---------------------+-----------------------------------------+
+| Paste               | Paste from clipboard.                   |
++---------------------+-----------------------------------------+
+| Undo                | Undo last modification.                 |
++---------------------+-----------------------------------------+
+| Redo                | Redo last undo.                         |
++---------------------+-----------------------------------------+
+| Search              | Search text.                            |
++---------------------+-----------------------------------------+
+| Replace             | Replace text.                           |
++---------------------+-----------------------------------------+
+| Convert             | Show text convert menu.                 |
++---------------------+-----------------------------------------+
 
 Text convert menu
 ~~~~~~~~~~~~~~~~~~~~
 
-Upper
-    Convert selected text to upper case.
-
-Lower
-    Convert selected text to lower case.
-
-Normalization
-    Convert selected text to Unicode Normalization Forms(NFKC).
-
-Full-width
-    Convert alphabet and numbers in the selected text to full-width character.
++---------------+----------------------------------------------------+
+| Upper         | Convert selected text to upper case.               |
++---------------+----------------------------------------------------+
+| Lower         | Convert selected text to lower case.               |
++---------------+----------------------------------------------------+
+| Normalization | Convert selected text to Unicode Normalization     |
+|               | Forms(NFKC).                                       |
++---------------+----------------------------------------------------+
+| Full-width    | Convert alphabet and numbers in the selected text  |
+|               | to full-width character.                           |
++---------------+----------------------------------------------------+
 
 
 Code memu
 +++++++++
 
-Comment
-    Insert line comment character at top of lines in selected regin.
-    
-Uncomment
-    Delete line comment character at top of lines in selected regin.
++---------------+----------------------------------------------------+
+| Comment       | Insert line comment character at top of lines in   |
+|               | selected regin.                                    |
++---------------+----------------------------------------------------+
+| Uncomment     | Delete line comment character at top of lines in   |
+|               | selected regin.                                    |
++---------------+----------------------------------------------------+
 
 
 Macro menu
 ++++++++++
 
-Start record
-   Start macro recording.
-
-End record
-   End macro recording.
-
-Run macro
-   Run last macro.
++---------------+----------------------------------------------------+
+| Start record  | Start macro recording.                             |
++---------------+----------------------------------------------------+
+| End record    | End macro recording.                               |
++---------------+----------------------------------------------------+
+| Run macro     | Run last macro.                                    |
++---------------+----------------------------------------------------+
 
 
 Tools menu
 ++++++++++
 
-Python console
-    Execute Python script.
-
-Grep
-   Search text from disk.
-
-Paste lines
-   Insert lines of text without auto indentation.
-
-Shell command
-   Execute external shell command and insert the output.
++----------------+------------------------------------------------+
+| Python console | Execute Python script.                         |
++----------------+------------------------------------------------+
+| Grep           | Search text from disk.                         |
++----------------+------------------------------------------------+
+| Paste lines    | Insert lines of text without auto indentation. |
++----------------+------------------------------------------------+
+| Shell command  | Execute external shell command and insert the  |
+|                | output.                                        |
++----------------+------------------------------------------------+
 
 
 Window menu
 +++++++++++
 
-Frame list
-   Show list of frame windows. Use left/right arrow key to change active frame.
-
-Split vert
-   Split current window vertically.
-
-Split horz
-   Split current window horizontally.
-
-Move separator
-   Move window separator. Use left/right arrow key to move separator.
-
-Next window
-   Activate next window.
-
-Join window
-   Join splitted window.
-
-Switch file
-   Switch content of active window.
++----------------+-------------------------------------------------+
+| Frame list     | Show list of frame windows. Use left/right      |
+|                | arrow key to change active frame.               |
++----------------+-------------------------------------------------+
+| Switch file    | Switch content of active window.                |
++----------------+-------------------------------------------------+
+| Split vert     | Split current window vertically.                |
++----------------+-------------------------------------------------+
+| Split horz     | Split current window horizontally.              |
++----------------+-------------------------------------------------+
+| Move separator | Move window separator. Use left/right arrow key | 
+|                | to move separator.                              |
++----------------+-------------------------------------------------+
+| Next window    | Activate next window.                           |
++----------------+-------------------------------------------------+
+| Join window    | Join splitted window.                           |
++----------------+-------------------------------------------------+
 
 
 Key bindings
 ------------
 
-Input mode
-+++++++++++
+Menu keys
++++++++++++++++++++
 
-F1, alt+/
-   Show menu.
++---------------+----------------------------------------------------+
+| F1, alt+/     | Show menu.                                         |
++---------------+----------------------------------------------------+
+| Alt-M v       | Show text conversion menu.                         |
++---------------+----------------------------------------------------+
 
-Arrow keys(up, down, left, right)
-   Move cursor.
 
-Shift+arrow keys
-   Select text.
+Cursor keys
+++++++++++++++++
 
-Control+left/right arrow keys
-   Move cursor to next/prev word boundary.
++--------------------+------------------------------------------------+
+| left, Control+b    | Cursor left.                                   |
++--------------------+------------------------------------------------+
+| right, Control+f   | Cursor right.                                  |
++--------------------+------------------------------------------------+
+| up                 | Cursor up.                                     |
++--------------------+------------------------------------------------+
+| down               | Cursor down.                                   |
++--------------------+------------------------------------------------+
+| Control+p          | Move cursor to previous physical line.         |
++--------------------+------------------------------------------------+
+| Control+n          | Move cursor to next physical line.             |
++--------------------+------------------------------------------------+
+| Control+left,      | Word left                                      |
+| Alt+b              |                                                |
++--------------------+------------------------------------------------+
+| Control+right,     | Move cursor to next/prev word boundary.        |
+| Alt+f              |                                                |
++--------------------+------------------------------------------------+
+| Alt+p, Page up     | Previous page.                                 |
++--------------------+------------------------------------------------+
+| Alt+n, Page down   | Next page.                                     |
++--------------------+------------------------------------------------+
+| Home               | Move cursor to top of line.                    |
++--------------------+------------------------------------------------+
+| End                | Move cursor to end of line.                    |
++--------------------+------------------------------------------------+
+| Control+Home       | Move cursor to top of file.                    |
++--------------------+------------------------------------------------+
+| Control+End        | Move cursor to end of file.                    |
++--------------------+------------------------------------------------+
+| Control+g          | Go to line number.                             |
++--------------------+------------------------------------------------+
 
-Control+b, Control+f
-   Move cursor to left/right.
 
-Control+p, Control+n
-   Move cursor to previous/next physical line.
+Text selection
++++++++++++++++++++
 
-Alt+b, Alt+f
-   Move cursor to next/prev word boundary.
++--------------------+------------------------------------------------+
+| Shift+left         | Select to previous character.                  |
++--------------------+------------------------------------------------+
+| Shift+right        | Select to next character.                      |
++--------------------+------------------------------------------------+
+| Shift+up           | Select to previous line.                       |
++--------------------+------------------------------------------------+
+| Shift+down         | Select to next line.                           |
++--------------------+------------------------------------------------+
+| Shift+Home         | Select text to top of line.                    |
++--------------------+------------------------------------------------+
+| Shift+End          | Select text to end of line.                    |
++--------------------+------------------------------------------------+
+| Control+Shift+Home | Selects text to top of file.                   |
++--------------------+------------------------------------------------+
+| Control+Shift+End  | Select text to end of file.                    |
++--------------------+------------------------------------------------+
+| Control+Space,     | Set mark to select text region.                |
+| Control+@          |                                                |
++--------------------+------------------------------------------------+
+| Alt+#              | Set mark to select text rectangularly.         |
++--------------------+------------------------------------------------+
+| Alt+a              | Select all text.                               |
++--------------------+------------------------------------------------+
+| Alt+c              | Select current word at first press. Subsequent |
+|                    | press selects entire current line, and the     |
+|                    | third press selects entire text                |
++--------------------+------------------------------------------------+
 
-Alt+n, Alt+p
-    Page down/up
 
-Home, Shift+Home
-   Move cursor to top of line. Shift+Home selects text to top of line.
+Text deletion
+++++++++++++++++
 
-End, Shift+End
-   Move cursor to end of line. Shift+Home selects text to end of line.
++--------------------+------------------------------------------------+
+| Backspace,         | Delete the character to the left.              |
+| Control+h          |                                                |
++--------------------+------------------------------------------------+
+| Delete,            | Delete the character at the cursor.            |
+| Control+d          |                                                |
++--------------------+------------------------------------------------+
+| Control+backspace, | Delete the word to the left.                   |
+| Alt+h              |                                                |
++--------------------+------------------------------------------------+
+| Control+Delete,    | Delete the word to the right.                  |
+| Alt+d              |                                                |
++--------------------+------------------------------------------------+
+| Control+k          | Delete the line to the right.                  |
++--------------------+------------------------------------------------+
+| Alt+k              | Delete the current line.                       |
++--------------------+------------------------------------------------+
 
-Control+Home, Control+Shift+Home
-   Move cursor to top of file. Control+Shift+Home selects text to top of file.
 
-Control+End, Control+Shift+End
-   Move cursor to end of file. Control+Shift+End selects text to end of file.
+Clipboard
+++++++++++++++++
 
-Control+g
-   Go to line number.
++--------------------+------------------------------------------------+
+| Control+v          | Paste                                          |
++--------------------+------------------------------------------------+
+| Control+x          | Cut selection.                                 |
++--------------------+------------------------------------------------+
+| Control+c          | Copy selection                                 |
++--------------------+------------------------------------------------+
 
-Alt+a
-   Select all text.
 
-Alt+c
-   Select current word for first press, current line for second time and entire text for third time.
+Undo/Redo
++++++++++++++++
 
-Backspace, Control+h
-   Delete the character to the left.
++--------------------+------------------------------------------------+
+| Control+z          | Undo last change.                              |
++--------------------+------------------------------------------------+
+| Control+y          | Redo last undo.                                |
++--------------------+------------------------------------------------+
 
-Delete, Control+d
-   Delete the character at the cursor.
 
-Control+backspace, Alt+h
-   Delete the word to the left.
+Search/Replace
++++++++++++++++++
 
-Control+Delete, Alt+d
-   Delete the word to the right.
++--------------------+------------------------------------------------+
+| Control+s          | Search text.                                   |
++--------------------+------------------------------------------------+
+| Alt+s              | Replace text.                                  |
++--------------------+------------------------------------------------+
+| F2                 | Search prev.                                   |
++--------------------+------------------------------------------------+
+| F3                 | Search next.                                   |
++--------------------+------------------------------------------------+
 
-Control+k
-   Delete the line to the right.
+Other
++++++++++++++++
 
-Alt+k
-   Delete the current line.
++--------------------+------------------------------------------------+
+| F6                 | Toggle macro recording on/off.                 |
++--------------------+------------------------------------------------+
+| F5                 | Run macro.                                     |
++--------------------+------------------------------------------------+
+| Alt+.              | Run last execused edit command again.          |
++--------------------+------------------------------------------------+
+| Tab                | Indent selected lines.                         |
++--------------------+------------------------------------------------+
+| Shift+Tab          | Dedent selected lines.                         |
++--------------------+------------------------------------------------+
+| Control+o          | Word completion.                               |
++--------------------+------------------------------------------------+
+| Control+u Alt+!    | Execute command and insert the output.         |
++--------------------+------------------------------------------------+
 
-Control+Space, Control+@
-   Set mark to select text region. Hit control+Space, control+@ or ESC to unset mark.
-
-Alt+#
-   Set mark to select text rectangularly.
-
-Control+v
-   Paste
-
-Control+x
-   Cut selection
-
-Control+c
-   Copy selection
-
-Control+z
-   Undo last change.
-
-Control+y
-   Redo last undo.
-
-F6
-   Toggle macro recording on/off.
-
-F5
-   Run macro.
-
-Alt+.
-   Run last execused edit command again.
-
-Control+s
-   Search text.
-
-Alt+s
-   Replace text.
-
-F2
-    Search prev
-
-F3
-    Search next
-
-Tab, Shift+Tab
-   Indent/dedent selection.
-
-Control+o
-     Word completion.
-
-Alt-M v
-    Show text conversion menu.
-
-Control+u Alt+!
-    Execute command and insert the output.
 
 
 Replace dialog
