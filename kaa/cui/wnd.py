@@ -39,6 +39,7 @@ class Window(kaa.context.Context):
             w = max(1, w)
             h = max(1, h)
             self._cwnd = curses.newwin(h, w, y, x)
+
         self._panel = curses.panel.new_panel(self._cwnd)
         self._cwnd.keypad(1)
         self.parent = parent
@@ -151,7 +152,7 @@ class Window(kaa.context.Context):
         """Activate wnd"""
         self.bring_top()
         kaa.app.set_focus(self)
-
+        
     def set_rect(self, l, t, r, b):
         """Set window coordinate"""
 

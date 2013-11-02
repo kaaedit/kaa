@@ -10,14 +10,15 @@ from kaa.exceptions import KaaError
 class CuiApp:
     SHOW_MENU_MESSAGE = 'Type F1 or alt+/ for menu.'
     DEFAULT_THEME = 'default'
-
+    MAX_CLIPBOARD = 10
+    
     def __init__(self, config):
         self.config = config
         self._idleprocs = None
         self.colors = color.Colors()
         self.lastcommands = ()
         self.focus = None
-        self.clipboard = ''
+        self._clipboard = []
         self._quit = False
         self._theme_name = self.DEFAULT_THEME
         self.last_dir = '.'
@@ -141,6 +142,23 @@ class CuiApp:
 
     def get_activeframe(self):
         return self.mainframe.activeframe
+
+    def show_cursor(self, f):
+        try:
+            curses.curs_set(f)
+        except curses.error:
+            # curses.curs_set() occasionally fails if $TERM=xterm-color
+            pass
+
+    def get_clipboard(self):
+        return self._clipboard[0] if self._clipboard else ''
+        
+    def get_clipboards(self):
+        return iter(self._clipboard)
+        
+    def set_clipboard(self, s):
+        self._clipboard.insert(0, s)
+        del self._clipboard[self.MAX_CLIPBOARD:]
 
     def run(self):
 

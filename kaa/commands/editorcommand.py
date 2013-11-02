@@ -771,7 +771,7 @@ class EditCommands(Commands):
                 return '\n'.join(s)
 
     def _copy_sel(self, wnd):
-        kaa.app.clipboard = self._get_sel(wnd)
+        kaa.app.set_clipboard(self._get_sel(wnd))
         
     @command('edit.copy')
     def copy(self, wnd):
@@ -786,8 +786,9 @@ class EditCommands(Commands):
 
     @command('edit.paste')
     def paste(self, wnd):
-        if kaa.app.clipboard:
-            self.put_string(wnd, kaa.app.clipboard)
+        s = kaa.app.get_clipboard()
+        if s:
+            self.put_string(wnd, s)
             wnd.screen.selection.clear()
 
     @command('edit.conv.upper')

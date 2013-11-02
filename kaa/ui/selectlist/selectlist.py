@@ -25,7 +25,7 @@ class SelectItemList(dialogmode.DialogMode):
 
         return doc
 
-    def get_cursor_visibility(self):
+    def is_cursor_visible(self):
         return 0   # hide cursor
 
     def on_str(self, wnd, s):

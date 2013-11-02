@@ -12,7 +12,7 @@ class WordCompleteList(filterlist.FilterListMode):
         if query:
             items = []
             for s in self.candidates:
-                u = s.upper()
+                u = s.text.upper()
                 for q in query:
                     if not u.startswith(q):
                         break
@@ -29,8 +29,6 @@ workcomplete_keys = {
     (shift, tab): 'filterlistdlg.prev',
     '\r': 'wordcomplete.select',
     '\n': 'wordcomplete.select',
-    (alt, '\r'): 'wordcomplete.force_input',
-    (alt, '\n'): 'wordcomplete.force_input',
 }
 
 class WordCompleteInputMode(filterlist.FilterListInputDlgMode):
@@ -69,29 +67,6 @@ class WordCompleteInputMode(filterlist.FilterListInputDlgMode):
 
         return 0, top, wnd.mainframe.width, top+height
 
-    def start(self, list):
-        words = self.target.document.mode.get_word_list()
-        words.sort(key=lambda v:v.upper())
-        self.orgpos = self.target.cursor.pos
-
-        word = self.target.document.mode.get_word_at(self.orgpos)
-
-        self.wordpos = (self.orgpos, self.orgpos)
-        wnd = self.document.wnds[0]
-        if word:
-            f, t, cg = word
-            if cg[0] in 'LMN': # Letter, Mark, Number
-                self.wordpos = (f, t)
-                
-                s = self.target.document.gettext(f, t)
-                if s:
-                    self.target.screen.selection.set_range(f, t)
-                    self.set_query(wnd, s)
-
-        list.document.mode.set_candidates(words)
-        self.on_edited(self.document.wnds[0])
-        list.get_label('popup').on_console_resized()
-
     @command('wordcomplete.select')
     @norec
     @norerun
@@ -109,21 +84,46 @@ class WordCompleteInputMode(filterlist.FilterListInputDlgMode):
             s, update_cursor=True)
         wnd.get_label('popup').destroy()
             
-    @command('wordcomplete.force_input')
-    @norec
-    @norerun
-    def force_input(self, wnd):
-        self.target.screen.selection.clear()
+    def on_edited(self, wnd):
+        super().on_edited(wnd)
         s = self.get_query()
-        wnd.document.mode.edit_commands.replace_string(
-            self.target, self.wordpos[0], self.wordpos[1], 
-            s, update_cursor=True)
-        self.target.screen.selection.clear()
-        wnd.get_label('popup').destroy()
-            
+        f, t = self.wordpos
+        self.target.document.mode.edit_commands.replace_string(
+            self.target, f, t, s, update_cursor=True)
+        self.wordpos = (f, f+len(s))
+        
     def on_esc_pressed(self, wnd, event):
         self.target.screen.selection.clear()
         super().on_esc_pressed(wnd, event)
+
+    def start(self, list):
+        self.orgpos = self.target.cursor.pos
+
+        self.wordpos = (self.orgpos, self.orgpos)
+        wnd = self.document.wnds[0]
+
+        word = self.target.document.mode.get_word_at(self.orgpos)
+        if word:
+            f, t, cg = word
+            if cg[0] in 'LMN': # Letter, Mark, Number
+                self.wordpos = (f, t)
+                
+                s = self.target.document.gettext(f, t)
+                if s:
+                    self.target.screen.selection.set_range(f, t)
+                    self.set_query(wnd, s)
+
+        words = self.target.document.mode.get_word_list()
+        for s in kaa.app.get_clipboards():
+            s = s.split('\n')[0]
+            words.append(s)
+
+        words.sort(key=lambda v:v.upper())
+
+        list.document.mode.set_candidates(words)
+        self.on_edited(self.document.wnds[0])
+
+        list.get_label('popup').on_console_resized()
 
 def show_wordlist(wnd):
     doc = WordCompleteInputMode.build(wnd)

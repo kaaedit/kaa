@@ -1,3 +1,4 @@
+import re
 import kaa
 from kaa import document
 from kaa.ui.dialog import dialogmode
@@ -28,19 +29,28 @@ class FilterListMode(selectlist.SelectItemList):
         wnd.set_label('filterlist', wnd)
 
     def set_candidates(self, candidates):
-        self.candidates = candidates[:]
+        ws = re.compile(r'\s')
+        self.candidates = []
+        for c in candidates:
+            if not ws.search(c):
+                c = selectlist.SelectItem(
+                        'selectitem', 'selectitem-active', c, c)
+            else:
+                c = selectlist.SelectItem(
+                        'selectphrase', 'selectphrase-active', c, c)
+            self.candidates.append(c)
 
     def _filter_items(self, query):
         query = [f.upper() for f in query.split()]
         if query:
             items = []
-            for s in self.candidates:
-                u = s.upper()
+            for item in self.candidates:
+                u = item.text.upper()
                 for q in query:
                     if q not in u:
                         break
                 else:
-                    items.append(s)
+                    items.append(item)
         else:
             items = self.candidates[:]
 
@@ -48,8 +58,6 @@ class FilterListMode(selectlist.SelectItemList):
 
     def set_query(self, wnd, query):
         items = self._filter_items(query)
-        items = [selectlist.SelectItem('selectitem', 'selectitem-active', s, s)
-                     for s in items]
         self.update_doc(items)
         if items:
             self.update_sel(wnd, items[0])

@@ -95,14 +95,7 @@ class TextEditorWindow(Window):
         self._update_activeframe()
 
         if self.document:
-            try:
-                curses.curs_set(self.document.mode.get_cursor_visibility())
-            except curses.error:
-                # curses.curs_set() occasionally fails if $TERM=xterm-color
-                pass
-
-            # relocate cursor
-            self.cursor.setpos(self.cursor.pos)
+            self.document.mode.on_focus(self)
 
     def _getcharattrs(self, row, rectangular, selfrom, selto, colfrom, colto):
         # returns character attributes of each characters in row.
@@ -155,7 +148,8 @@ class TextEditorWindow(Window):
 
         self.screen.apply_updates()
         if kaa.app.focus:
-            cury, curx = kaa.app.focus._cwnd.getyx()
+            if self.document.mode.is_cursor_visible():
+                cury, curx = kaa.app.focus._cwnd.getyx()
 
         h, w = self._cwnd.getmaxyx()
 
@@ -259,7 +253,8 @@ class TextEditorWindow(Window):
             self._cwnd.clrtobot()
 
         if kaa.app.focus:
-            kaa.app.focus._cwnd.move(cury, curx)
+            if self.document.mode.is_cursor_visible():
+                kaa.app.focus._cwnd.move(cury, curx)
 
         return updated
 

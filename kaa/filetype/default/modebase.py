@@ -134,6 +134,12 @@ class ModeBase:
             if self.DOCUMENT_MODE and self.document.fileinfo:
                 self.document.fileinfo.save_screenloc(wnd.screen.pos)
 
+    def on_focus(self, wnd):
+        kaa.app.show_cursor(self.is_cursor_visible())
+
+        # relocate cursor
+        wnd.cursor.setpos(wnd.cursor.pos)
+
     def register_keys(self, keybind, keys):
         for d in keys:
             keybind.add_keybind(d)
@@ -213,7 +219,7 @@ class ModeBase:
     def get_menu(self, itemname):
         return self.menu.get(itemname, None)
         
-    def get_cursor_visibility(self):
+    def is_cursor_visible(self):
         return 1   # normal
 
     def on_keypressed(self, wnd, event, s, commands, candidate):

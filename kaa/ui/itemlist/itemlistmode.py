@@ -128,7 +128,7 @@ class ItemListMode(dialogmode.DialogMode):
         super().init_themes()
         self.themes.append(ItemListThemes)
 
-    def get_cursor_visibility(self):
+    def is_cursor_visible(self):
         return 0   # hide cursor
 
     def on_esc_pressed(self, wnd, event):

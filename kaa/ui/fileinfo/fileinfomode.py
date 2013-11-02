@@ -121,7 +121,7 @@ class FileInfoMode(dialogmode.DialogMode):
                       shortcut_need_alt=False)
 
 
-    def get_cursor_visibility(self):
+    def is_cursor_visible(self):
         return 0   # hide cursor
 
     def on_str(self, wnd, s):
