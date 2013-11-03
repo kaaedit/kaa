@@ -319,15 +319,7 @@ class Selection:
         
         return posfrom, posto, colfrom, colto
         
-    def get_rect_selection(self, tol):
-        if not self.is_selected() or not self.is_rectangular():
-            return
-
-        posfrom, posto, colfrom, colto = self.get_rect_range()
-
-        if not (posfrom <= tol < posto):
-            return
-
+    def get_col_string(self, tol, colfrom, colto):
         eol, s = self.screen.document.getline(tol)
         (dispchrs, dispcols, positions, intervals) = translate_chars(
             tol, s, self.screen.document.mode.tab_width)

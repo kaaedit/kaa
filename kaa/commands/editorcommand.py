@@ -451,7 +451,8 @@ class EditCommands(Commands):
                 if posto <= posfrom:
                     break
                     
-                sel = wnd.screen.selection.get_rect_selection(posfrom)
+                sel = wnd.screen.selection.get_col_string(
+                        posfrom, colfrom, colto)
                 if sel:
                     f, t, org = sel
                     if org.endswith('\n'):
@@ -500,7 +501,8 @@ class EditCommands(Commands):
                 ) = wnd.screen.selection.get_rect_range()
 
             while posfrom < posto:
-                sel = wnd.screen.selection.get_rect_selection(posfrom)
+                sel = wnd.screen.selection.get_col_string(
+                        posfrom, colfrom, colto)
                 if sel:
                     f, t, org = sel
                     if org.endswith('\n'):
@@ -759,7 +761,8 @@ class EditCommands(Commands):
                     ) = wnd.screen.selection.get_rect_range()
     
                 while posfrom < posto:
-                    sel = wnd.screen.selection.get_rect_selection(posfrom)
+                    sel = wnd.screen.selection.get_col_string(
+                            posfrom, colfrom, colto)
                     if sel:
                         f, t, org = sel
                         s.append(org.rstrip('\n'))
