@@ -480,7 +480,6 @@ class EditCommands(Commands):
         else:
             self.insert_string(wnd, wnd.cursor.pos, s)
 
-
     def delete_sel(self, wnd):
         if wnd.screen.selection.is_selected():
             if not wnd.screen.selection.is_rectangular():
@@ -828,6 +827,13 @@ class EditCommands(Commands):
     def complete(self, wnd):
         from kaa.ui.wordcomplete import wordcompletemode
         wordcompletemode.show_wordlist(wnd)
+
+    @command('edit.clipboard-history')
+    @norec
+    @norerun
+    def clipboard_history(self, wnd):
+        from kaa.ui.clipboardhist import clipboardhistmode
+        clipboardhistmode.show_history(wnd)
 
 class CodeCommands(Commands):
     @command('code.region.linecomment')

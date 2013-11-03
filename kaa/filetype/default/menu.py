@@ -28,10 +28,12 @@ MENUS = {
         [['&Cut', None, 'edit.cut'],
          ['C&opy', None, 'edit.copy'],
          ['&Paste', None, 'edit.paste'],
+         ['Paste &History', None, 'edit.clipboard-history'],
          ['&Undo', None, 'edit.undo'],
          ['&Redo', None, 'edit.redo'],
          ['&Search', None, 'search.showsearch'],
          ['R&eplace', None, 'search.showreplace'],
+         ['Co&mplete', None, 'edit.word-complete'],
          ['[&Convert]', 'EDIT-CONVERT', None]],
 
     'EDIT-CONVERT':

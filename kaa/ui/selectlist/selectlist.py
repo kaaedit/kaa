@@ -8,6 +8,13 @@ from kaa.command import command, norec, norerun
 SelectItem = collections.namedtuple(
     'SelectItem', ['style', 'activestyle', 'text', 'value'])
 
+selectlist_keys = {
+    down: 'selectitemlist.next',
+    tab: 'selectitemlist.next',
+    up: 'selectitemlist.prev',
+    (shift, tab): 'selectitemlist.prev',
+}
+
 class SelectItemList(dialogmode.DialogMode):
     USE_UNDO = False
     NO_WRAPINDENT = False
@@ -29,13 +36,17 @@ class SelectItemList(dialogmode.DialogMode):
     def is_cursor_visible(self):
         return 0   # hide cursor
 
+    def init_keybind(self):
+        super().init_keybind()
+        self.keybind.add_keybind(selectlist_keys)
+    
     def on_str(self, wnd, s):
         pass
 
     def calc_position(self, wnd):
         height = wnd.screen.get_total_height()
         height = min(height, wnd.mainframe.height//2)
-        top = 0
+        top = wnd.mainframe.height - height - wnd.mainframe.MESSAGEBAR_HEIGHT
         return 0, top, wnd.mainframe.width, top+height
 
     def update_doc(self, items):
@@ -81,6 +92,9 @@ class SelectItemList(dialogmode.DialogMode):
 
         self.cursel = newsel
 
+    @command('selectitemlist.next')
+    @norec
+    @norerun
     def sel_next(self, wnd):
         if not self.items:
             newsel = None
@@ -100,6 +114,9 @@ class SelectItemList(dialogmode.DialogMode):
         self.update_sel(wnd, newsel, bottom=True)
         return newsel
 
+    @command('selectitemlist.prev')
+    @norec
+    @norerun
     def sel_prev(self, wnd):
         bottom = None
         if not self.items:

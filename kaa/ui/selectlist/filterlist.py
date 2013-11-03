@@ -21,7 +21,8 @@ FilterListThemes = {
 class FilterListMode(selectlist.SelectItemList):
     SEP = '\n'
     MAX_CAPTION_LEN = None
-
+    USE_PHRASE_STYLE = False
+    
     def init_themes(self):
         super().init_themes()
         self.themes.append(FilterListThemes)
@@ -38,8 +39,7 @@ class FilterListMode(selectlist.SelectItemList):
             caption = c
             if ws.search(caption):
                 phrase = True
-                caption = ' '.join(caption.split('\n'))
-                caption = caption.strip()
+                caption = ' '.join(caption.split())
                 if not caption:
                     caption = '(...)'
 
@@ -48,7 +48,7 @@ class FilterListMode(selectlist.SelectItemList):
                     caption = caption[:self.MAX_CAPTION_LEN] + '...'
                     phrase = True
 
-            if not phrase:
+            if not self.USE_PHRASE_STYLE or not phrase:
                 c = selectlist.SelectItem(
                         'selectitem', 'selectitem-active', caption, c)
             else:

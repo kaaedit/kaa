@@ -72,6 +72,7 @@ edit_command_keys = {
     (ctrl, 'z'): 'edit.undo',
     (ctrl, 'y'): 'edit.redo',
 
+    (alt, 'v'): 'edit.clipboard-history',
 }
 
 addtional_edit_command_keys = {

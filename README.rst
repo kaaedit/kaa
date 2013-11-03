@@ -34,7 +34,7 @@ See http://kaaedit.github.io for more screen shots.
 Kaa is easy!
 ------------
 
-Kaa is very easy to learn in spite of its rich functions. Only thing you need to remember is **"To display menu, hit F1 key or alt+'/' key"**. Most of basic feartures could be accessed from fancy menus by hitting underlined character in the menu items. You can use kaa as easy as you are with Notepad on MS-Windows.
+Kaa is very easy to learn in spite of its rich functionality. Only thing you need to remember is **"To display menu, hit F1 key or alt+'/' key"**. Most of basic feartures could be accessed from fancy menus by hitting underlined character in the menu items. You can use kaa as easy as you are with Notepad on MS-Windows.
 
 
 Customizable
@@ -195,6 +195,8 @@ Edit menu
 +---------------------+-----------------------------------------+
 | Paste               | Paste from clipboard.                   |
 +---------------------+-----------------------------------------+
+| Paste History       | Paste from clipboard history.           |
++---------------------+-----------------------------------------+
 | Undo                | Undo last modification.                 |
 +---------------------+-----------------------------------------+
 | Redo                | Redo last undo.                         |
@@ -202,6 +204,8 @@ Edit menu
 | Search              | Search text.                            |
 +---------------------+-----------------------------------------+
 | Replace             | Replace text.                           |
++---------------------+-----------------------------------------+
+| Complet             | Word completion.                        |
 +---------------------+-----------------------------------------+
 | Convert             | Show text convert menu.                 |
 +---------------------+-----------------------------------------+
@@ -312,10 +316,10 @@ Cursor keys
 +--------------------+------------------------------------------------+
 | Control+n          | Move cursor to next physical line.             |
 +--------------------+------------------------------------------------+
-| Control+left,      | Word left                                      |
+| Control+left,      | Move cursor to previous word boundary.         |
 | Alt+b              |                                                |
 +--------------------+------------------------------------------------+
-| Control+right,     | Move cursor to next/prev word boundary.        |
+| Control+right,     | Move cursor to next word boundary.             |
 | Alt+f              |                                                |
 +--------------------+------------------------------------------------+
 | Alt+p, Page up     | Previous page.                                 |
@@ -393,11 +397,13 @@ Clipboard
 ++++++++++++++++
 
 +--------------------+------------------------------------------------+
-| Control+v          | Paste                                          |
+| Control+v          | Paste from clipboard.                          |
 +--------------------+------------------------------------------------+
 | Control+x          | Cut selection.                                 |
 +--------------------+------------------------------------------------+
-| Control+c          | Copy selection                                 |
+| Control+c          | Copy selection.                                |
++--------------------+------------------------------------------------+
+| Alt+c              | Paste from clipboard history.                  |
 +--------------------+------------------------------------------------+
 
 
@@ -518,6 +524,13 @@ Links
 
 Version history
 =================
+
+0.7 - 2013.11.
+---------------
+
+- Word completion list now contains text from clipboard history.
+
+- Paste from clipboard history.
 
 0.6 - 2013.11.1
 ---------------

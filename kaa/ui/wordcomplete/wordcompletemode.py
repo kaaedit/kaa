@@ -8,7 +8,8 @@ from kaa.keyboard import *
 
 class WordCompleteList(filterlist.FilterListMode):
     MAX_CAPTION_LEN = 30
-
+    USE_PHRASE_STYLE = True
+    
     def _filter_items(self, query):
         if query:
             query = query.upper()
@@ -33,7 +34,7 @@ workcomplete_keys = {
 
 class WordCompleteInputMode(filterlist.FilterListInputDlgMode):
     MAX_INPUT_HEIGHT = 4
-    INITIAL_MESSAGE = "Hit tab/shift+tab to complete.."
+    INITIAL_MESSAGE = "Hit tab/shift+tab to complete."
 
     @classmethod
     def build(cls, target):
@@ -116,13 +117,10 @@ class WordCompleteInputMode(filterlist.FilterListInputDlgMode):
         words = self.target.document.mode.get_word_list()
         words.extend(kaa.app.get_clipboards())
 
+
         list.document.mode.set_candidates(words)
         list.document.mode.candidates.sort(key=lambda v:v.text.upper())
-
-
-
-        self.on_edited(self.document.wnds[0])
-
+        list.document.mode.set_query(list, self.get_query())
         list.get_label('popup').on_console_resized()
 
 def show_wordlist(wnd):
