@@ -85,7 +85,7 @@ class Splitter:
         if not doc:
             doc = self.wnd.document
         if vert:
-            self.vsep = w//2
+            self.vsep = w//2+1
             self.left = Splitter(self.frame, self, self.wnd)
             self.right = Splitter(self.frame, self, self.wnd.dup())
             self.right.wnd.show_doc(doc)
@@ -93,7 +93,7 @@ class Splitter:
             self.left.activate()
             ret = self.right
         else:
-            self.hsep = h//2
+            self.hsep = h//2+1
             self.above = Splitter(self.frame, self, self.wnd)
             self.below = Splitter(self.frame, self, self.wnd.dup())
             self.below.wnd.show_doc(doc)

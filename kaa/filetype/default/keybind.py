@@ -6,6 +6,7 @@ app_keys = {
     f1: 'app.mainmenu',
     f9: 'app.global.prev',
     f10: 'app.global.next',
+    (alt, 'w'): 'menu.window',
 }
 
 # default cursor commands

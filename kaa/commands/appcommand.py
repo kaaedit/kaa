@@ -14,6 +14,12 @@ class ApplicationCommands(Commands):
     def show_mainmenu(self, wnd):
         menumode.MenuMode.show_menu(wnd, 'MAIN')
 
+    @command('menu.window')
+    @norec
+    @norerun
+    def show_windowmenu(self, wnd):
+        menumode.MenuMode.show_menu(wnd, 'CHANGE-WINDOW')
+
     @command('menu.edit.convert')
     @norec
     @norerun
@@ -64,14 +70,16 @@ class ApplicationCommands(Commands):
     @norerun
     def editor_splitvert(self, wnd):
         if wnd.splitter:
-            wnd.splitter.split(vert=True)
+            s = wnd.splitter.split(vert=True)
+            s.wnd.activate()
 
     @command('editor.splithorz')
     @norec
     @norerun
     def editor_splithorz(self, wnd):
         if wnd.splitter:
-            wnd.splitter.split(vert=False)
+            s = wnd.splitter.split(vert=False)
+            s.wnd.activate()
 
     @command('editor.moveseparator')
     @norec
@@ -169,10 +177,4 @@ class ApplicationCommands(Commands):
             doc = itemlistmode.ItemListMode.build('', titles, n, callback, selchanged)
             kaa.app.show_dialog(doc)
 
-        if len(wnd.document.wnds) == 1:
-            wnd.document.mode.file_commands.ask_doc_close(
-                wnd, wnd.document, saved, 'Save file before close?')
-        else:
-            saved(False)
-
-
+        wnd.document.mode.file_commands.can_close_wnd(wnd, saved)

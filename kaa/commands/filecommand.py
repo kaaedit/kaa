@@ -13,6 +13,37 @@ class FileCommands(Commands):
         doc = fileio.newfile()
         kaa.app.show_doc(doc)
 
+    def _find_file_doc(self, filename):
+        for frame in kaa.app.get_frames():
+            for doc in frame.get_documents():
+                if doc.get_filename() == filename:
+                    MAX_FILENAMEMSG_LEN = 50
+                    if len(filename) > MAX_FILENAMEMSG_LEN:
+                        filename = '...{}'.format(
+                            filename[MAX_FILENAMEMSG_LEN*-1:])
+        
+                    kaa.app.messagebar.set_message(
+                        "`{}` is already opened.".format(filename))
+                    return doc
+
+    def _activate_file(self, filename):
+        doc = self._find_file_doc(filename)
+        if doc:
+            if doc.wnds:
+                wnd = doc.wnds[0]
+                wnd.get_label('frame').bring_top()
+                wnd.activate()
+            return True
+        
+    def _restore_file_loc(self, wnd):
+        if wnd.document.fileinfo:
+            disp = kaa.app.config.hist_filedisp.find(
+                    wnd.document.fileinfo.fullpathname)
+            if disp:
+                loc = disp.get('pos', 0)
+                loc = min(loc, wnd.document.endpos())
+                wnd.cursor.setpos(loc, top=True)
+
     @command('file.open')
     @norec
     @norerun
@@ -20,36 +51,17 @@ class FileCommands(Commands):
         def cb(filename, encoding, newline):
             if not filename:
                 return
-
-            for frame in kaa.app.get_frames():
-                for doc in frame.get_documents():
-                    if doc.get_filename() == filename:
-                        if doc.wnds:
-                            wnd = doc.wnds[0]
-                            wnd.get_label('frame').bring_top()
-                            wnd.activate()
-
-                        MAX_FILENAMEMSG_LEN = 50
-                        if len(filename) > MAX_FILENAMEMSG_LEN:
-                            filename = '...{}'.format(
-                                filename[MAX_FILENAMEMSG_LEN*-1:])
-
-                        kaa.app.messagebar.set_message(
-                            "`{}` is already opened.".format(filename))
-                        return
-
+                
+            if self._activate_file(filename):
+                return
+            
             doc = kaa.app.storage.openfile(filename, encoding, newline)
             editor = kaa.app.show_doc(doc)
-            if doc.fileinfo:
-                disp = kaa.app.config.hist_filedisp.find(
-                        doc.fileinfo.fullpathname)
-                if disp:
-                    loc = disp.get('pos', 0)
-                    loc = min(loc, doc.endpos())
-                    editor.cursor.setpos(loc, top=True)
-
+            self._restore_file_loc(editor)
+            
         from kaa.ui.selectfile import selectfile
         selectfile.show_fileopen(filename, cb)
+
 
     @command('file.info')
     @norec
@@ -250,15 +262,7 @@ class FileCommands(Commands):
         frames = wnd.mainframe.childframes[:]
         callback(False)
 
-    @command('file.recently-used-files')
-    @norec
-    @norerun
-    def file_recently_used_files(self, wnd):
-
-        def cb(filename):
-            if filename:
-                self.file_open(wnd, filename)
-
+    def _select_recentry_used_files(self, callback):
         files = []
         for p, info in kaa.app.config.hist_files.get():
             path = os.path.relpath(p)
@@ -266,17 +270,23 @@ class FileCommands(Commands):
 
         from kaa.ui.selectlist import filterlist
         filterlist.show_listdlg('Recently used files:', 
-            files, cb)
+            files, callback)
 
-    @command('file.recently-used-directories')
+    @command('file.recently-used-files')
     @norec
     @norerun
-    def file_recently_used_dirs(self, wnd):
-
+    def file_recently_used_files(self, wnd):
         def cb(filename):
             if filename:
+                filename = os.path.abspath(filename)
+                if self._activate_file(filename):
+                    return
+                    
                 self.file_open(wnd, filename)
 
+        self._select_recentry_used_files(cb)
+
+    def _select_recentry_used_dirs(self, callback):
         files = []
         for p, info in kaa.app.config.hist_dirs.get():
             path = os.path.relpath(p)
@@ -284,13 +294,22 @@ class FileCommands(Commands):
 
         from kaa.ui.selectlist import filterlist
         filterlist.show_listdlg('Recently used directories:', 
-            files, cb)
+            files, callback)
+
+    @command('file.recently-used-directories')
+    @norec
+    @norerun
+    def file_recently_used_dirs(self, wnd):
+        def cb(filename):
+            if filename:
+                self.file_open(wnd, filename)
+
+        self._select_recentry_used_dirs(cb)
 
     @command('file.quit')
     @norec
     @norerun
     def file_quit(self, wnd):
-
         def saved(canceled):
             if not canceled:
                 try:
@@ -302,3 +321,77 @@ class FileCommands(Commands):
         
         docs = self.get_current_documents(wnd)
         self.save_documents(wnd, docs, saved, 'Save file before close?')
+
+    def can_close_wnd(self, wnd, cb):
+        if len(wnd.document.wnds) == 1:
+            wnd.document.mode.file_commands.ask_doc_close(
+                wnd, wnd.document, cb, 'Save file before close?')
+        else:
+            cb(False)
+
+    def _open_file_to_wnd(self, wnd, func):
+        def cb(filename, encoding, newline):
+            if not filename:
+                return
+                
+            doc = self._find_file_doc(filename)
+            if not doc:
+                doc = kaa.app.storage.openfile(filename, encoding, newline)
+
+            wnd.show_doc(doc)
+            self._restore_file_loc(wnd)
+
+        def saved(canceled):
+            if canceled:
+                return
+            func(cb)
+
+        self.can_close_wnd(wnd, saved)
+        
+    @command('file.new-to')
+    @norec
+    @norerun
+    def file_new_to(self, wnd):
+        def openfile(cb):
+            from kaa import fileio
+            doc = fileio.newfile()
+            wnd.show_doc(doc)
+
+        self._open_file_to_wnd(wnd, openfile)
+
+    @command('file.open-to')
+    @norec
+    @norerun
+    def file_open_to(self, wnd):
+        def openfile(cb):
+            from kaa.ui.selectfile import selectfile
+            selectfile.show_fileopen('', cb)
+
+        self._open_file_to_wnd(wnd, openfile)
+
+    def _show_selected_recentlyfile(self, cb, filename):
+        if filename:
+            filename = os.path.abspath(filename)
+
+            from kaa.ui.selectfile import selectfile
+            selectfile.show_fileopen(filename, cb)
+        
+    @command('file.recently-used-files-to')
+    @norec
+    @norerun
+    def file_recently_used_files_to(self, wnd):
+        def selectfile(cb):
+            self._select_recentry_used_files(
+                lambda filename:self._show_selected_recentlyfile(cb, filename))
+            
+        self._open_file_to_wnd(wnd, selectfile)
+
+    @command('file.recently-used-directories-to')
+    @norec
+    @norerun
+    def file_recently_used_dirs_to(self, wnd):
+        def selectdir(cb):
+            self._select_recentry_used_dirs(
+                lambda filename:self._show_selected_recentlyfile(cb, filename))
+            
+        self._open_file_to_wnd(wnd, selectdir)

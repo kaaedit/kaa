@@ -56,11 +56,18 @@ MENUS = {
          
     'WINDOW':
         [['&Frame list', None, 'app.show-framelist'],
-         ['&Switch file', None, 'editor.switchfile'],
          ['Split &vert', None, 'editor.splitvert'],
          ['Split &horz', None, 'editor.splithorz'],
          ['&Move separator', None, 'editor.moveseparator'],
          ['&Next window', None, 'editor.nextwindow'],
          ['&Prev window', None, 'editor.prevwindow'],		
-         ['&Join window', None, 'editor.joinwindow']]
+         ['&Join window', None, 'editor.joinwindow'],
+         ['[&Switch file]', 'CHANGE-WINDOW', None]],
+
+     'CHANGE-WINDOW':
+         [['&Switch file', None, 'editor.switchfile'],
+          ['&New file here', None, 'file.new-to'],
+          ['&Open file here', None, 'file.open-to'],
+          ['Recently used &Files', None, 'file.recently-used-files-to'],
+          ['Recently used &Dir', None, 'file.recently-used-directories-to']],
 }
