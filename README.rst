@@ -4,7 +4,7 @@ Kaa - console text editor
 
 Kaa is a small and easy CUI text editor for console/terminal emulator environments.
 
-.. contents::
+.. contents:: depth 2
 
 
 Overview
@@ -43,7 +43,7 @@ Customizable
 Kaa is written in `Python <http://www.python.org/>`_. So, you can easily customize many aspects of kaa through simple Python scripts.
 
 
-Supported environment
+Cross platform
 ---------------------
 
 Kaa is a CUI editor that runs on most of modern UN*X flavor operating systems like Linux or Mac OS X. Kaa requires Unicode friendly environment both platform running kaa and terminal emulator/console to interact with kaa.
@@ -122,7 +122,7 @@ For iTerm2, you can:
 
 1. Select Preferences menu.
 2. Open the Profiles tab.
-3. Open the Terminal  tab.
+3. Open the Terminal tab.
 4. Select `xterm-256color` for `"Report terminal type"` field.
 
 Otherwise, you should manually update terminal setting. e.g., If you use bash, add following line to `~/.bashrc` file:
@@ -143,7 +143,7 @@ Using kaa is intuitive. Typing alphabet keys will update file as you expected. F
 Using menu
 -----------
 
-To display menu, type F1 key or alt+/ (type slash key with alt key). Each items in the menu has one underlined character. The menu item is execused by typing the underlined key.
+To display menu, type F1 key or alt+/ (type slash key with alt key). Each items in the menu has one underlined character. The menu item is execused by typing the underlined key with or without pressing alt key.
 
 Typing escape key hides menu.
 
@@ -156,8 +156,8 @@ File menu
 +------------+----------------------------------------------------+
 | Open       | Open existing file.                                |
 +------------+----------------------------------------------------+
-| File info  | Show file information. Also update per file editor |
-|            | settings of tab/indentation.                       |
+| File info  | Show file information. Also update per file        |
+|            | settings of tab or indentation.                    |
 +------------+----------------------------------------------------+
 | Save       | Save current file.                                 |
 +------------+----------------------------------------------------+
@@ -205,7 +205,7 @@ Edit menu
 +---------------------+-----------------------------------------+
 | Replace             | Replace text.                           |
 +---------------------+-----------------------------------------+
-| Complet             | Word completion.                        |
+| Complete            | Word completion.                        |
 +---------------------+-----------------------------------------+
 | Convert             | Show text convert menu.                 |
 +---------------------+-----------------------------------------+
@@ -326,13 +326,13 @@ Cursor keys
 +--------------------+------------------------------------------------+
 | Alt+n, Page down   | Next page.                                     |
 +--------------------+------------------------------------------------+
-| Home               | Move cursor to top of line.                    |
+| Control+a, Home    | Move cursor to top of line.                    |
 +--------------------+------------------------------------------------+
-| End                | Move cursor to end of line.                    |
+| Control+e, End     | Move cursor to end of line.                    |
 +--------------------+------------------------------------------------+
-| Control+Home       | Move cursor to top of file.                    |
+| Alt+<, Control+Home| Move cursor to top of file.                    |
 +--------------------+------------------------------------------------+
-| Control+End        | Move cursor to end of file.                    |
+| Alt+>, Control+End | Move cursor to end of file.                    |
 +--------------------+------------------------------------------------+
 | Control+g          | Go to line number.                             |
 +--------------------+------------------------------------------------+
@@ -403,7 +403,7 @@ Clipboard
 +--------------------+------------------------------------------------+
 | Control+c          | Copy selection.                                |
 +--------------------+------------------------------------------------+
-| Alt+c              | Paste from clipboard history.                  |
+| Alt+v              | Paste from clipboard history.                  |
 +--------------------+------------------------------------------------+
 
 
@@ -528,12 +528,15 @@ Version history
 0.7 - 2013.11.
 ---------------
 
-- Word completion list now contains text from clipboard history.
-
 - Paste from clipboard history.
 
+- Word completion list now contains text from clipboard history.
+
+Past versions
+--------------
+
 0.6 - 2013.11.1
----------------
++++++++++++++++++++++
 
 - Basic word completion with ctrl+o.
 
@@ -543,7 +546,7 @@ Version history
 
 
 0.5 - 2013.10.30
------------------
++++++++++++++++++++++
 
 - Locate position of opened file where the file located last time.
 
@@ -555,7 +558,7 @@ Version history
 
 
 0.4 - 2013.10.27
------------------
++++++++++++++++++++++
 
 - Rectangular selection can be started by Alt+'#' key.
 
@@ -565,7 +568,7 @@ Version history
 
 
 0.3.1 - 2013.10.25
-------------------
++++++++++++++++++++++
 
 - Python console window now works with Gnome terminal.
 
@@ -575,7 +578,7 @@ Version history
 
 
 0.3.0 - 2013.10.24
-------------------
++++++++++++++++++++++
 
 - Python console window.
 
@@ -587,7 +590,7 @@ Version history
 
 
 0.2.0 - 2013.10.20
-------------------
++++++++++++++++++++++
 
 - Comment/Uncomment region.
 
@@ -597,7 +600,7 @@ Version history
 
 
 0.1.0 - 2013.10.14
-------------------
++++++++++++++++++++++
 
 - Grep
 
@@ -605,7 +608,7 @@ Version history
 
 
 0.0.4 - 2013.10.11
-------------------
++++++++++++++++++++++
 
 - New command: Close all.
 
@@ -617,7 +620,7 @@ Version history
 
 
 0.0.3 - 2013.10.9
------------------
++++++++++++++++++++++
 
 - Incremental search.
 
@@ -633,7 +636,7 @@ Version history
 
 
 0.0.2 - 2013.10.5
------------------
++++++++++++++++++++++
 
 - Misc commands.
 
@@ -645,7 +648,7 @@ Version history
 
 
 0.0.1 - 2013.6.16
------------------
++++++++++++++++++++++
 
 - Initial release.
 

@@ -2,16 +2,17 @@
 Kaa - console text editor
 ============================
 
+:date: 2013-11-03 23:00
+:tags: kaa, Python3
+:slug: kaa-doc-ja
+
 kaa はシンプルで簡単に使える、コンソール用テキストエディタです。
 
-.. contents:: depth 2
+.. contents::
 
 
 Overview
 ============
-
-.. image:: http://www.gembook.org/static/images/kaa_multiwindow.png
-
 
 kaa は簡単かつ高機能なテキストエディタで、次のような機能を備えています。
 
@@ -28,6 +29,9 @@ kaa は簡単かつ高機能なテキストエディタで、次のような機�
 - オープンソース・ソフトウェア(MITライセンス).
 
 - などなど
+
+
+.. image:: http://www.gembook.org/static/images/kaa_multiwindow.png
 
 http://kaaedit.github.io にもスクリーンショットが公開されています。
 
