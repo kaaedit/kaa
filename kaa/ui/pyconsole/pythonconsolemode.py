@@ -6,10 +6,19 @@ from kaa.keyboard import *
 from kaa.filetype.default import defaultmode
 from kaa.filetype.python import pythonmode
 from kaa.command import command, Commands, norec, norerun
+from kaa.theme import Theme, Style
 
 pythonconsole_keys = {
     (alt, '\r'): ('python.exec'),
     (alt, '\n'): ('python.exec'),
+}
+
+PythonConsoleThemes = {
+    'default':
+        Theme([
+            Style('stdout', 'Default', 'Default', nowrap=True),
+            Style('stderr', 'Magenta', 'Default', nowrap=True),
+        ])
 }
 
 class PythonConsoleMode(pythonmode.PythonMode):
@@ -30,19 +39,24 @@ class PythonConsoleMode(pythonmode.PythonMode):
         stderr = sys.stderr
 
         output = self.output
+        style_stdout = output.mode.get_styleid('stdout')
+        style_stderr = output.mode.get_styleid('stderr')
         
         class out:
+            def __init__(self, style):
+                self.style = style
+                
             def write(self, s):
                 if not output.closed:
-                    output.append(s)
+                    output.append(s, self.style)
                     w = output.wnds[0]
                     if not w.closed:
                         # rebuild screen before move cursor
                         w.screen.locate(w.screen.pos, top=True)
                         w.cursor.eof()
                 
-        sys.stdout = out()
-        sys.stderr = out()
+        sys.stdout = out(style_stdout)
+        sys.stderr = out(style_stderr)
 
         yield
         
@@ -107,6 +121,11 @@ class PythonOutputMode(defaultmode.DefaultMode):
     MODENAME = 'Python outputs'
     DOCUMENT_MODE = False
     USE_UNDO = False
+
+    def init_themes(self):
+        super().init_themes()
+        self.themes.append(PythonConsoleThemes)
+
 
 def show_console():
     buf = document.Buffer()
