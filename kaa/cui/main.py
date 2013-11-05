@@ -1,4 +1,4 @@
-import curses, os, sys, types
+import curses, os, sys, types, signal
 import kaa.tools
 import kaa.log
 from kaa import options, version, consts, config
@@ -97,6 +97,9 @@ def main(stdscr):
     finally:
         _restore()
 
+def handle_term(signum, frame):
+    sys.exit(signum+0x80)
+
 COLOR_ENVS = ('COLORTERM', 'XTERM_VERSION', 'ROXTERM_ID',
              'KONSOLE_DBUS_SESSION')
 
@@ -123,11 +126,16 @@ def _init_term():
 def run():
     if sys.version_info[:2] < (3, 3):
         raise RuntimeError('kaa requires Python 3.3 or later')
-        
+    
     if not getattr(__builtins__, 'kaa_freeze', False):
-        import setproctitle
-        setproctitle.setproctitle('kaa')
-        
+        try:
+            setproctitle = __import__('setproctitle')
+            setproctitle.setproctitle('kaa')
+        except:
+            pass
+
+    signal.signal(signal.SIGTERM, handle_term)
+    
     parser = options.build_parser()
 
     global opt
