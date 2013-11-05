@@ -4,7 +4,8 @@ Kaa - console text editor
 
 Kaa is a small and easy CUI text editor for console/terminal emulator environments.
 
-.. contents:: depth 2
+.. contents::
+    :depth: 2
 
 
 Overview

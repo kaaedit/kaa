@@ -1,7 +1,7 @@
 ============================
 Kaa - console text editor
 ============================
-daf
+
 :date: 2013-11-03 23:00
 :tags: kaa, Python3
 :slug: kaa-doc-ja
@@ -9,7 +9,7 @@ daf
 kaa はシンプルで簡単に使える、コンソール用テキストエディタです。
 
 .. contents::
-
+    :depth: 2
 
 Overview
 ============
