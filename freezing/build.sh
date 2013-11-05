@@ -3,13 +3,16 @@
 PYTHON=~/src/cpython.kaa
 PYTHONBIN=$PYTHON/bin/python3.3
 export PYTHONPATH=..
+cd ..
+$PYTHONBIN setup.py install
+cd freezing
 
 rm -rf dist
 rm -rf build
 
 mkdir dist
 
-$PYTHONBIN $PYTHON/Tools/freeze/freeze.py -m -X setproctitle -o build kaa_freeze.py kaa.filetype.html kaa.filetype.html.htmlmode  kaa.filetype.javascript kaa.filetype.javascript.javascriptmode  kaa.filetype.css kaa.filetype.css.cssmode  kaa.filetype.python kaa.filetype.python.pythonmode  
+$PYTHONBIN $PYTHON/Tools/freeze/freeze.py -m  -o build kaa_freeze.py kaa.filetype.html kaa.filetype.html.htmlmode  kaa.filetype.javascript kaa.filetype.javascript.javascriptmode  kaa.filetype.css kaa.filetype.css.cssmode  kaa.filetype.python kaa.filetype.python.pythonmode  
 
 cd build
 make
