@@ -22,7 +22,7 @@ MENUS = {
          
     'RECENTLY-USED-FILES':
         [['Recently used &Files', None, 'file.recently-used-files'],
-         ['Recently used &Dir', None, 'file.recently-used-directories']],
+         ['Recently used &Dirs', None, 'file.recently-used-directories']],
 
     'EDIT':
         [['&Cut', None, 'edit.cut'],
@@ -69,5 +69,5 @@ MENUS = {
           ['&New file here', None, 'file.new-to'],
           ['&Open file here', None, 'file.open-to'],
           ['Recently used &Files', None, 'file.recently-used-files-to'],
-          ['Recently used &Dir', None, 'file.recently-used-directories-to']],
+          ['Recently used &Dirs', None, 'file.recently-used-directories-to']],
 }

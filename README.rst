@@ -26,7 +26,7 @@ Kaa is an easy yet powerful text editor for console user interface, providing nu
 
 - More to come!
 
-.. image:: http://kaaedit.github.io/screenshots/kaa_multiwindow.png
+.. image:: http://www.gembook.org/static/images/kaa_multiwindow.png
 
 See http://kaaedit.github.io for more screen shots.
 
@@ -169,11 +169,10 @@ File menu
 +------------+----------------------------------------------------+
 | Close All  | Close all frames.                                  |
 +------------+----------------------------------------------------+
-| Recently   | Show recently used files menu.                     |
+| [Recently] | Show recently used files menu.                     |
 +------------+----------------------------------------------------+
 | Quit       | Terminate kaa.                                     |
 +------------+----------------------------------------------------+
-
 
 
 Recently used files memu
@@ -184,6 +183,7 @@ Recently used files memu
 +---------------------+-----------------------------------------+
 | Recently used dirs  | Show list of recently used directories. |
 +---------------------+-----------------------------------------+
+
 
 Edit menu
 +++++++++
@@ -207,8 +207,9 @@ Edit menu
 +---------------------+-----------------------------------------+
 | Complete            | Word completion.                        |
 +---------------------+-----------------------------------------+
-| Convert             | Show text convert menu.                 |
+| [Convert]           | Show text convert menu.                 |
 +---------------------+-----------------------------------------+
+
 
 Text convert menu
 ~~~~~~~~~~~~~~~~~~~~
@@ -272,8 +273,6 @@ Window menu
 | Frame list     | Show list of frame windows. Use left/right      |
 |                | arrow key to change active frame.               |
 +----------------+-------------------------------------------------+
-| Switch file    | Switch content of active window.                |
-+----------------+-------------------------------------------------+
 | Split vert     | Split current window vertically.                |
 +----------------+-------------------------------------------------+
 | Split horz     | Split current window horizontally.              |
@@ -283,8 +282,28 @@ Window menu
 +----------------+-------------------------------------------------+
 | Next window    | Activate next window.                           |
 +----------------+-------------------------------------------------+
+| Prev window    | Activate previous window.                       |
++----------------+-------------------------------------------------+
 | Join window    | Join splitted window.                           |
 +----------------+-------------------------------------------------+
+| [Switch file]  | Show switch window menu.                        |
++----------------+-------------------------------------------------+
+
+
+Switch file menu
++++++++++++++++++
+
++---------------------+-------------------------------------------------+
+| Switch file         | Switch content of active window.                |
++---------------------+-------------------------------------------------+
+| New file here       | Create new file to active window.               |
++---------------------+-------------------------------------------------+
+| open file here      | Open existing file to active window.            |
++---------------------+-------------------------------------------------+
+| Recently used files | Show list of recently used files.               |
++---------------------+-------------------------------------------------+
+| Recently used dirs  | Show list of recently used directories.         |
++---------------------+-------------------------------------------------+
 
 
 Key bindings
@@ -295,6 +314,8 @@ Menu keys
 
 +---------------+----------------------------------------------------+
 | F1, alt+/     | Show menu.                                         |
++---------------+----------------------------------------------------+
+| Alt-w         | Show switch file menu.                             |
 +---------------+----------------------------------------------------+
 | Alt-M v       | Show text conversion menu.                         |
 +---------------+----------------------------------------------------+
@@ -525,12 +546,21 @@ Links
 Version history
 =================
 
-0.7 - 2013.11.
----------------
+0.7 - 2013.11.5
+----------------
 
 - Paste from clipboard history.
 
 - Word completion list now contains text from clipboard history.
+
+- New command: New file here.
+
+- New command: Open file here.
+
+- New command: Open recently used file here.
+
+- New command: Open recently used directory here.
+
 
 Past versions
 --------------
