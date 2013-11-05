@@ -4,6 +4,7 @@ from kaa import document, encodingdef, utils, consts
 from kaa.ui.dialog import dialogmode
 from kaa.ui.selectlist import selectlist
 from kaa.ui.itemlist import itemlistmode
+from kaa.ui.inputline import inputlinemode
 from kaa.ui.msgbox import msgboxmode
 
 from kaa.theme import Theme, Style
@@ -36,6 +37,9 @@ class DirFileListMode(selectlist.SelectItemList):
     def set_dir(self, dirname):
         self.caption = self.dirname = os.path.abspath(
             os.path.expanduser(dirname))
+        self.read_dir()
+        
+    def read_dir(self):
         try:
             self.dirs, self.files = kaa.app.storage.listdir(self.dirname)
         except OSError as e:
@@ -223,6 +227,11 @@ class OpenFilenameDlgMode(dialogmode.DialogMode):
                       on_shortcut=lambda wnd:
                                       wnd.document.mode.select_newline(wnd))
 
+        f.append_text('checkbox', '[&Create dir]', 
+                      shortcut_style='checkbox.shortcut',
+                      on_shortcut=lambda wnd:
+                                      wnd.document.mode.create_dir(wnd))
+
         return doc
 
     def close(self):
@@ -333,7 +342,27 @@ class OpenFilenameDlgMode(dialogmode.DialogMode):
 
         kaa.app.show_dialog(doc)
 
+    def create_dir(self, wnd):
+        filelist = wnd.get_label('filelist')
+        dirname = filelist.document.mode.dirname
 
+        def callback(w, path):
+            path = os.path.join(dirname, path)
+            try:
+                os.makedirs(path)
+            except Exception as  e:
+                kaa.app.messagebar.set_message(str(e))
+            else:
+                filelist = wnd.get_label('filelist')
+                filelist.document.mode.read_dir()
+                filelist.document.mode.show_files(wnd)
+
+            popup = w.get_label('popup')
+            popup.destroy()
+
+        doc = inputlinemode.InputlineMode.build('directory name:', callback)
+        kaa.app.show_dialog(doc)
+        
 def show_fileopen(filename, callback):
     if not filename:
         filename = kaa.app.last_dir
