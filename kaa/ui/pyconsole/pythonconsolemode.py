@@ -100,23 +100,30 @@ class PythonConsoleMode(pythonmode.PythonMode):
     @norec
     @norerun
     def exec_script(self, wnd):
-        if wnd.screen.selection.is_selected():
+        is_sel = wnd.screen.selection.is_selected()
+        if is_sel:
             f, t = wnd.screen.selection.get_selrange()
             s = wnd.document.gettext(f, t)
         else:
             s = wnd.document.gettext(0, wnd.document.endpos())
-
+        
         s = s.rstrip()
         if not s:
             return
 
-        s += '\n'
+        scr = s+'\n'
 
         with self._redirect_output():
             if not self._eval_str(s):
                 self._exec_str(s)
 
-
+        if not is_sel:
+            endpos = self.document.endpos()
+            if not self.document.gettext(endpos-1, endpos).endswith('\n'):
+                self.edit_commands.insert_string(wnd, self.document.endpos(),
+                    '\n', update_cursor=False)
+            wnd.screen.selection.set_range(0, endpos)
+            
 class PythonOutputMode(defaultmode.DefaultMode):
     MODENAME = 'Python outputs'
     DOCUMENT_MODE = False
