@@ -8,6 +8,7 @@ from kaa.ui.msgbox import msgboxmode
 from kaa.command import command, Commands, norec, norerun
 from kaa.commands import editorcommand
 from kaa.ui.selectlist import filterlist
+from kaa.ui.selectfile import selectfile
 from kaa.ui.grep import grepmode
 
 class GrepOption(modebase.SearchOption):
@@ -113,6 +114,7 @@ grepdlg_keys = {
     '\r': ('grepdlg.field.next'),
     '\n': ('grepdlg.field.next'),
     up: ('grepdlg.history'),
+    tab: ('grepdlg.select-dir'),
 }
 
 
@@ -230,6 +232,11 @@ class GrepDlgMode(dialogmode.DialogMode):
                       shortcut_style='checkbox.shortcut',
                       on_shortcut=self.run_grep)
 
+        f.append_text('checkbox', '[&Dir]',
+                      mark_pair='select-dir',
+                      shortcut_style='checkbox.shortcut',
+                      on_shortcut=self.select_dir)
+
         f.append_text('checkbox', '[&Tree]',
                       mark_pair='search-tree',
                       on_shortcut=self.toggle_option_tree,
@@ -294,6 +301,26 @@ class GrepDlgMode(dialogmode.DialogMode):
         self.update_option_style()
         self.document.style_updated(0, self.document.endpos())
 
+
+    def _select_dir(self, wnd):
+        def cb(dir):
+            wnd.set_visible(True)
+            if dir:
+                path = os.path.relpath(dir)
+                self.set_dir(wnd, path)
+
+        wnd.set_visible(False)
+        dir = os.path.abspath(self.get_dir())
+        selectfile.show_selectdir(dir, cb)
+
+    @command('grepdlg.select-dir')
+    @norec
+    @norerun
+    def select_dir(self, wnd):
+        f, t = self.document.marks['directory']
+        if f <= wnd.cursor.pos <= t:
+            self._select_dir(wnd)
+
     def toggle_option_tree(self, wnd):
         self.option.tree = not self.option.tree
         self._option_updated()
@@ -317,6 +344,11 @@ class GrepDlgMode(dialogmode.DialogMode):
     def get_dir(self):
         f, t = self.document.marks['directory']
         return self.document.gettext(f, t)
+
+    def set_dir(self, wnd, dir):
+        f, t = self.document.marks['directory']
+        self.edit_commands.replace_string(
+            wnd, f, t, dir, update_cursor=True)
 
     def get_files(self):
         f, t = self.document.marks['filenames']

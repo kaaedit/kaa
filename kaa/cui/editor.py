@@ -12,7 +12,8 @@ class TextEditorWindow(Window):
     document = None
     statusbar = None
     editmode = None
-
+    visible = True
+    
     def _oninit(self):
         super()._oninit()
         self._cwnd.leaveok(0)
@@ -79,6 +80,10 @@ class TextEditorWindow(Window):
 
     def set_cursor(self, cursor):
         self.cursor = cursor
+
+    def set_visible(self, visible):
+        self.visible =  visible
+        self.draw_screen(force=True)
 
     def _flush_pending_str(self):
         if self.editmode:
@@ -159,7 +164,7 @@ class TextEditorWindow(Window):
         theme = self.document.mode.theme
         defaultcolor = theme.get_style('default').cui_colorattr
 
-        if force:
+        if force or not self.visible:
             drawn = {}
             updated = True
         else:
@@ -204,6 +209,9 @@ class TextEditorWindow(Window):
             self._cwnd.move(n, 0)
             self._cwnd.clrtoeol()
             self._cwnd.chgat(n, 0, -1, defaultcolor)
+
+            if not self.visible:
+                continue
 
             # draw line no
             if self.document.mode.SHOW_LINENO:

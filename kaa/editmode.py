@@ -83,6 +83,9 @@ class EditMode:
             self.flush_pending_str(wnd)
 
         if not wnd.closed:
+            # cancel mark
+            wnd.screen.selection.set_mark(None)
+
             wnd.document.mode.on_esc_pressed(wnd, event)
 
     def clear_repeat(self):

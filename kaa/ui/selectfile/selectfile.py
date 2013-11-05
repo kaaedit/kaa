@@ -193,6 +193,7 @@ class FilenameEditCommands(editorcommand.EditCommands):
 class OpenFilenameDlgMode(dialogmode.DialogMode):
     MAX_INPUT_HEIGHT = 4
     autoshrink = True
+
     @classmethod
     def build(cls, filename, newline, encoding, callback):
         buf = document.Buffer()
@@ -210,13 +211,17 @@ class OpenFilenameDlgMode(dialogmode.DialogMode):
         f.append_text('default', filename, mark_pair='filename')
         f.append_text('default', ' ')
 
-        f.append_text('checkbox', '[&Encoding:{}]'.format(mode.encoding), mark_pair='enc',
+        f.append_text('checkbox', '[&Encoding:{}]'.format(mode.encoding), 
+                      mark_pair='enc',
                       shortcut_style='checkbox.shortcut',
-                      on_shortcut=lambda wnd:wnd.document.mode.select_encoding(wnd))
+                      on_shortcut=lambda wnd:
+                                      wnd.document.mode.select_encoding(wnd))
 
-        f.append_text('checkbox', '[&Newline:{}]'.format(mode.newline), mark_pair='newline',
+        f.append_text('checkbox', '[&Newline:{}]'.format(mode.newline), 
+                      mark_pair='newline',
                       shortcut_style='checkbox.shortcut',
-                      on_shortcut=lambda wnd:wnd.document.mode.select_newline(wnd))
+                      on_shortcut=lambda wnd:
+                                      wnd.document.mode.select_newline(wnd))
 
         return doc
 
@@ -391,7 +396,6 @@ class SaveAsFilenameDlgMode(OpenFilenameDlgMode):
         self.fileopendlg_commands = FileSaveAsDlgCommands()
         self.register_command(self.fileopendlg_commands)
 
-
 def show_filesaveas(filename, encoding, newline, callback):
     if not filename:
         filename = kaa.app.last_dir
@@ -409,5 +413,63 @@ def show_filesaveas(filename, encoding, newline, callback):
 
     doc.mode.fileopendlg_commands.show_filename(
         dlg.get_label('editor'), filename)
+
+    return doc
+
+
+class SelectDirDlgMode(OpenFilenameDlgMode):
+    @classmethod
+    def build(cls, filename, callback):
+        buf = document.Buffer()
+        doc = document.Document(buf)
+        mode = cls()
+        doc.setmode(mode)
+
+        mode.callback = callback
+
+        f = dialogmode.FormBuilder(doc)
+        f.append_text('caption', 'Directory name:' )
+        f.append_text('default', ' ')
+        f.append_text('default', filename, mark_pair='filename')
+        f.append_text('default', ' ')
+
+        f.append_text('checkbox', '[&Select this dir}]', 
+                      shortcut_style='checkbox.shortcut',
+                      on_shortcut=lambda wnd:
+                                      wnd.document.mode.on_select_dir(wnd))
+
+        return doc
+
+    def on_esc_pressed(self, wnd, event):
+        popup = wnd.get_label('popup')
+        popup.destroy()
+        kaa.app.messagebar.set_message("")
+        self.callback(None)
+
+    def on_select_dir(self, wnd):
+        filename = self.fileopendlg_commands._build_filename(wnd)
+        popup = wnd.get_label('popup')
+        popup.destroy()
+        kaa.app.messagebar.set_message("")
+        self.callback(filename)
+            
+class DirListMode(DirFileListMode):
+    def show_files(self, wnd):
+        self.cursel = None
+        dirs = [selectlist.SelectItem(
+                    'selectitem', 'selectitem-active', name, name) for name in self.dirs]
+        if self.filterfunc:
+            dirs = [item for item in dirs if self.filterfunc(item.text)]
+        self.update_doc(dirs)
+
+def show_selectdir(curdir, callback):
+    doc = SelectDirDlgMode.build('', callback)
+    dlg = kaa.app.show_dialog(doc)
+
+    filelist = DirListMode.build()
+    dlg.add_doc('dlg_filelist', 0, filelist)
+
+    doc.mode.fileopendlg_commands.show_filename(
+        dlg.get_label('editor'), curdir)
 
     return doc

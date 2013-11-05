@@ -18,6 +18,8 @@ selectlist_keys = {
 class SelectItemList(dialogmode.DialogMode):
     USE_UNDO = False
     NO_WRAPINDENT = False
+    CAPTION_STYLE = 'caption'
+
     items = ()
     cursel = None
     filterfunc = None
@@ -59,7 +61,7 @@ class SelectItemList(dialogmode.DialogMode):
         f = dialogmode.FormBuilder(self.document)
 
         if self.caption:
-            f.append_text('caption', self.caption+':\n')
+            f.append_text(self.CAPTION_STYLE, self.caption+':\n')
 
         for n, item in enumerate(self.items):
             f.append_text(item.style, item.text, mark_pair=item)
