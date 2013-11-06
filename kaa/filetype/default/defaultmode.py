@@ -1,4 +1,4 @@
-import copy
+import copy, time
 from collections import defaultdict
 import kaa
 from kaa.commands import (appcommand, filecommand, editorcommand, 
@@ -89,11 +89,32 @@ class DefaultMode(modebase.ModeBase):
         self.keybind_vi_visuallinewisemode.clear()
 
 
+    def on_idle(self):
+        if self.closed:
+            return
 
-    HIGHLIGHTBATCH = 300
-    def run_highlight(self):
-        return self.highlight.update_style(self.document, batch=self.HIGHLIGHTBATCH)
+        ret = super().on_idle()
+        if not ret:
+            ret = self.check_fileupdate()
 
+        return ret
+
+    INTERVAL_CHECKUPDATE = 60
+    def check_fileupdate(self):
+        if not self.DOCUMENT_MODE:
+            return
+        if not kaa.app.mainframe.is_idle():
+            return
+
+        t = time.time()
+        if t - self._check_fileupdate < self.INTERVAL_CHECKUPDATE:
+            return
+
+        self._check_fileupdate = t
+        if self.document.fileinfo:
+            if self.document.fileinfo.check_update():
+                self.file_commands.notify_fileupdated(self.document)
+                
     def on_esc_pressed(self, wnd, event):
         super().on_esc_pressed(wnd, event)
         return

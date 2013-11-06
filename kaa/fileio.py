@@ -103,7 +103,8 @@ class FileStorage:
             # TODO: fsync
             f.write(doc.gettext(0, doc.endpos()))
 
-        doc.fileinfo = self.get_fileinfo(filename)
+        doc.fileinfo = self.get_fileinfo(filename, doc.fileinfo.encoding, 
+                                            doc.fileinfo.newline)
         doc.set_title(None)
         doc.provisional = False
         if doc.undo:
@@ -145,6 +146,22 @@ class FileInfo:
             info['pos'] = pos
             kaa.app.config.hist_filedisp.add(
                 self.fullpathname, info)
+
+    def check_update(self):
+        if self.fullpathname:
+            try:
+                stat = os.stat(self.fullpathname)
+            except Exception:
+                return
+    
+            if stat.st_mtime == self.stat.st_mtime:
+                return
+            
+            if stat.st_size == self.stat.st_size:
+                return
+            
+            self.stat = stat
+            return True
 
 def select_mode(filename):
     ext = os.path.splitext(filename)[1].lower()

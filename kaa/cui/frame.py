@@ -162,6 +162,9 @@ class MainFrame(Window, kaa.context.ContextRoot):
             self.childframes.remove(childframe)
         self.childframes.insert(0, childframe)
 
+    def is_idle(self):
+        return not self.popups and not self.inputline
+        
     def show_doc(self, doc):
         frame = self._get_provisional_frame()
         if frame:

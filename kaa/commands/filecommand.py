@@ -346,6 +346,41 @@ class FileCommands(Commands):
         docs = self.get_current_documents(wnd)
         self.save_documents(wnd, docs, saved, 'Save file before close?')
 
+    def reload_file(self, document):
+        fileinfo = document.fileinfo
+        newdoc = kaa.app.storage.openfile(
+            fileinfo.filename, fileinfo.encoding, fileinfo.newline)
+
+        for w in document.wnds:
+            w.show_doc(newdoc)
+
+        if not document.closed:
+            document.close()
+
+    def notify_fileupdated(self, document):
+        def choice(c):
+            if c == 'y':
+                self.reload_file(document)
+            elif c == 'n':
+                return
+            elif c == 'd':
+                def cb():
+                    return self.notify_fileupdated(document)
+
+                if document.fileinfo and document.fileinfo.fullpathname:
+                    from kaa.ui.viewdiff import viewdiffmode
+                    viewdiffmode.view_diff(
+                        document, callback=cb)
+                else:
+                    cb()
+            else:
+                self.notify_fileupdated(document)
+
+        items = ['&Yes', '&No', 'View &Diff']
+        msg = 'File [{}] has been updated by other process. Reload file?: '
+        msgboxmode.MsgBoxMode.show_msgbox(msg.format(document.get_title()),
+            items, choice)
+        
     def can_close_wnd(self, wnd, cb):
         if len(wnd.document.wnds) == 1:
             wnd.document.mode.file_commands.ask_doc_close(

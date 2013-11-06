@@ -7,7 +7,7 @@ from kaa.theme import Theme, Style
 DiffThemes = {
     'default':
         Theme([
-            Style('default', 'Base00', 'Base02', False, False),
+            Style('default', 'Base00', None),
             Style('fromfile', 'Orange', None),
             Style('tofile', 'Yellow', None),
             Style('hunk', 'Blue', None),

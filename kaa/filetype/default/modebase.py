@@ -62,6 +62,7 @@ class ModeBase:
     current_lastcommands = None
     theme = None
     highlight = None
+    _check_fileupdate = 0
     
     def __init__(self):
         self.commands = {}
