@@ -13,7 +13,11 @@ FrameListThemes = {
 
 framelist_keys = {
     left: 'framelist.prev',
+    (ctrl, 'p'): 'framelist.prev',
+    (ctrl, 'b'): 'framelist.prev',
     right: 'framelist.next',
+    (ctrl, 'n'): 'framelist.next',
+    (ctrl, 'f'): 'framelist.next',
     '\r': 'framelist.close',
     '\n': 'framelist.close',
 }

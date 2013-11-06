@@ -10,8 +10,12 @@ SelectItem = collections.namedtuple(
 
 selectlist_keys = {
     down: 'selectitemlist.next',
+    (ctrl, 'n'): 'selectitemlist.next',
+    (ctrl, 'f'): 'selectitemlist.next',
     tab: 'selectitemlist.next',
     up: 'selectitemlist.prev',
+    (ctrl, 'p'): 'selectitemlist.prev',
+    (ctrl, 'b'): 'selectitemlist.prev',
     (shift, tab): 'selectitemlist.prev',
 }
 

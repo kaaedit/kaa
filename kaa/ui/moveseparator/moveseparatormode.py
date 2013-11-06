@@ -12,7 +12,13 @@ MoveSeparatorThemes = {
 
 moveseparator_keys = {
     left: 'moveseparator.prev',
+    up: 'moveseparator.prev',
+    (ctrl, 'p'): 'moveseparator.prev',
+    (ctrl, 'b'): 'moveseparator.prev',
     right: 'moveseparator.next',
+    down: 'moveseparator.next',
+    (ctrl, 'f'): 'moveseparator.next',
+    (ctrl, 'n'): 'moveseparator.next',
     '\r': 'moveseparator.close',
     '\n': 'moveseparator.close',
 }

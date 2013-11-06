@@ -12,7 +12,11 @@ ItemListThemes = {
 
 itemlist_keys = {
     left: 'itemlist.prev',
+    (ctrl, 'p'): 'itemlist.prev',
+    (ctrl, 'b'): 'itemlist.prev',
     right: 'itemlist.next',
+    (ctrl, 'n'): 'itemlist.next',
+    (ctrl, 'f'): 'itemlist.next',
     '\r': 'itemlist.close',
     '\n': 'itemlist.close',
 }
