@@ -209,7 +209,8 @@ class Document:
         for wnd in self.wnds:
             wnd.on_document_updated(pos, inslen, dellen)
 
-        self.mode.on_document_updated(pos, inslen, dellen)
+        if self.mode:
+            self.mode.on_document_updated(pos, inslen, dellen)
 
     def style_updated(self, posfrom, posto):
         for wnd in self.wnds:
@@ -263,6 +264,13 @@ class Document:
             return (len(self.buf), self.buf[pos:])
         else:
             return (eol, self.buf[pos:eol])
+
+    def iterlines(self, pos):
+        end = self.endpos()
+        while pos < end:
+            eol = self.geteol(pos)
+            yield self.buf[pos:eol]
+            pos = eol
 
     def insert(self, pos, s, style=None):
         self.buf.insert(pos, s)

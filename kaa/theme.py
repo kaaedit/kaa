@@ -13,11 +13,12 @@ class Theme:
             self.styles[style.name] = style
 
     def update(self, rhs):
-        self.add_styles(rhs.styles.values())
+        default = self.styles.get('default', None)
+        self.add_styles(s.fill(default) for s in rhs.styles.values())
 
 class Style:
-    def __init__(self, name, fgcolor=None, bgcolor=None, underline=None,
-                 bold=None, nowrap=None, rjust=None):
+    def __init__(self, name, fgcolor, bgcolor, underline=False,
+                 bold=False, nowrap=False, rjust=False):
         self.name = name
         self.fgcolor = fgcolor
         self.bgcolor = bgcolor

@@ -12,6 +12,7 @@ MENUS = {
         [['&New', None, 'file.new'],
          ['&Open', None, 'file.open'],
          ['File &Info', None, 'file.info'],
+         ['View &Diff', None, 'file.viewdiff'],
          ['&Save', None, 'file.save'],
          ['Save &As', None, 'file.saveas'],
          ['&Close', None, 'file.close'],

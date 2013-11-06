@@ -160,15 +160,18 @@ File menu
 | File info  | Show file information. Also update per file        |
 |            | settings of tab or indentation.                    |
 +------------+----------------------------------------------------+
+| View Diff  | Show difference between original file and current  |
+|            | buffer.                                            |
++------------+----------------------------------------------------+
 | Save       | Save current file.                                 |
 +------------+----------------------------------------------------+
 | Save As    | Save current file as new file.                     |
 +------------+----------------------------------------------------+
 | Close      | Close current frame.                               |
 +------------+----------------------------------------------------+
-| Save All   | Save all current files.                            |
+| Save all   | Save all current files.                            |
 +------------+----------------------------------------------------+
-| Close All  | Close all frames.                                  |
+| Close all  | Close all frames.                                  |
 +------------+----------------------------------------------------+
 | [Recently] | Show recently used files menu.                     |
 +------------+----------------------------------------------------+

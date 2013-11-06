@@ -70,6 +70,14 @@ class FileCommands(Commands):
         from kaa.ui.fileinfo import fileinfomode
         fileinfomode.show_fileinfo(wnd)
 
+    @command('file.viewdiff')
+    @norec
+    @norerun
+    def file_viewdiff(self, wnd, callback=None):
+        if wnd.document.fileinfo and wnd.document.fileinfo.fullpathname:
+            from kaa.ui.viewdiff import viewdiffmode
+            viewdiffmode.view_diff(wnd.document, callback=None)
+
     @command('file.save')
     @norec
     @norerun
@@ -131,15 +139,31 @@ class FileCommands(Commands):
                 self.file_save(wnd, saved=callback, document=document)
             elif c == 'n':
                 callback(canceled=False)
+            elif c == 'd':
+                def cb():
+                    return self.ask_doc_close(
+                        wnd, document, callback, msg)
+
+                if document.fileinfo and document.fileinfo.fullpathname:
+                    from kaa.ui.viewdiff import viewdiffmode
+                    viewdiffmode.view_diff(
+                        document, callback=cb)
+                else:
+                    cb()
 
         if (document.mode.DOCUMENT_MODE 
             and document.undo
             and document.undo.is_dirty()):
-                
+
+
+            items = ['&Yes', '&No', '&Cancel']
+            if document.fileinfo and document.fileinfo.fullpathname:
+                items.append('View &Diff')
+            
             msgboxmode.MsgBoxMode.show_msgbox(
                 '{} [{}]: '.format(
                     msg, document.get_title()),
-                ['&Yes', '&No', '&Cancel'], choice)
+                items, choice)
         else:
             callback(canceled=False)
 

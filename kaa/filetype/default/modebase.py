@@ -61,7 +61,8 @@ class ModeBase:
     closed = False
     current_lastcommands = None
     theme = None
-
+    highlight = None
+    
     def __init__(self):
         self.commands = {}
         self.is_availables = {}
@@ -293,8 +294,10 @@ class ModeBase:
         ret = self.run_highlight()
         return ret
 
+    HIGHLIGHTBATCH = 300
     def run_highlight(self):
-        pass
+        if self.highlight:
+            return self.highlight.update_style(self.document, batch=self.HIGHLIGHTBATCH)
 
     def _split_chars(self, begin, end):
         """split characters by character category."""
