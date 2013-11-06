@@ -40,7 +40,7 @@ class FileStorage:
         fileinfo.filename = filename
 
         try:
-            fileinfo.stat = os.stat(filename)
+            fileinfo.stat = os.stat(fullpath)
         except FileNotFoundError:
             fileinfo.stat = None
 
