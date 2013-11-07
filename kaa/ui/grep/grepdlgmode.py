@@ -235,7 +235,7 @@ class GrepDlgMode(dialogmode.DialogMode):
         f.append_text('checkbox', '[&Dir]',
                       mark_pair='select-dir',
                       shortcut_style='checkbox.shortcut',
-                      on_shortcut=self.select_dir)
+                      on_shortcut=self._select_dir)
 
         f.append_text('checkbox', '[&Tree]',
                       mark_pair='search-tree',
