@@ -349,7 +349,8 @@ class FileCommands(Commands):
     def reload_file(self, document):
         fileinfo = document.fileinfo
         newdoc = kaa.app.storage.openfile(
-            fileinfo.filename, fileinfo.encoding, fileinfo.newline)
+            fileinfo.fullpathname, fileinfo.encoding, fileinfo.newline,
+            filemustexists=True)
 
         for w in document.wnds:
             w.show_doc(newdoc)

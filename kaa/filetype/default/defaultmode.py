@@ -99,7 +99,7 @@ class DefaultMode(modebase.ModeBase):
 
         return ret
 
-    INTERVAL_CHECKUPDATE = 60
+    INTERVAL_CHECKUPDATE = 15
     def check_fileupdate(self):
         if not self.DOCUMENT_MODE:
             return

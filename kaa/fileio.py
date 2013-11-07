@@ -6,7 +6,7 @@ from kaa.filetype.default import defaultmode
 from kaa import consts
 
 class FileStorage:
-    def get_textio(self, fileinfo):
+    def get_textio(self, fileinfo, filemustexists=False):
         try:
             # use surrogateescape to preserve file contents intact.
             textio = open(fileinfo.fullpathname, 'r',
@@ -15,6 +15,8 @@ class FileStorage:
                         newline=fileinfo.nlchars)
         
         except FileNotFoundError:
+            if filemustexists:
+                raise
             return None
 
         return textio
@@ -72,10 +74,11 @@ class FileStorage:
         kaa.app.config.hist_dirs.add(dirname)
         kaa.app.last_dir = dirname
 
-    def openfile(self, filename, encoding=None, newline=None, nohist=False):
+    def openfile(self, filename, encoding=None, newline=None, nohist=False,
+                    filemustexists=False):
         if not nohist:
             self._save_hist(filename)
-        return openfile(filename, encoding, newline)
+        return openfile(filename, encoding, newline, filemustexists)
 
     def save_document(self, doc, filename, encoding=None, newline=None):
         self._save_hist(filename)
@@ -173,10 +176,10 @@ def select_mode(filename):
     return defaultmode.DefaultMode
 
 
-def openfile(filename, encoding=None, newline=None):
+def openfile(filename, encoding=None, newline=None, filemustexists=False):
     # Open file
     fileinfo = kaa.app.storage.get_fileinfo(filename, encoding, newline)
-    textio = kaa.app.storage.get_textio(fileinfo)
+    textio = kaa.app.storage.get_textio(fileinfo, filemustexists)
 
     buf = document.Buffer()
     if textio:
