@@ -550,6 +550,21 @@ Links
 Version history
 =================
 
+0.8 - 2013.11.7
+----------------
+
+- View diff between original file and current buffer.
+
+- Grep dialog now has 'Dir' button to select directory.
+ 
+- Handle SIGTERM to restore terminal state before exit.
+
+- Prompt to reload file when file modified by other process.
+
+
+Past versions
+--------------
+
 0.7 - 2013.11.5
 ----------------
 
@@ -565,9 +580,6 @@ Version history
 
 - New command: Open recently used directory here.
 
-
-Past versions
---------------
 
 0.6 - 2013.11.1
 +++++++++++++++++++++
