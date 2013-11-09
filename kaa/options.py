@@ -5,6 +5,14 @@ def build_parser():
 
     parser.add_argument('--version', dest='show_version', action='store_true', 
             default=False, help='show version info and exit')
+
+    parser.add_argument('--no-init', dest='no_init', action='store_true', 
+            default=False, help='skip loading initialization script')
+
+    parser.add_argument('--init-script', dest='init_script', 
+        help='execute file as initialization script instead of default initialization file')
+
+
     parser.add_argument('file', nargs='*', default=[])
 
     return parser

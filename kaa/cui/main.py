@@ -30,8 +30,7 @@ def _restore():
     curses.nl()
 
 
-def run_userinit():
-    fname = os.path.join(kaa.app.config.KAADIR, '__kaa__.py')
+def run_userinit(fname):
     if os.path.isfile(fname):
         with open(fname) as f:
             src = f.read()
@@ -59,7 +58,11 @@ def main(stdscr):
         mainframe = frame.MainFrame(stdscr)
         kaa.app.init(mainframe)
 
-        run_userinit()
+        if not opt.no_init:
+            fname = opt.init_script
+            if not fname:
+                fname = os.path.join(kaa.app.config.KAADIR, '__kaa__.py')
+            run_userinit(fname)
 
         if not opt.file:
             # no file args. show new document.
