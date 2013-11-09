@@ -11,6 +11,23 @@ class FileStorage:
             return 'cp932'
         return encoding
         
+    def guess_japanese_encoding(self, filename):
+        import pyjf3
+        ret = pyjf3.guess(open(filename, 'rb').read())
+        
+        if ret in (pyjf3.ASCII, pyjf3.UTF8):
+            return 'utf-8'
+        elif ret == pyjf3.SJIS:
+            return 'cp932'
+        elif ret == pyjf3.EUC:
+            return 'euc-jp'
+        elif ret == pyjf3.JIS:
+            return 'iso-2022-jp'
+        elif ret == pyjf3.UTF16_LE:
+            return 'utf-16le'
+        elif ret == pyjf3.UTF16_BE:
+            return 'utf-16be'
+        
     def get_textio(self, fileinfo, filemustexists=False):
         try:
             # use surrogateescape to preserve file contents intact.

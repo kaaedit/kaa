@@ -1,5 +1,6 @@
 import re, os
 import kaa
+from kaa import encodingdef, consts
 from kaa.keyboard import *
 from kaa.ui.dialog import dialogmode
 from kaa.theme import Theme, Style
@@ -9,6 +10,7 @@ from kaa.command import command, Commands, norec, norerun
 from kaa.commands import editorcommand
 from kaa.ui.selectlist import filterlist
 from kaa.ui.selectfile import selectfile
+from kaa.ui.itemlist import itemlistmode
 from kaa.ui.grep import grepmode
 
 class GrepOption(modebase.SearchOption):
@@ -18,12 +20,16 @@ class GrepOption(modebase.SearchOption):
         self.tree = True
         self.directory = '.'
         self.filenames = '*.*'
+        self.encoding = 'utf-8'
+        self.newline = 'auto'
 
     def clone(self):
         ret = super().clone()
         ret.tree = self.tree
         ret.directory  = self.directory
         ret.filenames  = self.filenames
+        ret.encoding = self.encoding
+        ret.newline = self.newline
         return ret
 
 GrepOption.LASTOPTION = GrepOption()
@@ -225,7 +231,7 @@ class GrepDlgMode(dialogmode.DialogMode):
         f.append_text('default', '(current dir)')
         f.append_text('default', ' ')
         f.append_text('default', os.getcwd())
-        f.append_text('default', ' ')
+        f.append_text('default', '\n')
 
         # buttons
         f.append_text('checkbox', '[&Search]',
@@ -262,6 +268,19 @@ class GrepDlgMode(dialogmode.DialogMode):
                       shortcut_style='checkbox.shortcut',
                       shortcut_mark='shortcut-r')
 
+        f.append_text('checkbox', '[&Encoding:{}]'.format(self.option.encoding), 
+                      mark_pair='enc',
+                      shortcut_style='checkbox.shortcut',
+                      on_shortcut=lambda wnd:
+                                      wnd.document.mode.select_encoding(wnd))
+
+        f.append_text('checkbox', '[&Newline:{}]'.format(self.option.newline), 
+                      mark_pair='newline',
+                      shortcut_style='checkbox.shortcut',
+                      on_shortcut=lambda wnd:
+                                      wnd.document.mode.select_newline(wnd))
+
+
         self.update_option_style()
         kaa.app.messagebar.set_message(
             "Hit alt+S to begin search. Hit up to show history.")
@@ -296,6 +315,8 @@ class GrepDlgMode(dialogmode.DialogMode):
         style = self._get_optionstylename(self.option.regex)
         self._set_option_style('regex', 'checkbox'+style, 'shortcut-r',
                                'checkbox.shortcut'+style)
+
+
 
     def _option_updated(self):
         self.update_option_style()
@@ -336,6 +357,54 @@ class GrepDlgMode(dialogmode.DialogMode):
     def toggle_option_regex(self, wnd):
         self.option.regex = not self.option.regex
         self._option_updated()
+
+    def _get_encnames(self):
+        return sorted(encodingdef.encodings + ['japanese'],
+                 key=lambda k:k.upper())
+
+    def select_encoding(self, wnd):
+        encnames = self._get_encnames()
+        
+        def callback(n):
+            if n is None:
+                return
+
+            enc = encnames[n]
+            if enc != self.option.encoding:
+                self.option.encoding = enc
+                f, t = self.document.marks['enc']
+                # [Encoding:{mode}]
+                # 01234567890    10
+                self.document.replace(f+10, t-1, self.option.encoding)
+
+        doc = itemlistmode.ItemListMode.build(
+            'Select character encoding:',
+            encnames,
+            encnames.index(self.option.encoding),
+            callback)
+
+        kaa.app.show_dialog(doc)
+
+    def select_newline(self, wnd):
+        def callback(n):
+            if n is None:
+                return
+
+            nl = consts.NEWLINES[n]
+            if nl != self.option.newline:
+                self.option.newline = nl
+                f, t = self.document.marks['newline']
+                # [Newline:{mode}]
+                # 0123456789    10
+                self.document.replace(f+9, t-1, self.option.newline)
+
+        doc = itemlistmode.ItemListMode.build(
+            'Select newline mode:',
+            consts.NEWLINES,
+            consts.NEWLINES.index(self.option.newline),
+            callback)
+
+        kaa.app.show_dialog(doc)
 
     def get_search_str(self):
         f, t = self.document.marks['searchtext']

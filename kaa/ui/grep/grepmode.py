@@ -95,13 +95,24 @@ def _iter_lines(text):
     
     yield lineno, pos, len(text), text[pos:]
 
-
-def _grep(filename, regex):
+def _enc_japanese(filename):
+    encoding = kaa.app.storage.guess_japanese_encoding(filename)
+    if encoding:
+        return encoding
+    else:
+        kaa.app.messagebar.set_message(
+            'Cannot detect text encoding:: {}'.format(filename))
+    
+def _grep(filename, regex, encoding, newline):
     doc = document.Document.find_filename(filename)
     if doc:
         text = doc.gettext(0, doc.endpos())
     else:
-        fileinfo = kaa.app.storage.get_fileinfo(filename)
+        if encoding == 'japanese':
+            encoding = _enc_japanese(filename)
+            
+        fileinfo = kaa.app.storage.get_fileinfo(filename, 
+                    encoding=encoding, newline=newline)
         f = kaa.app.storage.get_textio(fileinfo)
         if not f:
             return
@@ -167,7 +178,8 @@ def _search(dir, option, doc):
         if len(path) > len(fname):
             path = fname
             
-        for lineno, linefrom, lineto, line, f, t, match in _grep(fname, regex):
+        for lineno, linefrom, lineto, line, f, t, match in _grep(fname, regex, 
+                    option.encoding, option.newline):
             nhits += 1
             
             line = line.rstrip('\n')
@@ -294,7 +306,12 @@ class GrepMode(defaultmode.DefaultMode):
         filename = os.path.abspath(filename)
         doc = document.Document.find_filename(filename)
         if not doc:
-            doc = kaa.app.storage.openfile(filename)
+            enc = self.grepoption.encoding
+            if enc == 'japanese':
+                enc = _enc_japanese(filename)
+
+            doc = kaa.app.storage.openfile(filename, encoding=enc,
+                                            newline=self.grepoption.newline)
 
         buddy = wnd.splitter.get_buddy()
         if not buddy:

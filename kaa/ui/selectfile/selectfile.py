@@ -171,22 +171,8 @@ class FileOpenDlgCommands(Commands):
         if os.path.isfile(filename):
             enc = wnd.document.mode.encoding
             if enc == 'japanese':
-                import pyjf3
-                ret = pyjf3.guess(open(filename, 'rb').read())
-                
-                if ret in (pyjf3.ASCII, pyjf3.UTF8):
-                    enc = 'utf-8'
-                elif ret == pyjf3.SJIS:
-                    enc = 'cp932'
-                elif ret == pyjf3.EUC:
-                    enc = 'euc-jp'
-                elif ret == pyjf3.JIS:
-                    enc = 'iso-2022-jp'
-                elif ret == pyjf3.UTF16_LE:
-                    enc = 'utf-16le'
-                elif ret == pyjf3.UTF16_BE:
-                    enc = 'utf-16be'
-                else:
+                enc = kaa.app.storage.guess_japanese_encoding(filename)
+                if not enc:
                     kaa.app.messagebar.set_message('Cannot detect text encoding.')
                     return
                     
