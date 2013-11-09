@@ -96,6 +96,5 @@ encodings = [
 ]
 
 canonical_names = {codecs.lookup(name).name:name for name in encodings}
-
 def normalize_encname(name):
     return canonical_names[codecs.lookup(name).name]

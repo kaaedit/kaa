@@ -1,7 +1,6 @@
 import itertools
 import re
 import unicodedata
-import pyjf3
 import kaa
 from kaa.command import Commands, command, is_enable, norec, norerun
 from kaa import document
@@ -819,6 +818,7 @@ class EditCommands(Commands):
 
     @command('edit.conv.full-width')
     def conv_fullwidth(self, wnd):
+        import pyjf3
         s = self._get_sel(wnd)
         if s:
             self.put_string(wnd, pyjf3.tofull(s))

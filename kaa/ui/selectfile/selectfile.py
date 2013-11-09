@@ -169,7 +169,28 @@ class FileOpenDlgCommands(Commands):
     def openfile(self, wnd):
         filename = self._build_filename(wnd)
         if os.path.isfile(filename):
-            wnd.document.mode.callback(filename, wnd.document.mode.encoding,
+            enc = wnd.document.mode.encoding
+            if enc == 'japanese':
+                import pyjf3
+                ret = pyjf3.guess(open(filename, 'rb').read())
+                
+                if ret in (pyjf3.ASCII, pyjf3.UTF8):
+                    enc = 'utf-8'
+                elif ret == pyjf3.SJIS:
+                    enc = 'cp932'
+                elif ret == pyjf3.EUC:
+                    enc = 'euc-jp'
+                elif ret == pyjf3.JIS:
+                    enc = 'iso-2022-jp'
+                elif ret == pyjf3.UTF16_LE:
+                    enc = 'utf-16le'
+                elif ret == pyjf3.UTF16_BE:
+                    enc = 'utf-16be'
+                else:
+                    kaa.app.messagebar.set_message('Cannot detect text encoding.')
+                    return
+                    
+            wnd.document.mode.callback(filename, enc,
                                        wnd.document.mode.newline)
             popup = wnd.get_label('popup')
             popup.destroy()
@@ -300,12 +321,18 @@ class OpenFilenameDlgMode(dialogmode.DialogMode):
         wnd.screen.selection.set_range(f, f+len(s))
         wnd.cursor.setpos(f+len(s))
 
+    def _get_encnames(self):
+        return sorted(encodingdef.encodings + ['japanese'],
+                 key=lambda k:k.upper())
+
     def select_encoding(self, wnd):
+        encnames = self._get_encnames()
+        
         def callback(n):
             if n is None:
                 return
 
-            enc = encodingdef.encodings[n]
+            enc = encnames[n]
             if enc != self.encoding:
                 self.encoding = enc
                 f, t = self.document.marks['enc']
@@ -315,8 +342,8 @@ class OpenFilenameDlgMode(dialogmode.DialogMode):
 
         doc = itemlistmode.ItemListMode.build(
             'Select character encoding:',
-            encodingdef.encodings,
-            encodingdef.encodings.index(self.encoding),
+            encnames,
+            encnames.index(self.encoding),
             callback)
 
         kaa.app.show_dialog(doc)

@@ -6,11 +6,16 @@ from kaa.filetype.default import defaultmode
 from kaa import consts
 
 class FileStorage:
+    def adjust_encoding(self, encoding):
+        if encoding.lower() == 'shiftjis':
+            return 'cp932'
+        return encoding
+        
     def get_textio(self, fileinfo, filemustexists=False):
         try:
             # use surrogateescape to preserve file contents intact.
             textio = open(fileinfo.fullpathname, 'r',
-                        encoding=fileinfo.encoding, 
+                        encoding=self.adjust_encoding(fileinfo.encoding), 
                         errors='surrogateescape', 
                         newline=fileinfo.nlchars)
         
@@ -98,7 +103,8 @@ class FileStorage:
             if doc.fileinfo.newline is None:
                 doc.fileinfo.newline = kaa.app.config.DEFAULT_NEWLINE
 
-        with open(filename, 'w', encoding=doc.fileinfo.encoding,
+        with open(filename, 'w', 
+                 encoding=self.adjust_encoding(doc.fileinfo.encoding),
                  newline=consts.NEWLINE_CHARS[doc.fileinfo.newline],
                  errors='surrogateescape') as f:
 
