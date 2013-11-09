@@ -550,6 +550,17 @@ Links
 Version history
 =================
 
+0.9 - 2013.11.9
+---------------
+
+- Markdown mode.
+
+- reStructuredText mode.
+
+
+Past versions
+--------------
+
 0.8 - 2013.11.7
 ----------------
 
@@ -561,9 +572,6 @@ Version history
 
 - Prompt to reload file when file modified by other process.
 
-
-Past versions
---------------
 
 0.7 - 2013.11.5
 ----------------
@@ -662,7 +670,7 @@ Past versions
 
 - Search/Replace history.
 
-- Line number display setting at menu|File|File Info.
+- Line number display setting at menu | File | File Info.
 
 
 0.0.3 - 2013.10.9
@@ -676,7 +684,7 @@ Past versions
 
 - New command: Select current word(^c).
 
-- New command: Save all files(menu|file|Save All).
+- New command: Save all files(menu | file | Save All).
 
 - Improve file open dialog.
 

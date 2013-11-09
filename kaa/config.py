@@ -86,6 +86,8 @@ class Config:
         'kaa.filetype.javascript',
         'kaa.filetype.css',
         'kaa.filetype.diff',
+        'kaa.filetype.rst',
+        'kaa.filetype.markdown',
     ]
 
     DEFAULT_NEWLINE = 'auto'

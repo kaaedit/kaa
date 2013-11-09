@@ -67,7 +67,9 @@ class Keywords(SingleToken):
 
 
 class Span(Token):
-    def __init__(self, name, stylename, start, end, escape=None):
+    def __init__(self, name, stylename, start, end, escape=None,
+            capture_end=True):
+                
         super().__init__(name, stylename)
 
         self.start = start
@@ -75,7 +77,8 @@ class Span(Token):
         if escape:
             end = '({}.)|({})'.format(gre.escape(escape), end)
         self.end = gre.compile(end, gre.X+gre.M+gre.S)
-
+        self._capture_end = capture_end
+        
     def prepare(self, tokenizer):
         super().prepare(tokenizer)
 
@@ -86,6 +89,9 @@ class Span(Token):
     def re_start(self):
         return self.start
 
+    def _is_end(self, doc, m):
+        return True
+        
     def on_start(self, tokenizer, doc, pos, match):
         yield (match.start(), match.end(), self.span_start)
 
@@ -94,10 +100,17 @@ class Span(Token):
                 continue
 
             if match.end() != m.start():
+                if not self._is_end(doc, m):
+                    continue
                 yield (match.end(), m.start(), self.span_mid)
-
-            yield (m.start(), m.end(), self.span_end)
-            return m.end(), None, False
+            
+            if self._capture_end:
+                yield (m.start(), m.end(), self.span_end)
+                end = m.end()
+            else:
+                end = m.start()
+                
+            return end, None, False
 
         else:
             yield (match.end(), doc.endpos(), self.span_mid)

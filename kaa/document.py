@@ -220,6 +220,9 @@ class Document:
         """Returns end position of this document(=size of document)."""
         return len(self.buf)
 
+    def findchr(self, pos, chars):
+        return self.buf.findchr(chars, pos, len(self.buf))
+        
     def gettol(self, pos):
         """Returns top of line at pos"""
 
