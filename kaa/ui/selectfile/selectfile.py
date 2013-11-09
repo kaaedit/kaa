@@ -452,6 +452,10 @@ class SaveAsFilenameDlgMode(OpenFilenameDlgMode):
         self.fileopendlg_commands = FileSaveAsDlgCommands()
         self.register_command(self.fileopendlg_commands)
 
+    def _get_encnames(self):
+        return sorted(encodingdef.encodings,
+                 key=lambda k:k.upper())
+
 def show_filesaveas(filename, encoding, newline, callback):
     if not filename:
         filename = kaa.app.last_dir
