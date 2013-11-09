@@ -12,7 +12,7 @@ MsgBoxThemes = {
             Style('separator', 'Menu1', 'Base02', nowrap=False),
             Style('button', 'Menu1', 'Base02', nowrap=True),
             Style('button.shortcut', 'Menu1', 'Base02', underline=True,
-                   bold=True, nowrap=True),
+                   nowrap=True),
         ])
 }
 
