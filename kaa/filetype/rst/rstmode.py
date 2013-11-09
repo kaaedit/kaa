@@ -24,12 +24,13 @@ class RstInline(Span):
     WS = ' \t\r\n'
     STARTS = '\'"([{<' + WS
     ENDS = '\'".,:;!?-)]}/\\>' + WS
+    
     def on_start(self, tokenizer, doc, pos, match):
         if pos and (doc.gettext(pos-1, pos) not in self.STARTS):
             yield pos, pos+1, tokenizer.nulltoken
             return pos+1, None, False
                 
-        ret = yield from  super().on_start(tokenizer, doc, pos, match)
+        ret = yield from super().on_start(tokenizer, doc, pos, match)
         return ret
 
     def _is_end(self, doc, m):
@@ -38,6 +39,27 @@ class RstInline(Span):
             return (doc.gettext(pos, pos+1) in self.ENDS)
         return True
         
+
+class TableToken(SingleToken):
+    def on_start(self, tokenizer, doc, pos, match):
+        in_table = False
+        tol = doc.gettol(pos)
+        if pos == tol:
+            in_table = True
+        else:
+            # check if previous line is table
+            if tol > 1:
+                laststyle = doc.get_styles(tol-2, tol-1)[0]
+                token = tokenizer.highlighter.get_token(laststyle)
+                if isinstance(token, TableToken):
+                    in_table = True
+        if in_table:
+            ret = yield from super().on_start(tokenizer, doc, pos, match)
+            return ret
+        else:
+            yield pos, pos+1, tokenizer.nulltoken
+            return pos+1, None, False
+    
 
 def build_tokenizer():
     RSTTOKENS = namedtuple('rsttokens', 
@@ -57,9 +79,9 @@ def build_tokenizer():
             SingleToken('escape', 'default', [r'\\.']),
             
             # header token
-            SingleToken('header1', 'header', 
+            TableToken('header1', 'header', 
                     [r'^(?P<H>[{}])(?P=H)+\n.+\n(?P=H)+$'.format(HEADERS)]),
-            SingleToken('header2', 'header', 
+            TableToken('header2', 'header', 
                     [r'^.+\n(?P<H2>[{}])(?P=H2)+$'.format(HEADERS)]),
 
             # list
@@ -72,8 +94,8 @@ def build_tokenizer():
                 capture_end=False),
 
             #table
-            SingleToken('rst-table-border', 'table', [r'^\+[+-=]+$']),
-            SingleToken('rst-table-row', 'table', [r'\|\s+']),
+            TableToken('rst-table-border', 'table', [r'\+[+-=]+(\s+|$)']),
+            TableToken('rst-table-row', 'table', [r'\|(\s+|$)']),
             
             # inline token
             RstInline('rst-strong', 'strong', r'\*\*', r'\*\*', escape='\\'),

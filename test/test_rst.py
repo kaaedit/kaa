@@ -1,3 +1,4 @@
+from unittest.mock import patch
 import kaa_testutils
 from kaa import highlight
 from kaa.filetype.rst import rstmode
@@ -104,5 +105,17 @@ class TestRstHighlight(kaa_testutils._TestDocBase):
             (8,  18, self.tokens.directive.span_mid),
             (18, 21, self.tokenizers[0].nulltoken),
         ] == list((f, t, style) for f, t, style in hl.highlight(doc, 0))
+
+    def test_table(self):
+        hl = highlight.Highlighter(tokenizers=self.tokenizers)
+
+        with patch.object(hl, 'get_token', return_value=self.tokens.tableborder):
+            doc = self._getdoc('+=+\n| |')
+            assert [
+                (0,  3, self.tokens.tableborder.tokenid),
+                (3,  4, self.tokenizers[0].nulltoken),
+                (4,  6, self.tokens.tablerow.tokenid),
+                (6,  7, self.tokens.tablerow.tokenid),
+            ] == list((f, t, style) for f, t, style in hl.highlight(doc, 0))
 
 
