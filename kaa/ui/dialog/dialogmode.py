@@ -4,10 +4,9 @@ from kaa.filetype.default import modebase
 from kaa.theme import Theme, Style
 
 DialogThemes = {
-    'default':
+    'dark':
         Theme([
             Style('default', 'Base3', 'Base02', False, False),
-            Style('title', 'Base3', 'Blue', nowrap=True),
             Style('caption', 'Menu2', 'Base02', nowrap=True),
 
             Style('activemark', 'Base02', 'Yellow', nowrap=True),
@@ -31,6 +30,35 @@ DialogThemes = {
 
             Style('selectphrase', 'Black', 'Cyan', nowrap=True),
             Style('selectphrase2', 'Yellow', 'Base02', nowrap=True),
+            Style('selectphrase-active', 'Base02', 'Yellow', nowrap=True),
+    ]),
+    
+    'light':
+        Theme([
+            Style('default', 'Base03', 'Base2'),
+            Style('caption', 'Menu2', 'Base2', nowrap=True),
+
+            Style('activemark', 'Base02', 'Yellow', nowrap=True),
+            Style('nonactivemark', 'Blue', 'Base2', nowrap=True),
+
+            Style('button', 'Base3', 'Base01', rjust=True, nowrap=True),
+            Style('button.shortcut', 'Base3', 'Base01', underline=True,
+                    rjust=True, nowrap=True),
+
+            Style('checkbox', 'Base3', 'Base01', rjust=True, nowrap=True),
+            Style('checkbox.checked', 'Menu3', 'Menu2', rjust=True,
+                  nowrap=True),
+            Style('checkbox.shortcut', 'Base3', 'Base01', underline=True,
+                  rjust=True, nowrap=True),
+            Style('checkbox.shortcut.checked', 'Menu3', 'Menu2', 
+                  underline=True, rjust=True, nowrap=True),
+
+            Style('selectitem', 'Blue', 'Base2', nowrap=True),
+            Style('selectitem2', 'Red', 'Base2', nowrap=True),
+            Style('selectitem-active', 'Base02', 'Yellow', nowrap=True),
+
+            Style('selectphrase', 'Black', 'Cyan', nowrap=True),
+            Style('selectphrase2', 'Yellow', 'Base2', nowrap=True),
             Style('selectphrase-active', 'Base02', 'Yellow', nowrap=True),
     ])
 }

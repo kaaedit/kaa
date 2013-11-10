@@ -240,10 +240,17 @@ def grep(option, target):
         target.activate()
     
 GrepThemes = {
-    'default':
+    'dark':
         Theme([
             Style('grep-filename', 'Green', 'Default'),
             Style('grep-lineno', 'Green', 'Default'),
+            Style('grep-match', 'Base03', 'Yellow'),
+        ]),
+
+    'light':
+        Theme([
+            Style('grep-filename', 'Orange', 'Default'),
+            Style('grep-lineno', 'Orange', 'Default'),
             Style('grep-match', 'Base03', 'Yellow'),
         ])
 }

@@ -9,7 +9,7 @@ from kaa.exceptions import KaaError
 
 class CuiApp:
     SHOW_MENU_MESSAGE = 'Type F1 or alt+/ for menu.'
-    DEFAULT_THEME = 'default'
+    DEFAULT_THEME = 'light'
     MAX_CLIPBOARD = 10
     
     def __init__(self, config):

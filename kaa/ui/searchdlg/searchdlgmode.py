@@ -10,7 +10,11 @@ from kaa.ui.selectlist import filterlist
 from gappedbuf.sre_constants import error as gre_error
 
 SearchThemes = {
-    'default':
+    'dark':
+        Theme([
+        ]),
+
+    'light':
         Theme([
         ])
 }

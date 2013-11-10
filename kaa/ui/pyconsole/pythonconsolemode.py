@@ -14,7 +14,13 @@ pythonconsole_keys = {
 }
 
 PythonConsoleThemes = {
-    'default':
+    'dark':
+        Theme([
+            Style('stdout', 'Default', 'Default'),
+            Style('stderr', 'Magenta', 'Default'),
+        ]),
+
+    'light':
         Theme([
             Style('stdout', 'Default', 'Default'),
             Style('stderr', 'Magenta', 'Default'),

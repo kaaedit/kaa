@@ -5,7 +5,11 @@ from kaa.theme import Theme, Style
 from kaa.keyboard import *
 
 ItemListThemes = {
-    'default':
+    'dark':
+        Theme([
+        ]),
+
+    'light':
         Theme([
         ])
 }

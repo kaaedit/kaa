@@ -63,7 +63,7 @@ class TestFormBuilder(kaa_testutils._TestScreenBase):
 
             doc = self._getdoc('')
 
-            doc.mode.themes = [{'default':Theme([
+            doc.mode.themes = [{'dark':Theme([
                 Style('default', 'default', 'default', False, False),
                 Style('shortcut', 'default', 'default', False, False),
             ])}]

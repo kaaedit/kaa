@@ -35,8 +35,12 @@ class GrepOption(modebase.SearchOption):
 GrepOption.LASTOPTION = GrepOption()
 
 
-GrepThemes = {
-    'default':
+GrepDlgThemes = {
+    'dark':
+        Theme([
+        ]),
+
+    'light':
         Theme([
         ])
 }
@@ -187,7 +191,7 @@ class GrepDlgMode(dialogmode.DialogMode):
 
     def init_themes(self):
         super().init_themes()
-        self.themes.append(GrepThemes)
+        self.themes.append(GrepDlgThemes)
 
     def on_add_window(self, wnd):
         super().on_add_window(wnd)

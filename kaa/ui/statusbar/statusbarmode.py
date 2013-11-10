@@ -34,13 +34,22 @@ class StatusInfo:
 
 
 StatusBarThemes = {
-    'default':
+    'dark':
         Theme([
             Style('default', 'Red', 'Base02'),
             Style('filename', 'Menu1', 'Base02'),
             Style('msg', 'Red', 'Base02'),
             Style('editmode', 'Green', 'Base02', rjust=True),
+        ]),
+        
+    'light':
+        Theme([
+            Style('default', 'Red', 'Base2'),
+            Style('filename', 'Menu1', 'Base2'),
+            Style('msg', 'Red', 'Base2'),
+            Style('editmode', 'Green', 'Base2', rjust=True),
         ])
+
 }
 
 class StatusBarMode(modebase.ModeBase):

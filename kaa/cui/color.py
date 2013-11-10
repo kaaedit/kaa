@@ -343,9 +343,10 @@ class SolarizedColorName(ColorName):
             self.YELLOW = curses.COLOR_YELLOW
 
             self.ORANGE = curses.COLOR_MAGENTA
+            self.BASE01 = curses.COLOR_BLUE
             self.BASE02 = curses.COLOR_BLUE
-            self.MENU1 = curses.COLOR_CYAN
-            self.MENU2 = curses.COLOR_YELLOW
+            self.MENU1 = curses.COLOR_BLUE
+            self.MENU2 = curses.COLOR_MAGENTA
             self.MENU3 = curses.COLOR_BLACK
         else:
             self.MENU1 = self.BLUE
