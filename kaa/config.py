@@ -92,7 +92,8 @@ class Config:
 
     DEFAULT_NEWLINE = 'auto'
     DEFAULT_ENCODING = 'utf-8'
-
+    AMBIGUOUS_WIDTH = 1
+    
     def __init__(self):
         kaadir = os.path.abspath(
                  os.path.expandvars(

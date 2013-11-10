@@ -1,6 +1,7 @@
 import itertools, re, math
 from unicodedata import east_asian_width
 
+import kaa
 from kaa import document
 from kaa.document import is_combine
 
@@ -37,7 +38,7 @@ class Row:
 
 
 
-def translate_chars(posfrom, chars, tab_width):
+def translate_chars(posfrom, chars, tab_width, ambiguous_width):
     """Build character informations from chars.
 
     Returns tuple of four lists. The first item is a list of characters to be
@@ -51,7 +52,10 @@ def translate_chars(posfrom, chars, tab_width):
     dispcols = []
     positions = []
     intervals = []
-
+    double_width = set('WF')
+    if ambiguous_width == 2:
+        double_width.add('A')
+        
     pos = posfrom
 #    return chars, [1]*len(chars), [(posfrom+i) for i in range(len(chars))], [0]*len(chars)
 
@@ -69,10 +73,11 @@ def translate_chars(posfrom, chars, tab_width):
         for i, d in enumerate(dispstr):
             positions.append(pos)
             intervals.append(i)
-            if curcol and is_combine(c):  # first char if line never be combined
+            if curcol and is_combine(c):  # first char of line never be combined
                 cols = 0
             else:
-                cols = 2 if east_asian_width(d) in {'W', 'F', 'A'} else 1
+                w = east_asian_width(d)
+                cols = 2 if w in double_width else 1
             dispcols.append(cols)
             curcol += cols
         pos += 1
@@ -301,7 +306,8 @@ class Selection:
         tol = self.screen.document.gettol(pos)
         eol, s = self.screen.document.getline(tol)
         (dispchrs, dispcols, positions, intervals) = translate_chars(
-            tol, s, self.screen.document.mode.tab_width)
+            tol, s, self.screen.document.mode.tab_width, 
+            kaa.app.config.AMBIGUOUS_WIDTH)
 
         if pos < eol:
             n = positions.index(pos)
@@ -322,7 +328,8 @@ class Selection:
     def get_col_string(self, tol, colfrom, colto):
         eol, s = self.screen.document.getline(tol)
         (dispchrs, dispcols, positions, intervals) = translate_chars(
-            tol, s, self.screen.document.mode.tab_width)
+            tol, s, self.screen.document.mode.tab_width, 
+            kaa.app.config.AMBIGUOUS_WIDTH)
 
         col = 0
         for top, c in enumerate(dispcols):
@@ -420,7 +427,10 @@ class Screen:
                 self.locate(self.pos, top=True, refresh=True)
 
     def _buildrow(self, pos, s, styles):
-        dispchrs, dispcols, positions, intervals = translate_chars(pos, s, self.document.mode.tab_width)
+        dispchrs, dispcols, positions, intervals = translate_chars(
+            pos, s, self.document.mode.tab_width, 
+            kaa.app.config.AMBIGUOUS_WIDTH)
+            
         if self.document.mode.SHOW_LINENO:
             linenowidth = calc_lineno_width(self)
         else:

@@ -440,7 +440,8 @@ class ModeBase:
     def calc_cols(self, f, t):
         chars = self.document.gettext(f, t)
         (dispchrs, dispcols, positions,
-         intervals) = screen.translate_chars(f, chars, self.tab_width)
+         intervals) = screen.translate_chars(f, chars, self.tab_width, 
+                         kaa.app.config.AMBIGUOUS_WIDTH)
 
         return sum(dispcols)
 
