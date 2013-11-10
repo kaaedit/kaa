@@ -36,7 +36,7 @@ DialogThemes = {
     'light':
         Theme([
             Style('default', 'Base03', 'Base2'),
-            Style('caption', 'Menu2', 'Base2', nowrap=True),
+            Style('caption', 'Menu02', 'Base2', nowrap=True),
 
             Style('activemark', 'Base02', 'Yellow', nowrap=True),
             Style('nonactivemark', 'Blue', 'Base2', nowrap=True),

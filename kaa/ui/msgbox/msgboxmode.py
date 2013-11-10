@@ -18,9 +18,9 @@ MsgBoxThemes = {
     'light':
         Theme([
             Style('underline', 'Base3', 'Base2', underline=True),
-            Style('separator', 'Menu1', 'Base2', nowrap=False),
-            Style('button', 'Menu1', 'Base2', nowrap=True),
-            Style('button.shortcut', 'Menu1', 'Base2', underline=True,
+            Style('separator', 'Menu01', 'Base2', nowrap=False),
+            Style('button', 'Menu01', 'Base2', nowrap=True),
+            Style('button.shortcut', 'Menu01', 'Base2', underline=True,
                    nowrap=True),
         ])
 }

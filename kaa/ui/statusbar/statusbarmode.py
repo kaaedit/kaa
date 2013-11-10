@@ -45,7 +45,7 @@ StatusBarThemes = {
     'light':
         Theme([
             Style('default', 'Red', 'Base2'),
-            Style('filename', 'Menu1', 'Base2'),
+            Style('filename', 'Menu01', 'Base2'),
             Style('msg', 'Red', 'Base2'),
             Style('editmode', 'Green', 'Base2', rjust=True),
         ])
