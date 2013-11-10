@@ -203,7 +203,7 @@ class ModeBase:
     def select_theme(self, theme_name, themes):
         theme = themes.get(theme_name, None)
         if theme is None:
-            theme = themes.get[kaa.app.DEFAULT_THEME]
+            theme = themes[kaa.app.DEFAULT_THEME]
         return theme
 
     def _build_theme(self):

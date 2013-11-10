@@ -53,8 +53,10 @@ def main(stdscr):
         keydef.init(conf)
 
         kaa.app = app.CuiApp(conf)
+        if opt.color:
+            kaa.app.theme = opt.color
         kaa.app.storage = fileio.FileStorage()
-
+        
         mainframe = frame.MainFrame(stdscr)
         kaa.app.init(mainframe)
 
@@ -107,6 +109,9 @@ COLOR_ENVS = ('COLORTERM', 'XTERM_VERSION', 'ROXTERM_ID',
              'KONSOLE_DBUS_SESSION')
 
 def _init_term():
+    if opt.term:
+        os.environ['TERM'] = opt.term
+
     # http://fedoraproject.org/wiki/Features/256_Color_Terminals
     for env in COLOR_ENVS:
         if os.environ.get(env):
@@ -117,6 +122,7 @@ def _init_term():
         
     if has_color:
         term = os.environ.get('TERM')
+            
         if term in ('xterm', 'screen', 'Eterm'):
             term = term+'-256color'
             os.environ['TERM'] = term

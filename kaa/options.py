@@ -12,6 +12,11 @@ def build_parser():
     parser.add_argument('--init-script', dest='init_script', 
         help='execute file as initialization script instead of default initialization file')
 
+    parser.add_argument('--color', dest='color', default='dark',
+        help='color theme defaults to `dark`')
+
+    parser.add_argument('--term', '-t', dest='term', default='',
+        help='specify terminal type')
 
     parser.add_argument('file', nargs='*', default=[])
 

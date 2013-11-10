@@ -9,7 +9,7 @@ from kaa.exceptions import KaaError
 
 class CuiApp:
     SHOW_MENU_MESSAGE = 'Type F1 or alt+/ for menu.'
-    DEFAULT_THEME = 'light'
+    DEFAULT_THEME = 'dark'
     MAX_CLIPBOARD = 10
     
     def __init__(self, config):
@@ -20,7 +20,7 @@ class CuiApp:
         self.focus = None
         self._clipboard = []
         self._quit = False
-        self._theme_name = self.DEFAULT_THEME
+        self.theme = self.DEFAULT_THEME
         self.last_dir = '.'
 
     def init(self, mainframe):
@@ -51,7 +51,7 @@ class CuiApp:
         self.config.hist_grepfiles.close()
 
     def get_current_theme(self):
-        return self._theme_name
+        return self.theme
 
     def quit(self):
         self._quit = True
