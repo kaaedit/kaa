@@ -398,8 +398,8 @@ class LightPalette(ColorName):
 
 class Colors:
     
-    def __init__(self):
-        self.colornames = DarkPalette()
+    def __init__(self, palette):
+        self.colornames = palette
         
         self.pairs = {
             (ColorName.WHITE, ColorName.BLACK):0

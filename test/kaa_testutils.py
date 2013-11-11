@@ -2,6 +2,7 @@ from unittest.mock import patch
 
 import kaa
 import kaa.config
+import kaa.options
 from kaa import screen, document, cursor, context, editmode
 from kaa.filetype.default import defaultmode
 
@@ -56,8 +57,11 @@ class DmyFrame:
 
 
 class DmyApp:
-    config = kaa.config.Config()
+    option = kaa.options.build_parser().parse_args()
+    config = kaa.config.Config(option)
     last_dir = ''
+    DEFAULT_THEME = 'basic'
+    
     def translate_key(self, mod, char):
         return ()
 
@@ -84,7 +88,7 @@ class _TestDocBase:
 
     def _getmode(self):
         with patch('kaa.app', create=True):
-            kaa.app.DEFAULT_THEME = 'default'
+            kaa.app.DEFAULT_THEME = 'basic'
             cls = self._getmodeclass()
             return self._createmode(cls)
 

@@ -43,7 +43,7 @@ def run_userinit(fname):
 
 
 def main(stdscr):
-    conf = config.Config()
+    conf = config.Config(opt)
     sys.path.insert(0, conf.KAADIR)
 
     kaa.log.init(conf.LOGDIR)
@@ -53,8 +53,6 @@ def main(stdscr):
         keydef.init(conf)
 
         kaa.app = app.CuiApp(conf)
-        if opt.color:
-            kaa.app.theme = opt.color
         kaa.app.storage = fileio.FileStorage()
         
         mainframe = frame.MainFrame(stdscr)

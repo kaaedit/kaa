@@ -15,7 +15,7 @@ class CuiApp:
     def __init__(self, config):
         self.config = config
         self._idleprocs = None
-        self.colors = color.Colors()
+        self.set_palette(config.palette)
         self.lastcommands = ()
         self.focus = None
         self._clipboard = []
@@ -53,6 +53,16 @@ class CuiApp:
     def get_current_theme(self):
         return self.theme
 
+    def set_palette(self, name):
+        palette = self.get_palette(name)
+        self.colors = color.Colors(palette)
+
+    def get_palette(self, name):
+        if name == 'light':
+            return color.LightPalette()
+        else:
+            return color.DarkPalette()
+            
     def quit(self):
         self._quit = True
 

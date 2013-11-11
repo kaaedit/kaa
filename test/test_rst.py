@@ -112,8 +112,7 @@ class TestRstHighlight(kaa_testutils._TestDocBase):
         with patch.object(hl, 'get_token', return_value=self.tokens.tableborder):
             doc = self._getdoc('+=+\n| |')
             assert [
-                (0,  3, self.tokens.tableborder.tokenid),
-                (3,  4, self.tokenizers[0].nulltoken),
+                (0,  4, self.tokens.tableborder.tokenid),
                 (4,  6, self.tokens.tablerow.tokenid),
                 (6,  7, self.tokens.tablerow.tokenid),
             ] == list((f, t, style) for f, t, style in hl.highlight(doc, 0))

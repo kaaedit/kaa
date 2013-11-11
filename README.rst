@@ -80,10 +80,8 @@ Command line options
 To start kaa, type ::
 
     usage: kaa [-h] [--version] [--no-init] [--init-script INIT_SCRIPT]
-               [--color COLOR] [--term TERM]
+               [--palette PALETTE] [--term TERM]
                [file [file ...]]
-    
-    kaa text editor.
     
     positional arguments:
       file
@@ -95,7 +93,7 @@ To start kaa, type ::
       --init-script INIT_SCRIPT
                             execute file as initialization script instead of
                             default initialization file
-      --color COLOR         color theme. available: dark, light
+      --palette PALETTE     color palette. available values: dark, light.
       --term TERM, -t TERM  specify terminal type
 
 
@@ -581,9 +579,9 @@ Version history
 
 - Specify text encoding to grep file.
 
-- New commandline option: --no-init, --init-script, --color, --term.
+- New commandline option: --no-init, --init-script, --palette, --term.
 
-- New color scheme: dark, light.
+- New color palette: dark, light.
 
 
 Past versions

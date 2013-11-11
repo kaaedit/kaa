@@ -94,7 +94,7 @@ class Config:
     DEFAULT_ENCODING = 'utf-8'
     AMBIGUOUS_WIDTH = 1
     
-    def __init__(self):
+    def __init__(self, option):
         kaadir = os.path.abspath(
                  os.path.expandvars(
                  os.path.expanduser(consts.KAA_DIR)))
@@ -114,6 +114,8 @@ class Config:
         self.LOGDIR = logdir
         self.HISTDIR = histdir
 
+        self.palette = option.palette
+        
     def init_history(self):
         self.hist_storage = KaaHistoryStorage(
             os.path.join(self.HISTDIR, consts.HIST_DBNAME))

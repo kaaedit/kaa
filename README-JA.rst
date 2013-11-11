@@ -84,10 +84,8 @@ easy_install3 や pip-3で、PyPI からインストールします ::
 kaa は以下のコマンドラインオプションをサポートしています。 ::
 
     usage: kaa [-h] [--version] [--no-init] [--init-script INIT_SCRIPT]
-               [--color COLOR] [--term TERM]
+               [--palette PALETTE] [--term TERM]
                [file [file ...]]
-    
-    kaa text editor.
     
     positional arguments:
       file
@@ -99,7 +97,7 @@ kaa は以下のコマンドラインオプションをサポートしていま�
       --init-script INIT_SCRIPT
                             execute file as initialization script instead of
                             default initialization file
-      --color COLOR         color theme defaults to `dark`
+      --palette PALETTE     color palette. available values: dark, light.
       --term TERM, -t TERM  specify terminal type
       
 

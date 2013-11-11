@@ -59,7 +59,7 @@ class TestFormBuilder(kaa_testutils._TestScreenBase):
 
     def test_build_shortcut(self):
         with patch('kaa.app', create=True):
-            kaa.app.DEFAULT_THEME = 'default'
+            kaa.app.DEFAULT_THEME = 'basic'
 
             doc = self._getdoc('')
 
