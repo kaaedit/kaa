@@ -40,15 +40,16 @@ class EditMode:
                             for keys, command
                                 in keybind.get_candidates(self.pending_keys)]
 
-        match = [command for keys, command in candidates
-                    if len(keys) == len(self.pending_keys)]
-        s = None
         if not candidates:
             if len(self.pending_keys) == 1:
                 if isinstance(event.key, str):
                     s = event.key
+                    return s, None, candidates
+                    
+        elif len(candidates[0][0]) == len(self.pending_keys):
+            return None, candidates[0][1], candidates
 
-        return s, (match[0] if match else None), candidates
+        return None, None, candidates
 
     def _on_str(self, wnd, s):
         self.pending_str += s
