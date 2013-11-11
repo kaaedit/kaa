@@ -12,7 +12,7 @@ MessageBarThemes = {
     'light':
         Theme([
             Style('default', 'Base01', 'default'),
-            Style('rec', 'Base3', 'red'),
+            Style('rec', 'Base03', 'red'),
         ])
 }
 

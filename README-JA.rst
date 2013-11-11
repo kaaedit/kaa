@@ -554,6 +554,18 @@ Sample - キー割り当てのカスタマイズ
    
 この例では、`C-x 2` というキーシーケンス（`control+x` の後、`2` を入力) に、'editor.splithorz' コマンドを割り当てています。
 
+
+Sample - 色テーマ設定
+----------------------------------
+
+色テーマを、``kaa.app.theme`` に指定します。
+
+.. code:: python
+
+    import kaa
+    kaa.app.theme = 'light'  # `light' テーマを指定。デフォルトは`dark'
+
+
 Links
 ==========
 
