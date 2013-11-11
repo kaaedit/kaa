@@ -79,12 +79,26 @@ Command line options
 
 To start kaa, type ::
 
-   $ kaa [-h] [--version] [FILE [FILE ...]]
+    usage: kaa [-h] [--version] [--no-init] [--init-script INIT_SCRIPT]
+               [--color COLOR] [--term TERM]
+               [file [file ...]]
+    
+    kaa text editor.
+    
+    positional arguments:
+      file
+    
+    optional arguments:
+      -h, --help            show this help message and exit
+      --version             show version info and exit
+      --no-init             skip loading initialization script
+      --init-script INIT_SCRIPT
+                            execute file as initialization script instead of
+                            default initialization file
+      --color COLOR         color theme. available: dark, light
+      --term TERM, -t TERM  specify terminal type
 
-   optional arguments:
-     -h, --help  show this help message and exit
-     --version show version info and exit
-      
+
 Terminal setting
 ================
 
@@ -550,19 +564,31 @@ Links
 Version history
 =================
 
+0.10 - 2013.11.
+----------------
+
+- Add 'japanese' encoding that detects text encoding from file.
+
+- Specify text encoding to grep file.
+
+- New commandline option: --no-init, --init-script, --color, --term.
+
+- New color scheme: dark, light.
+
+
+Past versions
+--------------
+
 0.9 - 2013.11.9
----------------
++++++++++++++++++++++
 
 - Markdown mode.
 
 - reStructuredText mode.
 
 
-Past versions
---------------
-
 0.8 - 2013.11.7
-----------------
++++++++++++++++++++++
 
 - View diff between original file and current buffer.
 
@@ -574,7 +600,7 @@ Past versions
 
 
 0.7 - 2013.11.5
-----------------
++++++++++++++++++++++
 
 - Paste from clipboard history.
 

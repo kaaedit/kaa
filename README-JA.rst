@@ -83,11 +83,24 @@ easy_install3 や pip-3で、PyPI からインストールします ::
 
 kaa は以下のコマンドラインオプションをサポートしています。 ::
 
-   $ kaa [-h] [--version] [FILE [FILE ...]]
-
-   optional arguments:
-     -h, --help  show this help message and exit
-     --version show version info and exit
+    usage: kaa [-h] [--version] [--no-init] [--init-script INIT_SCRIPT]
+               [--color COLOR] [--term TERM]
+               [file [file ...]]
+    
+    kaa text editor.
+    
+    positional arguments:
+      file
+    
+    optional arguments:
+      -h, --help            show this help message and exit
+      --version             show version info and exit
+      --no-init             skip loading initialization script
+      --init-script INIT_SCRIPT
+                            execute file as initialization script instead of
+                            default initialization file
+      --color COLOR         color theme defaults to `dark`
+      --term TERM, -t TERM  specify terminal type
       
 
 ターミナル設定

@@ -13,7 +13,7 @@ def build_parser():
         help='execute file as initialization script instead of default initialization file')
 
     parser.add_argument('--color', dest='color', default='dark',
-        help='color theme defaults to `dark`')
+        help='color theme. available: dark, light.')
 
     parser.add_argument('--term', '-t', dest='term', default='',
         help='specify terminal type')

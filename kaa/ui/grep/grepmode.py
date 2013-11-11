@@ -249,8 +249,8 @@ GrepThemes = {
 
     'light':
         Theme([
-            Style('grep-filename', 'Orange', 'Default'),
-            Style('grep-lineno', 'Orange', 'Default'),
+            Style('grep-filename', 'Blue', 'Default'),
+            Style('grep-lineno', 'Blue', 'Default'),
             Style('grep-match', 'Base03', 'Yellow'),
         ])
 }
