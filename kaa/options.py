@@ -12,7 +12,7 @@ def build_parser():
     parser.add_argument('--init-script', dest='init_script', 
         help='execute file as initialization script instead of default initialization file')
 
-    parser.add_argument('--palette', dest='palette', default='dark',
+    parser.add_argument('--palette', dest='palette', default=None,
         help='color palette. available values: dark, light.')
 
     parser.add_argument('--term', '-t', dest='term', default='',

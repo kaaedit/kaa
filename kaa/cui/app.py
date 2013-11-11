@@ -15,7 +15,6 @@ class CuiApp:
     def __init__(self, config):
         self.config = config
         self._idleprocs = None
-        self.set_palette(config.palette)
         self.lastcommands = ()
         self.focus = None
         self._clipboard = []
@@ -24,6 +23,8 @@ class CuiApp:
         self.last_dir = '.'
 
     def init(self, mainframe):
+        if self.config.palette:
+            self.set_palette(self.config.palette)
         self.config.init_history()
         
         self.messagebar = messagebarmode.MessageBarMode()
