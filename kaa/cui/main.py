@@ -55,14 +55,14 @@ def main(stdscr):
         kaa.app = app.CuiApp(conf)
         kaa.app.storage = fileio.FileStorage()
         
-        mainframe = frame.MainFrame(stdscr)
-        kaa.app.init(mainframe)
-
         if not opt.no_init:
             fname = opt.init_script
             if not fname:
                 fname = os.path.join(kaa.app.config.KAADIR, '__kaa__.py')
             run_userinit(fname)
+
+        mainframe = frame.MainFrame(stdscr)
+        kaa.app.init(mainframe)
 
         if not opt.file:
             # no file args. show new document.

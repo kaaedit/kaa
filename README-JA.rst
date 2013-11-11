@@ -72,7 +72,7 @@ MS-WindowsのCygwinは、現在のところサポートしていません。今�
 
 インストール
 ============
-
+n
 easy_install3 や pip-3で、PyPI からインストールします ::
 
    $ easy_install3 kaaedit
@@ -556,12 +556,12 @@ Sample - キー割り当てのカスタマイズ
 Sample - 色テーマ設定
 ----------------------------------
 
-色テーマを、``kaa.app.theme`` に指定します。
+色パレットを、``light`` に設定します。
 
 .. code:: python
 
     import kaa
-    kaa.app.theme = 'light'  # `light' テーマを指定。デフォルトは`dark'
+    kaa.app.set_palett('light')  # `light' テーマを指定。デフォルトは`dark'
 
 
 Links

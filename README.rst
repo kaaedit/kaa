@@ -548,15 +548,15 @@ Assign same keyboard shortcut of splitting windows command as Emacs.
    
 In this example, key sequence C-x 2 (control+x followed by 2) is assigned to 'editor.splithorz' command.
 
-Sample - Change color theme
+Sample - Change color palette
 ----------------------------------
 
-Color theme name could be specified to ``kaa.app.theme``.
+Change color palette to ``light``.
 
 .. code:: python
 
     import kaa
-    kaa.app.theme = 'light'  # Use `light' theme. Default is `dark'.
+    kaa.app.set_palett('light')  # Use `light' theme. Default is `dark'.
 
 
 Links
