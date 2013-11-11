@@ -572,8 +572,8 @@ Links
 Version history
 =================
 
-0.10 - 2013.11.
-----------------
+0.10 - 2013.11.11
+------------------
 
 - Add 'japanese' encoding that detects text encoding from file.
 
