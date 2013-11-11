@@ -706,7 +706,7 @@ class EditCommands(Commands):
     @command('edit.undo')
     @norerun
     def undo(self, wnd):
-        if wnd.document.undo.can_undo():
+        if wnd.document.undo and wnd.document.undo.can_undo():
             wnd.screen.selection.clear()
             pos = None
             for rec in wnd.document.undo.undo():
@@ -737,7 +737,7 @@ class EditCommands(Commands):
     @command('edit.redo')
     @norerun
     def redo(self, wnd):
-        if wnd.document.undo.can_redo():
+        if wnd.document.undo and wnd.document.undo.can_redo():
             wnd.screen.selection.clear()
             pos = None
             for rec in wnd.document.undo.redo():
