@@ -16,13 +16,9 @@ import kaa.filetype.default.keybind
 
 
 FileOpenDlgThemes = {
-    'dark':
+    'basic':
         Theme([
         ]),
-
-    'light':
-        Theme([
-        ])
 }
 
 class DirFileListMode(selectlist.SelectItemList):
@@ -75,13 +71,9 @@ class DirFileListMode(selectlist.SelectItemList):
         self.update_doc(items)
 
 FileNameDlgThemes = {
-    'dark':
+    'basic':
         Theme([
         ]),
-
-    'light':
-        Theme([
-        ])
 }
 
 

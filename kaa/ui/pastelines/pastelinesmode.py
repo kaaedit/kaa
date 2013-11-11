@@ -7,13 +7,10 @@ from kaa.commands import editorcommand
 from kaa.keyboard import *
 
 PasteLinesThemes = {
-    'dark':
+    'basic':
         Theme([
         ]),
 
-    'light':
-        Theme([
-        ])
 }
 
 pastelines_keys = {

@@ -5,14 +5,10 @@ from kaa.highlight import Tokenizer, Span, Keywords, EndSection, SingleToken
 from kaa.theme import Theme, Style
 
 JavaScriptThemes = {
-    'dark':
+    'basic':
         Theme([
             # None defined
         ]),
-    'light':
-        Theme([
-            # None defined
-        ])
 }
 def build_tokenizer(stop=None, terminates=None):
     JSTOKENS = namedtuple('jstokens', ['keywords', 'number', 'comment1', 'comment2',

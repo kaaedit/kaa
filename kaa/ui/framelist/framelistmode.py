@@ -6,13 +6,9 @@ from kaa.theme import Theme, Style
 from kaa.keyboard import *
 
 FrameListThemes = {
-    'dark':
+    'basic':
         Theme([
         ]), 
-        
-    'light':
-        Theme([
-        ])
 }
 
 framelist_keys = {

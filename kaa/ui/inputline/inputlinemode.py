@@ -7,13 +7,9 @@ from kaa.commands import editorcommand
 from kaa.keyboard import *
 
 InputlineThemes = {
-    'dark':
+    'basic':
         Theme([
         ]),
-
-    'light':
-        Theme([
-        ])
 }
 
 inputline_keys = {

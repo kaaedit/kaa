@@ -8,21 +8,13 @@ from kaa.filetype.javascript import javascriptmode
 from kaa.filetype.css import cssmode
 
 HTMLThemes = {
-    'dark':
+    'basic':
         Theme([
             Style('html-decl', 'Red', 'default'),
             Style('html-tag', 'Magenta', 'default'),
             Style('html-attrname', 'green', 'default'),
             Style('html-attrvalue', 'yellow', 'default'),
         ]),
-        
-    'light':
-        Theme([
-            Style('html-decl', 'Red', 'default'),
-            Style('html-tag', 'Magenta', 'default'),
-            Style('html-attrname', 'green', 'default'),
-            Style('html-attrvalue', 'yellow', 'default'),
-        ])
 }
 
 class HTMLTag(Token):

@@ -268,6 +268,24 @@ class ColorName:
     COLOR254 = 254
     COLOR255 = 255
 
+    # from http://ethanschoonover.com/solarized
+    BASE03 = 234
+    BASE02 = 235
+    BASE01 = 240
+    BASE00 = 241
+    BASE0 = 244
+    BASE1 = 245
+    BASE2 = 254
+    BASE3 = 230
+    YELLOW = 136
+    ORANGE = 166
+    RED = 160
+    MAGENTA = 125
+    VIOLET = 61
+    BLUE = 33
+    CYAN = 37
+    GREEN = 64
+
     # from tmux color.c
     _COLOR256_TO_16 = [
          0,  1,  2,  3,  4,  5,  6,  7,  8,  9, 10, 11, 12, 13, 14, 15,
@@ -305,7 +323,7 @@ class ColorName:
             ret = ret - 8 if ret >= 8 else ret
         return ret
 
-class SolarizedColorName(ColorName):
+class DarkPalette(ColorName):
     # from http://ethanschoonover.com/solarized
     BASE03 = 234
     BASE02 = 235
@@ -315,17 +333,13 @@ class SolarizedColorName(ColorName):
     BASE1 = 245
     BASE2 = 254
     BASE3 = 230
-    YELLOW = 136
-    ORANGE = 166
-    RED = 160
-    MAGENTA = 125
-    VIOLET = 61
-    BLUE = 33
-    CYAN = 37
-    GREEN = 64
+
+    LIGHTBLUE = ColorName.BLUE
 
     def __init__(self):
         super().__init__()
+
+        self.COLOR256_TO_16[self.BASE02] = curses.COLOR_BLUE
         self.COLOR256_TO_16[self.BASE3] = curses.COLOR_WHITE
         self.COLOR256_TO_16[self.YELLOW] = curses.COLOR_YELLOW
         self.COLOR256_TO_16[self.WHITE] = curses.COLOR_WHITE
@@ -343,27 +357,49 @@ class SolarizedColorName(ColorName):
             self.YELLOW = curses.COLOR_YELLOW
 
             self.ORANGE = curses.COLOR_MAGENTA
-            self.BASE01 = curses.COLOR_BLUE
-            self.BASE02 = curses.COLOR_BLUE
+            self.LIGHTBLUE = curses.COLOR_CYAN
 
-            self.MENU1 = curses.COLOR_WHITE
-            self.MENU2 = curses.COLOR_CYAN
-            self.MENU3 = curses.COLOR_BLACK
 
-            self.MENU01 = curses.COLOR_BLUE
-            self.MENU02 = curses.COLOR_MAGENTA
-        else:
-            self.MENU1 = self.BLUE
-            self.MENU2 = self.ORANGE
-            self.MENU3 = self.BASE3
+class LightPalette(ColorName):
+    # from http://ethanschoonover.com/solarized
+    BASE3 = 234
+    BASE2 = 235
+    BASE1 = 240
+    BASE0 = 241
+    BASE00 = 244
+    BASE01 = 245
+    BASE02 = 254
+    BASE03 = 230
 
-            self.MENU01 = self.BLUE
-            self.MENU02 = self.ORANGE
+    LIGHTBLUE = ColorName.CYAN
+
+    def __init__(self):
+        super().__init__()
+
+        self.COLOR256_TO_16[self.BASE02] = curses.COLOR_BLUE
+        self.COLOR256_TO_16[self.BASE3] = curses.COLOR_BLUE
+        self.COLOR256_TO_16[self.YELLOW] = curses.COLOR_YELLOW
+        self.COLOR256_TO_16[self.WHITE] = curses.COLOR_WHITE
+
+        if self.num_colors < 256:
+            # todo:
+            self.DEFAULT = -1
+            self.BLACK = curses.COLOR_BLACK
+            self.BLUE = curses.COLOR_BLUE
+            self.CYAN = curses.COLOR_CYAN
+            self.GREEN = curses.COLOR_GREEN
+            self.MAGENTA = curses.COLOR_MAGENTA
+            self.RED = curses.COLOR_RED
+            self.WHITE = curses.COLOR_WHITE
+            self.YELLOW = curses.COLOR_YELLOW
+
+            self.ORANGE = curses.COLOR_MAGENTA
+            self.LIGHTBLUE = curses.COLOR_CYAN
 
 class Colors:
     
     def __init__(self):
-        self.colornames = SolarizedColorName()
+        self.colornames = DarkPalette()
         
         self.pairs = {
             (ColorName.WHITE, ColorName.BLACK):0

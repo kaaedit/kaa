@@ -207,7 +207,10 @@ class Splitter:
             self.below.bring_top()
 
     def draw(self):
-        self.frame._cwnd.attron(kaa.app.colors.get_color(ColorName.CYAN, ColorName.DEFAULT))
+        self.frame._cwnd.attron(
+            kaa.app.colors.get_color(
+                kaa.app.colors.colornames.get('CYAN'), 
+                kaa.app.colors.colornames.get('DEFAULT')))
         l, t, r, b = self.rect
         if self.left:
             try:

@@ -6,19 +6,12 @@ from kaa.theme import Theme, Style
 from kaa.filetype.javascript import javascriptmode
 
 CSSThemes = {
-    'dark':
+    'basic':
         Theme([
             Style('css-selector', 'magenta', 'default'),
             Style('css-propname', 'blue', 'default', bold=True),
             Style('css-propvalue', 'green', 'default', bold=True),
     ]),
-    
-    'light':
-        Theme([
-            Style('css-selector', 'magenta', 'default'),
-            Style('css-propname', 'blue', 'default', bold=True),
-            Style('css-propvalue', 'green', 'default', bold=True),
-    ])
 }
 
 class CSSProp(Token):

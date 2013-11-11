@@ -5,7 +5,7 @@ from kaa.highlight import Tokenizer, Token, Span, Keywords, EndSection, SingleTo
 from kaa.theme import Theme, Style
 
 RstThemes = {
-    'dark':
+    'basic':
         Theme([
             Style('header', 'Blue', None),
             Style('block', 'Orange', None),
@@ -18,20 +18,6 @@ RstThemes = {
             Style('role', 'Cyan', None),
             Style('substitution', 'Green', None),
         ]),
-
-    'light':
-        Theme([
-            Style('header', 'Blue', None),
-            Style('block', 'Orange', None),
-            Style('directive', 'Green', None),
-            Style('table', 'Cyan', None),
-            Style('strong', 'Magenta', None),
-            Style('emphasis', 'Blue', None),
-            Style('literal', 'Cyan', None),
-            Style('reference', 'Red', None),
-            Style('role', 'Cyan', None),
-            Style('substitution', 'Green', None),
-        ])
 }
 
 class RstInline(Span):

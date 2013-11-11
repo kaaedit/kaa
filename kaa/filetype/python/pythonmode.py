@@ -7,15 +7,11 @@ from kaa.command import Commands, command, norec, norerun
 from kaa.keyboard import *
 
 PythonThemes = {
-    'dark':
+    'basic':
         Theme([
             Style('python-bytes', 'blue', 'default'),
         ]),
 
-    'light':
-        Theme([
-            Style('python-bytes', 'blue', 'default'),
-        ])
 }
 
 PYTHONMENU = [
