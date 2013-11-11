@@ -556,7 +556,7 @@ Change color palette to ``light``.
 .. code:: python
 
     import kaa
-    kaa.app.set_palett('light')  # Use `light' theme. Default is `dark'.
+    kaa.app.set_palett('light')  # Use `light' palette. Default is `dark'.
 
 
 Links
