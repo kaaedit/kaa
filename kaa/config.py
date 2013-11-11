@@ -110,10 +110,6 @@ class Config:
         if not os.path.exists(histdir):
             os.mkdir(histdir)
 
-        userdir = os.path.join(kaadir, 'kaa')
-        if not os.path.exists(userdir):
-            os.mkdir(userdir)
-
         self.KAADIR = kaadir
         self.LOGDIR = logdir
         self.HISTDIR = histdir
