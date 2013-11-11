@@ -560,8 +560,8 @@ Sample - 色テーマ設定
 
 .. code:: python
 
-    import kaa
-    kaa.app.set_palett('light')  # `light' テーマを指定。デフォルトは`dark'
+   import kaa
+   kaa.app.DEFAULT_PALETTE = 'light' # `light' テーマを指定。デフォルトは`dark'
 
 
 Links

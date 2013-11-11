@@ -10,10 +10,12 @@ from kaa.exceptions import KaaError
 class CuiApp:
     SHOW_MENU_MESSAGE = 'Type F1 or alt+/ for menu.'
     DEFAULT_THEME = 'basic'
+    DEFAULT_PALETTE = 'dark'
     MAX_CLIPBOARD = 10
     
     def __init__(self, config):
         self.config = config
+        self.colors = None
         self._idleprocs = None
         self.lastcommands = ()
         self.focus = None
@@ -25,6 +27,9 @@ class CuiApp:
     def init(self, mainframe):
         if self.config.palette:
             self.set_palette(self.config.palette)
+        elif not self.colors:
+            self.set_palette(self.DEFAULT_PALETTE)
+            
         self.config.init_history()
         
         self.messagebar = messagebarmode.MessageBarMode()
