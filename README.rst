@@ -246,12 +246,17 @@ Text convert menu
 Code memu
 +++++++++
 
+Code menu differs among file types. Following items are typical in programming languages.
+
 +---------------+----------------------------------------------------+
 | Comment       | Insert line comment character at top of lines in   |
 |               | selected regin.                                    |
 +---------------+----------------------------------------------------+
 | Uncomment     | Delete line comment character at top of lines in   |
 |               | selected regin.                                    |
++---------------+----------------------------------------------------+
+| Table of      | Show table of contents to move cursor.             |
+| contents      |                                                    |
 +---------------+----------------------------------------------------+
 
 
@@ -372,6 +377,8 @@ Cursor keys
 | Alt+>, Control+End | Move cursor to end of file.                    |
 +--------------------+------------------------------------------------+
 | Control+g          | Go to line number.                             |
++--------------------+------------------------------------------------+
+| Control+t          | Table of contents.                             |
 +--------------------+------------------------------------------------+
 
 
@@ -572,8 +579,19 @@ Links
 Version history
 =================
 
-0.10 - 2013.11.11
+0.11 - 2013.11.14
 ------------------
+
+- Show table of contents in Python mode. Hit Ctrl+t to display TOC.
+
+- Improve highlighting in reStructured mode.
+
+
+Past versions
+--------------
+
+0.10 - 2013.11.11
++++++++++++++++++++++
 
 - Add 'japanese' encoding that detects text encoding from file.
 
@@ -583,9 +601,6 @@ Version history
 
 - New color palette: dark, light.
 
-
-Past versions
---------------
 
 0.9 - 2013.11.9
 +++++++++++++++++++++

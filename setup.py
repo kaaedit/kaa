@@ -26,7 +26,7 @@ def read(fname):
 setup(
     cmdclass = cmdclass,
     name = "kaaedit",
-    version = "0.10.0",
+    version = "0.11.0",
     description='kaa - console text editor.',
     url='https://github.com/kaaedit/kaa',
     author='Atsuo Ishimoto',
@@ -34,7 +34,7 @@ setup(
     long_description=read('README.rst'),
     classifiers=[
             "Programming Language :: Python :: 3",
-            "Development Status :: 2 - Pre-Alpha",
+            "Development Status :: 3 - Alpha",
             "Topic :: Text Editors",
             "Environment :: Console :: Curses",
             "License :: OSI Approved :: MIT License", ],
