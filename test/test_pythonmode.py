@@ -19,6 +19,6 @@ def bacon():
         tokens = [t for t in doc.mode.get_headers()]
         assert tokens == [
             ('namespace', (), 'spam', 'spam', None, 1), 
-            ('item', (tokens[0],), 'spam.ham', 'ham()', None, 13),
-            ('item', (), 'egg', 'egg()', None, 76), 
-            ('item', (), 'bacon', 'bacon()', None, 99)] 
+            ('function', (tokens[0],), 'spam.ham', 'ham()', None, 13),
+            ('function', (), 'egg', 'egg()', None, 76), 
+            ('function', (), 'bacon', 'bacon()', None, 99)] 
