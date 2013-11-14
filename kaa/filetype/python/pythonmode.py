@@ -188,7 +188,7 @@ class PythonMode(defaultmode.DefaultMode):
         stack = []
         for token, pos, indent, name in self._py_tokenize():
             dispname = name if token is 'class' else name+'()'
-            headertype = 'namespace' if token == 'class' else 'item'
+            headertype = 'namespace' if token == 'class' else 'function'
             if not stack:
                 header = self.HeaderInfo(headertype, (), name, dispname, None, pos)
                 yield header
