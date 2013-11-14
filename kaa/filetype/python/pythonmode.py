@@ -131,8 +131,7 @@ class PythonMode(defaultmode.DefaultMode):
             
     TOKENIZE_SEARCH_CLOSE = r'''
             (?P<BACKSLASH>\\.)|(?P<PARENTHESIS>[\{\[\(])|
-            (?P<STRING>"{1,3}|'{1,3})|
-            (?P<COMMENT>\#)'''
+            (?P<COMMENT>\#)|(?P<STRING>\"|\"\"\"|\'|\'\'\')'''
 
     def _py_close_parenthesis(self, m):
         close = '|(?P<CLOSE>\\%s)' % self.PARENSIS_PAIR[m.group()]
@@ -160,7 +159,7 @@ class PythonMode(defaultmode.DefaultMode):
     RE_TOKENIZE_SEARCH = gre.compile(
         r'''(?P<BACKSLASH>\\.)|(?P<CLASS>\bclass\b)|
             (?P<DEF>\bdef\b)|(?P<PARENTHESIS>[\{\[\(])|
-            (?P<COMMENT>\#)|''' + '(?P<STRING>\"|\"\"\"|\'|\'\'\')', gre.X)
+            (?P<COMMENT>\#)|(?P<STRING>\"|\"\"\"|\'|\'\'\')''', gre.X)
 
     def _py_tokenize(self):
         pos = 0
