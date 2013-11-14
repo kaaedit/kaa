@@ -72,7 +72,7 @@ MS-WindowsのCygwinは、現在のところサポートしていません。今�
 
 インストール
 ============
-n
+
 easy_install3 や pip-3で、PyPI からインストールします ::
 
    $ easy_install3 kaaedit

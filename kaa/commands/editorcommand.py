@@ -299,7 +299,6 @@ class ScreenCommands(Commands):
             wnd.screen.selection.set_rectangle_mark(wnd.cursor.pos)
         else:
             wnd.screen.selection.set_rectangle_mark(None)
-            
 
     @command('selection.all')
     @norerun

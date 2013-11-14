@@ -17,10 +17,12 @@ PythonThemes = {
 PYTHONMENU = [
     ['&Comment', None, 'code.region.linecomment'],
     ['&Uncomment', None, 'code.region.unlinecomment'],
+    ['&Table of contents', None, 'toc.showlist'],
 ]
 
 python_code_keys = {
-    ((alt, 'm'), ('c')): 'menu.python.code',
+    ((alt, 'm'), (alt, 'c')): 'menu.code',
+    (ctrl, 't'): 'toc.showlist',
 }
 
 class PythonMode(defaultmode.DefaultMode):
@@ -75,4 +77,146 @@ class PythonMode(defaultmode.DefaultMode):
             wnd.cursor.setpos(pos+len(indent))
             
             wnd.cursor.savecol()
+
+    RE_SEARCH_NAME = gre.compile(r'(\\.)|(\w+)|(\S)')
+    def _py_getname(self, pos):
+        while True:
+            m = self.RE_SEARCH_NAME.search(self.document.buf, pos)
+            if not m:
+                return self.document.endpos()
+            if m.lastindex == 1:
+                pos = m.end()
+                continue
+            elif m.lastindex == 2:
+                return m.start(), m.end(), m.group()
+            else:
+                return m.start(), m.start(), ''
+
+    def _py_def(self, m, token):
+        pos, end, name = self._py_getname(m.end())
+        if name:
+            f, t = self.get_indent_range(m.start())
+            cols = self.calc_cols(f, t)
+
+            yield token, f, cols, name
+        return end
+
+    def _py_end_comment(self, m):
+        close = r'(\\\n)|(\n)'
+        reobj = gre.compile(close)
+
+        pos = m.end()
+        while True:
+            m = reobj.search(self.document.buf, pos)
+            if not m:
+                return self.document.endpos()
+            if m.lastindex == 2:
+                return m.end()
+            else:
+                pos = m.end()
+            
+    def _py_end_string(self, m):
+        close = r'\\.|(?P<CLOSE>%s)' % m.group()
+        reobj = gre.compile(close)
+
+        pos = m.end()
+        while True:
+            m = reobj.search(self.document.buf, pos)
+            if not m:
+                return self.document.endpos()
+            if m.lastgroup == 'CLOSE':
+                return m.end()
+            else:
+                pos = m.end()
+            
+    TOKENIZE_SEARCH_CLOSE = r'''
+            (?P<BACKSLASH>\\.)|(?P<PARENTHESIS>[\{\[\(])|
+            (?P<STRING>"{1,3}|'{1,3})|
+            (?P<COMMENT>\#)'''
+
+    def _py_close_parenthesis(self, m):
+        close = '|(?P<CLOSE>\\%s)' % self.PARENSIS_PAIR[m.group()]
+        reobj = gre.compile(self.TOKENIZE_SEARCH_CLOSE+close, gre.X)
+        pos = m.end()
+        while True:
+            m = reobj.search(self.document.buf, pos)
+            if not m:
+                return self.document.endpos()
+
+            g = m.lastgroup
+            if g == 'CLOSE':
+                return m.end()
+            elif g == 'BACKSLASH':
+                pos = m.end()
+            elif g == 'PARENTHESIS':
+                pos = self._py_close_parenthesis(m)
+            elif g == 'STRING':
+                pos = self._py_end_string(m)
+            elif g == 'COMMENT':
+                pos = self._py_end_comment(m)
+            else:
+                assert 0
+        
+    RE_TOKENIZE_SEARCH = gre.compile(
+        r'''(?P<BACKSLASH>\\.)|(?P<CLASS>\bclass\b)|
+            (?P<DEF>\bdef\b)|(?P<PARENTHESIS>[\{\[\(])|
+            (?P<COMMENT>\#)|''' + '(?P<STRING>\"|\"\"\"|\'|\'\'\')', gre.X)
+
+    def _py_tokenize(self):
+        pos = 0
+        while True:
+            m = self.RE_TOKENIZE_SEARCH.search(self.document.buf, pos)
+            if not m:
+                break
+            g = m.lastgroup
+            if g == 'BACKSLASH':
+                pos = m.end()
+            elif g == 'CLASS':
+                pos = yield from self._py_def(m, 'class')
+            elif g == 'DEF':
+                pos = yield from self._py_def(m, 'def')
+            elif g == 'PARENTHESIS':
+                pos = self._py_close_parenthesis(m)
+            elif g == 'STRING':
+                pos = self._py_end_string(m)
+            elif g == 'COMMENT':
+                pos = self._py_end_comment(m)
+            else:
+                assert 0
+                
+    def get_headers(self):
+        stack = []
+        for token, pos, indent, name in self._py_tokenize():
+            dispname = name if token is 'class' else name+'()'
+            headertype = 'namespace' if token == 'class' else 'item'
+            if not stack:
+                header = self.HeaderInfo(headertype, (), name, dispname, None, pos)
+                yield header
+                stack.append((indent, header))
+                continue
+
+            for i, (parent_indent, info) in enumerate(stack):
+                if indent <= parent_indent:
+                    del stack[i:]
+                    break
+
+            if stack:
+                parents = tuple(header for (_, header) in stack 
+                                    if header.token == 'namespace')
+                fullname = '.'.join([stack[-1][1].name, name])
+                header = self.HeaderInfo(
+                    headertype, parents, fullname, 
+                    dispname, None, pos)
+            else:
+                header = self.HeaderInfo(headertype, (), name, dispname, None, pos)
+
+            yield header
+            stack.append((indent, header))
+
+    @command('toc.showlist')
+    @norec
+    @norerun
+    def show_toclist(self, wnd):
+        from kaa.ui.toclist import toclistmode
+        toclistmode.show_toclist(wnd, list(self.get_headers()))
 

@@ -128,7 +128,7 @@ class MainFrame(Window, kaa.context.ContextRoot):
         """Resize wnds"""
         self.height, self.width = self._cwnd.getmaxyx()
 
-        if self.inputline:
+        if self.inputline and not self.inputline.closed:
             w, h = self.inputline.getsize()
             editorheight = max(1, self.height - h-self.MESSAGEBAR_HEIGHT)
         else:

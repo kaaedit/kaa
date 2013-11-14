@@ -82,7 +82,7 @@ addtional_edit_command_keys = {
     tab: 'edit.indent',
     (shift, tab): 'edit.dedent',
 
-    ((alt, 'm'), ('v')): 'menu.edit.convert',
+    ((alt, 'm'), (alt, 'v')): 'menu.edit.convert',
     ((ctrl, 'u'), (alt, '!')): 'tools.execute-shell-command',
 
     (ctrl, 'o'): 'edit.word-complete',

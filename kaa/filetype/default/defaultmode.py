@@ -1,5 +1,5 @@
 import copy, time
-from collections import defaultdict
+from collections import defaultdict, namedtuple
 import kaa
 from kaa.commands import (appcommand, filecommand, editorcommand, 
     editmodecommand, toolcommand)
@@ -213,4 +213,8 @@ class DefaultMode(modebase.ModeBase):
             if d.get(key) == 0:
                 return pos
 
-            
+    HeaderInfo = namedtuple(
+                    'header_info', ['token', 'parents', 'name', 'dispname', 
+                                    'lineno', 'pos'])
+    def get_headers(self):
+        return ()

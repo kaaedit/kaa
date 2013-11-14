@@ -57,7 +57,7 @@ class DmyFrame:
 
 
 class DmyApp:
-    option = kaa.options.build_parser().parse_args()
+    option = kaa.options.build_parser().parse_args([])
     config = kaa.config.Config(option)
     last_dir = ''
     DEFAULT_THEME = 'basic'
@@ -75,6 +75,7 @@ class DmyApp:
         pass
         
 class _TestDocBase:
+    DEFAULTMODECLASS = defaultmode.DefaultMode
     def get_title(self):
         return repr(self)
 
@@ -93,7 +94,7 @@ class _TestDocBase:
             return self._createmode(cls)
 
     def _getmodeclass(self):
-        return defaultmode.DefaultMode
+        return self.DEFAULTMODECLASS
 
     def _createmode(self, cls):
         return cls()

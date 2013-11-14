@@ -26,6 +26,12 @@ class ApplicationCommands(Commands):
     def show_editmenuconvert(self, wnd):
         menumode.MenuMode.show_menu(wnd, 'EDIT-CONVERT')
 
+    @command('menu.code')
+    @norec
+    @norerun
+    def show_codemenu(self, wnd):
+        menumode.MenuMode.show_menu(wnd, 'CODE')
+
     def _walk_all_wnds(self, wnd):
         yield wnd
         curframe = wnd.get_label('frame')
