@@ -49,11 +49,6 @@ class PythonConsoleMode(pythonmode.PythonMode):
             def write(self, s):
                 if not output.closed:
                     output.append(s, self.style)
-                    w = output.wnds[0]
-                    if not w.closed:
-                        # rebuild screen before move cursor
-                        w.screen.locate(w.screen.pos, top=True)
-                        w.cursor.eof()
                 
         sys.stdout = out(style_stdout)
         sys.stderr = out(style_stderr)
@@ -62,6 +57,13 @@ class PythonConsoleMode(pythonmode.PythonMode):
         
         sys.stdout = stdout
         sys.stderr = stderr
+
+        w = output.wnds[0]
+        if not w.closed:
+            # rebuild screen before move cursor
+            w.screen.locate(w.screen.pos, top=True)
+            w.cursor.eof()
+
 
     def _eval_str(self, s):
         try:
@@ -128,6 +130,7 @@ class PythonOutputMode(defaultmode.DefaultMode):
     MODENAME = 'Python outputs'
     DOCUMENT_MODE = False
     USE_UNDO = False
+    NO_WRAPINDENT = True
 
     def init_themes(self):
         super().init_themes()
