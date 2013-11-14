@@ -26,7 +26,10 @@ class RstInline(Span):
     ENDS = '\'".,:;!?-)]}/\\>' + WS
     
     def on_start(self, tokenizer, doc, pos, match):
-        if pos and (doc.gettext(pos-1, pos) not in self.STARTS):
+        if ((pos and (doc.gettext(pos-1, pos) not in self.STARTS)) or 
+            (pos >= doc.endpos()-1) or
+            (doc.gettext(pos+1, pos+2) in self.WS)):
+
             yield pos, pos+1, tokenizer.nulltoken
             return pos+1, None, False
                 
@@ -63,7 +66,7 @@ class TableToken(SingleToken):
 
 def build_tokenizer():
     RSTTOKENS = namedtuple('rsttokens', 
-                            ['escape', 'header1', 'header2', 'star', 
+                            ['escape', 'header1', 'header2', 
                              'directive', 'block', 'tableborder',
                              'tablerow',
                              'strong', 'emphasis', 
@@ -79,13 +82,10 @@ def build_tokenizer():
             SingleToken('escape', 'default', [r'\\.']),
             
             # header token
-            TableToken('header1', 'header', 
+            SingleToken('header1', 'header', 
                     [r'^(?P<H>[{}])(?P=H)+\n.+\n(?P=H)+$'.format(HEADERS)]),
-            TableToken('header2', 'header', 
+            SingleToken('header2', 'header', 
                     [r'^.+\n(?P<H2>[{}])(?P=H2)+$'.format(HEADERS)]),
-
-            # list
-            Span('rst-star', 'default', r'^\s*\*\s+', r'$', escape='\\'),
 
             # block
             Span('directive', 'directive', r'\.\.\s+\S+::', '^\S', 
@@ -94,7 +94,7 @@ def build_tokenizer():
                 capture_end=False),
 
             #table
-            TableToken('rst-table-border', 'table', [r'\+[+-=]+(\s+|$)']),
+            TableToken('rst-table-border', 'table', [r'\+[+\-=]+(\s+|$)']),
             TableToken('rst-table-row', 'table', [r'\|(\s+|$)']),
             
             # inline token
