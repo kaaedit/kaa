@@ -52,15 +52,16 @@ class TOCList(filterlist.FilterListMode):
         for item in self.items:
             if item.value.token == 'namespace':
                 if prev:
-                    f.append_text('default', '\n'+'  '*len(item.value.parents))
+                    f.append_text('default', 
+                            '\n'+'  '*len(item.value.get_parents()))
                 f.append_text(item.style, item.text, mark_pair=item)
 
             else:
                 if prev and (prev.value.token =='namespace' or 
-                             prev.value.parents != item.value.parents):
+                         prev.value.get_parents() != item.value.get_parents()):
  
                     f.append_text('default', 
-                                  '\n'+'  '*(len(item.value.parents)))
+                                  '\n'+'  '*(len(item.value.get_parents())))
 
                 f.append_text(item.style, item.text, mark_pair=item)
                 f.append_text('default', ' ')

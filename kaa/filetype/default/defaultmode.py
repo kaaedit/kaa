@@ -213,8 +213,22 @@ class DefaultMode(modebase.ModeBase):
             if d.get(key) == 0:
                 return pos
 
-    HeaderInfo = namedtuple(
-                    'header_info', ['token', 'parents', 'name', 'dispname', 
-                                    'lineno', 'pos'])
+    class HeaderInfo:
+        def __init__(self, token, parent, name, dispname, lineno, pos):
+            self.token = token
+            self.parent = parent
+            self.name = name
+            self.dispname = dispname
+            self.lineno = lineno
+            self.pos = pos
+
+        def get_parents(self):
+            ret = []
+            p = self.parent
+            while p:
+                ret.insert(0, p)
+                p = p.parent
+            return ret
+
     def get_headers(self):
         return ()

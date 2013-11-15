@@ -20,8 +20,7 @@ PYTHONMENU = [
     ['&Table of contents', None, 'toc.showlist'],
 ]
 
-python_code_keys = {
-    ((alt, 'm'), (alt, 'c')): 'menu.code',
+python_keys = {
     (ctrl, 't'): 'toc.showlist',
 }
 
@@ -32,7 +31,7 @@ class PythonMode(defaultmode.DefaultMode):
     
     def init_keybind(self):
         super().init_keybind()
-        self.register_keys(self.keybind, [python_code_keys])
+        self.register_keys(self.keybind, [python_keys])
 
     def init_menu(self):
         super().init_menu()
@@ -189,7 +188,7 @@ class PythonMode(defaultmode.DefaultMode):
             dispname = name if token is 'class' else name+'()'
             headertype = 'namespace' if token == 'class' else 'function'
             if not stack:
-                header = self.HeaderInfo(headertype, (), name, dispname, None, pos)
+                header = self.HeaderInfo(headertype, None, name, dispname, None, pos)
                 yield header
                 stack.append((indent, header))
                 continue
@@ -202,12 +201,13 @@ class PythonMode(defaultmode.DefaultMode):
             if stack:
                 parents = tuple(header for (_, header) in stack 
                                     if header.token == 'namespace')
+                parent = parents[-1] if parents else None
                 fullname = '.'.join([stack[-1][1].name, name])
                 header = self.HeaderInfo(
-                    headertype, parents, fullname, 
+                    headertype, parent, fullname, 
                     dispname, None, pos)
             else:
-                header = self.HeaderInfo(headertype, (), name, dispname, None, pos)
+                header = self.HeaderInfo(headertype, None, name, dispname, None, pos)
 
             yield header
             stack.append((indent, header))

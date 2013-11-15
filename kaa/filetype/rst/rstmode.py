@@ -1,8 +1,11 @@
+import copy
 from collections import namedtuple
 from kaa.filetype.default import defaultmode
 from gappedbuf import re as gre
 from kaa.highlight import Tokenizer, Token, Span, Keywords, EndSection, SingleToken
 from kaa.theme import Theme, Style
+from kaa.command import Commands, command, norec, norerun
+from kaa.keyboard import *
 
 RstThemes = {
     'basic':
@@ -64,6 +67,7 @@ class TableToken(SingleToken):
             return pos+1, None, False
     
 
+RST_HEADERS = r'=\-`:\'"~^_*+#<>'
 def build_tokenizer():
     RSTTOKENS = namedtuple('rsttokens', 
                             ['escape', 'header1', 'header2', 
@@ -75,7 +79,6 @@ def build_tokenizer():
                              'target', 'substitution', 'citation',
                          ])
 
-    HEADERS = r'=\-`:\'"~^_*+#<>'
     return Tokenizer(
             RSTTOKENS(
             # escape
@@ -83,9 +86,9 @@ def build_tokenizer():
             
             # header token
             SingleToken('header1', 'header', 
-                    [r'^(?P<H>[{}])(?P=H)+\n.+\n(?P=H)+$'.format(HEADERS)]),
+                [r'^(?P<H>[{}])(?P=H)+\n.+\n(?P=H)+$'.format(RST_HEADERS)]),
             SingleToken('header2', 'header', 
-                    [r'^.+\n(?P<H2>[{}])(?P=H2)+$'.format(HEADERS)]),
+                [r'^.+\n(?P<H2>[{}])(?P=H2)+$'.format(RST_HEADERS)]),
 
             # block
             Span('directive', 'directive', r'\.\.\s+\S+::', '^\S', 
@@ -113,11 +116,91 @@ def build_tokenizer():
 
         ))
 
+
+RSTMENU = [
+    ['&Table of contents', None, 'toc.showlist'],
+]
+
+rst_keys = {
+    (ctrl, 't'): 'toc.showlist',
+}
+
 class RstMode(defaultmode.DefaultMode):
     MODENAME = 'Rst'
+
+    def init_keybind(self):
+        super().init_keybind()
+        self.register_keys(self.keybind, [rst_keys])
+
+    def init_menu(self):
+        super().init_menu()
+        self.menu['CODE'] = copy.deepcopy(RSTMENU)
+
     def init_themes(self):
         super().init_themes()
         self.themes.append(RstThemes)
 
     def init_tokenizers(self):
         self.tokenizers = [build_tokenizer()]
+
+    HEADER1 = r'''^(?P<H>[{}])(?P=H)+\n
+                  (?P<TITLE>.+)\n
+                  (?P=H)+$'''.format(RST_HEADERS)
+
+    HEADER2 = r'''^(?P<TITLE2>.+)\n
+                (?P<H2>[{}])(?P=H2)+$'''.format(RST_HEADERS)
+    
+    RE_HEADER = gre.compile('|'.join([HEADER1, HEADER2]), gre.X|gre.M)
+
+    def get_headers(self):
+        levels = {}
+        stack = []
+        pos = 0
+        while True:
+            m = self.RE_HEADER.search(self.document.buf, pos)
+            if not m:
+                break
+    
+            pos = m.end()
+            name = m.group('TITLE') or m.group('TITLE2')
+            name = name.strip()
+
+            bar = (m.group('H'), m.group('H2'))
+            if bar not in levels:
+                level = len(levels)
+                levels[bar] = level
+            else:
+                level = levels[bar]
+
+            if not stack:
+                header = self.HeaderInfo('namespace', None, name, name, 
+                            None, pos)
+                yield header
+                stack.append((level, header))
+                continue
+
+            for i, (parent_level, info) in enumerate(stack):
+                if level <= parent_level:
+                    del stack[i:]
+                    break
+
+            if stack:
+                parent = stack[-1][1]
+            else:
+                parent = None
+
+            header = self.HeaderInfo(
+                'namespace', parent, name, 
+                name, None, pos)
+            yield header
+            stack.append((level, header))
+            
+
+    @command('toc.showlist')
+    @norec
+    @norerun
+    def show_toclist(self, wnd):
+        from kaa.ui.toclist import toclistmode
+        headers = list(self.get_headers())
+        toclistmode.show_toclist(wnd, headers)
+
