@@ -230,5 +230,18 @@ class DefaultMode(modebase.ModeBase):
                 p = p.parent
             return ret
 
+        def __eq__(self, rhs):
+            ''' for testing '''
+            token, parent, name, dispname, lineno, pos = rhs
+            return ((token == self.token) and 
+                    (parent is self.parent) and
+                    (name == self.name) and
+                    (dispname == self.dispname) and
+                    (lineno == self.lineno) and
+                    (pos == self.pos))
+
+        def __hash__(self):
+            return id(self)
+            
     def get_headers(self):
         return ()

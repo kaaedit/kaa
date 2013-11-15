@@ -649,7 +649,7 @@ class Screen:
                 break
 
             eol, s = self.document.getline(bottomrow.posto)
-            styles = self.document.get_styles(bottomrow.posto, eol)
+            styles = self.document.getstyles(bottomrow.posto, eol)
             self.rows.extend(self._buildrow(bottomrow.posto, s, styles))
        
         self._set_rowport()
@@ -674,7 +674,7 @@ class Screen:
 
         elif self.build_entire_rows:
             eol, s = self.document.getline(0)
-            styles = self.document.get_styles(0, eol)
+            styles = self.document.getstyles(0, eol)
             self.rows = self._buildrow(0, s, styles)
             self._fillscreen()
             posidx, posrow = self.getrow(pos)
@@ -683,7 +683,7 @@ class Screen:
             # build specified row
             tol = self.document.gettol(pos)
             eol, s = self.document.getline(tol)
-            styles = self.document.get_styles(tol, eol)
+            styles = self.document.getstyles(tol, eol)
             self.rows = self._buildrow(tol, s, styles)
             posidx, posrow = self.getrow(pos)
 
@@ -718,7 +718,7 @@ class Screen:
                 # build previous line
                 top = self.document.gettol(curtop-1)
                 eol, s = self.document.getline(top)
-                styles = self.document.get_styles(top, eol)
+                styles = self.document.getstyles(top, eol)
                 rows = self._buildrow(top, s, styles)
                 height += sum(row.height for row in rows)
                 rowidx += len(rows)
@@ -762,7 +762,7 @@ class Screen:
         elif self.pos > 0:
             tol = self.document.gettol(self.pos-1)
             eol, s = self.document.getline(tol)
-            styles = self.document.get_styles(tol, eol)
+            styles = self.document.getstyles(tol, eol)
             rows = self._buildrow(tol, s, styles)
             self.rows[0:0] = rows
             self.pos = rows[-1].posfrom

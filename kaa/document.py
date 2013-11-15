@@ -246,7 +246,7 @@ class Document:
         return eol
 
     def geteol(self, pos):
-        """Returns end of line at pos"""
+        """Returns top of next line or end of buffer"""
 
         eol = self._findeol(pos)
         if eol == -1:
@@ -256,7 +256,7 @@ class Document:
     def gettext(self, begin, end):
         return self.buf[begin:end]
 
-    def get_styles(self, begin, end):
+    def getstyles(self, begin, end):
         return self.styles.getints(begin, end)
 
     def getline(self, pos):

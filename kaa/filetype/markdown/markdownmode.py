@@ -11,7 +11,6 @@ MarkdownThemes = {
     'basic':
         Theme([
             Style('header', 'Blue', None),
-            Style('block', 'Orange', None),
             Style('hr', 'Green', None),
             Style('strong', 'Magenta', None),
             Style('emphasis', 'Blue', None),
@@ -81,12 +80,26 @@ class ImageToken(LinkToken):
     def re_start(self):
         return r'!\['
 
+class MDInline(Span):
+    WS = ' \t\r\n'
+    
+    def on_start(self, tokenizer, doc, pos, match):
+        if ((pos >= doc.endpos()-1) or
+            (doc.gettext(pos+1, pos+2) in self.WS)):
 
+            yield pos, pos+1, tokenizer.nulltoken
+            return pos+1, None, False
+                
+        ret = yield from super().on_start(tokenizer, doc, pos, match)
+        return ret
+
+    
 HEADERS = r'=-'
 def build_tokenizer():
     MARKDOWNTOKENS = namedtuple('markdowntokens', 
-                            ['escape', 'header1', 'header2', 'codeblock', 
-                             'hr', 'link', 'image', 'strong1', 'strong2', 
+                            ['escape', 'header1', 'header2',
+                             'hr', 'link', 'image', 
+                             'strong1', 'strong2', 
                              'emphasis1', 'emphasis2', 'code1', 'code2'])
 
     return Tokenizer(MARKDOWNTOKENS(
@@ -98,9 +111,6 @@ def build_tokenizer():
                     [r'^.+\n(?P<H1>[{}])(?P=H1)+$'.format(HEADERS)]),
             SingleToken('md-header2', 'header', [r'^\#{1,6}.*$']),
 
-            # code block
-            SingleToken('md-codeblock', 'literal', [r'^(\t+|\ {4,}).*$']),
-            
             # hr
             SingleToken('md-hr', 'hr', [r'^(\-{3,}|_{3,}|\*{3,})$']),
             
@@ -111,16 +121,16 @@ def build_tokenizer():
             ImageToken('md-image', 'reference'),
             
             # strong
-            Span('md-strong1', 'strong', r'\*\*', r'\*\*', escape='\\'),
-            Span('md-strong2', 'strong', r'__', r'__', escape='\\'),
+            MDInline('md-strong1', 'strong', r'\*\*', r'\*\*|$', escape='\\'),
+            MDInline('md-strong2', 'strong', r'__', r'__|$', escape='\\'),
 
             # emphasis
-            Span('md-emphasis1', 'emphasis', r'\*', r'\*', escape='\\'),
-            Span('md-emphasis2', 'emphasis', r'_', r'_', escape='\\'),
+            MDInline('md-emphasis1', 'emphasis', r'\*', r'\*|$', escape='\\'),
+            MDInline('md-emphasis2', 'emphasis', r'_', r'_|$', escape='\\'),
 
             # code
-            Span('md-code1', 'literal', r'``', r'``', escape='\\'),
-            Span('md-code2', 'literal', r'`', r'`', escape='\\'),
+            MDInline('md-code1', 'literal', r'``', r'``', escape='\\'),
+            MDInline('md-code2', 'literal', r'`', r'`', escape='\\'),
         ))
 
 

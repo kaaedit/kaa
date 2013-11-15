@@ -55,7 +55,7 @@ class TableToken(SingleToken):
         else:
             # check if previous line is table
             if tol > 1:
-                laststyle = doc.get_styles(tol-2, tol-1)[0]
+                laststyle = doc.getstyles(tol-2, tol-1)[0]
                 token = tokenizer.highlighter.get_token(laststyle)
                 if isinstance(token, TableToken):
                     in_table = True

@@ -149,7 +149,8 @@ class SubTokenizer(Token):
     def resume_pos(self, highlighter, tokenizer, doc, pos):
         # Returns top of current keyword
         if 0 < pos < len(doc.styles):
-            p = doc.styles.rfindint(tuple(self.sub_tokens.keys()), 0, pos, comp_ne=True)
+            p = doc.styles.rfindint(tuple(self.sub_tokens.keys()), 0, pos, 
+                    comp_ne=True)
             if p > 0:
                 return highlighter.get_resume_pos(doc, p)
         return 0

@@ -23,14 +23,6 @@ class TestMarkdownHighlight(kaa_testutils._TestDocBase):
             (0, 5, self.tokens.header2.tokenid),
         ] == list((f, t, style) for f, t, style in hl.highlight(doc, 0))
 
-    def test_codeblock(self):
-        hl = highlight.Highlighter(tokenizers=self.tokenizers)
-
-        doc = self._getdoc('    abc')
-        assert [
-            (0, 7, self.tokens.codeblock.tokenid),
-        ] == list((f, t, style) for f, t, style in hl.highlight(doc, 0))
-
     def test_hr(self):
         hl = highlight.Highlighter(tokenizers=self.tokenizers)
 
@@ -123,6 +115,13 @@ class TestMarkdownHighlight(kaa_testutils._TestDocBase):
             (0, 1, self.tokens.code2.span_start),
             (1, 5, self.tokens.code2.span_mid),
             (5, 6, self.tokens.code2.span_end),
+        ] == list((f, t, style) for f, t, style in hl.highlight(doc, 0))
+
+        doc = self._getdoc('` text`')
+        assert [
+            (0, 1, self.tokenizers[0].nulltoken),
+            (1, 6, self.tokenizers[0].nulltoken),
+            (6, 7, self.tokenizers[0].nulltoken),
         ] == list((f, t, style) for f, t, style in hl.highlight(doc, 0))
 
 

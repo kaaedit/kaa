@@ -17,6 +17,7 @@ def bacon():
 '''
         doc = self._getdoc(script)
         tokens = [t for t in doc.mode.get_headers()]
+        H = pythonmode.PythonMode.HeaderInfo
         assert tokens == [
             ('namespace', None, 'spam', 'spam', None, 1), 
             ('function', tokens[0], 'spam.ham', 'ham()', None, 13),
