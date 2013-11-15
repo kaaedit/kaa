@@ -310,8 +310,9 @@ class GrepMode(defaultmode.DefaultMode):
             if enc == 'japanese':
                 enc = _enc_japanese(filename)
 
-            doc = kaa.app.storage.openfile(filename, encoding=enc,
-                                            newline=self.grepoption.newline)
+            doc = kaa.app.storage.openfile(
+                    filename, encoding=enc, nohist=True,
+                    newline=self.grepoption.newline)
 
         buddy = wnd.splitter.get_buddy()
         if not buddy:

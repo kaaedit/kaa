@@ -102,8 +102,10 @@ class FileStorage:
             self._save_hist(filename)
         return openfile(filename, encoding, newline, filemustexists)
 
-    def save_document(self, doc, filename, encoding=None, newline=None):
-        self._save_hist(filename)
+    def save_document(self, doc, filename, encoding=None, newline=None, 
+                        nohist=False):
+        if not nohist:
+            self._save_hist(filename)
 
         if not doc.fileinfo:
             fileinfo = kaa.app.storage.get_fileinfo(filename, encoding, newline)
