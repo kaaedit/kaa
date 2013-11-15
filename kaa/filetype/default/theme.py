@@ -8,7 +8,7 @@ DefaultThemes = {
             Style('parenthesis_cur', 'White', 'Blue'),
             Style('parenthesis_match', 'Red', 'Yellow'),
 
-            Style('keyword', 'Red', 'default'),
+            Style('keyword', 'Magenta', 'default'),
             Style('comment', 'Cyan', 'default'),
             Style('string', 'Blue', 'default'),
             Style('number', 'Green', 'default'),
