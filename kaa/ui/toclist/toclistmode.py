@@ -48,24 +48,24 @@ class TOCList(filterlist.FilterListMode):
         self.document.delete(0, self.document.endpos())
         f = dialogmode.FormBuilder(self.document)
 
-        parents = ()
-        for n, item in enumerate(self.items):
+        prev = None
+        for item in self.items:
             if item.value.token == 'namespace':
-                parents = item.value.parents+(item.value,)
-                if n != 0:
+                if prev:
                     f.append_text('default', '\n'+'  '*len(item.value.parents))
-                
                 f.append_text(item.style, item.text, mark_pair=item)
-                f.append_text('default', '\n'+'  '*len(parents))
+
             else:
-                if parents != item.value.parents:
+                if prev and (prev.value.token =='namespace' or 
+                             prev.value.parents != item.value.parents):
+ 
                     f.append_text('default', 
                                   '\n'+'  '*(len(item.value.parents)))
-                    parents = item.value.parents
 
                 f.append_text(item.style, item.text, mark_pair=item)
                 f.append_text('default', ' ')
 
+            prev = item
 
     def sel_next_namespace(self, wnd):
         if not self.items:
