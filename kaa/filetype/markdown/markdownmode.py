@@ -1,8 +1,11 @@
+import copy
 from collections import namedtuple
 from kaa.filetype.default import defaultmode
 from gappedbuf import re as gre
 from kaa.highlight import Tokenizer, Token, Span, Keywords, EndSection, SingleToken
 from kaa.theme import Theme, Style
+from kaa.command import Commands, command, norec, norerun
+from kaa.keyboard import *
 
 MarkdownThemes = {
     'basic':
@@ -79,13 +82,13 @@ class ImageToken(LinkToken):
         return r'!\['
 
 
+HEADERS = r'=-'
 def build_tokenizer():
     MARKDOWNTOKENS = namedtuple('markdowntokens', 
                             ['escape', 'header1', 'header2', 'codeblock', 
                              'hr', 'link', 'image', 'strong1', 'strong2', 
                              'emphasis1', 'emphasis2', 'code1', 'code2'])
 
-    HEADERS = r'=-'
     return Tokenizer(MARKDOWNTOKENS(
             # escape
             SingleToken('md-escape', 'default', [r'\\.']),
@@ -122,12 +125,87 @@ def build_tokenizer():
 
 
 
+MDMENU = [
+    ['&Table of contents', None, 'toc.showlist'],
+]
+
+md_keys = {
+    (ctrl, 't'): 'toc.showlist',
+}
 
 class MarkdownMode(defaultmode.DefaultMode):
     MODENAME = 'Markdown'
+
+    def init_keybind(self):
+        super().init_keybind()
+        self.register_keys(self.keybind, [md_keys])
+
+    def init_menu(self):
+        super().init_menu()
+        self.menu['CODE'] = copy.deepcopy(MDMENU)
+
     def init_themes(self):
         super().init_themes()
         self.themes.append(MarkdownThemes)
 
     def init_tokenizers(self):
         self.tokenizers = [build_tokenizer()]
+
+    HEADER1 = r'^(?P<TITLE>.+)\n(?P<H1>[{}])(?P=H1)+$'.format(HEADERS)
+    HEADER2 = r'^(?P<H2>\#{1,6})(?P<TITLE2>.+)$'
+    
+    RE_HEADER = gre.compile('|'.join([HEADER1, HEADER2]), gre.X|gre.M)
+
+    def get_headers(self):
+        stack = []
+        pos = 0
+        while True:
+            m = self.RE_HEADER.search(self.document.buf, pos)
+            if not m:
+                break
+    
+            pos = m.end()
+            name = m.group('TITLE') or m.group('TITLE2')
+            name = name.strip()
+
+            bar = m.group('H1')
+            if bar:
+                if bar == '=':
+                    level = 0
+                else:
+                    level = 1
+            else:
+                level = len(m.group('H2'))-1
+
+            if not stack:
+                header = self.HeaderInfo('namespace', None, name, name, 
+                            None, pos)
+                yield header
+                stack.append((level, header))
+                continue
+
+            for i, (parent_level, info) in enumerate(stack):
+                if level <= parent_level:
+                    del stack[i:]
+                    break
+
+            if stack:
+                parent = stack[-1][1]
+            else:
+                parent = None
+
+            header = self.HeaderInfo(
+                'namespace', parent, name, 
+                name, None, pos)
+            yield header
+            stack.append((level, header))
+            
+
+    @command('toc.showlist')
+    @norec
+    @norerun
+    def show_toclist(self, wnd):
+        from kaa.ui.toclist import toclistmode
+        headers = list(self.get_headers())
+        toclistmode.show_toclist(wnd, headers)
+
