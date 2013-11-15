@@ -48,14 +48,22 @@ class DirFileListMode(selectlist.SelectItemList):
             self.files = []
 
         # add '..' if dir is not root
-        if self.dirname != '/' and os.path.exists(os.path.join(self.dirname, '..')):
-            self.dirs.insert(0, '..')
+        if self.dirname != '/':
+            if os.path.exists(os.path.join(self.dirname, '..')):
+                self.dirs.insert(0, '..')
+
         self.dirs = [name+'/' for name in self.dirs]
 
     def set_filename(self, filename):
         if filename.strip():
-            upper = filename.strip().upper()
-            self.filterfunc = lambda s:upper in s.upper()
+            upper = filename.strip().upper().split()
+            def f(s):
+                s = s.upper()
+                for u in upper:
+                    if u not in s:
+                        return False
+                return True
+            self.filterfunc = f
         else:
             self.filterfunc = None
 
