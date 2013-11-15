@@ -242,6 +242,9 @@ class DefaultMode(modebase.ModeBase):
 
         def __hash__(self):
             return id(self)
-            
+
+        def __repr__(self):
+            return repr((self.token, self.parent, self.name, self.dispname, 
+                    self.lineno, self.pos))
     def get_headers(self):
         return ()

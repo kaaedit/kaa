@@ -158,7 +158,7 @@ class PythonMode(defaultmode.DefaultMode):
     RE_TOKENIZE_SEARCH = gre.compile(
         r'''(?P<BACKSLASH>\\.)|(?P<CLASS>\bclass\b)|
             (?P<DEF>\bdef\b)|(?P<PARENTHESIS>[\{\[\(])|
-            (?P<COMMENT>\#)|(?P<STRING>\"|\"\"\"|\'|\'\'\')''', gre.X)
+            (?P<COMMENT>\#)|(?P<STRING>\"\"\"|\"|\'\'\'|\')''', gre.X)
 
     def _py_tokenize(self):
         pos = 0

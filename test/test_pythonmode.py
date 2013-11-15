@@ -9,17 +9,16 @@ class TestPythonMode(kaa_testutils._TestDocBase):
         script = '''
 class spam:
     def ham(self, \, x=(def xxx)):
-        'def\\''
+        'def'
 # class xyz
 def egg():
-   """\\""""
+   """\\\\"""
 def bacon():
 '''
         doc = self._getdoc(script)
         tokens = [t for t in doc.mode.get_headers()]
-        H = pythonmode.PythonMode.HeaderInfo
         assert tokens == [
             ('namespace', None, 'spam', 'spam', None, 1), 
             ('function', tokens[0], 'spam.ham', 'ham()', None, 13),
-            ('function', None, 'egg', 'egg()', None, 76), 
-            ('function', None, 'bacon', 'bacon()', None, 99)] 
+            ('function', None, 'egg', 'egg()', None, 74), 
+            ('function', None, 'bacon', 'bacon()', None, 97)] 
