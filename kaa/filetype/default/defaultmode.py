@@ -213,15 +213,9 @@ class DefaultMode(modebase.ModeBase):
             if d.get(key) == 0:
                 return pos
 
-    class HeaderInfo:
-        def __init__(self, token, parent, name, dispname, lineno, pos):
-            self.token = token
-            self.parent = parent
-            self.name = name
-            self.dispname = dispname
-            self.lineno = lineno
-            self.pos = pos
-
+    _headerinfo = namedtuple('_headerinfo', 
+            ['token', 'parent', 'name', 'dispname', 'lineno', 'pos'])
+    class HeaderInfo(_headerinfo):
         def get_parents(self):
             ret = []
             p = self.parent
@@ -230,21 +224,5 @@ class DefaultMode(modebase.ModeBase):
                 p = p.parent
             return ret
 
-        def __eq__(self, rhs):
-            ''' for testing '''
-            token, parent, name, dispname, lineno, pos = rhs
-            return ((token == self.token) and 
-                    (parent is self.parent) and
-                    (name == self.name) and
-                    (dispname == self.dispname) and
-                    (lineno == self.lineno) and
-                    (pos == self.pos))
-
-        def __hash__(self):
-            return id(self)
-
-        def __repr__(self):
-            return repr((self.token, self.parent, self.name, self.dispname, 
-                    self.lineno, self.pos))
     def get_headers(self):
         return ()

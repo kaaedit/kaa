@@ -88,12 +88,11 @@ class TestRstHighlight(kaa_testutils._TestDocBase):
     def test_block(self):
         hl = highlight.Highlighter(tokenizers=self.tokenizers)
 
-        doc = self._getdoc('abc::\n 123\n 123\nxyz')
+        doc = self._getdoc('abc:: \n')
         assert [
             (0, 3, self.tokenizers[0].nulltoken),
-            (3, 5, self.tokens.block.span_start),
-            (5, 16, self.tokens.block.span_mid),
-            (16, 19, self.tokenizers[0].nulltoken),
+            (3, 6, self.tokens.block.tokenid),
+            (6, 7, self.tokenizers[0].nulltoken),
         ] == list((f, t, style) for f, t, style in hl.highlight(doc, 0))
 
     def test_directive(self):

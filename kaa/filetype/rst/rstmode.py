@@ -93,8 +93,7 @@ def build_tokenizer():
             # block
             Span('directive', 'directive', r'\.\.\s+\S+::', '^\S', 
                 escape='\\', capture_end=False),
-            Span('block', 'block', r'::\s*$', '^\S', escape='\\', 
-                capture_end=False),
+            SingleToken('block', 'block', [r'::[\ \t]*$']),
 
             #table
             TableToken('rst-table-border', 'table', [r'\+[+\-=]+(\s+|$)']),
