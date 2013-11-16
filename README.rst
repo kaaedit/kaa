@@ -52,8 +52,14 @@ Kaa is a CUI editor that runs on most of modern UN*X flavor operating systems li
 Cygwin environment on Windows platform is not supported at this time, but will be tested after they provide Python 3.3 package.
 
 
-Requirements
+Setup 
 ============
+
+
+Requirements
+------------
+
+To run kaa, you need following component:
 
 * Python 3.3 or later
 
@@ -65,13 +71,12 @@ Requirements
 
 * (optional) Cython
 
-
 Installation
-============
+-------------
 
 Use easy_install3 or pip3 to install kaa from PyPI ::
 
-   $ easy_install3 kaaedit
+   $ sudo easy_install3 kaaedit
 
 
 Command line options
@@ -579,16 +584,28 @@ Links
 Version history
 =================
 
-0.11 - 2013.11.14
+0.12 - 2013.11.16
 ------------------
+
+- Show table of contents in Markdown mode. Hit Ctrl+t to display TOC.
+
+- Show table of contents reStructuredText mode. Hit Ctrl+t to display TOC.
+
+- Improve highlighting in Markdown mode.
+
+- Bugs fixed.
+
+
+Past versions
+--------------
+
+0.11 - 2013.11.14
++++++++++++++++++++++
 
 - Show table of contents in Python mode. Hit Ctrl+t to display TOC.
 
 - Improve highlighting in reStructured mode.
 
-
-Past versions
---------------
 
 0.10 - 2013.11.11
 +++++++++++++++++++++

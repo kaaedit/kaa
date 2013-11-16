@@ -53,14 +53,17 @@ kaa はCUI環境用のエディタで、LinuxやMac OS Xなど、多くのUN*X�
 MS-WindowsのCygwinは、現在のところサポートしていません。今後、CygwinでPython3.3以降がリリースされたあと、kaaの動作確認を実施する予定です。
 
 
+インストール
+=============
+
 動作環境
-============
+---------
 
 * Python 3.3以降
 
 * Pythonの開発用ヘッダ・ライブラリと、ワイド文字をサポートした ncurses ライブラリが必要です。Debian/Ubuntuでは、 ::
 
-  $ sudo apt-get install python3-dev libncursesw5-dev 
+    $ sudo apt-get install python3-dev libncursesw5-dev 
 
   で必要なファイルをインストールできます。
 
@@ -71,11 +74,11 @@ MS-WindowsのCygwinは、現在のところサポートしていません。今�
 
 
 インストール
-============
+---------------
 
 easy_install3 や pip-3で、PyPI からインストールします ::
 
-   $ easy_install3 kaaedit
+   $ sudo easy_install3 kaaedit
 
 
 コマンドラインオプション
