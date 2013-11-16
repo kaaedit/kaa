@@ -164,5 +164,15 @@ def show_toclist(wnd, toclist):
     filterlistdoc.mode.set_candidates(toclist)
     filterlistdoc.mode.set_query(list, '')
     dlg.on_console_resized()
-    
+
+    pos = wnd.cursor.pos
+    last = None
+    for item in filterlistdoc.mode.candidates:
+        if pos < item.value.pos:
+            break
+        last = item
+
+    if last:
+        filterlistdoc.mode.update_sel(list, last, bottom=True)
+
     return dlg

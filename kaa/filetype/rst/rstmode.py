@@ -173,7 +173,7 @@ class RstMode(defaultmode.DefaultMode):
 
             if not stack:
                 header = self.HeaderInfo('namespace', None, name, name, 
-                            None, pos)
+                            None, m.start())
                 yield header
                 stack.append((level, header))
                 continue
@@ -190,7 +190,7 @@ class RstMode(defaultmode.DefaultMode):
 
             header = self.HeaderInfo(
                 'namespace', parent, name, 
-                name, None, pos)
+                name, None, m.start())
             yield header
             stack.append((level, header))
             

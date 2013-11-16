@@ -72,7 +72,7 @@ class SelectItemList(dialogmode.DialogMode):
             if n != (len(self.items)-1):
                 f.append_text('default', self.SEP)
 
-    def _update_item_style(self, wnd, item, activate, bottom=None):
+    def _update_item_style(self, wnd, item, activate, middle=None, bottom=None):
 
         if item not in self.document.marks:
             return
@@ -86,15 +86,16 @@ class SelectItemList(dialogmode.DialogMode):
         self.document.styles.setints(f, t, self.get_styleid(style))
         if activate:
             wnd.screen.apply_updates()
-            top = not bottom
-            wnd.screen.locate(f, top=top, bottom=bottom)
+            top = not middle and not bottom
+            wnd.screen.locate(f, top=top, middle=middle, bottom=bottom)
             
-    def update_sel(self, wnd, newsel, bottom=None):
+    def update_sel(self, wnd, newsel, middle=None, bottom=None):
         if self.cursel is not None:
             self._update_item_style(wnd, self.cursel, False)
 
         if newsel is not None:
-            self._update_item_style(wnd, newsel, True, bottom=bottom)
+            self._update_item_style(wnd, newsel, True, 
+                        middle=middle, bottom=bottom)
 
         self.cursel = newsel
 
