@@ -17,7 +17,7 @@ class CursorCommands(Commands):
             wnd.cursor.right()
         elif wnd.screen.selection.is_selected():
             range = wnd.screen.selection.get_selrange()
-            if wnd.cursor.pos >= range[1]:
+            if wnd.cursor.pos > range[1]:
                 wnd.cursor.right()
             else:
                 wnd.cursor.setpos(wnd.cursor.adjust_nextpos(
@@ -42,7 +42,7 @@ class CursorCommands(Commands):
             wnd.cursor.left()
         elif wnd.screen.selection.is_selected():
             range = wnd.screen.selection.get_selrange()
-            if wnd.cursor.pos <= range[0]:
+            if wnd.cursor.pos < range[0]:
                 wnd.cursor.left()
             else:
                 wnd.cursor.setpos(wnd.cursor.adjust_nextpos(
