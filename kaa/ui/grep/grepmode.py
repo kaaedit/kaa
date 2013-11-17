@@ -3,6 +3,7 @@ import fnmatch
 import re
 
 import kaa
+from gappedbuf import re as gre
 from kaa import document
 from kaa.keyboard import *
 from kaa.theme import Theme, Style
@@ -255,9 +256,7 @@ grep_keys = {
 }
 
 
-
-class GrepMode(defaultmode.DefaultMode):
-    MODENAME = 'Grep'
+class FileListMode(defaultmode.DefaultMode):
     DOCUMENT_MODE = False
     USE_UNDO = False
     HIGHLIGHT_CURSORLINE = True
@@ -330,43 +329,61 @@ class GrepMode(defaultmode.DefaultMode):
                 
             self.app_commands.save_splitterdocs(wnd, buddy, callback)
             
+    RE_FILENAME = gre.compile(r'^[^:]+\:\d+\:.*$', gre.M)
+    def is_match(self, pos):
+        m  = self.RE_FILENAME.match(self.document.buf, pos)
+        return m
+            
     def on_global_prev(self, wnd):
         if kaa.app.focus in self.document.wnds:
-            self.show_hit(kaa.app.focus)
-            return True
+            if self.is_match(self.document.gettol(wnd.cursor.pos)):
+                self.show_hit(kaa.app.focus)
+                return True
             
         pos = wnd.cursor.pos
-        eol = self.document.gettol(pos)
-        if eol:
-            tol = self.document.gettol(eol-1)
-        else:
-            eol = self.document.endpos()
-            tol = self.document.gettol(eol)
 
-        eol, line = self.document.getline(tol)
-        if line.strip():
-            wnd.cursor.setpos(tol)
-            self.show_hit(wnd)
-        elif eol:
-            wnd.cursor.setpos(self.document.gettol(eol-1))
-            self.document.wnds[0].activate()
+        while True:
+            eol = self.document.gettol(pos)
+            if eol:
+                tol = self.document.gettol(eol-1)
+            else:
+                eol = self.document.endpos()
+                tol = self.document.gettol(eol)
 
-        return True
+
+            if self.is_match(tol):
+                wnd.cursor.setpos(tol)
+                self.show_hit(wnd)
+                return True
+
+            if tol == 0:
+                wnd.cursor.setpos(tol)
+                self.document.wnds[0].activate()
+                return True
+
+            pos = tol
         
     def on_global_next(self, wnd):
         if kaa.app.focus in self.document.wnds:
-            self.show_hit(kaa.app.focus)
-            return True
+            if self.is_match(self.document.gettol(wnd.cursor.pos)):
+                self.show_hit(kaa.app.focus)
+                return True
             
         pos = wnd.cursor.pos
-        tol = self.document.geteol(pos)
+        while True:
+            tol = self.document.geteol(pos)
+    
+            if self.is_match(tol):
+                wnd.cursor.setpos(tol)
+                self.show_hit(wnd)
+                return True
 
-        eol, line = self.document.getline(tol)
-        if line.strip():
-            wnd.cursor.setpos(tol)
-            self.show_hit(wnd)
-        elif eol == self.document.endpos():
-            wnd.cursor.setpos(0)
-            self.document.wnds[0].activate()
+            if self.document.geteol(tol) == self.document.endpos():
+                wnd.cursor.setpos(0)
+                self.document.wnds[0].activate()
+                return True
+    
+            pos = tol
 
-        return True
+class GrepMode(FileListMode):
+    MODENAME = 'Grep'
