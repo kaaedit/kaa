@@ -53,6 +53,7 @@ MENUS = {
          ['&Grep', None, 'search.showgrep'],
          ['Paste &Lines', None, 'edit.paste-lines'],
          ['&Shell command', None, 'tools.execute-shell-command'],
+         ['&Make', None, 'tools.make'],
          ],
          
     'WINDOW':

@@ -15,7 +15,9 @@ class FileStorage:
         import pyjf3
         ret = pyjf3.guess(open(filename, 'rb').read())
         
-        if ret in (pyjf3.ASCII, pyjf3.UTF8):
+        if ret == pyjf3.ASCII:
+            return kaa.app.config.DEFAULT_ENCODING
+        elif ret == pyjf3.UTF8:
             return 'utf-8'
         elif ret == pyjf3.SJIS:
             return 'cp932'

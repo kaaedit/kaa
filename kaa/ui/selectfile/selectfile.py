@@ -378,9 +378,6 @@ class OpenFilenameDlgMode(dialogmode.DialogMode):
                 filelist.document.mode.read_dir()
                 filelist.document.mode.show_files(wnd)
 
-            popup = w.get_label('popup')
-            popup.destroy()
-
         doc = inputlinemode.InputlineMode.build('directory name:', callback)
         kaa.app.show_dialog(doc)
         

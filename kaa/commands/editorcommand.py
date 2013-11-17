@@ -251,9 +251,6 @@ class CursorCommands(Commands):
             tol = wnd.document.gettol(pos)
             wnd.cursor.setpos(wnd.cursor.adjust_nextpos(wnd.cursor.pos, tol))
 
-            popup = w.get_label('popup')
-            popup.destroy()
-
         def filter(wnd, s):
             if s == '0':
                 t = wnd.document.mode.get_input_text().strip()

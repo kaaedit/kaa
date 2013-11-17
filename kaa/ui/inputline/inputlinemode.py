@@ -1,10 +1,11 @@
 import kaa
 from kaa import document, command
-from kaa.ui.dialog import dialogmode
 from kaa.theme import Theme, Style
 from kaa.filetype.default import keybind
 from kaa.commands import editorcommand
 from kaa.keyboard import *
+from kaa.ui.dialog import dialogmode
+from kaa.ui.selectlist import filterlist
 
 InputlineThemes = {
     'basic':
@@ -15,6 +16,7 @@ InputlineThemes = {
 inputline_keys = {
     ('\r'): ('inputline'),
     ('\n'): ('inputline'),
+    up: ('inputline.history'),
 }
 
 class InputlineMode(dialogmode.DialogMode):
@@ -34,12 +36,8 @@ class InputlineMode(dialogmode.DialogMode):
         super().init_themes()
         self.themes.append(InputlineThemes)
 
-    def close(self):
-        super().close()
-
     def init_keybind(self):
         super().init_keybind()
-
         self.register_keys(self.keybind, self.KEY_BINDS)
 
     def init_commands(self):
@@ -82,6 +80,10 @@ class InputlineMode(dialogmode.DialogMode):
         cur = self.get_input_text()
         f, t = self.document.marks['inputtext']
         self.document.replace(f, t, s, self.get_styleid('default'))
+        f, t = self.document.marks['inputtext']
+        wnd.cursor.setpos(f)
+        if s:
+            wnd.screen.selection.set_range(f, t)
 
     @command.command('inputline')
     @command.norec
@@ -89,16 +91,34 @@ class InputlineMode(dialogmode.DialogMode):
     def input_line(self, w):
         s = self.get_input_text()
         self.callback(w, s)
+                
+        popup = w.get_label('popup')
+        popup.destroy()
+
+    @command.command('inputline.history')
+    @command.norec
+    @command.norerun
+    def input_history(self, wnd):
+        if not self.history:
+            return
+
+        def callback(result):
+            if result:
+                self.set_input_ext(wnd, result)
+            
+
+        filterlist.show_listdlg(self.caption, self.history, callback)
 
     @classmethod
-    def build(cls, caption, callback, filter=None):
+    def build(cls, caption, callback, filter=None, history=()):
         buf = document.Buffer()
         doc = document.Document(buf)
         mode = cls()
         doc.setmode(mode)
+        mode.caption = caption
         mode.callback = callback
         mode.filter = filter
-
+        mode.history = history
         f = dialogmode.FormBuilder(doc)
 
         # caption

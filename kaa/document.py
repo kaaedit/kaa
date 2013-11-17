@@ -289,7 +289,7 @@ class Document:
     def replace(self, begin, end, s, style=None):
         self.buf.replace(begin, end, s)
         if style is not None:
-            self.styles.setints(pos, pos+len(s), style)
+            self.styles.setints(begin, begin+len(s), style)
 
     def get_nextpos(self, pos):
         pos += 1

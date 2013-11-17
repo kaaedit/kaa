@@ -129,6 +129,7 @@ class Config:
         self.hist_grepstr = History('grep_text', self.hist_storage)
         self.hist_grepdir = History('grep_dir', self.hist_storage)
         self.hist_grepfiles = History('grep_filename', self.hist_storage)
+        self.hist_makecommands = History('makecommands', self.hist_storage)
 
     def get_mode_packages(self):
         for pkgname in self.FILETYPES:
