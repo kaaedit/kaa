@@ -9,6 +9,7 @@ DefaultThemes = {
             Style('parenthesis_match', 'Red', 'Yellow'),
 
             Style('keyword', 'Magenta', 'default'),
+            Style('directive', 'Orange', 'default'),
             Style('comment', 'Cyan', 'default'),
             Style('string', 'Blue', 'default'),
             Style('number', 'Green', 'default'),

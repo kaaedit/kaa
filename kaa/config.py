@@ -88,6 +88,7 @@ class Config:
         'kaa.filetype.diff',
         'kaa.filetype.rst',
         'kaa.filetype.markdown',
+        'kaa.filetype.c',
     ]
 
     DEFAULT_NEWLINE = 'auto'
