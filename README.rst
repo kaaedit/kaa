@@ -76,7 +76,8 @@ Installation
 
 Use easy_install3 or pip3 to install kaa from PyPI ::
 
-   $ sudo easy_install3 kaaedit
+   $ sudo easy_install3 -U kaaedit
+
 
 
 Command line options
@@ -280,16 +281,19 @@ Macro menu
 Tools menu
 ++++++++++
 
-+----------------+------------------------------------------------+
-| Python console | Execute Python script.                         |
-+----------------+------------------------------------------------+
-| Grep           | Search text from disk.                         |
-+----------------+------------------------------------------------+
-| Paste lines    | Insert lines of text without auto indentation. |
-+----------------+------------------------------------------------+
-| Shell command  | Execute external shell command and insert the  |
-|                | output.                                        |
-+----------------+------------------------------------------------+
++----------------+----------------------------------------------------+
+| Python console | Execute Python script.                             |
++----------------+----------------------------------------------------+
+| Grep           | Search text from disk.                             |
++----------------+----------------------------------------------------+
+| Paste lines    | Insert lines of text without auto indentation.     |
++----------------+----------------------------------------------------+
+| Shell command  | Execute external shell command and insert the      |
+|                | output.                                            |
++----------------+----------------------------------------------------+
+| Make           | Run ``make`` to compile source files and capture   |
+|                | error  messages. Use f9/10 key to traverse errors. |
++----------------+----------------------------------------------------+
 
 
 Window menu
@@ -522,6 +526,14 @@ Unlike Python's interactive console, Python console in kaa does not execute Pyth
 When alt+Enter key was hit, all text in the window is executed as Python script and the value of the expression is printed out to console window. If the script contains print expression, the text will also be printed out to console window. If a part of text in the console window is selected, only text in the selected region will be execused.
 
 
+Make
+--------------
+
+``[Tools]|Make`` executes ``make`` command to build your files. You can alter command and options to build. To retrieve previous command and options, hit up cursor key to display history window.
+
+Output of ``make`` displayed on the window. You can traverse source files cause of the error forth and back with f9 and f10 key.
+
+
 Customization
 ==================
 
@@ -580,12 +592,27 @@ Links
 
 - `Python Package Index(PyPI) <http://pypi.python.org/pypi/kaaedit/>`_
 
+- `Twitter account to notify new releases <https://twitter.com/kaaedit>`_
+
 
 Version history
 =================
 
-0.12 - 2013.11.16
+0.13 - 2013.11.18
 ------------------
+
+- New file mode: C language.
+
+- New command: *[Tools] | Make*. Invoke ``make`` command to build and view output without leaving kaa.
+
+- Move initial selection of Table Of Contents to current cursor position.
+
+
+Past versions
+--------------
+
+0.12 - 2013.11.16
++++++++++++++++++++++
 
 - Show table of contents in Markdown mode. Hit Ctrl+t to display TOC.
 
@@ -595,9 +622,6 @@ Version history
 
 - Bugs fixed.
 
-
-Past versions
---------------
 
 0.11 - 2013.11.14
 +++++++++++++++++++++
