@@ -1,4 +1,4 @@
-import sys, os, curses
+import sys, os, curses, subprocess
 import kaa
 from kaa.command import Commands, command, is_enable, norec, norerun
 
@@ -37,6 +37,7 @@ class ToolCommands(Commands):
         def callback(w, s):
             s = s.strip()
             if s:
+                kaa.app.config.hist_shellcommands.add(s)
                 ret = subprocess.check_output(
                     s, stderr=subprocess.STDOUT,
                     shell=True,
@@ -48,15 +49,17 @@ class ToolCommands(Commands):
                 kaa.app.messagebar.set_message(
                     "{} letters inserted".format(len(ret)))
 
+        hist = [s for s, info in kaa.app.config.hist_shellcommands.get()]
         from kaa.ui.inputline import inputlinemode
-        doc = inputlinemode.InputlineMode.build('Shell command:', callback)
+        doc = inputlinemode.InputlineMode.build('Shell command:', 
+                    callback, history=hist)
         kaa.app.messagebar.set_message('Execute shell command')
 
         kaa.app.show_dialog(doc)
 
-    READ_LEN=1024
     def _exec_cmd(self, cmd):
-        import select, subprocess, errno
+        # todo: move to util
+        import select, errno
         master, slave = os.pipe()
         with subprocess.Popen(cmd, shell=True, stdout=slave, 
                 stderr=slave, bufsize=1,
@@ -97,6 +100,7 @@ class ToolCommands(Commands):
         def callback(w, s):
             s = s.strip()
             if s:
+                kaa.app.config.hist_makecommands.add(s)
                 # todo: move these lines to kaa.cui.*
                 curses.def_prog_mode()
                 curses.endwin()
@@ -107,10 +111,13 @@ class ToolCommands(Commands):
                     wnd.mainframe.refresh()
 
                 from kaa.ui.makeoutput import makeoutputmode
-                makeoutputmode.show(ret)
-                
+                makeoutputmode.show(s, ret)
+
         from kaa.ui.inputline import inputlinemode
-        doc = inputlinemode.InputlineMode.build('Make command:', callback)
+        hist = [s for s, info in kaa.app.config.hist_makecommands.get()]
+        value = 'make' if not hist else hist[0]
+        doc = inputlinemode.InputlineMode.build('Make command:', callback,
+                history=hist, value=value)
         kaa.app.messagebar.set_message('Execute command')
 
         kaa.app.show_dialog(doc)

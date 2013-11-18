@@ -112,7 +112,10 @@ class FilenameIndexMode(defaultmode.DefaultMode):
                 
             self.app_commands.save_splitterdocs(wnd, buddy, callback)
             
-    RE_FILENAME = gre.compile(r'^[^:\n]+\:\d+\:.*$', gre.M)
+    RE_FILENAME = gre.compile(
+        r'(?P<FILENAME>^[^:\n]+)\:(?P<LINENO>\d+)\:.*$', 
+        gre.M|gre.X)
+        
     def is_match(self, pos):
         m  = self.RE_FILENAME.match(self.document.buf, pos)
         return m

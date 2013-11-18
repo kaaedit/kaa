@@ -314,6 +314,8 @@ class Document:
         else:
             return self.buf.lineno.getpos(lineno)
 
+    def setstyle(self, start, end, style):
+        self.styles.setints(start, end, style)
 
 class Marks(dict):
     locked = False

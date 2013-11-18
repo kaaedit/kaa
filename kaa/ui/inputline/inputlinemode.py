@@ -58,8 +58,12 @@ class InputlineMode(dialogmode.DialogMode):
         wnd.set_cursor(dialogmode.DialogCursor(wnd,
                    [dialogmode.MarkRange('inputtext')]))
 
-        wnd.cursor.setpos(self.document.marks['inputtext'][0])
+        f, t = self.document.marks['inputtext']
+        wnd.cursor.setpos(f)
 
+        if f != t:
+            wnd.screen.selection.set_range(f, t)
+            
     def on_esc_pressed(self, wnd, event):
         super().on_esc_pressed(wnd, event)
         popup = wnd.get_label('popup')
@@ -110,7 +114,7 @@ class InputlineMode(dialogmode.DialogMode):
         filterlist.show_listdlg(self.caption, self.history, callback)
 
     @classmethod
-    def build(cls, caption, callback, filter=None, history=()):
+    def build(cls, caption, callback, filter=None, history=(), value=''):
         buf = document.Buffer()
         doc = document.Document(buf)
         mode = cls()
@@ -120,11 +124,11 @@ class InputlineMode(dialogmode.DialogMode):
         mode.filter = filter
         mode.history = history
         f = dialogmode.FormBuilder(doc)
-
+    
         # caption
         f.append_text('caption', caption)
         f.append_text('default', ' ')
-        f.append_text('default', '', mark_pair='inputtext')
+        f.append_text('default', value, mark_pair='inputtext')
 
         return doc
 
