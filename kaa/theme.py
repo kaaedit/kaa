@@ -3,6 +3,7 @@ import kaa
 class Theme:
     def __init__(self, styles):
         self.styles = {}
+        self.overlays = {}
         self.add_styles(styles)
 
     def get_style(self, name):
@@ -10,11 +11,16 @@ class Theme:
 
     def add_styles(self, styles):
         for style in styles:
-            self.styles[style.name] = style
-
+            if not isinstance(style, Overlay):
+                # Style instance
+                self.styles[style.name] = style
+            else:
+                self.overlays[style.name] = style
+        
     def update(self, rhs):
         default = self.styles.get('default', None)
         self.add_styles(s.fill(default) for s in rhs.styles.values())
+        self.add_styles(s.fill(default) for s in rhs.overlays.values())
 
 class Style:
     def __init__(self, name, fgcolor, bgcolor, underline=False,
@@ -26,9 +32,9 @@ class Style:
         self.bold = bold
         self.nowrap = nowrap
         self.rjust = rjust
-
+        
     def fill(self, default):
-        return Style(
+        return self.__class__(
             self.name,
             self.fgcolor if self.fgcolor is not None else default.fgcolor,
             self.bgcolor if self.bgcolor is not None else default.bgcolor,
@@ -38,4 +44,17 @@ class Style:
             self.rjust if self.rjust is not None else default.rjust,
         )
 
+
+class Overlay(Style):
+    def __init__(self, name, fgcolor=None, bgcolor=None, underline=None, bold=None):
+        super().__init__(name, fgcolor, bgcolor, underline, bold)
+
+    def fill(self, default):
+        return self.__class__(
+            self.name,
+            self.fgcolor,
+            self.bgcolor,
+            self.underline,
+            self.bold
+        )
 

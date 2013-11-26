@@ -49,11 +49,13 @@ MENUS = {
          ['&Run Macro', None, 'macro.run']],
         
     'TOOLS':
-        [['&Python console', None, 'python.console'],
-         ['&Grep', None, 'search.showgrep'],
+        [['&Grep', None, 'search.showgrep'],
          ['Paste &Lines', None, 'edit.paste-lines'],
          ['&Shell command', None, 'tools.execute-shell-command'],
          ['&Make', None, 'tools.make'],
+         ['&Python console', None, 'python.console'],
+         ['Run Python &Debugger', None, 'python.debugger.run'],
+         ['Python Debugger s&erver', None, 'python.debugger.server'],
          ],
          
     'WINDOW':

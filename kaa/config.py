@@ -16,7 +16,7 @@ class KaaHistoryStorage:
     
 
 class History:
-    MAX_HISTORY = 999
+    MAX_HISTORY = 200
 
     def __init__(self, name, storage):
         self.name = name
@@ -131,7 +131,22 @@ class Config:
         self.hist_grepfiles = History('grep_filename', self.hist_storage)
         self.hist_shellcommands = History('shellcommands', self.hist_storage)
         self.hist_makecommands = History('makecommands', self.hist_storage)
+        self.hist_pythondebug_expr = History('pythondebug_expr', self.hist_storage)
+        self.hist_pythondebugcommands = History('pythondebug_cmdline', self.hist_storage)
 
+    def close(self):
+        self.hist_files.close()
+        self.hist_dirs.close()
+        self.hist_searchstr.close()
+        self.hist_replstr.close()
+        self.hist_grepstr.close()
+        self.hist_grepdir.close()
+        self.hist_grepfiles.close()
+        self.hist_shellcommands.close()
+        self.hist_makecommands.close()
+        self.hist_pythondebug_expr.close()
+        self.hist_pythondebugcommands.close()
+        
     def get_mode_packages(self):
         for pkgname in self.FILETYPES:
             try:

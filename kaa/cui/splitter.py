@@ -50,7 +50,7 @@ class Splitter:
         if self.right: self.right.destroy()
         if self.above: self.above.destroy()
         if self.below: self.below.destroy()
-        self.wnd = self.left = self.right = self.above = self.below = None
+        self.left = self.right = self.above = self.below = None
         
     def destroy(self):
         self._destroy_children()
@@ -136,7 +136,7 @@ class Splitter:
                 self.parent.below = next
 
         # clean up
-        self.left = self.right = self.above = self.below= None
+        self.left = self.right = self.above = self.below = None
         self.destroy()
 
         next.resize()

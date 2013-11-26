@@ -320,7 +320,7 @@ class GrepDlgMode(dialogmode.DialogMode):
 
     def _option_updated(self):
         self.update_option_style()
-        self.document.style_updated(0, self.document.endpos())
+        self.document.style_updated()
 
 
     def _select_dir(self, wnd):

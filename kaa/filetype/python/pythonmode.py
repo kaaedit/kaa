@@ -5,23 +5,25 @@ from kaa.theme import Theme, Style
 from gappedbuf import re as gre
 from kaa.command import Commands, command, norec, norerun
 from kaa.keyboard import *
+from kaa.ui.pythondebug import port
 
 PythonThemes = {
     'basic':
         Theme([
             Style('python-bytes', 'blue', 'default'),
         ]),
-
 }
 
 PYTHONMENU = [
     ['&Comment', None, 'code.region.linecomment'],
     ['&Uncomment', None, 'code.region.unlinecomment'],
     ['&Table of contents', None, 'toc.showlist'],
+    ['Toggle &Breakpoint', None, 'debugger.toggle.breakpoint'],
 ]
 
 python_keys = {
     (ctrl, 't'): 'toc.showlist',
+    f8: 'debugger.toggle.breakpoint',
 }
 
 class PythonMode(defaultmode.DefaultMode):
@@ -58,6 +60,33 @@ class PythonMode(defaultmode.DefaultMode):
             Span('python-bytes12', 'python-bytes', "(br?|r?b)'", "'", escape='\\'),
         ])]
 
+    def on_set_document(self, document):
+        super().on_set_document(document)
+
+        fname = document.get_filename()
+        if fname:
+            bps = port.get_breakpoints(fname)
+            for bp in bps:
+                pos = self.document.get_lineno_pos(bp.lineno)
+                self.document.marks[bp] = pos
+            
+    def on_del_window(self, wnd):
+        super().on_del_window(wnd)
+        self.update_python_breakpoints()
+        
+    def get_line_overlays(self):
+        ret = super().get_line_overlays()
+        
+        for k, v in self.get_breakpoints():
+            ret[v] = 'breakpoint'
+        return ret
+
+    def on_file_saved(self, fileinfo):
+        if self.document.get_filename() != fileinfo.fullpathname:
+            self._clear_breakpoints()
+
+        super().on_file_saved(fileinfo)
+            
     RE_BEGIN_NEWBLOCK = gre.compile(r"[^#]*\:\s*(#.*)?$", gre.M)
     def on_auto_indent(self, wnd):
         pos = wnd.cursor.pos
@@ -219,3 +248,45 @@ class PythonMode(defaultmode.DefaultMode):
         from kaa.ui.toclist import toclistmode
         toclistmode.show_toclist(wnd, list(self.get_headers()))
 
+    def get_breakpoints(self):
+        for k, v in self.document.marks.items():
+            if isinstance(k, port.BreakPoint):
+                yield k, v
+
+    def update_python_breakpoints(self):
+        filename = self.document.get_filename()
+        if not filename:
+            return
+            
+        bps = []
+        for k, v in self.get_breakpoints():
+            lineno = self.document.buf.lineno.lineno(v)
+            k.lineno = lineno
+            bps.append(k)
+    
+        port.set_breakpoints(filename, bps)
+
+    def _clear_breakpoints(self):
+        bps = [k for k in self.get_breakpoints()]
+        for bp in bps:
+            del self.document.marks[bp]
+
+    @command('debugger.toggle.breakpoint')
+    @norec
+    @norerun
+    def toggle_breakpoint(self, wnd):
+        pos = wnd.cursor.pos
+        tol = self.document.gettol(pos)
+        for bp, pos in self.get_breakpoints():
+            if tol == self.document.gettol(pos):
+                del self.document.marks[bp]
+                break
+        else:
+            filename = self.document.get_filename()
+            if filename:
+                lineno = self.document.buf.lineno.lineno(tol)
+                bp = port.BreakPoint(filename, lineno)
+                self.document.marks[bp] = tol
+
+        self.document.style_updated()
+        

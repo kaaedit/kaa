@@ -9,6 +9,7 @@ JavaScriptThemes = {
         Theme([
             # None defined
         ]),
+    
 }
 def build_tokenizer(stop=None, terminates=None):
     JSTOKENS = namedtuple('jstokens', ['keywords', 'number', 'comment1', 'comment2',

@@ -226,7 +226,7 @@ class SearchDlgMode(dialogmode.DialogMode):
 
     def _option_updated(self):
         self.update_option_style()
-        self.document.style_updated(0, self.document.endpos())
+        self.document.style_updated()
 
     def toggle_option_ignorecase(self, wnd):
         self.option.ignorecase = not self.option.ignorecase
@@ -435,7 +435,7 @@ class ReplaceDlgMode(SearchDlgMode):
     def _build_buttons(self, f):
         # buttons
         super()._build_buttons(f)
-        f.append_text('button', '[&All]', 'start-all', 'end-all',
+        f.append_text('checkbox', '[&All]', 'start-all', 'end-all',
                       shortcut_style='button.shortcut', on_shortcut=self.replace_all)
 
     def build_document(self):

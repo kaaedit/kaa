@@ -251,15 +251,10 @@ class CursorCommands(Commands):
             tol = wnd.document.gettol(pos)
             wnd.cursor.setpos(wnd.cursor.adjust_nextpos(wnd.cursor.pos, tol))
 
-        def filter(wnd, s):
-            if s == '0':
-                t = wnd.document.mode.get_input_text().strip()
-                if not t or int(t) == 0:
-                    return ''
-            return re.match(r'\d*', s).group()
 
         from kaa.ui.inputline import inputlinemode
-        doc = inputlinemode.InputlineMode.build('Line number:', callback, filter=filter)
+        doc = inputlinemode.InputlineMode.build('Line number:', callback, 
+                filter=inputlinemode.number_filter)
         kaa.app.messagebar.set_message("Enter line number")
 
         kaa.app.show_dialog(doc)

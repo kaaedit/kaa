@@ -1,4 +1,4 @@
-from kaa.theme import Theme, Style
+from kaa.theme import Theme, Style, Overlay
 
 DefaultThemes = {
     'basic':
@@ -13,6 +13,9 @@ DefaultThemes = {
             Style('comment', 'Cyan', 'default'),
             Style('string', 'Blue', 'default'),
             Style('number', 'Green', 'default'),
+
+            Overlay('cursor_row', None, 'Base02'),   
+            Overlay('breakpoint', None, 'Base01'),   
         ]),
     
 }

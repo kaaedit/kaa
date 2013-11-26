@@ -106,6 +106,7 @@ class FileStorage:
 
     def save_document(self, doc, filename, encoding=None, newline=None, 
                         nohist=False):
+        # todo: move most of codes to mode class.
         if not nohist:
             self._save_hist(filename)
 
@@ -133,13 +134,16 @@ class FileStorage:
             # TODO: fsync
             f.write(doc.gettext(0, doc.endpos()))
 
-        doc.fileinfo = self.get_fileinfo(filename, doc.fileinfo.encoding, 
+        fileinfo = self.get_fileinfo(filename, doc.fileinfo.encoding, 
                                             doc.fileinfo.newline)
+        doc.mode.on_file_saved(fileinfo)
+        
+        doc.fileinfo = fileinfo
         doc.set_title(None)
         doc.provisional = False
         if doc.undo:
             doc.undo.saved()
-
+        
         mode = select_mode(filename)
         if type(doc.mode) is not mode:
             doc.setmode(mode())

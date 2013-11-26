@@ -51,8 +51,9 @@ class ModeBase:
     SHOW_LINENO = False
     USE_UNDO = True
     DOCUMENT_MODE = False
-    HIGHLIGHT_CURSORLINE = False
-
+    HIGHLIGHT_CURSOR_ROW = False
+    SHOW_CURSOR = True
+    
     tab_width = 8
     indent_width = 4
     indent_tab = False
@@ -87,6 +88,11 @@ class ModeBase:
         self.stylemap = {}
         self.highlight = highlight.Highlighter(self.tokenizers)
 
+        self.setup()
+
+    def setup(self):
+        pass
+        
     def close(self):
         self.document = None
         self.closed = True
@@ -127,6 +133,9 @@ class ModeBase:
     def on_document_updated(self, pos, inslen, dellen):
         if self.highlight:
             self.highlight.updated(self.document, pos, inslen, dellen)
+
+    def on_file_saved(self, fileinfo):
+        pass
 
     def on_add_window(self, wnd):
         self.editmode_insert(wnd)
@@ -222,7 +231,7 @@ class ModeBase:
         return self.menu.get(itemname, None)
         
     def is_cursor_visible(self):
-        return 1   # normal
+        return self.SHOW_CURSOR
 
     def on_keypressed(self, wnd, event, s, commands, candidate):
         return s, commands, candidate
@@ -294,6 +303,9 @@ class ModeBase:
 
         ret = self.run_highlight()
         return ret
+
+    def get_line_overlays(self):
+        return {}
 
     HIGHLIGHTBATCH = 300
     def run_highlight(self):

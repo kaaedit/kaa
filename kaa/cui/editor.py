@@ -7,15 +7,20 @@ from kaa.cui.color import ColorName
 
 class TextEditorWindow(Window):
     """Text editor window"""
+
+    OVERLAY_CURSORROW = 'cursor_row'  # Name of overlay style of theme
+    
     show_lineno = True
     splitter = None
     document = None
     statusbar = None
     editmode = None
     visible = True
+    highlight_cursor_row = False
     
     def _oninit(self):
         super()._oninit()
+
         self._cwnd.leaveok(0)
         self._cwnd.scrollok(0)
 
@@ -25,7 +30,9 @@ class TextEditorWindow(Window):
         self.pending_str = ''
         self._drawn_rows = {}
         self.charattrs = {}
-
+        self.highlight_cursor_row = False
+        self.line_overlays = {}
+        
     def destroy(self):
         if self.document:
             self.document.del_window(self)
@@ -68,6 +75,33 @@ class TextEditorWindow(Window):
     def set_statusbar(self, statusbar):
         self.statusbar = statusbar
 
+    def set_highlight_cursor_row(self, f):
+        ret = f != self.highlight_cursor_row
+        self.highlight_cursor_row = f
+        if ret:
+            self.refresh()
+        return ret
+
+    def set_line_overlay(self, pos, overlay):
+        if pos:
+            if self.line_overlays.get(pos, '') != overlay:
+                self.line_overlays[pos] = overlay
+                self._drawn_rows = {}
+                self.refresh()
+                return True
+        else:
+            if pos in self.line_overlays:
+                del self.line_overlays[pos]
+                self._drawn_rows = {}
+                self.refresh()
+                return True
+
+    def clear_line_overlay(self):
+        if self.line_overlays:
+            self.line_overlays = {}
+            self._drawn_rows = {}
+            self.refresh()
+            
     def bring_top(self):
         if curses.panel.top_panel() is not self._panel:
             super().bring_top()
@@ -102,7 +136,7 @@ class TextEditorWindow(Window):
         if self.document:
             self.document.mode.on_focus(self)
 
-    def _getcharattrs(self, row, rectangular, selfrom, selto, colfrom, colto):
+    def _getcharattrs(self, row, rectangular, selfrom, selto, colfrom, colto, line_overlay):
         # returns character attributes of each characters in row.
         ncols = row.colfrom
         for pos, cols in zip(row.positions, row.cols):
@@ -129,7 +163,12 @@ class TextEditorWindow(Window):
                 tokenid = self.document.styles.getints(pos, pos+1)[0]
 
             style = self.document.mode.get_style(tokenid)
-            color = style.cui_colorattr
+            color = None
+            if line_overlay:
+                color = style.cui_overlays.get(line_overlay, None)
+            if color is None:
+                color = style.cui_colorattr
+                
             if style.underline:
                 color += curses.A_UNDERLINE
             if style.bold:
@@ -146,12 +185,15 @@ class TextEditorWindow(Window):
             kaa.log.debug('error on drawing: {}'.format(self), exc_info=True)
 
     def _draw_screen(self, force=False):
+        # don't draw is frame is not visible.
         frame = self.get_label('frame')
         if frame:
             if kaa.app.get_activeframe() is not frame:
                 return
 
         self.screen.apply_updates()
+
+        # save cursor position
         if kaa.app.focus:
             if self.document.mode.is_cursor_visible():
                 cury, curx = kaa.app.focus._cwnd.getyx()
@@ -161,9 +203,6 @@ class TextEditorWindow(Window):
         rows = list(self.screen.get_visible_rows())
         cur_sel = self.screen.selection.get_selrange()
 
-        theme = self.document.mode.theme
-        defaultcolor = theme.get_style('default').cui_colorattr
-
         if force or not self.visible:
             drawn = {}
             updated = True
@@ -172,16 +211,19 @@ class TextEditorWindow(Window):
             drawn = self._drawn_rows
         self._drawn_rows = {}
 
-        tol = rows[0].tol
         lineno_width = 0
+        lineno = self.document.buf.lineno.lineno(self.screen.pos)
         if self.document.mode.SHOW_LINENO:
             lineno_color = self.document.mode.theme.get_style('lineno').cui_colorattr
             lineno_width = screen.calc_lineno_width(self.screen)
-            lineno = self.document.buf.lineno.lineno(self.screen.pos)
         
         _, cursorrow = self.screen.getrow(self.cursor.pos)
 
 
+        tol = rows[0].tol
+        eol = self.document.geteol(tol)
+        endpos = self.document.endpos()
+        
         rectangular = self.screen.selection.is_rectangular()
         selfrom = selto = colfrom = colto = -1
 
@@ -194,6 +236,12 @@ class TextEditorWindow(Window):
             if selrect:
                 selfrom, selto, colfrom, colto = selrect
         
+        theme = self.document.mode.theme
+        defaultcolor = theme.get_style('default').cui_colorattr
+
+        overlays = self.document.mode.get_line_overlays()
+        overlays.update(self.line_overlays)
+
         for n, row in enumerate(rows):
             if n > h:
                 break
@@ -201,14 +249,35 @@ class TextEditorWindow(Window):
                 # The raw was already drawn.
                 continue
             
-            is_cursorline = row is cursorrow
             updated = True
             s = 0
+
+            if tol != row.tol:
+                tol = row.tol
+                eol = self.document.geteol(tol)
+
+            line_overlay = None
+            if row is cursorrow and (
+                self.highlight_cursor_row or
+                self.document.mode.HIGHLIGHT_CURSOR_ROW):
+
+                line_overlay = self.OVERLAY_CURSORROW
+            else:
+                for pos in overlays.keys():
+                    if (tol <= pos < eol) or (pos == tol == eol == endpos):
+                        line_overlay = overlays[pos]
+                        break
 
             # clear row
             self._cwnd.move(n, 0)
             self._cwnd.clrtoeol()
-            self._cwnd.chgat(n, 0, -1, defaultcolor)
+            if not line_overlay:
+                erase_attr = defaultcolor
+            else:
+                style = theme.get_style('default')
+                erase_attr = style.cui_overlays.get(line_overlay, defaultcolor)
+                
+            self._cwnd.chgat(n, 0, -1, erase_attr)
 
             if not self.visible:
                 continue
@@ -216,9 +285,6 @@ class TextEditorWindow(Window):
             # draw line no
             if self.document.mode.SHOW_LINENO:
                 self._cwnd.move(n, 0)
-                if tol != row.tol:
-                    lineno += 1
-                    tol = row.tol
 
                 if row.posfrom == row.tol:
                     self.add_str(str(lineno).rjust(lineno_width-1), lineno_color)
@@ -232,11 +298,9 @@ class TextEditorWindow(Window):
             rjust = False
 
             for (attr, attr_rjust), group in itertools.groupby(
-                    self._getcharattrs(row, rectangular, selfrom, selto, colfrom, colto)):
+                    self._getcharattrs(row, rectangular, selfrom, selto, 
+                                       colfrom, colto, line_overlay)):
 
-                if is_cursorline and self.document.mode.HIGHLIGHT_CURSORLINE:
-                    attr |= curses.A_BOLD
-                    
                 if not rjust and attr_rjust:
                     rjust = True
 
@@ -278,7 +342,6 @@ class TextEditorWindow(Window):
             self.screen.style_updated()
             updated = self.screen.apply_updates()
             if updated:
-                self.draw_screen(force=True)
                 self.refresh()
 
     CURSOR_TO_MIDDLE_ON_SCROLL = True

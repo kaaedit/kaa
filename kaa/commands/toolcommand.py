@@ -10,6 +10,18 @@ class ToolCommands(Commands):
         from kaa.ui.pyconsole import pythonconsolemode
         pythonconsolemode.show_console()
 
+    @command('python.debugger.run')
+    @norerun
+    def pythonchilddebugger(self, wnd):
+        from kaa.ui.pythondebug import port
+        port.run()
+
+    @command('python.debugger.server')
+    @norerun
+    def pythondebuggerserver(self, wnd):
+        from kaa.ui.pythondebug import port
+        port.init_server()
+
     @command('command.rerun')
     @norerun
     def reruncommand(self, wnd):

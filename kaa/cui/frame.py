@@ -97,7 +97,7 @@ class MainFrame(Window, kaa.context.ContextRoot):
     inputline = None
 
     need_refresh = False
-    need_redraw = False
+#    need_redraw = False
     childframes = []
     activeframe = None
 
@@ -204,13 +204,14 @@ class MainFrame(Window, kaa.context.ContextRoot):
 
     def run_refresh(self):
         if self.need_refresh:
-            if self.need_redraw:
-                for child in self.walk_children():
-                    child._cwnd.touchwin()
+#            if self.need_redraw:
+#                for child in self.walk_children():
+#                    child._cwnd.touchwin()
 
             curses.panel.update_panels()
             curses.doupdate()
-            self.need_refresh = self.need_redraw = False
+            self.need_refresh = False
+#            self.need_refresh = self.need_redraw = False
 
             return True
 

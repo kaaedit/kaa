@@ -53,7 +53,7 @@ class EditMode:
 
     def _on_str(self, wnd, s):
         for c in s:
-            if c == '\t' or c >= ' ':
+            if c in '\t\r\n' or c >= ' ':
                 self.pending_str += c
 
     def on_key_pressed(self, wnd, event):

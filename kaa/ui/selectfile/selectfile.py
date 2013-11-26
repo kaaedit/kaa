@@ -484,7 +484,7 @@ class SelectDirDlgMode(OpenFilenameDlgMode):
         f.append_text('default', filename, mark_pair='filename')
         f.append_text('default', ' ')
 
-        f.append_text('checkbox', '[&Select this dir}]', 
+        f.append_text('checkbox', '[&Select this dir]', 
                       shortcut_style='checkbox.shortcut',
                       on_shortcut=lambda wnd:
                                       wnd.document.mode.on_select_dir(wnd))

@@ -1,3 +1,7 @@
+import socket
+import pickle
+import sys
+import select
 import curses
 import kaa
 import kaa.log
@@ -23,7 +27,8 @@ class CuiApp:
         self._quit = False
         self.theme = self.DEFAULT_THEME
         self.last_dir = '.'
-
+        self._input_readers = []
+        
     def init(self, mainframe):
         if self.config.palette:
             self.set_palette(self.config.palette)
@@ -47,15 +52,8 @@ class CuiApp:
         self.messagebar.set_message(self.SHOW_MENU_MESSAGE)
 
     def on_shutdown(self):
-        self.config.hist_files.close()
-        self.config.hist_dirs.close()
-        self.config.hist_searchstr.close()
-        self.config.hist_replstr.close()
-
-        self.config.hist_grepstr.close()
-        self.config.hist_grepdir.close()
-        self.config.hist_grepfiles.close()
-
+        self.config.close()
+        
     def get_current_theme(self):
         return self.theme
 
@@ -72,11 +70,11 @@ class CuiApp:
     def quit(self):
         self._quit = True
 
-    def on_idle(self):
-        if not self._idleprocs:
-            self._idleprocs = [
-                doc.mode.on_idle for doc in document.Document.all if doc.mode]
+    def set_idlejob(self):
+        self._idleprocs = [
+            doc.mode.on_idle for doc in document.Document.all if doc.mode]
 
+    def on_idle(self):
         if self._idleprocs:
             proc = self._idleprocs.pop(0)
             # proc() returns True if proc() still has job to be done.
@@ -88,11 +86,28 @@ class CuiApp:
             return True
 
     def translate_theme(self, theme):
+        overlays = {}
+        for name, overlay in theme.overlays.items():
+            fg = bg = None
+            if overlay.fgcolor:
+                fg = self.colors.colornames.get(overlay.fgcolor.upper())
+            if overlay.bgcolor:
+                bg = self.colors.colornames.get(overlay.bgcolor.upper())
+            overlays[name] = (fg, bg)
+
         for style in theme.styles.values():
             fg, bg = (self.colors.colornames.get(style.fgcolor.upper()),
                       self.colors.colornames.get(style.bgcolor.upper()))
             attr = self.colors.get_color(fg, bg)
             style.cui_colorattr = attr
+
+            style.cui_overlays = {}
+            for name, (o_fg, o_bg) in overlays.items():
+                if o_fg is None:
+                    o_fg = fg
+                if o_bg is None:
+                    o_bg = bg
+                style.cui_overlays[name] = self.colors.get_color(o_fg, o_bg)
 
     def translate_key(self, mod, c):
         """Translate kaa's key value to curses keycode"""
@@ -141,16 +156,21 @@ class CuiApp:
         '''
         Create new window for the doc and show it.
         '''
-        return self.mainframe.show_doc(doc)
-
+        ret = self.mainframe.show_doc(doc)
+        self.set_idlejob()  # Reschedule idle procs
+        return ret
+        
     def show_inputline(self, doc):
+        self._idleprocs = None  # Reschedule idle procs
         dlg = dialog.DialogWnd(parent=self.mainframe, doc=doc)
         self.mainframe.show_inputline(dlg)
+        self.set_idlejob()  # Reschedule idle procs
         return dlg
 
     def show_dialog(self, doc):
         dlg = dialog.DialogWnd(parent=self.mainframe, doc=doc)
         self.mainframe.show_dialog(dlg)
+        self.set_idlejob()  # Reschedule idle procs
         return dlg
 
     def get_frames(self):
@@ -176,15 +196,50 @@ class CuiApp:
         self._clipboard.insert(0, s)
         del self._clipboard[self.MAX_CLIPBOARD:]
 
-    def run(self):
 
+    def add_input_reader(self, reader):
+        self._input_readers.append(reader)
+
+    def del_input_reader(self, reader):
+        if reader in self._input_readers:
+            self._input_readers.remove(reader)
+        
+    def run(self):
+        
         nonblocking = True
         while not self._quit:
             try:
                 if not self.focus:
                     kaa.log.error('Internal error: invalid focus window.')
                     break
-                inputs = self.focus.do_input(nonblocking)
+
+                if not nonblocking:
+                    # update screen before sleep.
+                    curses.panel.update_panels()
+                    curses.doupdate()
+
+                rd = []
+                for f in self._input_readers:
+                    rd.extend(f.get_reader())
+
+                try:
+                    rlist, _, _ = select.select(
+                            [sys.stdin]+rd, [], [], 
+                            0 if nonblocking else None)
+
+                except InterruptedError:
+                    pass
+
+                else:
+                    ready = [r for r in rlist if r is not sys.stdin]
+                    if ready:
+                        nonblocking = True
+                        for r in ready:
+                            idx = rd.index(r)
+                            self._input_readers[idx].read_input(r)
+                        self.set_idlejob()  # Reschedule idle procs
+
+                inputs = self.focus.do_input(nonblocking=True)
                 for c in inputs:
                     if isinstance(c, keydef.KeyEvent):
                         nonblocking = True
@@ -200,9 +255,13 @@ class CuiApp:
                         continue
                     # no input
                     if not self.on_idle():
+                        if self.mainframe.on_idle():
+                            continue
                         # No more idle jobs
                         nonblocking = False
-
+                else:
+                    self.set_idlejob()  # Reschedule idle procs
+                    
             except Exception as e:
                 kaa.log.error('Unhandled exception', exc_info=True)
                 kaa.app.messagebar.set_message(str(e))

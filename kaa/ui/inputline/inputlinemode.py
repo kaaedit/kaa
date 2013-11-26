@@ -1,3 +1,4 @@
+import re
 import kaa
 from kaa import document, command
 from kaa.theme import Theme, Style
@@ -6,6 +7,14 @@ from kaa.commands import editorcommand
 from kaa.keyboard import *
 from kaa.ui.dialog import dialogmode
 from kaa.ui.selectlist import filterlist
+
+def number_filter(wnd, s):
+    if s == '0':
+        t = wnd.document.mode.get_input_text().strip()
+        if not t or int(t) == 0:
+            return ''
+    return re.match(r'\d*', s).group()
+
 
 InputlineThemes = {
     'basic':
@@ -65,6 +74,7 @@ class InputlineMode(dialogmode.DialogMode):
             wnd.screen.selection.set_range(f, t)
             
     def on_esc_pressed(self, wnd, event):
+        # todo: run callback
         super().on_esc_pressed(wnd, event)
         popup = wnd.get_label('popup')
         popup.destroy()
@@ -95,10 +105,9 @@ class InputlineMode(dialogmode.DialogMode):
     def input_line(self, w):
         s = self.get_input_text()
         self.callback(w, s)
-                
         popup = w.get_label('popup')
         popup.destroy()
-
+        
     @command.command('inputline.history')
     @command.norec
     @command.norerun

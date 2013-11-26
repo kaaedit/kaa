@@ -212,7 +212,10 @@ class Document:
         if self.mode:
             self.mode.on_document_updated(pos, inslen, dellen)
 
-    def style_updated(self, posfrom, posto):
+    def style_updated(self, posfrom=0, posto=None):
+        if posto is None:
+            posto = self.endpos()
+            
         for wnd in self.wnds:
             wnd.style_updated(posfrom, posto)
 

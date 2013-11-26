@@ -12,9 +12,9 @@ DialogThemes = {
             Style('activemark', 'Base02', 'Yellow', nowrap=True),
             Style('nonactivemark', 'Yellow', 'Base02', nowrap=True),
 
-            Style('button', 'Base3', 'Base01', rjust=True, nowrap=True),
+            Style('button', 'Base3', 'Base01', nowrap=True),
             Style('button.shortcut', 'Base3', 'Base01', underline=True,
-                    rjust=True, nowrap=True),
+                    nowrap=True),
 
             Style('checkbox', 'Base3', 'Base01', rjust=True, nowrap=True),
             Style('checkbox.checked', 'Base3', 'Orange', rjust=True,
