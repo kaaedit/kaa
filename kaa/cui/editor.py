@@ -61,6 +61,8 @@ class TextEditorWindow(Window):
         self.refresh()
         self.cursor.refresh(middle=True)
 
+        kaa.app.set_idlejob()  # Reschedule idle procs
+
     def set_editmode(self, mode):
         self.editmode = mode
         self.editmode.activated(self)
@@ -458,6 +460,5 @@ class TextEditorWindow(Window):
                 linecount=linecount,
                 editmode=self.editmode.MODENAME,
             )
-
             return updated
 

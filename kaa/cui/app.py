@@ -157,20 +157,17 @@ class CuiApp:
         Create new window for the doc and show it.
         '''
         ret = self.mainframe.show_doc(doc)
-        self.set_idlejob()  # Reschedule idle procs
         return ret
         
     def show_inputline(self, doc):
         self._idleprocs = None  # Reschedule idle procs
         dlg = dialog.DialogWnd(parent=self.mainframe, doc=doc)
         self.mainframe.show_inputline(dlg)
-        self.set_idlejob()  # Reschedule idle procs
         return dlg
 
     def show_dialog(self, doc):
         dlg = dialog.DialogWnd(parent=self.mainframe, doc=doc)
         self.mainframe.show_dialog(dlg)
-        self.set_idlejob()  # Reschedule idle procs
         return dlg
 
     def get_frames(self):
@@ -237,7 +234,6 @@ class CuiApp:
                         for r in ready:
                             idx = rd.index(r)
                             self._input_readers[idx].read_input(r)
-                        self.set_idlejob()  # Reschedule idle procs
 
                 inputs = self.focus.do_input(nonblocking=True)
                 for c in inputs:
