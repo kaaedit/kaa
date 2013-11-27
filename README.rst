@@ -539,7 +539,7 @@ Python debugger
 Starting debugger
 ++++++++++++++++++
 
-There are three way to start debugger.
+There are three ways to start debugger.
 
 Remote runner
 ~~~~~~~~~~~~~~~~~~~~~~~~
