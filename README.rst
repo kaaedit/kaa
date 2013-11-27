@@ -677,8 +677,16 @@ Links
 Version history
 =================
 
-0.13 - 2013.11.18
+0.14 - 2013.11.27
 ------------------
+
+- Experimental Python debugger.
+
+Past versions
+--------------
+
+0.13 - 2013.11.18
++++++++++++++++++++++
 
 - New file mode: C language.
 
@@ -686,9 +694,6 @@ Version history
 
 - Move initial selection of Table Of Contents to current cursor position.
 
-
-Past versions
---------------
 
 0.12 - 2013.11.16
 +++++++++++++++++++++
