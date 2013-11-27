@@ -533,6 +533,85 @@ Make
 
 Output of ``make`` displayed on the window. You can traverse source files cause of the error forth and back with f9 and f10 key.
 
+Python debugger
+---------------
+
+Starting debugger
+++++++++++++++++++
+
+There are three way to start debugger.
+
+Remote runner
+~~~~~~~~~~~~~~~~~~~~~~~~
+
+Remote runnner executes Python script and connect to kaa debugger.
+
+To activate kaa remote debugger, select ``[Tools]|Python debugger server`` and enter port number to connect debugger(default 28110).
+
+Next, open another terminal window other than kaa running, run following command.
+
+::
+
+    $ python -m kaadbg.run my_test_stript.py arg1 args
+
+
+``kaadbg.run`` is Python module bundled with kaa, which connects Python script specified in argument to kaa debugger. If you need use other port than `28110`, you should provide port number with ``-p`` option.
+
+::
+
+    $ python -m kaadbg.run -p 29000 my_test_stript.py arg1 args
+
+set_trace
+~~~~~~~~~~~~~~~~~~~~~~~~
+
+Like Python's standard ``pdb`` module, you can import remote runner and call ``set_trace()`` to start debug session.
+
+You should start activate kaa remote debugger by menu ``[Tools]|Python debugger server`` and enter port number to connect debugger(default 28110).
+
+To connect kaa remote debugger, open your target script and insert following lines of code.
+
+.. code:: python
+
+    import kaadbg.debug
+    kaadbg.debug.set_trace()
+
+If you need use other port than `28110`, you should provide port number to ``set_trace()``.
+
+.. code:: python
+
+    import kaadbg.debug
+    kaadbg.debug.set_trace(29000)
+
+Now you can start your target script. Kaa remote debugger will be opened when ``kaadbg.debug.set_trace()`` is hit.
+
+
+Run child process
+~~~~~~~~~~~~~~~~~~~~~~~~
+
+You can run your target script as child process of kaa to debug.
+
+To start child process, select ``[Tools]|Python debugger`` in kaa menu and specify command line as follow.
+
+::
+
+    python3.3 -m kaadbg.run myscript.py arg1 arg2
+
+Command line should starts with Python interpreter you use and ``-m kaadbg.run``. Name of target script and arguments follows.
+
+Note that kaa doesn't capture standard output and standard error of target process, so you cannot see outputs of the target script. Also, standard input of the target process is closed just after command started.
+
+Breakpoints
+++++++++++++++++++
+
+To set/unset breakpoints, select ``[Code]|Toggle Breakpoint`` in menu in editor. By default, ``f8`` key is bounded to this menu item.
+
+While debugger window is opend, you can suspend the debugger window with escape key. After you finish to update breakpoints with editor window, select ``[Tools]|Python debugger`` menu again to resume debugger.
+
+Inspect variables
+++++++++++++++++++
+
+To see value of variables, select ``Expr`` on the debugger window by pressing ``alt+E`` key and enter Python expression you want to inspect like ``self.spam``.
+
 
 Customization
 ==================

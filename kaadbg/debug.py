@@ -9,6 +9,8 @@ import json
 import locale
 import atexit
 
+DEFAULT_PORT_NO = 28110
+
 port = None
 lock = threading.RLock()
 
@@ -64,10 +66,9 @@ else:
         return f.getvalue()
         
 class Kdb(bdb.Bdb):
-    portno = 28110
     closed = False
     _wait_for_mainpyfile = False
-    _remote = False
+    _skip_debug = False
     mainpyfile = None
     
     def __init__(self):
@@ -89,10 +90,12 @@ class Kdb(bdb.Bdb):
                 fp.read(), self.mainpyfile)
         self.run(statement)
         
-    def connect(self):
+    def connect(self, portno=None):
+        if not portno:
+            portno = DEFAULT_PORT_NO
+            
         self.sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        self.sock.connect(('localhost', self.portno))
-        self._remote = True
+        self.sock.connect(('localhost', portno))
         return True
 
     def run_command(self, frame, obj):
@@ -187,9 +190,10 @@ class Kdb(bdb.Bdb):
         self.interaction(frame)
 
     def in_kdb_code(self, frame):
-        if not self._remote:
+        if not self._skip_debug:
             return
-        if 'kaadbg'+os.sep in frame.f_code.co_filename:
+        print(frame.f_code.co_filename)
+        if os.path.join('kaadbg', 'debug') in frame.f_code.co_filename:
             return True
         else:
             prev_frame = frame.f_back
@@ -198,18 +202,20 @@ class Kdb(bdb.Bdb):
                 
             return self.in_kdb_code(prev_frame)
 
-def set_trace():
+def set_trace(portno=None):
     with lock:
         global port
         if not port:
             p = Kdb()
-            if p.connect():
+            if p.connect(portno):
                 port = p
-            
+
         port.set_trace()
+        port._skip_debug = True
 
 @atexit.register
 def release():
-    global port, lock
-    port.set_quit()
+    global port
+    if port:
+        port.set_quit()
 

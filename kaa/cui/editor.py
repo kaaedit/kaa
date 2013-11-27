@@ -85,7 +85,7 @@ class TextEditorWindow(Window):
         return ret
 
     def set_line_overlay(self, pos, overlay):
-        if pos:
+        if pos is not None:
             if self.line_overlays.get(pos, '') != overlay:
                 self.line_overlays[pos] = overlay
                 self._drawn_rows = {}

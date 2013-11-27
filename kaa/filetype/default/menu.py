@@ -54,8 +54,8 @@ MENUS = {
          ['&Shell command', None, 'tools.execute-shell-command'],
          ['&Make', None, 'tools.make'],
          ['&Python console', None, 'python.console'],
-         ['Run Python &Debugger', None, 'python.debugger.run'],
-         ['Python Debugger s&erver', None, 'python.debugger.server'],
+         ['Python &Debugger', None, 'python.debugger.run'],
+         ['Python debugger s&erver', None, 'python.debugger.server'],
          ],
          
     'WINDOW':

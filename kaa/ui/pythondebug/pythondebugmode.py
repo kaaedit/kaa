@@ -94,12 +94,12 @@ class BreakPoints(selectlist.SelectItemList):
 DebugThemes = {
     'basic':
         Theme([
-            Style('line', 'Orange', None),
+            Style('line', 'Cyan', None),
             Style('line-active', 'Base02', 'Yellow'),
-            Style('filename', 'Cyan', None),
-            Style('lineno', 'Cyan', None),
-            Style('funcname', 'Blue', None),
-            Style('dirname', 'Cyan', None),
+            Style('filename', 'Default', None),
+            Style('lineno', 'Default', None),
+            Style('funcname', 'Default', None),
+            Style('dirname', 'Default', None),
         ]),
 }
 
@@ -195,6 +195,15 @@ class PythonCallStackMode(dialogmode.DialogMode):
         f.append_text('default', '\n')
 
         for n, (fname, lno, funcname, lines) in enumerate(self.stack):
+            s = self.document.endpos()
+            
+            line = (lines[0] if lines else '').strip()
+            if not line:
+                line = '(empty line)'
+            f.append_text('line', line.replace('&', '&&')+'\n')
+            
+            t = self.document.endpos()
+            self.document.marks[('stack', n)] = (s, t)
             
             dirname, filename = os.path.split(fname)
             f.append_text('filename', filename.replace('&', '&&'))
@@ -208,15 +217,6 @@ class PythonCallStackMode(dialogmode.DialogMode):
 
             f.append_text('dirname', dirname.replace('&', '&&')+'\n')
 
-            s = self.document.endpos()
-            
-            line = (lines[0] if lines else '').strip()
-            if not line:
-                line = '(empty line)'
-            f.append_text('line', line.replace('&', '&&')+'\n')
-            
-            t = self.document.endpos()
-            self.document.marks[('stack', n)] = (s, t)
 
     def update(self, wnd, stack):
         self.build(stack)
@@ -276,7 +276,7 @@ class PythonCallStackMode(dialogmode.DialogMode):
         else:
             doc = kaa.app.storage.openfile(filename)
             wnd = kaa.app.show_doc(doc)
-
+        
         self._locate_doc(wnd, doc, lineno)
        
     @command('callstack_keys.prev')

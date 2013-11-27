@@ -31,29 +31,84 @@ def init_reader():
     kaa.app.add_input_reader(InputReader())
 
 
+def _check_running():
+    if DEBUGGER:
+        if DEBUGGER.session:
+            DEBUGGER.show_callstack()
+            return True
+
 def init_server():
     global DEBUGGER
-    if DEBUGGER:
+    if _check_running():
+        return
+
+    if isinstance(DEBUGGER, RemoteDebugger):
         DEBUGGER.show_callstack()
         return
-        
-    DEBUGGER = RemoteDebugger()
-    DEBUGGER.prepare()
+    else:
+        if DEBUGGER:
+            DEBUGGER.close()
+            DEBUGGER = None
+            
+    def callback(w, s):
+        s = s.strip()
+        try:
+            portno = int(s)
+        except ValueError as e:
+            kaa.app.messagebar.set_message(str(e))
+            return
 
-    init_reader()
+        global DEBUGGER
+        DEBUGGER = RemoteDebugger()
+        DEBUGGER.prepare(portno)
+    
+        init_reader()
+
+
+    doc = inputlinemode.InputlineMode.build('Port no:', 
+                callback, value=str(RemoteDebugger.DEBUGGER_PORT),
+                filter=inputlinemode.number_filter)
+
+    kaa.app.show_dialog(doc)
+    kaa.app.messagebar.set_message(
+        'Enter debugger port number (default:28110)')
 
 def run():
     global DEBUGGER
-    if DEBUGGER:
-        DEBUGGER.show_callstack()
+    if _check_running():
         return
 
-    DEBUGGER = ChildDebugger()
-    DEBUGGER.prepare()
+    if DEBUGGER:
+        DEBUGGER.close()
+        DEBUGGER = None
 
-    init_reader()
-    DEBUGGER.run()
-    
+    def callback(w, s):
+        global DEBUGGER
+
+        s = s.strip()
+        if s:
+            DEBUGGER = ChildDebugger()
+            DEBUGGER.prepare()
+        
+            init_reader()
+
+            kaa.app.config.hist_pythondebugcommands.add(s)
+            DEBUGGER.run(s)
+
+    hist = [s for s, info in kaa.app.config.hist_pythondebugcommands.get()]
+    if hist:
+        value = hist[0]
+    else:
+        value = 'python3.3 -m kaadbg.run myscript.py arg'
+        
+    doc = inputlinemode.InputlineMode.build('Command line:', 
+                callback, value=value, history=hist)
+    kaa.app.messagebar.set_message(
+        'Enter command line. (e.g python3.3 -m kaadbg.run myscript.py arg)')
+
+    kaa.app.show_dialog(doc)
+
+
 class BreakPoint:
     def __init__(self, filename, lineno):
         self.filename = filename
@@ -125,7 +180,7 @@ class Debugger:
             self.accept()
         elif f is self.session:
             if not self.read_command():
-                self.close()
+                self.finished()
 
     def accept(self):
         if self.session:
@@ -275,34 +330,27 @@ except Exception:
 
 class RemoteDebugger(Debugger):
     DEBUGGER_PORT = 28110
-    def prepare(self):
-        def callback(w, s):
-            s = s.strip()
-            try:
-                portno = int(s)
-            except ValueError as e:
-                kaa.app.messagebar.set_message(str(e))
-                return
+    def prepare(self, portno):
             
-            s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-            s.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
-            s.bind(('', portno))
-            s.listen(5)
-            s.setblocking(False)
-            self.port = s
-            kaa.app.messagebar.set_message(
-                'Python debugger server started on port %d.' % portno)
-
-            RemoteDebugger.DEBUGGER_PORT = portno
-
-        doc = inputlinemode.InputlineMode.build('Port no:', 
-                    callback, value=str(RemoteDebugger.DEBUGGER_PORT),
-                    filter=inputlinemode.number_filter)
-
-        kaa.app.show_dialog(doc)
+        s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        s.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+        s.bind(('', portno))
+        s.listen(5)
+        s.setblocking(False)
+        self.port = s
         kaa.app.messagebar.set_message(
-            'Enter debugger port number (default:28110)')
+            'Python debugger server started on port %d.' % portno)
 
+        RemoteDebugger.DEBUGGER_PORT = portno
+
+        self.show_callstack()
+
+    def finished(self):
+        if self.session:
+            self.session.close()
+            self.session = None
+            self.current_frames = None
+            self._close_page()
 
 class ChildDebugger(Debugger):
     def prepare(self):
@@ -310,33 +358,19 @@ class ChildDebugger(Debugger):
                 socket.AF_UNIX, socket.SOCK_STREAM)
         kaa.app.messagebar.set_message('Python debugger started.')
     
-    def run(self):
-        def callback(w, s):
-            s = s.strip()
-            if s:
-                kaa.app.config.hist_pythondebugcommands.add(s)
-                env = {
-                    'KAADBG_PORT':str(self.child.fileno())
-                }
-                self.process = subprocess.Popen(s, stdout=subprocess.PIPE,
-                    stderr=subprocess.STDOUT, shell=True, 
-                    universal_newlines=True, pass_fds=(self.child.fileno(),),
-                    env=env)
-                self.child.close()
-                kaa.app.messagebar.set_message("Process started.")
-
-        hist = [s for s, info in kaa.app.config.hist_pythondebugcommands.get()]
-        if hist:
-            value = hist[0]
-        else:
-            value = 'python3.3 -m kaadbg.run myscript.py arg'
-            
-        doc = inputlinemode.InputlineMode.build('Command line:', 
-                    callback, value=value, history=hist)
-        kaa.app.messagebar.set_message(
-            'Enter command line. (e.g python3.3 -m kaadbg.run myscript.py arg)')
-
-        kaa.app.show_dialog(doc)
+    def finished(self):
+        self.close()
+        
+    def run(self, s):
+        env = {
+            'KAADBG_DOMAINPORT':str(self.child.fileno())
+        }
+        self.process = subprocess.Popen(s, stdout=subprocess.PIPE,
+            stderr=subprocess.STDOUT, shell=True, 
+            universal_newlines=True, pass_fds=(self.child.fileno(),),
+            env=env)
+        self.child.close()
+        kaa.app.messagebar.set_message("Process started.")
 
     def close(self):
         if self.session:

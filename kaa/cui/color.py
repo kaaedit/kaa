@@ -377,7 +377,7 @@ class LightPalette(ColorName):
         super().__init__()
 
         self.COLOR256_TO_16[self.BASE02] = curses.COLOR_BLUE
-        self.COLOR256_TO_16[self.BASE3] = curses.COLOR_BLUE
+        self.COLOR256_TO_16[self.BASE3] = curses.COLOR_CYAN
         self.COLOR256_TO_16[self.YELLOW] = curses.COLOR_YELLOW
         self.COLOR256_TO_16[self.WHITE] = curses.COLOR_WHITE
 
