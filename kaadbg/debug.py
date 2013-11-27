@@ -192,7 +192,7 @@ class Kdb(bdb.Bdb):
     def in_kdb_code(self, frame):
         if not self._skip_debug:
             return
-        print(frame.f_code.co_filename)
+
         if os.path.join('kaadbg', 'debug') in frame.f_code.co_filename:
             return True
         else:
