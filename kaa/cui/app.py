@@ -109,6 +109,15 @@ class CuiApp:
                     o_bg = bg
                 style.cui_overlays[name] = self.colors.get_color(o_fg, o_bg)
 
+    def get_keyname(self, key):
+        try:
+            if not isinstance(key, int):
+                key = ord(key)
+                
+            return str(curses.keyname(key), 'utf-8', 'replace')
+        except Exception:
+            return '?'
+
     def translate_key(self, mod, c):
         """Translate kaa's key value to curses keycode"""
 

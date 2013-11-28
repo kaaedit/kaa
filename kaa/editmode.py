@@ -56,11 +56,38 @@ class EditMode:
             if c in '\t\r\n' or c >= ' ':
                 self.pending_str += c
 
+    def _keys_to_str(self, keys):
+        ret = []
+        alt = False
+        for k in keys:
+            if k == '\x1b':
+                alt = True
+            else:
+                s = kaa.app.get_keyname(k)
+                if alt:
+                    s = 'alt-'+s
+                    alt = False
+                ret.append(s)
+        return ret
+
+    def _show_pending_keys(self, s, commands, candidates):
+        if s or commands or not candidates:
+            kaa.app.messagebar.set_message('')
+        else:
+            cur = self._keys_to_str(self.pending_keys)
+            curlen = len(cur)
+            nextkeys = set(self._keys_to_str(k)[curlen:curlen+1][0]
+                            for k, commands in candidates)
+            
+            msg =  ' '.join(cur) + ' [%s]' % (', '.join(sorted(nextkeys)))
+            kaa.app.messagebar.set_message(msg)
+        
     def on_key_pressed(self, wnd, event):
         s, commands, candidate = self._get_command(wnd, event)
         s, commands, candidate = wnd.document.mode.on_keypressed(
                                     wnd, event, s, commands, candidate)
 
+        self._show_pending_keys(s, commands, candidate)
         try:
             if s:
                 self._on_str(wnd, s)
@@ -78,6 +105,7 @@ class EditMode:
                 self.pending_keys = []
 
     def on_esc_pressed(self, wnd, event):
+        kaa.app.messagebar.set_message('')
         self.pending_keys = []
         self.clear_repeat()
         del self.last_command_keys[:]

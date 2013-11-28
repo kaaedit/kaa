@@ -23,6 +23,8 @@ Kaa is an easy yet powerful text editor for console user interface, providing nu
 
 - Grep.
 
+- Python debugger.
+
 - Open source software(MIT).
 
 - More to come!
@@ -548,7 +550,7 @@ Remote runnner executes Python script and connect to kaa debugger.
 
 To activate kaa remote debugger, select ``[Tools]|Python debugger server`` and enter port number to connect debugger(default 28110).
 
-Next, open another terminal window other than kaa running, run following command.
+Next, open new terminal window and run following command in the terminal window.
 
 ::
 
@@ -605,7 +607,7 @@ Breakpoints
 
 To set/unset breakpoints, select ``[Code]|Toggle Breakpoint`` in menu in editor. By default, ``f8`` key is bounded to this menu item.
 
-While debugger window is opend, you can suspend the debugger window with escape key. After you finish to update breakpoints with editor window, select ``[Tools]|Python debugger`` menu again to resume debugger.
+While debugger window is opend, you can suspend the debugger window by escape key. After you finish to update breakpoints with editor window, select ``[Tools]|Python debugger`` menu again to resume debugger.
 
 Inspect variables
 ++++++++++++++++++
