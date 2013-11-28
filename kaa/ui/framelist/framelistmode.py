@@ -91,18 +91,18 @@ class FrameListMode(dialogmode.DialogMode):
         mode = cls()
         doc.setmode(mode)
 
-        f = dialogmode.FormBuilder(doc)
-        for frame in kaa.app.get_frames():
-            start = f.document.endpos()
-            markname = '_{}'.format(id(frame))
-            f.append_text('default', frame.get_title().replace('&', '&&'))
-
-            f.document.marks['childframe'+markname] = (start, f.document.endpos())
-
-            f.append_text('default', ' ')
-
-        mode._update_style(None)
-        return doc
+        with dialogmode.FormBuilder(doc) as f:
+            for frame in kaa.app.get_frames():
+                start = f.document.endpos()
+                markname = '_{}'.format(id(frame))
+                f.append_text('default', frame.get_title().replace('&', '&&'))
+    
+                f.document.marks['childframe'+markname] = (start, f.document.endpos())
+    
+                f.append_text('default', ' ')
+    
+            mode._update_style(None)
+            return doc
 
     def _update_style(self, wnd):
         activeframe = kaa.app.get_activeframe()

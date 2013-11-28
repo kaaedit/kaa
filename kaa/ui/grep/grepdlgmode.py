@@ -202,88 +202,87 @@ class GrepDlgMode(dialogmode.DialogMode):
         wnd.screen.selection.set_range(f, t)
         
     def build_document(self):
-        f = dialogmode.FormBuilder(self.document)
-
-        # search text
-        f.append_text('caption', '   Search:')
-        f.append_text('default', ' ')
-        f.append_text('default', self.option.text, mark_pair='searchtext')
-        f.append_text('default', '\n')
-
-        # directory
-        f.append_text('caption', 'Directory:')
-        f.append_text('default', ' ')
-
-        path = self.option.directory
-        if path:
-            p = os.path.relpath(path)
-            path = p if len(p) < len(path) else path
-        f.append_text('default', path, mark_pair='directory')
-        f.append_text('default', '\n')
-
-        # filename
-        f.append_text('caption', 'Filenames:')
-        f.append_text('default', ' ')
-        f.append_text('default', self.option.filenames, mark_pair='filenames')
-        f.append_text('default', '\n')
-
-        # working directory
-        f.append_text('default', '(current dir)')
-        f.append_text('default', ' ')
-        f.append_text('default', os.getcwd())
-        f.append_text('default', '\n')
-
-        # buttons
-        f.append_text('checkbox', '[&Search]',
-                      shortcut_style='checkbox.shortcut',
-                      on_shortcut=self.run_grep)
-
-        f.append_text('checkbox', '[&Dir]',
-                      mark_pair='select-dir',
-                      shortcut_style='checkbox.shortcut',
-                      on_shortcut=self._select_dir)
-
-        f.append_text('checkbox', '[&Tree]',
-                      mark_pair='search-tree',
-                      on_shortcut=self.toggle_option_tree,
-                      shortcut_style='checkbox.shortcut',
-                      shortcut_mark='shortcut-t')
-
-        f.append_text('checkbox', '[&Ignore case]',
-                      mark_pair='ignore-case',
-                      on_shortcut=self.toggle_option_ignorecase,
-
-                      shortcut_style='checkbox.shortcut',
-                      shortcut_mark='shortcut-i')
-
-        f.append_text('checkbox', '[&Word]',
-                      mark_pair='word',
-                      on_shortcut=self.toggle_option_word,
-                      shortcut_style='checkbox.shortcut',
-                      shortcut_mark='shortcut-w')
-
-        f.append_text('checkbox', '[&Regex]',
-                      mark_pair='regex',
-                      on_shortcut=self.toggle_option_regex,
-                      shortcut_style='checkbox.shortcut',
-                      shortcut_mark='shortcut-r')
-
-        f.append_text('checkbox', '[&Encoding:{}]'.format(self.option.encoding), 
-                      mark_pair='enc',
-                      shortcut_style='checkbox.shortcut',
-                      on_shortcut=lambda wnd:
-                                      wnd.document.mode.select_encoding(wnd))
-
-        f.append_text('checkbox', '[&Newline:{}]'.format(self.option.newline), 
-                      mark_pair='newline',
-                      shortcut_style='checkbox.shortcut',
-                      on_shortcut=lambda wnd:
-                                      wnd.document.mode.select_newline(wnd))
-
-
-        self.update_option_style()
-        kaa.app.messagebar.set_message(
-            "Hit alt+S to begin search. Hit up to show history.")
+        with dialogmode.FormBuilder(self.document) as f:
+            # search text
+            f.append_text('caption', '   Search:')
+            f.append_text('default', ' ')
+            f.append_text('default', self.option.text, mark_pair='searchtext')
+            f.append_text('default', '\n')
+    
+            # directory
+            f.append_text('caption', 'Directory:')
+            f.append_text('default', ' ')
+    
+            path = self.option.directory
+            if path:
+                p = os.path.relpath(path)
+                path = p if len(p) < len(path) else path
+            f.append_text('default', path, mark_pair='directory')
+            f.append_text('default', '\n')
+    
+            # filename
+            f.append_text('caption', 'Filenames:')
+            f.append_text('default', ' ')
+            f.append_text('default', self.option.filenames, mark_pair='filenames')
+            f.append_text('default', '\n')
+    
+            # working directory
+            f.append_text('default', '(current dir)')
+            f.append_text('default', ' ')
+            f.append_text('default', os.getcwd())
+            f.append_text('default', '\n')
+    
+            # buttons
+            f.append_text('checkbox', '[&Search]',
+                          shortcut_style='checkbox.shortcut',
+                          on_shortcut=self.run_grep)
+    
+            f.append_text('checkbox', '[&Dir]',
+                          mark_pair='select-dir',
+                          shortcut_style='checkbox.shortcut',
+                          on_shortcut=self._select_dir)
+    
+            f.append_text('checkbox', '[&Tree]',
+                          mark_pair='search-tree',
+                          on_shortcut=self.toggle_option_tree,
+                          shortcut_style='checkbox.shortcut',
+                          shortcut_mark='shortcut-t')
+    
+            f.append_text('checkbox', '[&Ignore case]',
+                          mark_pair='ignore-case',
+                          on_shortcut=self.toggle_option_ignorecase,
+    
+                          shortcut_style='checkbox.shortcut',
+                          shortcut_mark='shortcut-i')
+    
+            f.append_text('checkbox', '[&Word]',
+                          mark_pair='word',
+                          on_shortcut=self.toggle_option_word,
+                          shortcut_style='checkbox.shortcut',
+                          shortcut_mark='shortcut-w')
+    
+            f.append_text('checkbox', '[&Regex]',
+                          mark_pair='regex',
+                          on_shortcut=self.toggle_option_regex,
+                          shortcut_style='checkbox.shortcut',
+                          shortcut_mark='shortcut-r')
+    
+            f.append_text('checkbox', '[&Encoding:{}]'.format(self.option.encoding), 
+                          mark_pair='enc',
+                          shortcut_style='checkbox.shortcut',
+                          on_shortcut=lambda wnd:
+                                          wnd.document.mode.select_encoding(wnd))
+    
+            f.append_text('checkbox', '[&Newline:{}]'.format(self.option.newline), 
+                          mark_pair='newline',
+                          shortcut_style='checkbox.shortcut',
+                          on_shortcut=lambda wnd:
+                                          wnd.document.mode.select_newline(wnd))
+    
+    
+            self.update_option_style()
+            kaa.app.messagebar.set_message(
+                "Hit alt+S to begin search. Hit up to show history.")
 
     def _set_option_style(self, mark, style,
                           shortcutmark, shortcutstyle):

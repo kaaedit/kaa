@@ -44,10 +44,10 @@ class WordCompleteInputMode(filterlist.FilterListInputDlgMode):
         doc.setmode(mode)
         mode.target = target
         
-        f = dialogmode.FormBuilder(doc)
-        f.append_text('caption', 'Select word:')
-        f.append_text('default', ' ')
-        f.append_text('default', '', mark_pair='query')
+        with dialogmode.FormBuilder(doc) as f:
+            f.append_text('caption', 'Select word:')
+            f.append_text('default', ' ')
+            f.append_text('default', '', mark_pair='query')
 
         return doc
 

@@ -95,11 +95,10 @@ class PasteLinesMode(dialogmode.DialogMode):
         doc.setmode(mode)
         mode.target = target
 
-        f = dialogmode.FormBuilder(doc)
-
-        # caption
-        f.append_text('caption', 'Paste text here. Hit alt+Enter when finished:')
-        f.append_text('default', '\n')
-        f.append_text('default', '', mark_pair='pastetext')
+        with dialogmode.FormBuilder(doc) as f:
+            # caption
+            f.append_text('caption', 'Paste text here. Hit alt+Enter when finished:')
+            f.append_text('default', '\n')
+            f.append_text('default', '', mark_pair='pastetext')
 
         return doc

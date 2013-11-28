@@ -63,6 +63,7 @@ def MarkRange(mark):
 class DialogMode(modebase.ModeBase):
     NO_WRAPINDENT = False
     autoshrink = False
+    suspend_autoshrink = False
     stack_upper = True
 
     min_height = 1
@@ -123,29 +124,44 @@ class DialogMode(modebase.ModeBase):
     def on_start(self, wnd):
         pass
 
+    def run_autoshrink(self):
+        for wnd in self.document.wnds:
+            w, h = wnd.getsize()
+            l, t, r, b = self.calc_position(wnd)
+            newh = b - t
+            # resize window if number of rows changed
+            if newh != h:
+                wnd.get_label('popup').on_console_resized()
+                wnd.mainframe.on_console_resized()
+                f, t = wnd.screen.get_visible_range()
+                if t == self.document.endpos():
+                    # display as many rows as we can
+                    wnd.screen.locate(t, bottom=True, align_always=True)
+                    wnd.cursor.setpos(wnd.cursor.pos)
+        
     def on_document_updated(self, pos, inslen, dellen):
         super().on_document_updated(pos, inslen, dellen)
 
         if self.autoshrink:
-            for wnd in self.document.wnds:
-                w, h = wnd.getsize()
-                l, t, r, b = self.calc_position(wnd)
-                newh = b - t
-                # resize window if number of rows changed
-                if newh != h:
-                    wnd.get_label('popup').on_console_resized()
-                    wnd.mainframe.on_console_resized()
-                    f, t = wnd.screen.get_visible_range()
-                    if t == self.document.endpos():
-                        # display as many rows as we can
-                        wnd.screen.locate(t, bottom=True, align_always=True)
-                        wnd.cursor.setpos(wnd.cursor.pos)
-
+            if not self.suspend_autoshrink:
+                self.run_autoshrink()
+            
 class FormBuilder:
     re_accel = re.compile(r'&.')
     def __init__(self, document):
         self.document = document
+        self.doc_autoshrink = getattr(self.document.mode, 'autoshrink', None)
+        
+    def __enter__(self):
+        if self.doc_autoshrink:
+            self.document.mode.suspend_autoshrink = True
+        return self
 
+    def __exit__(self, type, value, traceback):
+        if self.document.mode.suspend_autoshrink:
+             self.document.mode.suspend_autoshrink = False
+             self.document.mode.run_autoshrink()
+    
     def append_text(self, stylename, text, mark_start=None, mark_end=None, mark_pair=None,
                     on_shortcut=None, shortcut_style=None, shortcut_mark=None,
                     shortcut_need_alt=True):

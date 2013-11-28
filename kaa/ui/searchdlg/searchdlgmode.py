@@ -186,15 +186,16 @@ class SearchDlgMode(dialogmode.DialogMode):
                       shortcut_mark='shortcut-r')
 
     def build_document(self):
-        f = dialogmode.FormBuilder(self.document)
-        self._build_input(f)
-        self._build_buttons(f)
-        self._build_options(f)
+        with dialogmode.FormBuilder(self.document) as f:
+            self._build_input(f)
+            self._build_buttons(f)
+            self._build_options(f)
+    
+            self.document.insert(
+                self.document.marks['searchtext'][0], self.option.text)
+    
+            self.update_option_style()
 
-        self.document.insert(
-            self.document.marks['searchtext'][0], self.option.text)
-
-        self.update_option_style()
         kaa.app.messagebar.set_message("Hit alt+N/alt+P to search Next/Prev. Hit up to show history.")
 
     def _set_option_style(self, mark, style,
@@ -439,20 +440,20 @@ class ReplaceDlgMode(SearchDlgMode):
                       shortcut_style='button.shortcut', on_shortcut=self.replace_all)
 
     def build_document(self):
-        f = dialogmode.FormBuilder(self.document)
-        self._build_input(f)
-        self._build_buttons(f)
-        self._build_options(f)
+        with dialogmode.FormBuilder(self.document) as f:
+            self._build_input(f)
+            self._build_buttons(f)
+            self._build_options(f)
+    
+            self.document.insert(
+                self.document.marks['searchtext'][0], self.option.text)
+    
+            self.document.insert(
+                self.document.marks['replacetext'][0], self.option.replace_to)
+    
+            self.update_option_style()
 
-        self.document.insert(
-            self.document.marks['searchtext'][0], self.option.text)
-
-        self.document.insert(
-            self.document.marks['replacetext'][0], self.option.replace_to)
-
-        self.update_option_style()
         kaa.app.messagebar.set_message("Hit enter to move field. Hit up to show history.`")
-
         return
             
     def get_replace_str(self):

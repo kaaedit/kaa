@@ -16,7 +16,7 @@ class KaaHistoryStorage:
     
 
 class History:
-    MAX_HISTORY = 200
+    MAX_HISTORY = 1000
 
     def __init__(self, name, storage):
         self.name = name

@@ -82,30 +82,30 @@ class MsgBoxMode(dialogmode.DialogMode):
         mode.keys  = keys
         doc.setmode(mode)
 
-        f = dialogmode.FormBuilder(doc)
-
-        # caption
-        if caption:
-            f.append_text('caption', caption)
+        with dialogmode.FormBuilder(doc) as f:
+    
+            # caption
+            if caption:
+                f.append_text('caption', caption)
+                f.append_text('default', ' ')
+    
+            mode.shortcuts = {}
+            for n, option in enumerate(options):
+                m = re.search(r'&([^&])', option)
+                shortcut = m.group(1)
+                mode.shortcuts[shortcut.lower()] = option
+    
+                f.append_text('button',
+                              option,
+                              on_shortcut=
+                                lambda wnd, key=shortcut:mode.on_shortcut(wnd, key),
+                              shortcut_style='button.shortcut')
+    
+                if n < len(options)-1:
+                    f.append_text('separator', cls.SEPARATOR)
+    
             f.append_text('default', ' ')
-
-        mode.shortcuts = {}
-        for n, option in enumerate(options):
-            m = re.search(r'&([^&])', option)
-            shortcut = m.group(1)
-            mode.shortcuts[shortcut.lower()] = option
-
-            f.append_text('button',
-                          option,
-                          on_shortcut=
-                            lambda wnd, key=shortcut:mode.on_shortcut(wnd, key),
-                          shortcut_style='button.shortcut')
-
-            if n < len(options)-1:
-                f.append_text('separator', cls.SEPARATOR)
-
-        f.append_text('default', ' ')
-        f.append_text('underline', ' ')
+            f.append_text('underline', ' ')
 
         return doc
 

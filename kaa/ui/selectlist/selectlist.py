@@ -62,16 +62,15 @@ class SelectItemList(dialogmode.DialogMode):
 
         self.document.marks.clear()
         self.document.delete(0, self.document.endpos())
-        f = dialogmode.FormBuilder(self.document)
-
-        if self.caption:
-            f.append_text(self.CAPTION_STYLE, self.caption+':\n')
-
-        for n, item in enumerate(self.items):
-            f.append_text(item.style, item.text, mark_pair=item)
-            if n != (len(self.items)-1):
-                f.append_text('default', self.SEP)
-
+        with dialogmode.FormBuilder(self.document) as f:
+            if self.caption:
+                f.append_text(self.CAPTION_STYLE, self.caption+':\n')
+    
+            for n, item in enumerate(self.items):
+                f.append_text(item.style, item.text, mark_pair=item)
+                if n != (len(self.items)-1):
+                    f.append_text('default', self.SEP)
+    
     def _update_item_style(self, wnd, item, activate, middle=None, bottom=None):
 
         if item not in self.document.marks:

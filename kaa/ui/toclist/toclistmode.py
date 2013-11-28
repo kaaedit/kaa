@@ -46,28 +46,27 @@ class TOCList(filterlist.FilterListMode):
 
         self.document.marks.clear()
         self.document.delete(0, self.document.endpos())
-        f = dialogmode.FormBuilder(self.document)
-
-        prev = None
-        for item in self.items:
-            if item.value.token == 'namespace':
-                if prev:
-                    f.append_text('default', 
-                            '\n'+'  '*len(item.value.get_parents()))
-                f.append_text(item.style, item.text, mark_pair=item)
-
-            else:
-                if prev and (prev.value.token =='namespace' or 
-                         prev.value.get_parents() != item.value.get_parents()):
- 
-                    f.append_text('default', 
-                                  '\n'+'  '*(len(item.value.get_parents())))
-
-                f.append_text(item.style, item.text, mark_pair=item)
-                f.append_text('default', ' ')
-
-            prev = item
-
+        with dialogmode.FormBuilder(self.document) as f:
+            prev = None
+            for item in self.items:
+                if item.value.token == 'namespace':
+                    if prev:
+                        f.append_text('default', 
+                                '\n'+'  '*len(item.value.get_parents()))
+                    f.append_text(item.style, item.text, mark_pair=item)
+    
+                else:
+                    if prev and (prev.value.token =='namespace' or 
+                             prev.value.get_parents() != item.value.get_parents()):
+     
+                        f.append_text('default', 
+                                      '\n'+'  '*(len(item.value.get_parents())))
+    
+                    f.append_text(item.style, item.text, mark_pair=item)
+                    f.append_text('default', ' ')
+    
+                prev = item
+    
     def sel_next_namespace(self, wnd):
         if not self.items:
             newsel = None

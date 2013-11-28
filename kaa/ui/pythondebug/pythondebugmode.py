@@ -162,60 +162,59 @@ class PythonCallStackMode(dialogmode.DialogMode):
         self.document.delete(0, self.document.endpos())
 
         self.stack = tuple(stack or ())
-        f = dialogmode.FormBuilder(self.document)
-
-        f.append_text('button', '[&Step]', 
-                      shortcut_style='button.shortcut',
-                      on_shortcut=self.on_step)
-
-        f.append_text('button', '[&Next]', 
-                      shortcut_style='button.shortcut',
-                      on_shortcut=self.on_next)
-
-        f.append_text('button', '[&Return]', 
-                      shortcut_style='button.shortcut',
-                      on_shortcut=self.on_return)
-
-        f.append_text('button', '[&Continue]', 
-                      shortcut_style='button.shortcut',
-                      on_shortcut=self.on_continue)
-
-        f.append_text('button', '[&Expr]', 
-                      shortcut_style='button.shortcut',
-                      on_shortcut=self.on_expr)
-
-        f.append_text('button', '[&Breakpoint]', 
-                      shortcut_style='button.shortcut',
-                      on_shortcut=self.on_breakpoint)
-
-        f.append_text('button', '[&Quit]', 
-                      shortcut_style='button.shortcut',
-                      on_shortcut=self.on_quit)
-
-        f.append_text('default', '\n')
-
-        for n, (fname, lno, funcname, lines) in enumerate(self.stack):
-            s = self.document.endpos()
-            
-            line = (lines[0] if lines else '').strip()
-            if not line:
-                line = '(empty line)'
-            f.append_text('line', line.replace('&', '&&')+'\n')
-            
-            t = self.document.endpos()
-            self.document.marks[('stack', n)] = (s, t)
-            
-            dirname, filename = os.path.split(fname)
-            f.append_text('filename', filename.replace('&', '&&'))
-            f.append_text('default', ':')
-
-            f.append_text('lineno', str(lno))
-            f.append_text('default', ':')
-
-            f.append_text('funcname', funcname.replace('&', '&&'))
-            f.append_text('default', ':')
-
-            f.append_text('dirname', dirname.replace('&', '&&')+'\n')
+        with dialogmode.FormBuilder(self.document) as f:
+            f.append_text('button', '[&Step]', 
+                          shortcut_style='button.shortcut',
+                          on_shortcut=self.on_step)
+    
+            f.append_text('button', '[&Next]', 
+                          shortcut_style='button.shortcut',
+                          on_shortcut=self.on_next)
+    
+            f.append_text('button', '[&Return]', 
+                          shortcut_style='button.shortcut',
+                          on_shortcut=self.on_return)
+    
+            f.append_text('button', '[&Continue]', 
+                          shortcut_style='button.shortcut',
+                          on_shortcut=self.on_continue)
+    
+            f.append_text('button', '[&Expr]', 
+                          shortcut_style='button.shortcut',
+                          on_shortcut=self.on_expr)
+    
+            f.append_text('button', '[&Breakpoint]', 
+                          shortcut_style='button.shortcut',
+                          on_shortcut=self.on_breakpoint)
+    
+            f.append_text('button', '[&Quit]', 
+                          shortcut_style='button.shortcut',
+                          on_shortcut=self.on_quit)
+    
+            f.append_text('default', '\n')
+    
+            for n, (fname, lno, funcname, lines) in enumerate(self.stack):
+                s = self.document.endpos()
+                
+                line = (lines[0] if lines else '').strip()
+                if not line:
+                    line = '(empty line)'
+                f.append_text('line', line.replace('&', '&&')+'\n')
+                
+                t = self.document.endpos()
+                self.document.marks[('stack', n)] = (s, t)
+                
+                dirname, filename = os.path.split(fname)
+                f.append_text('filename', filename.replace('&', '&&'))
+                f.append_text('default', ':')
+    
+                f.append_text('lineno', str(lno))
+                f.append_text('default', ':')
+    
+                f.append_text('funcname', funcname.replace('&', '&&'))
+                f.append_text('default', ':')
+    
+                f.append_text('dirname', dirname.replace('&', '&&')+'\n')
 
 
     def update(self, wnd, stack):

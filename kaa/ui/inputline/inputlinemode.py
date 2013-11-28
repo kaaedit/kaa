@@ -132,12 +132,12 @@ class InputlineMode(dialogmode.DialogMode):
         mode.callback = callback
         mode.filter = filter
         mode.history = history
-        f = dialogmode.FormBuilder(doc)
-    
-        # caption
-        f.append_text('caption', caption)
-        f.append_text('default', ' ')
-        f.append_text('default', value, mark_pair='inputtext')
+
+        with dialogmode.FormBuilder(doc) as f:
+            # caption
+            f.append_text('caption', caption)
+            f.append_text('default', ' ')
+            f.append_text('default', value, mark_pair='inputtext')
 
         return doc
 

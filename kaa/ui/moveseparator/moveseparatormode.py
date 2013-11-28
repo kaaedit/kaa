@@ -66,8 +66,8 @@ class MoveSeparatorMode(dialogmode.DialogMode):
         mode.org_wnd = target
         mode.target = target.splitter.parent
 
-        f = dialogmode.FormBuilder(doc)
-        f.append_text('caption', 'Hit cursor left/right key to resize window.')
+        with dialogmode.FormBuilder(doc) as f:
+            f.append_text('caption', 'Hit cursor left/right key to resize window.')
         return doc
 
     def init_keybind(self):

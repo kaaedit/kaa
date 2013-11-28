@@ -110,10 +110,10 @@ class FilterListInputDlgMode(dialogmode.DialogMode):
 
         mode.callback = callback
 
-        f = dialogmode.FormBuilder(doc)
-        f.append_text('caption', caption)
-        f.append_text('default', ' ')
-        f.append_text('default', '', mark_pair='query')
+        with dialogmode.FormBuilder(doc) as f:
+            f.append_text('caption', caption)
+            f.append_text('default', ' ')
+            f.append_text('default', '', mark_pair='query')
 
         return doc
 

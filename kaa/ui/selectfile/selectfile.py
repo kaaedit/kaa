@@ -224,29 +224,29 @@ class OpenFilenameDlgMode(dialogmode.DialogMode):
         mode.encoding = encoding if encoding else kaa.app.config.DEFAULT_ENCODING
         mode.callback = callback
 
-        f = dialogmode.FormBuilder(doc)
-        f.append_text('caption', 'Filename:' )
-        f.append_text('default', ' ')
-        f.append_text('default', filename, mark_pair='filename')
-        f.append_text('default', ' ')
-
-        f.append_text('checkbox', '[&Encoding:{}]'.format(mode.encoding), 
-                      mark_pair='enc',
-                      shortcut_style='checkbox.shortcut',
-                      on_shortcut=lambda wnd:
-                                      wnd.document.mode.select_encoding(wnd))
-
-        f.append_text('checkbox', '[&Newline:{}]'.format(mode.newline), 
-                      mark_pair='newline',
-                      shortcut_style='checkbox.shortcut',
-                      on_shortcut=lambda wnd:
-                                      wnd.document.mode.select_newline(wnd))
-
-        f.append_text('checkbox', '[&Create dir]', 
-                      shortcut_style='checkbox.shortcut',
-                      on_shortcut=lambda wnd:
-                                      wnd.document.mode.create_dir(wnd))
-
+        with dialogmode.FormBuilder(doc) as f:
+            f.append_text('caption', 'Filename:' )
+            f.append_text('default', ' ')
+            f.append_text('default', filename, mark_pair='filename')
+            f.append_text('default', ' ')
+    
+            f.append_text('checkbox', '[&Encoding:{}]'.format(mode.encoding), 
+                          mark_pair='enc',
+                          shortcut_style='checkbox.shortcut',
+                          on_shortcut=lambda wnd:
+                                          wnd.document.mode.select_encoding(wnd))
+    
+            f.append_text('checkbox', '[&Newline:{}]'.format(mode.newline), 
+                          mark_pair='newline',
+                          shortcut_style='checkbox.shortcut',
+                          on_shortcut=lambda wnd:
+                                          wnd.document.mode.select_newline(wnd))
+    
+            f.append_text('checkbox', '[&Create dir]', 
+                          shortcut_style='checkbox.shortcut',
+                          on_shortcut=lambda wnd:
+                                          wnd.document.mode.create_dir(wnd))
+    
         return doc
 
     def close(self):
@@ -478,16 +478,16 @@ class SelectDirDlgMode(OpenFilenameDlgMode):
 
         mode.callback = callback
 
-        f = dialogmode.FormBuilder(doc)
-        f.append_text('caption', 'Directory name:' )
-        f.append_text('default', ' ')
-        f.append_text('default', filename, mark_pair='filename')
-        f.append_text('default', ' ')
-
-        f.append_text('checkbox', '[&Select this dir]', 
-                      shortcut_style='checkbox.shortcut',
-                      on_shortcut=lambda wnd:
-                                      wnd.document.mode.on_select_dir(wnd))
+        with dialogmode.FormBuilder(doc) as f:
+            f.append_text('caption', 'Directory name:' )
+            f.append_text('default', ' ')
+            f.append_text('default', filename, mark_pair='filename')
+            f.append_text('default', ' ')
+    
+            f.append_text('checkbox', '[&Select this dir]', 
+                          shortcut_style='checkbox.shortcut',
+                          on_shortcut=lambda wnd:
+                                          wnd.document.mode.on_select_dir(wnd))
 
         return doc
 

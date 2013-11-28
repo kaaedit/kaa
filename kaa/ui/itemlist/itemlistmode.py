@@ -89,17 +89,17 @@ class ItemListMode(dialogmode.DialogMode):
         mode.callback = callback
         mode.onchange = onchange
 
-        f = dialogmode.FormBuilder(doc)
+        with dialogmode.FormBuilder(doc) as f:
+    
+            if caption:
+                f.append_text('caption', caption.replace('&', '&&'))
+                f.append_text('default', cls.CAPTIONSEP)
+    
+            for i, item in enumerate(items):
+                f.append_text('default', item.replace('&', '&&'), mark_pair=i)
+                f.append_text('default', cls.ITEMSEP)
 
-        if caption:
-            f.append_text('caption', caption.replace('&', '&&'))
-            f.append_text('default', cls.CAPTIONSEP)
-
-        for i, item in enumerate(items):
-            f.append_text('default', item.replace('&', '&&'), mark_pair=i)
-            f.append_text('default', cls.ITEMSEP)
-
-        mode._update_style(None)
+            mode._update_style(None)
         return doc
 
     def _update_style(self, wnd):
