@@ -26,6 +26,14 @@ python_keys = {
     f8: 'debugger.toggle.breakpoint',
 }
 
+KEYWORDS = ['and', 'as', 'assert', 'break', 'class', 'continue', 'def',
+            'del', 'elif', 'else', 'except', 'finally', 'for', 'from', 
+            'global', 'if', 'import', 'in', 'is', 'lambda', 'nonlocal', 
+            'not', 'or', 'pass', 'raise', 'return', 'try', 'while', 
+            'with', 'yield']
+
+CONSTANTS = ['False', 'None', 'True']
+
 class PythonMode(defaultmode.DefaultMode):
     MODENAME = 'Python'
     re_begin_block = gre.compile(r"[^#]*:\s*(#.*)?$")
@@ -45,7 +53,8 @@ class PythonMode(defaultmode.DefaultMode):
 
     def init_tokenizers(self):
         self.tokenizers = [Tokenizer([
-            Keywords('python-statement', 'keyword', keyword.kwlist),
+            Keywords('python-statement', 'keyword', KEYWORDS),
+            Keywords('python-constant', 'constant', CONSTANTS),
             SingleToken('python-numeric', 'number',
                          [r'\b[0-9]+(\.[0-9]*)*\b', r'\b\.[0-9]+\b']), 
             Span('python-comment', 'comment', r'\#', '$', escape='\\'),
