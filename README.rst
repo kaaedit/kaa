@@ -123,7 +123,7 @@ Or, if you use iTerm2 on Mac, you should configure:
 1. Select Preferences menu.
 2. Open the Profiles tab.
 3. Open the Keys tab.
-4. Check `Left option Key acts as: +Esc.` button.
+4. Check `Left option Key acts as: +Esc.` and `Right option Key acts as: +Esc.` button.
 
 If you use Gnome terminal and wishes to access menu by F1 key, you should configure:
 
@@ -679,13 +679,22 @@ Links
 Version history
 =================
 
-0.14 - 2013.11.27
+0.15 - 2013.11.29
 ------------------
 
-- Experimental Python debugger.
+- Python debugger now runs 20+ times faster than in 0.14.
+
+- Highlight Python constant.
+
 
 Past versions
 --------------
+
+0.14 - 2013.11.27
++++++++++++++++++++++
+
+- Experimental Python debugger.
+
 
 0.13 - 2013.11.18
 +++++++++++++++++++++

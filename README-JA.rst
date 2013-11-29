@@ -126,7 +126,7 @@ iTermの場合 :
 1. 「Preferences」メニューを開く
 2. 「Profiles」タブを開く
 3. 「Keys」タブを開く
-4. 「`Left option Key acts as: +Esc.` 」 ボタンをチェックする
+4. 「`Left option Key acts as: +Esc.` 」 ボタンと「`Right option Key acts as: +Esc.` 」 ボタンをチェックする
 
 Gnome terminal では、f1 キーでメニューを表示する場合は次のように設定します。
 
