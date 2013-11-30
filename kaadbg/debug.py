@@ -114,7 +114,7 @@ class Kdb(bdb.Bdb):
         s = json.dumps(obj) + '\n'
         self.sock.send(to_bytes('%d\n' % len(s)))
         self.sock.send(to_bytes(s))
-        print('sent:', time.time())
+
     def readline(self):
         if not self.sock:
             return b''
@@ -151,10 +151,7 @@ class Kdb(bdb.Bdb):
         type, value = json.loads(from_utf8(b''.join(data)))
         return (type, value)
 
-    gggg = 0
     def interaction(self, frame):
-        print('interaction', time.time())
-        self.gggg = time.time()
 
         frames = []
         for f in inspect.getouterframes(frame):
@@ -173,7 +170,6 @@ class Kdb(bdb.Bdb):
             if not obj:
                 self.sock.close()
                 break
-            print('receive:', time.time())
             if self.run_command(frame, obj):
                 break
 
