@@ -2,8 +2,8 @@ from kaa import document
 import kaa_testutils
 
 
-
 class TestDocument(kaa_testutils._TestScreenBase):
+
     def test_gettol(self):
         assert self._getdoc('').gettol(0) == 0
         assert self._getdoc('0123').gettol(4) == 0
@@ -38,15 +38,15 @@ class TestDocument(kaa_testutils._TestScreenBase):
 
         doc = self._getdoc()
         doc.insert(0, 'abcde')
-        assert doc.styles.getints(0, len(doc.styles)) == [0]*5
+        assert doc.styles.getints(0, len(doc.styles)) == [0] * 5
 
         doc.insert(1, 'abcde')
-        assert doc.styles.getints(0, len(doc.styles)) == [0]*10
+        assert doc.styles.getints(0, len(doc.styles)) == [0] * 10
 
     def test_getnextpos(self):
         doc = self._getdoc("abc\ndef\nghi\njkl\n")
         for i in range(16):
-            assert doc.get_nextpos(i) == i+1
+            assert doc.get_nextpos(i) == i + 1
 
         doc = self._getdoc("abc")
         assert doc.get_nextpos(1) == 2
@@ -55,7 +55,7 @@ class TestDocument(kaa_testutils._TestScreenBase):
 
         doc = self._getdoc("abcdef")
         for i in range(6):
-            assert doc.get_nextpos(i) == i+1
+            assert doc.get_nextpos(i) == i + 1
         assert doc.get_nextpos(6) == 6
 
         doc = self._getdoc("abc\r\n")
@@ -71,7 +71,7 @@ class TestDocument(kaa_testutils._TestScreenBase):
     def test_getprevpos(self):
         doc = self._getdoc("abc\ndef\nghi\njkl\n")
         for i in range(1, 17):
-            assert doc.get_prevpos(i) == i-1
+            assert doc.get_prevpos(i) == i - 1
 
         doc = self._getdoc("abc",)
         assert doc.get_prevpos(0) == 0
@@ -81,7 +81,7 @@ class TestDocument(kaa_testutils._TestScreenBase):
 
         doc = self._getdoc("abcdef")
         for i in range(1, 6):
-            assert doc.get_prevpos(i) == i-1
+            assert doc.get_prevpos(i) == i - 1
         assert doc.get_prevpos(0) == 0
 
         doc = self._getdoc("abc\r\n")
@@ -94,7 +94,9 @@ class TestDocument(kaa_testutils._TestScreenBase):
         assert doc.get_prevpos(5) == 0
         assert doc.get_prevpos(6) == 5
 
+
 class TestMark(kaa_testutils._TestDocBase):
+
     def test_mark(self):
         doc = self._getdoc('01234567890123456789')
         doc.marks['mark1'] = 0
@@ -120,31 +122,33 @@ class TestMark(kaa_testutils._TestDocBase):
 
     def test_rangemark(self):
         doc = self._getdoc('')
-        doc.marks['mark1'] = (0,0)
+        doc.marks['mark1'] = (0, 0)
         doc.insert(0, 'abcde')
         assert doc.marks['mark1'] == (0, 5)
 
         doc = self._getdoc('01234567890123456789')
-        doc.marks['mark1'] = (1,3)
+        doc.marks['mark1'] = (1, 3)
         doc.delete(0, 1)
         assert doc.marks['mark1'] == (0, 2)
 
         doc = self._getdoc('01234567890123456789')
-        doc.marks['mark1'] = (1,3)
+        doc.marks['mark1'] = (1, 3)
         doc.delete(1, 2)
         assert doc.marks['mark1'] == (1, 2)
 
         doc = self._getdoc('01234567890123456789')
-        doc.marks['mark1'] = (1,3)
+        doc.marks['mark1'] = (1, 3)
         doc.delete(1, 3)
         assert doc.marks['mark1'] == (1, 1)
 
         doc = self._getdoc('01234567890123456789')
-        doc.marks['mark1'] = (1,3)
+        doc.marks['mark1'] = (1, 3)
         doc.delete(1, 4)
         assert doc.marks['mark1'] == (1, 1)
 
+
 class TestUndo:
+
     def test_undo(self):
         undo = document.Undo()
         assert not undo.can_undo()
@@ -160,7 +164,7 @@ class TestUndo:
         (action, args, kwargs), = undo.undo()
         assert action == 'action3'
         assert args == (3,)
-        assert kwargs == {'arg':3}
+        assert kwargs == {'arg': 3}
 
         assert undo.can_undo()
         assert undo.can_redo()
@@ -169,7 +173,7 @@ class TestUndo:
         (action, args, kwargs), = undo.undo()
         assert action == 'action2'
         assert args == (2,)
-        assert kwargs == {'arg':2}
+        assert kwargs == {'arg': 2}
 
         assert undo.can_undo()
         assert undo.can_redo()
@@ -177,7 +181,7 @@ class TestUndo:
         (action, args, kwargs), = undo.undo()
         assert action == 'action1'
         assert args == (1,)
-        assert kwargs == {'arg':1}
+        assert kwargs == {'arg': 1}
 
         assert not undo.can_undo()
         assert undo.can_redo()
@@ -185,7 +189,7 @@ class TestUndo:
         (action, args, kwargs), = undo.redo()
         assert action == 'action1'
         assert args == (1,)
-        assert kwargs == {'arg':1}
+        assert kwargs == {'arg': 1}
 
         assert undo.can_undo()
         assert undo.can_redo()
@@ -193,7 +197,7 @@ class TestUndo:
         (action, args, kwargs), = undo.redo()
         assert action == 'action2'
         assert args == (2,)
-        assert kwargs == {'arg':2}
+        assert kwargs == {'arg': 2}
 
         assert undo.can_undo()
         assert undo.can_redo()
@@ -201,7 +205,7 @@ class TestUndo:
         (action, args, kwargs), = undo.redo()
         assert action == 'action3'
         assert args == (3,)
-        assert kwargs == {'arg':3}
+        assert kwargs == {'arg': 3}
 
         assert undo.can_undo()
         assert not undo.can_redo()
@@ -221,7 +225,8 @@ class TestUndo:
         undo.add('action3')
         assert undo.is_dirty()
 
-        for r in undo.undo():pass
+        for r in undo.undo():
+            pass
         assert not undo.is_dirty()
 
     def test_addundo(self):
@@ -235,7 +240,8 @@ class TestUndo:
 
         assert not undo.is_dirty()
 
-        for r in undo.undo():pass
+        for r in undo.undo():
+            pass
         undo.add('action3')
 
         assert (('action3', (), {}),) == tuple(undo.undo())
@@ -272,7 +278,7 @@ class TestUndo:
                 ('5', (), {}),
                 ('4', (), {}),
                 ('3', (), {}),
-               ) == tuple(undo.undo())
+                ) == tuple(undo.undo())
         assert undo.is_dirty()
 
         assert (('2', (), {}),) == tuple(undo.undo())
@@ -285,16 +291,17 @@ class TestUndo:
                 ('5', (), {}),
                 ('6', (), {}),
                 ('7', (), {}),
-               ) == tuple(undo.redo())
+                ) == tuple(undo.redo())
         assert not undo.is_dirty()
         assert (('8', (), {}),) == tuple(undo.redo())
         assert undo.is_dirty()
 
 
 class TestLineNo(kaa_testutils._TestScreenBase):
+
     def test_bisect_left(self):
         lineno = document.LineNo()
-        lineno.buf.insertints(0, [0,1,2,3,4,5])
+        lineno.buf.insertints(0, [0, 1, 2, 3, 4, 5])
 
         assert lineno.bisect_left(0) == 0
         assert lineno.bisect_left(1) == 1
@@ -314,13 +321,13 @@ class TestLineNo(kaa_testutils._TestScreenBase):
         assert lineno.buf.getints(0, len(lineno.buf)) == [3]
 
         lineno.inserted(0, 'abc\n')
-        assert lineno.buf.getints(0, len(lineno.buf)) == [3,7]
+        assert lineno.buf.getints(0, len(lineno.buf)) == [3, 7]
 
         lineno.inserted(0, '\na\nab\n')
-        assert lineno.buf.getints(0, len(lineno.buf)) == [0,2,5,9,13]
+        assert lineno.buf.getints(0, len(lineno.buf)) == [0, 2, 5, 9, 13]
 
         lineno.inserted(14, 'a\nb')
-        assert lineno.buf.getints(0, len(lineno.buf)) == [0,2,5,9,13,15]
+        assert lineno.buf.getints(0, len(lineno.buf)) == [0, 2, 5, 9, 13, 15]
 
     def test_delete(self):
         lineno = document.LineNo()
@@ -367,4 +374,3 @@ class TestLineNo(kaa_testutils._TestScreenBase):
         lineno.inserted(0, 'abc\ndef')
         lineno.deleted(0, 100)
         assert lineno.buf.getints(0, len(lineno.buf)) == []
-

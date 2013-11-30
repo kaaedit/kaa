@@ -1,4 +1,6 @@
-import itertools, unicodedata, collections
+import itertools
+import unicodedata
+import collections
 
 import gappedbuf.re
 import kaa
@@ -8,8 +10,10 @@ from kaa import highlight
 from kaa import theme
 from kaa import screen
 
+
 class SearchOption:
     RE = gappedbuf.re
+
     def __init__(self):
         self.text = ''
         self.replace_to = ''
@@ -25,13 +29,13 @@ class SearchOption:
         ret.word = self.word
         ret.regex = self.regex
         return ret
-        
+
     def get_regex(self):
         text = self.text
         if not self.regex:
             text = self.RE.escape(text)
         if self.word:
-            text = r'\b'+text+r'\b'
+            text = r'\b' + text + r'\b'
 
         opt = self.RE.MULTILINE
         if self.ignorecase:
@@ -41,6 +45,7 @@ class SearchOption:
         return regex
 
 SearchOption.LAST_SEARCH = SearchOption()
+
 
 class ModeBase:
     CLOSE_ON_DEL_WINDOW = True
@@ -53,7 +58,7 @@ class ModeBase:
     DOCUMENT_MODE = False
     HIGHLIGHT_CURSOR_ROW = False
     SHOW_CURSOR = True
-    
+
     tab_width = 8
     indent_width = 4
     indent_tab = False
@@ -64,7 +69,7 @@ class ModeBase:
     theme = None
     highlight = None
     _check_fileupdate = 0
-    
+
     def __init__(self):
         self.commands = {}
         self.is_availables = {}
@@ -82,7 +87,7 @@ class ModeBase:
         self.init_themes()
         self._build_theme()
         kaa.app.translate_theme(self.theme)
-        
+
         self.tokenizers = []
         self.init_tokenizers()
         self.stylemap = {}
@@ -92,7 +97,7 @@ class ModeBase:
 
     def setup(self):
         pass
-        
+
     def close(self):
         self.document = None
         self.closed = True
@@ -129,7 +134,7 @@ class ModeBase:
 
         self._build_style_map()
         self.document.use_undo(self.USE_UNDO)
-        
+
     def on_document_updated(self, pos, inslen, dellen):
         if self.highlight:
             self.highlight.updated(self.document, pos, inslen, dellen)
@@ -166,7 +171,7 @@ class ModeBase:
 
     def init_menu(self):
         pass
-        
+
     def init_themes(self):
         pass
 
@@ -205,7 +210,7 @@ class ModeBase:
             if not self.stylemap:
                 ret = 1
             else:
-                ret = max(self.stylemap.keys())+1
+                ret = max(self.stylemap.keys()) + 1
             self.stylemap[ret] = self.theme.get_style(stylename)
             return ret
 
@@ -229,7 +234,7 @@ class ModeBase:
 
     def get_menu(self, itemname):
         return self.menu.get(itemname, None)
-        
+
     def is_cursor_visible(self):
         return self.SHOW_CURSOR
 
@@ -308,6 +313,7 @@ class ModeBase:
         return {}
 
     HIGHLIGHTBATCH = 300
+
     def run_highlight(self):
         if self.highlight:
             return self.highlight.update_style(self.document, batch=self.HIGHLIGHTBATCH)
@@ -355,7 +361,7 @@ class ModeBase:
         for f, t, s, cg in self.split_word(tol):
             if t <= pos:
                 if cg != 'Z_WHITESPACE':
-                    if t==pos and cg[0] == 'L':
+                    if t == pos and cg[0] == 'L':
                         return (f, t, cg)
                     else:
                         ret = (f, t, cg)
@@ -377,7 +383,7 @@ class ModeBase:
         for f, t, s, cg in self.split_word(0, all=True):
             if cg in {'Z_WHITESPACE', '_LF'}:
                 continue
-            if cg[0] in 'LMN': # Letter, Mark, Number
+            if cg[0] in 'LMN':  # Letter, Mark, Number
                 if len(s) > 2:
                     words[s] = None
         return list(words.keys())
@@ -406,9 +412,9 @@ class ModeBase:
         else:
             f, t = sel
 
-        tol =  doc.gettol(f)
+        tol = doc.gettol(f)
 
-        t_tol =  doc.gettol(t)
+        t_tol = doc.gettol(t)
         if t != t_tol:
             eol = doc.geteol(t)
         else:
@@ -417,7 +423,7 @@ class ModeBase:
         return tol, eol
 
     def get_indent_range(self, pos):
-        tol =  self.document.gettol(pos)
+        tol = self.document.gettol(pos)
         regex = gappedbuf.re.compile(self.RE_WHITESPACE)
         m = regex.match(self.document.buf, tol)
         if m:
@@ -429,7 +435,7 @@ class ModeBase:
         if self.indent_tab:
             ctab = col // self.tab_width
             cspc = col % self.tab_width
-            return  '\t' * ctab + ' ' * cspc
+            return '\t' * ctab + ' ' * cspc
         else:
             return ' ' * col
 
@@ -438,22 +444,22 @@ class ModeBase:
         f, t = self.get_indent_range(pos)
         indent = self.document.gettext(f, min(pos, t))
         if pos <= t:
-            self.edit_commands.insert_string(wnd, f, '\n', 
-                    update_cursor=False)
-            wnd.cursor.setpos(wnd.cursor.pos+1)
+            self.edit_commands.insert_string(wnd, f, '\n',
+                                             update_cursor=False)
+            wnd.cursor.setpos(wnd.cursor.pos + 1)
         else:
-            indent = '\n'+indent
-            self.edit_commands.insert_string(wnd, pos, indent, 
-                    update_cursor=False)
-            wnd.cursor.setpos(pos+len(indent))
-        
+            indent = '\n' + indent
+            self.edit_commands.insert_string(wnd, pos, indent,
+                                             update_cursor=False)
+            wnd.cursor.setpos(pos + len(indent))
+
         wnd.cursor.savecol()
 
     def calc_cols(self, f, t):
         chars = self.document.gettext(f, t)
         (dispchrs, dispcols, positions,
-         intervals) = screen.translate_chars(f, chars, self.tab_width, 
-                         kaa.app.config.AMBIGUOUS_WIDTH)
+         intervals) = screen.translate_chars(f, chars, self.tab_width,
+                                             kaa.app.config.AMBIGUOUS_WIDTH)
 
         return sum(dispcols)
 
@@ -462,4 +468,3 @@ class ModeBase:
 
     def on_global_prev(self, wnd):
         return
- 

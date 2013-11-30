@@ -28,7 +28,7 @@ cursor_keys = {
     (shift, down): 'cursor.down.select',
 
     (shift, ctrl, left): 'cursor.word-left.select',
-    (shift, ctrl, right):'cursor.word-right.select',
+    (shift, ctrl, right): 'cursor.word-right.select',
 
     home: ('cursor.home'),
     end: ('cursor.end'),
@@ -100,7 +100,6 @@ rerun_keys = {
 }
 
 
-
 # search commands
 search_command_keys = {
     (ctrl, 's'): 'search.showsearch',
@@ -159,8 +158,8 @@ visual_mode_keys = {
     up: 'cursor.up',
     down: 'cursor.down',
 
-    pagedown:'cursor.pagedown',
-    pageup:'cursor.pageup',
+    pagedown: 'cursor.pagedown',
+    pageup: 'cursor.pageup',
 
     'h': 'cursor.left',
     'l': 'cursor.right',
@@ -178,8 +177,8 @@ visual_linewise_mode_keys = {
     up: ('screen.lineselection.begin', 'cursor.up', 'screen.lineselection.set-end'),
     down: ('screen.lineselection.begin', 'cursor.down', 'screen.lineselection.set-end'),
 
-    pagedown:('screen.lineselection.begin', 'cursor.pagedown', 'screen.lineselection.set-end'),
-    pageup:('screen.lineselection.begin', 'cursor.pageup', 'screen.lineselection.set-end'),
+    pagedown: ('screen.lineselection.begin', 'cursor.pagedown', 'screen.lineselection.set-end'),
+    pageup: ('screen.lineselection.begin', 'cursor.pageup', 'screen.lineselection.set-end'),
 
     'h': ('screen.lineselection.begin', 'cursor.left', 'screen.lineselection.set-end'),
     'l': ('screen.lineselection.begin', 'cursor.right', 'screen.lineselection.set-end'),

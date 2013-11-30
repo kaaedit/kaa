@@ -1,4 +1,8 @@
-import curses, os, sys, types, signal
+import curses
+import os
+import sys
+import types
+import signal
 import kaa.tools
 import kaa.log
 from kaa import options, version, consts, config
@@ -10,11 +14,12 @@ from kaa import fileio
 CURSES_MOUSEINTERVAL = 200
 CURSES_ESCDELAY = '50'
 
+
 def _init(stdscr):
     if not hasattr(stdscr, 'get_wch'):
         raise RuntimeError(
-                'Kaa requires curses library with wide charater support.')
-        
+            'Kaa requires curses library with wide charater support.')
+
     curses.start_color()
     curses.use_default_colors()
 
@@ -54,7 +59,7 @@ def main(stdscr):
 
         kaa.app = app.CuiApp(conf)
         kaa.app.storage = fileio.FileStorage()
-        
+
         if not opt.no_init:
             fname = opt.init_script
             if not fname:
@@ -77,21 +82,22 @@ def main(stdscr):
                 else:
                     doc = kaa.app.storage.openfile(filename)
                     kaa.app.show_doc(doc)
-            
+
             if dirname:
                 from kaa.ui.selectfile import selectfile
+
                 def cb(filename, encoding, newline):
                     if filename:
                         doc = kaa.app.storage.openfile(
-                                filename, encoding, newline)
+                            filename, encoding, newline)
                         kaa.app.show_doc(doc)
                     else:
                         if not kaa.app.mainframe.childframes:
                             doc = fileio.newfile(provisional=True)
                             kaa.app.show_doc(doc)
-                    
+
                 selectfile.show_fileopen(dirname, cb)
-                
+
         kaa.app.run()
         kaa.app.on_shutdown()
 
@@ -100,11 +106,13 @@ def main(stdscr):
     finally:
         _restore()
 
+
 def handle_term(signum, frame):
-    sys.exit(signum+0x80)
+    sys.exit(signum + 0x80)
 
 COLOR_ENVS = ('COLORTERM', 'XTERM_VERSION', 'ROXTERM_ID',
-             'KONSOLE_DBUS_SESSION')
+              'KONSOLE_DBUS_SESSION')
+
 
 def _init_term():
     if opt.term:
@@ -117,23 +125,24 @@ def _init_term():
             break
     else:
         has_color = False
-        
+
     if has_color:
         term = os.environ.get('TERM')
-            
+
         if term in ('xterm', 'screen', 'Eterm'):
-            term = term+'-256color'
+            term = term + '-256color'
             os.environ['TERM'] = term
-    
+
         if os.environ.get('TERM', '') == 'screen-256color':
             termcap = os.environ.get('TERMCAP')
             if termcap:
                 os.environ['TERMCAP'] = termcap.replace('Co#8', 'Co#256')
-    
+
+
 def run():
     if sys.version_info[:2] < (3, 3):
         raise RuntimeError('kaa requires Python 3.3 or later')
-    
+
     if not getattr(__builtins__, 'kaa_freeze', False):
         try:
             setproctitle = __import__('setproctitle')
@@ -142,7 +151,7 @@ def run():
             pass
 
     signal.signal(signal.SIGTERM, handle_term)
-    
+
     parser = options.build_parser()
 
     global opt

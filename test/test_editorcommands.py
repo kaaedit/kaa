@@ -2,7 +2,9 @@
 import kaa_testutils
 from kaa.commands import editorcommand
 
+
 class TestCursor(kaa_testutils._TestScreenBase):
+
     def test_cursor(self):
         wnd = self._getwnd("abc\ndef\n")
 
@@ -21,6 +23,7 @@ class TestCursor(kaa_testutils._TestScreenBase):
 
 
 class TestEdit(kaa_testutils._TestScreenBase):
+
     def test_putstring(self):
         wnd = self._getwnd("abc\ndef\n")
 
@@ -67,7 +70,7 @@ class TestEdit(kaa_testutils._TestScreenBase):
 
     def test_blockindent(self):
         wnd = self._getwnd("abc\ndef\nghi")
-        wnd.screen.selection.set_range(1,9)
+        wnd.screen.selection.set_range(1, 9)
         cmd = editorcommand.EditCommands()
         cmd.indent(wnd)
         assert wnd.document.gettext(0, 7) == '    abc'
@@ -110,7 +113,6 @@ class TestEdit(kaa_testutils._TestScreenBase):
         cmd.redo(wnd)
         assert wnd.document.gettext(0, 2) == 'bc'
         assert wnd.cursor.pos == 0
-
 
     def test_undo_newline(self):
         wnd = self._getwnd("    abc")

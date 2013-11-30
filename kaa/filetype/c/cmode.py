@@ -8,45 +8,46 @@ from kaa.keyboard import *
 
 CThemes = {
     'basic':
-        Theme([
-        ]),
+    Theme([
+    ]),
 }
 
 c_keys = {
     (ctrl, 't'): 'toc.showlist',
 }
 
+
 def build_tokenizer(stop=None, terminates=None):
-    CTOKENS = namedtuple('ctokens', 
-        ['macro', 'keywords', 'number', 'comment1', 'comment2', 'string1', 
-        'string2', 'stop'])
+    CTOKENS = namedtuple('ctokens',
+                         ['macro', 'keywords', 'number', 'comment1', 'comment2', 'string1',
+                          'string2', 'stop'])
 
     macro = SingleToken('c-macro', 'directive', [r'\#\s*\w+'])
 
-    keywords=Keywords('c-keyword', 'keyword',
-        ['asm', 'auto', 'break', 'case', 'continue', 'const', 'char', 
-         'default', 'do', 'double', 'else', 'endasm', 'entry', 'enum', 
-         'extern', 'float', 'for', 'goto', 'if', 'int', 'long', 'register', 
-         'return', 'short', 'signed', 'sizeof', 'static', 'struct', 
-         'switch', 'typedef', 'union', 'unsigned', 'void', 'volatile', 
-         'while'])
+    keywords = Keywords('c-keyword', 'keyword',
+                        ['asm', 'auto', 'break', 'case', 'continue', 'const', 'char',
+                         'default', 'do', 'double', 'else', 'endasm', 'entry', 'enum',
+                         'extern', 'float', 'for', 'goto', 'if', 'int', 'long', 'register',
+                         'return', 'short', 'signed', 'sizeof', 'static', 'struct',
+                         'switch', 'typedef', 'union', 'unsigned', 'void', 'volatile',
+                         'while'])
 
-    number=SingleToken('c-numeric', 'number',
-                 [r'\b[0-9]+(\.[0-9]*)*\b', r'\b\.[0-9]+\b'])
-    comment1=Span('c-comment1', 'comment', r'/\*', r'\*/', escape='\\')
-    comment2=Span('c-comment2', 'comment', r'//', r'$', escape='\\')
-    string1=Span('c-string1', 'string', '"', '"', escape='\\')
-    string2=Span('c-string2', 'string', "'", "'", escape='\\')
+    number = SingleToken('c-numeric', 'number',
+                         [r'\b[0-9]+(\.[0-9]*)*\b', r'\b\.[0-9]+\b'])
+    comment1 = Span('c-comment1', 'comment', r'/\*', r'\*/', escape='\\')
+    comment2 = Span('c-comment2', 'comment', r'//', r'$', escape='\\')
+    string1 = Span('c-string1', 'string', '"', '"', escape='\\')
+    string2 = Span('c-string2', 'string', "'", "'", escape='\\')
 
-    tokens = CTOKENS(macro, keywords, number, comment1, comment2, 
-        string1, string2, stop)
+    tokens = CTOKENS(macro, keywords, number, comment1, comment2,
+                     string1, string2, stop)
 
     return Tokenizer(tokens, terminates=terminates)
 
 
 class CMode(defaultmode.DefaultMode):
     MODENAME = 'C'
-    
+
     def init_keybind(self):
         super().init_keybind()
         self.register_keys(self.keybind, [c_keys])

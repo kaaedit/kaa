@@ -3,8 +3,10 @@ from kaa import highlight
 
 
 class TestKeyword(kaa_testutils._TestDocBase):
+
     def test_keyword(self):
-        kwds = highlight.Keywords('keywords', 'keyword', ['if', 'while', 'for'])
+        kwds = highlight.Keywords(
+            'keywords', 'keyword', ['if', 'while', 'for'])
         tokenizer = highlight.Tokenizer([kwds])
 
         doc = self._getdoc('if while for ')
@@ -41,7 +43,7 @@ class TestKeyword(kaa_testutils._TestDocBase):
             (1, 4, span.span_start),
             (4, 5, span.span_mid),
             (5, 8, span.span_end),
-            (8, 9, hl.tokenizers[0].nulltoken),] == ret
+            (8, 9, hl.tokenizers[0].nulltoken), ] == ret
 
         span = highlight.Span('str', 'style', '"', '"')
         tokenizer = highlight.Tokenizer([span])
@@ -55,7 +57,7 @@ class TestKeyword(kaa_testutils._TestDocBase):
             (1, 2, span.span_end),
             (2, 3, hl.tokenizers[0].nulltoken),
             (3, 4, span.span_start),
-            (4, 5, span.span_end),] == ret
+            (4, 5, span.span_end), ] == ret
 
     def test_span_escape(self):
         span = highlight.Span('str', 'style', '"""', '"""', '\\')
@@ -68,7 +70,7 @@ class TestKeyword(kaa_testutils._TestDocBase):
         assert [
             (0, 3, span.span_start),
             (3, 5, span.span_mid),
-            (5, 8, span.span_end),] == ret
+            (5, 8, span.span_end), ] == ret
 
     def test_span_noclose(self):
         kwds = highlight.Span('str', 'style', '"', '"', '\\')
@@ -79,7 +81,7 @@ class TestKeyword(kaa_testutils._TestDocBase):
         ret = list((f, t, style) for f, t, style in hl.highlight(doc, 0))
         assert [
             (0, 1, kwds.span_start),
-            (1, 10, kwds.span_mid),] == ret
+            (1, 10, kwds.span_mid), ] == ret
 
     def test_span_resume(self):
         span = highlight.Span('str', 'style', '"', '"', None)
@@ -161,7 +163,9 @@ class TestKeyword(kaa_testutils._TestDocBase):
             (9, 11, tokenizer1.nulltoken),
         ] == ret
 
+
 class TestSection:
+
     def test_walk(self):
         section1 = highlight.Section(None, None)
         section2 = highlight.Section(None, None)
@@ -173,7 +177,6 @@ class TestSection:
         section8 = highlight.Section(None, None)
         section9 = highlight.Section(None, None)
         section10 = highlight.Section(None, None)
-
 
         section1.add(section2)
         section1.add(section3)
@@ -250,6 +253,7 @@ class TestSection:
 
 
 class TestHighlight(kaa_testutils._TestDocBase):
+
     def get_highliter(self):
         kwds = highlight.Keywords("jskeyword", 'style', ['if', 'while'])
         lit = highlight.Span('string', 'style', '"', '"', escape='\\')
@@ -257,7 +261,8 @@ class TestHighlight(kaa_testutils._TestDocBase):
         jstoken = highlight.Tokenizer([kwds, lit, endsection])
 
         elem = highlight.Span('comment', 'style', '<!--', '-->')
-        scriptelem = highlight.SubSection('beginscript', 'style', '<script>', tokenizer=jstoken)
+        scriptelem = highlight.SubSection(
+            'beginscript', 'style', '<script>', tokenizer=jstoken)
         htmltoken = highlight.Tokenizer([elem, scriptelem])
 
         hl = highlight.Highlighter(tokenizers=[htmltoken, jstoken])
@@ -313,16 +318,15 @@ class TestHighlight(kaa_testutils._TestDocBase):
         doc.mode.highlight = hl
         doc.mode.highlight.update_style(doc)
 
-        assert ([hl.tokenizers[0].nulltoken]*3 + [scriptelem.section_start]*8 + [kwds.tokenid]*2 +
-                [hl.tokenizers[1].nulltoken] + [kwds.tokenid]*5 + [endsection.section_end]*9 +
-                [hl.tokenizers[0].nulltoken]*8 + [elem.span_start]*4 + [elem.span_mid]*9 +
-                [elem.span_end]*3)  == doc.styles.getints(0, len(doc.styles))
+        assert ([hl.tokenizers[0].nulltoken] * 3 + [scriptelem.section_start] * 8 + [kwds.tokenid] * 2 +
+                [hl.tokenizers[1].nulltoken] + [kwds.tokenid] * 5 + [endsection.section_end] * 9 +
+                [hl.tokenizers[0].nulltoken] * 8 + [elem.span_start] * 4 + [elem.span_mid] * 9 +
+                [elem.span_end] * 3) == doc.styles.getints(0, len(doc.styles))
 
-        doc.replace(16, 17, 'x') # while -> whxle
+        doc.replace(16, 17, 'x')  # while -> whxle
         doc.mode.highlight.update_style(doc)
 
-        assert ([hl.tokenizers[0].nulltoken]*3 + [scriptelem.section_start]*8 + [kwds.tokenid]*2 +
-                [hl.tokenizers[1].nulltoken] + [hl.tokenizers[1].nulltoken]*5 + [endsection.section_end]*9 +
-                [hl.tokenizers[0].nulltoken]*8 + [elem.span_start]*4 + [elem.span_mid]*9 +
-                [elem.span_end]*3)  == doc.styles.getints(0, len(doc.styles))
-
+        assert ([hl.tokenizers[0].nulltoken] * 3 + [scriptelem.section_start] * 8 + [kwds.tokenid] * 2 +
+                [hl.tokenizers[1].nulltoken] + [hl.tokenizers[1].nulltoken] * 5 + [endsection.section_end] * 9 +
+                [hl.tokenizers[0].nulltoken] * 8 + [elem.span_start] * 4 + [elem.span_mid] * 9 +
+                [elem.span_end] * 3) == doc.styles.getints(0, len(doc.styles))

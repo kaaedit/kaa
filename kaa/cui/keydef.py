@@ -1,4 +1,7 @@
-import curses, curses_ex, io, os
+import curses
+import curses_ex
+import io
+import os
 from kaa.keyboard import *
 
 KAA_KEYCODE_FROM = 1000
@@ -31,6 +34,7 @@ BUTTONNAMES = {
 
 
 class KeyEvent:
+
     """ Stores information of keyboard input event.
     
     Attributes:
@@ -38,8 +42,9 @@ class KeyEvent:
         key -- key code returned by curses.
     """
     KEY_TRANSLATE = {
-        curses.KEY_BACKSPACE:'\x7f'
+        curses.KEY_BACKSPACE: '\x7f'
     }
+
     def __init__(self, wnd, key, no_trailing_char):
         """ 
         
@@ -63,6 +68,7 @@ class KeyEvent:
 
 
 class MouseEvent:
+
     """ Stores information of mouse input event.
     
     Attributes:
@@ -83,7 +89,7 @@ class MouseEvent:
         self.bstate = bstate
 
         self.code = bstate & ~(curses.BUTTON_SHIFT | curses.BUTTON_CTRL |
-                curses.BUTTON_ALT)
+                               curses.BUTTON_ALT)
 
         self.shift = bstate & curses.BUTTON_SHIFT
         self.ctrl = bstate & curses.BUTTON_CTRL
@@ -116,14 +122,14 @@ class MouseEvent:
                        ('SHIFT+' if self.shift else '')))
 
         return '<mouse: ({},{}) - {}{} {}>'.format(
-                self.x, self.y, mods, name, super().__repr__())
+            self.x, self.y, mods, name, super().__repr__())
 
     def unget(self):
         curses.ungetmouse(self.mouseid, self.x, self.y, self.z, self.bstate)
 
 
 KEYNAME_CURSES = {
-    backspace:'\x7f',
+    backspace: '\x7f',
     delete: curses.KEY_DC,
     pageup: curses.KEY_PPAGE,
     pagedown: curses.KEY_NPAGE,
@@ -175,7 +181,7 @@ KEYNAME_CURSES_SHIFT = {
 
 KEYNAME_TO_CODE = {
     # (ctrl, shift, key) : keycode
-    (0, 0, backspace):'\x7f',
+    (0, 0, backspace): '\x7f',
     (0, 0, delete): curses.KEY_DC,
     (0, 0, pageup): curses.KEY_PPAGE,
     (0, 0, pagedown): curses.KEY_NPAGE,
@@ -227,6 +233,7 @@ KEYNAME_TO_CODE = {
 
 def keyfromname(key, ctrl, shift):
     return KEYNAME_TO_CODE.get((ctrl, shift, key))
+
 
 def convert_registered_key(key):
     if key in REGISTERD_SEQUENCE:
@@ -286,6 +293,7 @@ KNOWN_KEY_SEQUENCE = {
 
 REGISTERD_SEQUENCE = {}
 
+
 def init(conf):
     # Experimental code to get keycode from cap name
     for i in range(512, 1024):
@@ -296,14 +304,14 @@ def init(conf):
 
     result = io.StringIO()
     err = False
-    
+
     reg_code = KAA_KEYCODE_FROM
     # register ESC + seq
     registered_seqs = set()
     for name, keycode in CAPNAME_TO_CODE.items():
         seq = curses.tigetstr(name)
         if seq:
-            seq = b'\x1b'+seq
+            seq = b'\x1b' + seq
             try:
                 curses_ex.define_key(seq, reg_code)
                 print('OK: ', name, keycode, reg_code, seq, file=result)
@@ -311,7 +319,7 @@ def init(conf):
                 print('NG: ', name, keycode, reg_code, seq, file=result)
                 err = True
                 continue
-                
+
             REGISTERD_SEQUENCE[reg_code] = ['\x1b', keycode]
             reg_code += 1
             registered_seqs.add(seq)
@@ -332,4 +340,3 @@ def init(conf):
     logname = os.path.join(conf.LOGDIR, 'DEFINE_KEY.LOG')
     with open(logname, 'w') as f:
         f.write(result.getvalue())
-        

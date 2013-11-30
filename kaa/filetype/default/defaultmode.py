@@ -1,8 +1,9 @@
-import copy, time
+import copy
+import time
 from collections import defaultdict, namedtuple
 import kaa
-from kaa.commands import (appcommand, filecommand, editorcommand, 
-    editmodecommand, toolcommand)
+from kaa.commands import (appcommand, filecommand, editorcommand,
+                          editmodecommand, toolcommand)
 from . import keybind, theme, modebase, menu
 from kaa import highlight
 
@@ -23,14 +24,14 @@ class DefaultMode(modebase.ModeBase):
     ]
 
     VI_KEY_BIND = [
-#        keybind.command_mode_keys
+        #        keybind.command_mode_keys
     ]
 
     VI_VISUAL_MODE_KEY_BIND = [
-#        keybind.visual_mode_keys
+        #        keybind.visual_mode_keys
     ]
     VI_VISUAL_LINEWISE_MODE_KEY_BIND = [
-#        keybind.visual_linewise_mode_keys
+        #        keybind.visual_linewise_mode_keys
     ]
 
     def init_keybind(self):
@@ -88,7 +89,6 @@ class DefaultMode(modebase.ModeBase):
         self.keybind_vi_visualmode.clear()
         self.keybind_vi_visuallinewisemode.clear()
 
-
     def on_idle(self):
         if self.closed:
             return
@@ -100,6 +100,7 @@ class DefaultMode(modebase.ModeBase):
         return ret
 
     INTERVAL_CHECKUPDATE = 15
+
     def check_fileupdate(self):
         if not self.DOCUMENT_MODE:
             return
@@ -114,7 +115,7 @@ class DefaultMode(modebase.ModeBase):
         if self.document.fileinfo:
             if self.document.fileinfo.check_update():
                 self.file_commands.notify_fileupdated(self.document)
-                
+
     def on_esc_pressed(self, wnd, event):
         super().on_esc_pressed(wnd, event)
         return
@@ -138,7 +139,7 @@ class DefaultMode(modebase.ModeBase):
         matchpos = self.find_match_parenthesis(pos)
         if matchpos is not None:
             charattrs[matchpos] = self.get_styleid('parenthesis_match')
-        
+
     def update_charattr(self, wnd):
         pos = wnd.cursor.pos
         d = {}
@@ -149,22 +150,21 @@ class DefaultMode(modebase.ModeBase):
         if c and (c in self.PARENTHESIS):
             self._show_parenthesis(d, pos)
         elif 1 < pos:
-            c = self.document.buf[pos-1]
+            c = self.document.buf[pos - 1]
             if c in self.PARENTHESIS_CLOSE:
-                self._show_parenthesis(d, pos-1)
-                    
+                self._show_parenthesis(d, pos - 1)
+
         if d != wnd.charattrs:
             wnd.charattrs = d
             wnd.screen.style_updated()
             return True
 
-
     PARENTHESIS_OPEN = '({['
     PARENTHESIS_CLOSE = ')}]'
     PARENTHESIS = PARENTHESIS_OPEN + PARENTHESIS_CLOSE
-    PARENSIS_PAIR = {o:c for (o, c) in
-                     zip(PARENTHESIS_OPEN+PARENTHESIS_CLOSE,
-                         PARENTHESIS_CLOSE+PARENTHESIS_OPEN)}
+    PARENSIS_PAIR = {o: c for (o, c) in
+                     zip(PARENTHESIS_OPEN + PARENTHESIS_CLOSE,
+                         PARENTHESIS_CLOSE + PARENTHESIS_OPEN)}
 
     def iter_parenthesis(self, posfrom):
         while True:
@@ -176,7 +176,7 @@ class DefaultMode(modebase.ModeBase):
 
             attr = self.document.styles.getint(pos)
             yield pos, self.document.buf[pos], attr
-            posfrom = pos+1
+            posfrom = pos + 1
 
     def iter_rev_parenthesis(self, posfrom):
         posfrom += 1
@@ -203,19 +203,20 @@ class DefaultMode(modebase.ModeBase):
             f = self.iter_rev_parenthesis
             key = (self.PARENSIS_PAIR[opener], curattr)
 
-
         for pos, c, attr in f(posfrom):
             if c in self.PARENTHESIS_OPEN:
-                d[(c,attr)] += 1
+                d[(c, attr)] += 1
             else:
-                d[(self.PARENSIS_PAIR[c],attr)] -= 1
+                d[(self.PARENSIS_PAIR[c], attr)] -= 1
 
             if d.get(key) == 0:
                 return pos
 
-    _headerinfo = namedtuple('_headerinfo', 
-            ['token', 'parent', 'name', 'dispname', 'lineno', 'pos'])
+    _headerinfo = namedtuple('_headerinfo',
+                             ['token', 'parent', 'name', 'dispname', 'lineno', 'pos'])
+
     class HeaderInfo(_headerinfo):
+
         def get_parents(self):
             ret = []
             p = self.parent

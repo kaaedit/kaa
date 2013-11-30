@@ -7,14 +7,16 @@ from kaa.filetype.javascript import javascriptmode
 
 CSSThemes = {
     'basic':
-        Theme([
-            Style('css-selector', 'magenta', 'default'),
-            Style('css-propname', 'blue', 'default', bold=True),
-            Style('css-propvalue', 'green', 'default', bold=True),
+    Theme([
+        Style('css-selector', 'magenta', 'default'),
+        Style('css-propname', 'blue', 'default', bold=True),
+        Style('css-propvalue', 'green', 'default', bold=True),
     ]),
 }
 
+
 class CSSProp(Token):
+
     def __init__(self, name, stylename, close='', closestyle=None):
         super().__init__(name, stylename)
 
@@ -23,10 +25,13 @@ class CSSProp(Token):
             self.close = '(?P<CLOSE>{})|'.format(close)
             self.closestyle = closestyle
 
-        self.CSS_TOP = gre.compile(self.close + r'(?P<COMMENT>/\*)|(?P<STRING>[\'"])|({)')
+        self.CSS_TOP = gre.compile(
+            self.close + r'(?P<COMMENT>/\*)|(?P<STRING>[\'"])|({)')
         self.END_COMMENT = gre.compile(r'\*/')
-        self.PROPERTY_TOP = gre.compile(self.close + r'(?P<COMMENT>/\*)|(?P<STRING>[\'"])|:|}')
-        self.PROPERTY_VALUE = gre.compile(self.close + r'(?P<COMMENT>/\*)|(?P<STRING>[\'"])|;|}')
+        self.PROPERTY_TOP = gre.compile(
+            self.close + r'(?P<COMMENT>/\*)|(?P<STRING>[\'"])|:|}')
+        self.PROPERTY_VALUE = gre.compile(
+            self.close + r'(?P<COMMENT>/\*)|(?P<STRING>[\'"])|;|}')
 
     def re_start(self):
         return r'.'
@@ -61,7 +66,8 @@ class CSSProp(Token):
         # Returns top of current keyword
         if 0 < pos < len(doc.styles):
             # resume from top of last selector
-            p = doc.styles.rfindint([self.span_selector], 0, pos, comp_ne=False)
+            p = doc.styles.rfindint(
+                [self.span_selector], 0, pos, comp_ne=False)
             if p == -1:
                 return 0
             return p
@@ -180,6 +186,7 @@ class CSSProp(Token):
 
 
 class CSSToken(CSSProp):
+
     def parse_css(self, buf, pos):
         while True:
             m = self.CSS_TOP.search(buf, pos)
@@ -210,9 +217,11 @@ class CSSToken(CSSProp):
 
     root_func = parse_css
 
+
 def build_tokenizer(close=None, closestyle=None):
     csstoken = CSSToken('css', 'default', close=close, closestyle=closestyle)
     return Tokenizer([csstoken])
+
 
 def build_proptokenizer(close=None, closestyle=None):
     csstoken = CSSProp('css', 'default', close=close, closestyle=closestyle)
@@ -221,10 +230,10 @@ def build_proptokenizer(close=None, closestyle=None):
 
 class CSSMode(defaultmode.DefaultMode):
     MODENAME = 'CSS'
+
     def init_themes(self):
         super().init_themes()
         self.themes.append(CSSThemes)
 
     def init_tokenizers(self):
         self.tokenizers = [build_tokenizer()]
-

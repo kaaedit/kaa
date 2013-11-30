@@ -4,7 +4,9 @@ from kaa import cursor
 
 import kaa_testutils
 
+
 class TestCursor(kaa_testutils._TestScreenBase):
+
     def _getcursor(self, s, width=10, height=10):
         wnd = self._getwnd(s, width, height)
         return cursor.Cursor(wnd)
@@ -30,7 +32,6 @@ class TestCursor(kaa_testutils._TestScreenBase):
         assert cursor.up()
         assert cursor.pos == 18
 
-
     def test_down(self):
         cursor = self._getcursor("abc\ndef\nghi\n012\n345\n678\n", height=3)
         cursor.preferred_col = 10
@@ -55,7 +56,7 @@ class TestCursor(kaa_testutils._TestScreenBase):
         cursor.setpos(0)
         for i in range(len(s)):
             cursor.right()
-            assert cursor.pos == i+1
+            assert cursor.pos == i + 1
 
     def test_rightword(self):
         s = 'abc あいうえおカキクケコ'
@@ -78,7 +79,7 @@ class TestCursor(kaa_testutils._TestScreenBase):
         s = "abc\ndef\nghi\n012\n345\n678\n"
         cursor = self._getcursor(s, height=1)
         cursor.setpos(len(s))
-        for i in range(len(s)-1, -1, -1):
+        for i in range(len(s) - 1, -1, -1):
             cursor.left()
             assert cursor.pos == i
 
@@ -114,7 +115,6 @@ class TestCursor(kaa_testutils._TestScreenBase):
         cursor.pagedown()
         assert cursor.pos == 24
 
-
     def test_pageup(self):
         s = "abc\ndef\nghi\n012\n345\n678\n"
         cursor = self._getcursor(s, height=3)
@@ -129,4 +129,3 @@ class TestCursor(kaa_testutils._TestScreenBase):
 
         cursor.pageup()
         assert cursor.pos == 5
-

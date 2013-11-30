@@ -1,4 +1,6 @@
 import kaa
+
+
 class Macro:
     recording = False
     commands = ()

@@ -1,16 +1,19 @@
-import curses, collections
+import curses
+import collections
 import kaa
 from kaa import document
 from kaa.cui.color import ColorName
 from kaa.ui.statusbar import statusbarmode
 from kaa.cui import editor
 
+
 class Splitter:
     vsep = hsep = 0
+
     def __init__(self, frame, parent, wnd):
         super().__init__()
 
-        self.wnd = self.left = self.right = self.above = self.below= None
+        self.wnd = self.left = self.right = self.above = self.below = None
         assert frame
         self.frame = frame
         self.parent = parent
@@ -46,17 +49,23 @@ class Splitter:
         self.resize()
 
     def _destroy_children(self):
-        if self.left: self.left.destroy()
-        if self.right: self.right.destroy()
-        if self.above: self.above.destroy()
-        if self.below: self.below.destroy()
+        if self.left:
+            self.left.destroy()
+        if self.right:
+            self.right.destroy()
+        if self.above:
+            self.above.destroy()
+        if self.below:
+            self.below.destroy()
         self.left = self.right = self.above = self.below = None
-        
+
     def destroy(self):
         self._destroy_children()
-        if self.wnd: self.wnd.destroy()
-        if self.statusbar: self.statusbar.destroy()
-        
+        if self.wnd:
+            self.wnd.destroy()
+        if self.statusbar:
+            self.statusbar.destroy()
+
         self.parent = None
         self.frame = None
         self.statusbar = None
@@ -77,15 +86,15 @@ class Splitter:
             self._destroy_children()
             self.wnd = editor.TextEditorWindow(parent=self.frame)
             self.resize()
-            
+
         self.wnd.show_doc(doc)
-            
+
     def split(self, vert, doc=None):
         w, h = self.wnd.getsize()
         if not doc:
             doc = self.wnd.document
         if vert:
-            self.vsep = w//2+1
+            self.vsep = w // 2 + 1
             self.left = Splitter(self.frame, self, self.wnd)
             self.right = Splitter(self.frame, self, self.wnd.dup())
             self.right.wnd.show_doc(doc)
@@ -93,17 +102,17 @@ class Splitter:
             self.left.activate()
             ret = self.right
         else:
-            self.hsep = h//2+1
+            self.hsep = h // 2 + 1
             self.above = Splitter(self.frame, self, self.wnd)
             self.below = Splitter(self.frame, self, self.wnd.dup())
             self.below.wnd.show_doc(doc)
             self.wnd = None
             self.above.activate()
             ret = self.below
-            
+
         self.resize()
         return ret
-        
+
     def join(self, wnd):
         if self.wnd:
             # not splitted
@@ -156,9 +165,9 @@ class Splitter:
         if self.wnd:
             if not self.statusbar:
                 self._build_statusbar()
-            self.statusbar.set_rect(l, b-1, r, b)
+            self.statusbar.set_rect(l, b - 1, r, b)
             self.statusbar.bring_top()
-            self.wnd.set_rect(l, t, r, b-1)
+            self.wnd.set_rect(l, t, r, b - 1)
             self.wnd.set_statusbar(self.statusbar.document.mode)
             self.wnd.bring_top()
         else:
@@ -167,11 +176,11 @@ class Splitter:
                 self.statusbar = None
 
             if self.left:
-                self.left.set_rect(l, t, l+self.vsep, b)
-                self.right.set_rect(l+self.vsep+1, t, r, b)
+                self.left.set_rect(l, t, l + self.vsep, b)
+                self.right.set_rect(l + self.vsep + 1, t, r, b)
             elif self.above:
-                self.above.set_rect(l, t, r, t+self.hsep)
-                self.below.set_rect(l, t+self.hsep, r, b)
+                self.above.set_rect(l, t, r, t + self.hsep)
+                self.below.set_rect(l, t + self.hsep, r, b)
 
     def get_editors(self):
         if self.wnd:
@@ -209,12 +218,13 @@ class Splitter:
     def draw(self):
         self.frame._cwnd.attron(
             kaa.app.colors.get_color(
-                kaa.app.colors.colornames.get('CYAN'), 
+                kaa.app.colors.colornames.get('CYAN'),
                 kaa.app.colors.colornames.get('DEFAULT')))
         l, t, r, b = self.rect
         if self.left:
             try:
-                self.frame._cwnd.vline(t, l+self.vsep, curses.ACS_VLINE, b-t)
+                self.frame._cwnd.vline(
+                    t, l + self.vsep, curses.ACS_VLINE, b - t)
             except curses.error:
                 pass
 
@@ -249,4 +259,3 @@ class Splitter:
                 self.hsep += 1
                 self.resize()
                 self.draw()
-

@@ -6,7 +6,7 @@ from kaa.filetype.markdown import markdownmode
 class TestMarkdownHighlight(kaa_testutils._TestDocBase):
     tokenizers = [markdownmode.build_tokenizer()]
     tokens = tokenizers[0].tokens
-    
+
     def test_header1(self):
         hl = highlight.Highlighter(tokenizers=self.tokenizers)
 
@@ -123,5 +123,3 @@ class TestMarkdownHighlight(kaa_testutils._TestDocBase):
             (1, 6, self.tokenizers[0].nulltoken),
             (6, 7, self.tokenizers[0].nulltoken),
         ] == list((f, t, style) for f, t, style in hl.highlight(doc, 0))
-
-

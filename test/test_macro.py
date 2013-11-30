@@ -3,7 +3,9 @@ from kaa.commands import editorcommand
 import kaa.macro
 from kaa.command import command, norec
 
+
 class TestMacro(kaa_testutils._TestScreenBase):
+
     def test_toggle_record(self):
         macro = kaa.macro.Macro()
         assert not macro.is_recording()
@@ -20,17 +22,19 @@ class TestMacro(kaa_testutils._TestScreenBase):
         macro.toggle_record()
 
         @command('command1')
-        def f():pass
+        def f():
+            pass
 
         macro.record(f)
-        assert macro.get_commands() == [('command1',(), {})]
+        assert macro.get_commands() == [('command1', (), {})]
 
         @command('command2')
         @norec
-        def g():pass
+        def g():
+            pass
 
         macro.record(g)
-        assert macro.get_commands() == [('command1',(),{})]
+        assert macro.get_commands() == [('command1', (), {})]
 
     def test_run(self):
         wnd = self._getwnd("abc\ndef\n")

@@ -7,8 +7,8 @@ from kaa.keyboard import *
 
 FrameListThemes = {
     'basic':
-        Theme([
-        ]), 
+    Theme([
+    ]),
 }
 
 framelist_keys = {
@@ -22,7 +22,9 @@ framelist_keys = {
     '\n': 'framelist.close',
 }
 
+
 class FrameListCommands(Commands):
+
     def _itermarks(self, wnd):
         ret = []
         names = dict(('childframe_{}'.format(id(frame)), frame)
@@ -30,7 +32,7 @@ class FrameListCommands(Commands):
         for name, pos in wnd.document.marks.items():
             if name in names:
                 ret.append((names[name], pos))
-        ret = sorted(ret, key=lambda e:e[1])
+        ret = sorted(ret, key=lambda e: e[1])
         return [f for f, pos in ret]
 
     # todo: refactor
@@ -43,10 +45,10 @@ class FrameListCommands(Commands):
         for n, frame in enumerate(frames):
             if cur is frame:
                 if n:
-                    frames[n-1].bring_top()
+                    frames[n - 1].bring_top()
                     wnd.get_label('popup').bring_top()
                     wnd.document.mode._update_style(wnd)
-                    wnd.document.mode._activated_frame = frames[n-1]
+                    wnd.document.mode._activated_frame = frames[n - 1]
                     return
 
     @command('framelist.next')
@@ -58,11 +60,11 @@ class FrameListCommands(Commands):
 
         for n, frame in enumerate(frames):
             if cur is frame:
-                if n < len(frames)-1:
-                    frames[n+1].bring_top()
+                if n < len(frames) - 1:
+                    frames[n + 1].bring_top()
                     wnd.get_label('popup').bring_top()
                     wnd.document.mode._update_style(wnd)
-                    wnd.document.mode._activated_frame = frames[n+1]
+                    wnd.document.mode._activated_frame = frames[n + 1]
                     return
 
     @command('framelist.close')
@@ -79,11 +81,12 @@ class FrameListCommands(Commands):
         if popup:
             popup.destroy()
 
+
 class FrameListMode(dialogmode.DialogMode):
     autoshrink = True
     USE_UNDO = False
     _activated_frame = None
-    
+
     @classmethod
     def build(cls):
         buf = document.Buffer()
@@ -96,11 +99,12 @@ class FrameListMode(dialogmode.DialogMode):
                 start = f.document.endpos()
                 markname = '_{}'.format(id(frame))
                 f.append_text('default', frame.get_title().replace('&', '&&'))
-    
-                f.document.marks['childframe'+markname] = (start, f.document.endpos())
-    
+
+                f.document.marks['childframe' +
+                                 markname] = (start, f.document.endpos())
+
                 f.append_text('default', ' ')
-    
+
             mode._update_style(None)
             return doc
 
@@ -110,12 +114,14 @@ class FrameListMode(dialogmode.DialogMode):
         for frame in kaa.app.get_frames():
             markname = '_{}'.format(id(frame))
 
-            f, t = self.document.marks['childframe'+markname]
+            f, t = self.document.marks['childframe' + markname]
             if activeframe is frame:
-                self.document.styles.setints(f, t, self.get_styleid('activemark'))
+                self.document.styles.setints(
+                    f, t, self.get_styleid('activemark'))
                 cursorpos = f
             else:
-                self.document.styles.setints(f, t, self.get_styleid('nonactivemark'))
+                self.document.styles.setints(
+                    f, t, self.get_styleid('nonactivemark'))
 
         if wnd and cursorpos is not None:
             wnd.cursor.setpos(cursorpos)

@@ -1,43 +1,47 @@
-import os, importlib, sqlite3, json
+import os
+import importlib
+import sqlite3
+import json
 import kaa
 from kaa import consts, utils
 
+
 class KaaHistoryStorage:
+
     def __init__(self, filename):
         self.filename = filename
         self.conn = sqlite3.connect(filename)
-        
+
     def close(self):
         self.conn.close()
-        
+
     def add_history(self, history):
         history.set_storage(self)
 
-    
 
 class History:
     MAX_HISTORY = 1000
 
     def __init__(self, name, storage):
         self.name = name
-        self.table_name = 'hist_'+self.name
+        self.table_name = 'hist_' + self.name
         self.storage = None
 
         storage.add_history(self)
-        
+
     @utils.ignore_errors
     def close(self):
         ret = self.storage.conn.execute('''
             SELECT id FROM {} ORDER BY id DESC LIMIT ?
             '''.format(self.table_name), (self.MAX_HISTORY, ))
-        recs =[value for value in ret]
+        recs = [value for value in ret]
         if recs:
             last, = recs[-1]
             self.storage.conn.execute('''
                 DELETE FROM {} WHERE id < ?
                 '''.format(self.table_name), (last,))
             self.storage.conn.commit()
-            
+
     def set_storage(self, storage):
         storage.conn.execute('''
             CREATE TABLE IF NOT EXISTS {}
@@ -53,7 +57,7 @@ class History:
 
         ret = self.storage.conn.execute('''
             DELETE FROM {} WHERE value = ?'''.format(self.table_name),
-            (value, ))
+                                        (value, ))
 
         self.storage.conn.execute('''
             INSERT INTO {}(value, info) VALUES(?, ?)
@@ -66,7 +70,7 @@ class History:
             SELECT value, info FROM {} ORDER BY id DESC LIMIT ?
             '''.format(self.table_name),
             (self.MAX_HISTORY,))
-        return [(value, json.loads(info)) for value,info in ret]
+        return [(value, json.loads(info)) for value, info in ret]
 
     @utils.ignore_errors
     def find(self, value):
@@ -77,7 +81,8 @@ class History:
 
         for info, in ret:
             return json.loads(info)
-        
+
+
 class Config:
     FILETYPES = [
         'kaa.filetype.default',
@@ -94,11 +99,11 @@ class Config:
     DEFAULT_NEWLINE = 'auto'
     DEFAULT_ENCODING = 'utf-8'
     AMBIGUOUS_WIDTH = 1
-    
+
     def __init__(self, option):
         kaadir = os.path.abspath(
-                 os.path.expandvars(
-                 os.path.expanduser(consts.KAA_DIR)))
+            os.path.expandvars(
+                os.path.expanduser(consts.KAA_DIR)))
 
         if not os.path.exists(kaadir):
             os.makedirs(kaadir)
@@ -116,7 +121,7 @@ class Config:
         self.HISTDIR = histdir
 
         self.palette = option.palette
-        
+
     def init_history(self):
         self.hist_storage = KaaHistoryStorage(
             os.path.join(self.HISTDIR, consts.HIST_DBNAME))
@@ -131,8 +136,10 @@ class Config:
         self.hist_grepfiles = History('grep_filename', self.hist_storage)
         self.hist_shellcommands = History('shellcommands', self.hist_storage)
         self.hist_makecommands = History('makecommands', self.hist_storage)
-        self.hist_pythondebug_expr = History('pythondebug_expr', self.hist_storage)
-        self.hist_pythondebugcommands = History('pythondebug_cmdline', self.hist_storage)
+        self.hist_pythondebug_expr = History(
+            'pythondebug_expr', self.hist_storage)
+        self.hist_pythondebugcommands = History(
+            'pythondebug_cmdline', self.hist_storage)
 
     def close(self):
         self.hist_files.close()
@@ -146,13 +153,12 @@ class Config:
         self.hist_makecommands.close()
         self.hist_pythondebug_expr.close()
         self.hist_pythondebugcommands.close()
-        
+
     def get_mode_packages(self):
         for pkgname in self.FILETYPES:
             try:
                 pkg = importlib.import_module(pkgname)
             except Exception:
-                kaa.log.exception('Error loading filetype: '+repr(pkgname))
+                kaa.log.exception('Error loading filetype: ' + repr(pkgname))
             else:
                 yield pkg
-   

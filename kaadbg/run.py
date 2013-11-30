@@ -4,6 +4,7 @@ import socket
 import kaadbg.debug
 import re
 
+
 def run_file(portno):
     filename = sys.argv[0]
     # Replace pdb's dir with script's dir in front of module search path.
@@ -14,25 +15,27 @@ def run_file(portno):
     port = os.environ.get('KAADBG_DOMAINPORT')
     if portno is None and not port:
         portno = kaadbg.debug.DEFAULT_PORT_NO
-        
+
     if portno:
         kaadbg.debug.port.connect(portno)
     else:
         kaadbg.debug.port.sock = socket.fromfd(
-                    int(port), 
-                    socket.AF_UNIX, socket.SOCK_STREAM)
-        
+            int(port),
+            socket.AF_UNIX, socket.SOCK_STREAM)
+
     kaadbg.debug.port.exec_file(filename)
+
 
 def usage():
     print('''python -m kaadbg.run [-p portno] myscript.py myarg1 myargs''')
+
 
 def _args():
     if len(sys.argv) == 2:
         if sys.argv[1] == '-h':
             usage()
             exit(0)
-            
+
     del sys.argv[0]
 
     m = re.match(r'-p(\d+)?', sys.argv[0])
@@ -48,7 +51,7 @@ def _args():
         no = None
 
     return no
-    
+
 if __name__ == "__main__":
     try:
         portno = _args()

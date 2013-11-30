@@ -10,16 +10,17 @@ from kaa.commands import editorcommand
 
 FilenameIndexThemes = {
     'basic':
-        Theme([
-            Style('filenameindex-filename', 'Green', 'Default'),
-            Style('filenameindex-lineno', 'Green', 'Default'),
-        ]),
+    Theme([
+        Style('filenameindex-filename', 'Green', 'Default'),
+        Style('filenameindex-lineno', 'Green', 'Default'),
+    ]),
 }
 
 filenameindex_keys = {
     '\r': ('filenameindex.showmatch'),
     '\n': ('filenameindex.showmatch'),
 }
+
 
 def _enc_japanese(filename):
     encoding = kaa.app.storage.guess_japanese_encoding(filename)
@@ -42,7 +43,7 @@ class FilenameIndexMode(defaultmode.DefaultMode):
 
     encoding = None
     newline = None
-    
+
     def init_themes(self):
         super().init_themes()
         self.themes.append(FilenameIndexThemes)
@@ -83,7 +84,7 @@ class FilenameIndexMode(defaultmode.DefaultMode):
         filename = os.path.abspath(filename)
         doc = document.Document.find_filename(filename)
         if not doc:
-            enc = self.encoding 
+            enc = self.encoding
             if not enc:
                 enc = kaa.app.config.DEFAULT_ENCODING
             if enc == 'japanese':
@@ -92,9 +93,9 @@ class FilenameIndexMode(defaultmode.DefaultMode):
             newline = self.newline
             if not newline:
                 newline = kaa.app.config.DEFAULT_NEWLINE
-                
+
             doc = kaa.app.storage.openfile(
-                    filename, encoding=enc, nohist=True, newline=newline)
+                filename, encoding=enc, nohist=True, newline=newline)
 
         buddy = wnd.splitter.get_buddy()
         if not buddy:
@@ -104,37 +105,36 @@ class FilenameIndexMode(defaultmode.DefaultMode):
             if buddy.wnd and buddy.wnd.document is doc:
                 self._locate_doc(buddy.wnd, doc, lineno)
                 return
-                
+
             def callback(canceled):
                 if not canceled:
                     buddy.show_doc(doc)
                     self._locate_doc(buddy.wnd, doc, lineno)
             self.app_commands.save_splitterdocs(wnd, buddy, callback)
-            
+
     RE_FILENAME = gre.compile(
-        r'(?P<FILENAME>^[^:\n]+)\:(?P<LINENO>\d+)\:.*$', 
-        gre.M|gre.X)
-        
+        r'(?P<FILENAME>^[^:\n]+)\:(?P<LINENO>\d+)\:.*$',
+        gre.M | gre.X)
+
     def is_match(self, pos):
-        m  = self.RE_FILENAME.match(self.document.buf, pos)
+        m = self.RE_FILENAME.match(self.document.buf, pos)
         return m
-            
+
     def on_global_prev(self, wnd):
         if kaa.app.focus in self.document.wnds:
             if self.is_match(self.document.gettol(wnd.cursor.pos)):
                 self.show_hit(kaa.app.focus)
                 return True
-            
+
         pos = wnd.cursor.pos
 
         while True:
             eol = self.document.gettol(pos)
             if eol:
-                tol = self.document.gettol(eol-1)
+                tol = self.document.gettol(eol - 1)
             else:
                 eol = self.document.endpos()
                 tol = self.document.gettol(eol)
-
 
             if self.is_match(tol):
                 wnd.cursor.setpos(tol)
@@ -147,13 +147,13 @@ class FilenameIndexMode(defaultmode.DefaultMode):
                 return True
 
             pos = tol
-        
+
     def on_global_next(self, wnd):
         if kaa.app.focus in self.document.wnds:
             if self.is_match(self.document.gettol(wnd.cursor.pos)):
                 self.show_hit(kaa.app.focus)
                 return True
-            
+
         pos = wnd.cursor.pos
         while True:
             tol = self.document.geteol(pos)
@@ -167,6 +167,5 @@ class FilenameIndexMode(defaultmode.DefaultMode):
                 wnd.cursor.setpos(0)
                 self.document.wnds[0].activate()
                 return True
-    
-            pos = tol
 
+            pos = tol

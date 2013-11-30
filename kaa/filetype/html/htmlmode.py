@@ -1,23 +1,25 @@
 from collections import namedtuple
 from kaa.filetype.default import defaultmode
 from gappedbuf import re as gre
-from kaa.highlight import (Tokenizer, Span, SingleToken, Token, 
-        SubSection, EndSection, SubTokenizer)
+from kaa.highlight import (Tokenizer, Span, SingleToken, Token,
+                           SubSection, EndSection, SubTokenizer)
 from kaa.theme import Theme, Style
 from kaa.filetype.javascript import javascriptmode
 from kaa.filetype.css import cssmode
 
 HTMLThemes = {
     'basic':
-        Theme([
-            Style('html-decl', 'Red', 'default'),
-            Style('html-tag', 'Magenta', 'default'),
-            Style('html-attrname', 'green', 'default'),
-            Style('html-attrvalue', 'yellow', 'default'),
-        ]),
+    Theme([
+        Style('html-decl', 'Red', 'default'),
+        Style('html-tag', 'Magenta', 'default'),
+        Style('html-attrname', 'green', 'default'),
+        Style('html-attrvalue', 'yellow', 'default'),
+    ]),
 }
 
+
 class HTMLTag(Token):
+
     def re_start(self):
         return r'<'
 
@@ -35,7 +37,7 @@ class HTMLTag(Token):
         # Returns top of current keyword
         if 0 < pos < len(doc.styles):
             p = doc.styles.rfindint([self.span_lt],
-                0, pos, comp_ne=False)
+                                    0, pos, comp_ne=False)
             if p != -1:
                 return p
         return 0
@@ -51,12 +53,12 @@ class HTMLTag(Token):
             yield match.start(), match.end(), self.span_attrvalue
             return match.end()
 
-        yield f, f+1, self.span_attrvalue
-        js_to, tok, close = yield from func.iter_subtokenizers(None, doc, f+1, None)
+        yield f, f + 1, self.span_attrvalue
+        js_to, tok, close = yield from func.iter_subtokenizers(None, doc, f + 1, None)
 
         pos = js_to
         if js_to < doc.endpos():
-            yield js_to, js_to+1, self.span_attrvalue
+            yield js_to, js_to + 1, self.span_attrvalue
             pos = js_to + 1
 
         return pos
@@ -72,15 +74,16 @@ class HTMLTag(Token):
             yield match.start(), match.end(), self.span_attrvalue
             return match.end()
 
-        yield f, f+1, self.span_attrvalue
-        pos, tok, close = yield from func.iter_subtokenizers(None, doc, f+1, None)
+        yield f, f + 1, self.span_attrvalue
+        pos, tok, close = yield from func.iter_subtokenizers(None, doc, f + 1, None)
         return pos
 
-    RE_ELEMNAME=gre.compile(r'\s*[^>\s]+')
-    RE_CLOSE=gre.compile(r'\s*/?>', gre.S)
+    RE_ELEMNAME = gre.compile(r'\s*[^>\s]+')
+    RE_CLOSE = gre.compile(r'\s*/?>', gre.S)
 
-    RE_ATTRNAME=gre.compile(r'>|(?P<ATTRNAME>[-._:a-zA-Z0-9]+)(?P<EQUAL>\s*=)?\s*')
-    RE_ATTRVALUE=gre.compile(r'\s*(?P<ATTRVALUE>({}))'.format(
+    RE_ATTRNAME = gre.compile(
+        r'>|(?P<ATTRNAME>[-._:a-zA-Z0-9]+)(?P<EQUAL>\s*=)?\s*')
+    RE_ATTRVALUE = gre.compile(r'\s*(?P<ATTRVALUE>({}))'.format(
         '|'.join(['[-._:a-zA-Z0-9]+', '(?P<Q1>"[^"]*")', "(?P<Q2>'[^']*')"])))
 
     def iter_attrs(self, tokenizer, doc, pos):
@@ -157,20 +160,19 @@ class HTMLTag(Token):
 def build_tokenizers():
 
     HTMLTOKENS = namedtuple('htmltokens', ['keywords', 'comment',
-                       'xmlpi', 'xmldef', 'endtag', 'jsstart', 'cssstart',
-                       'htmltag', 'jsattr1', 'jsattr2', 'cssattr1',
-                       'cssattr2'])
+                                           'xmlpi', 'xmldef', 'endtag', 'jsstart', 'cssstart',
+                                           'htmltag', 'jsattr1', 'jsattr2', 'cssattr1',
+                                           'cssattr2'])
 
-    keywords=SingleToken('html-entityrefs', 'keyword',
-                         [r'&\w+;', r'&\#x[0-9a-hA-H]+;', r'&\#[0-9]+;'])
+    keywords = SingleToken('html-entityrefs', 'keyword',
+                           [r'&\w+;', r'&\#x[0-9a-hA-H]+;', r'&\#[0-9]+;'])
 
-    comment=Span('html-comment', 'comment', r'<!--', r'--\s*>')
-    xmlpi=Span('xmlpi', 'html-decl', r'<\?', r'\?>')
-    xmldef=Span('xmldef', 'html-decl', r'<!', r'>')
+    comment = Span('html-comment', 'comment', r'<!--', r'--\s*>')
+    xmlpi = Span('xmlpi', 'html-decl', r'<\?', r'\?>')
+    xmldef = Span('xmldef', 'html-decl', r'<!', r'>')
 
     endtag = Span('html-endtag', 'html-tag', r'</', r'>')
     htmltag = HTMLTag('html', 'default')
-
 
     jsstop = EndSection('end-javascript', 'html-tag', r'</\s*script\s*>')
     jstokenizer = javascriptmode.build_tokenizer(jsstop)
@@ -181,22 +183,28 @@ def build_tokenizers():
     csstokenizer = cssmode.build_tokenizer(r'</\s*style\s*>', 'html-tag')
 
     cssstart = SubSection('start-css', 'html-tag',
-                         r'<\s*style(\s+[^>]*)*>', csstokenizer)
+                          r'<\s*style(\s+[^>]*)*>', csstokenizer)
 
-    jsattr1 = SubTokenizer('sub-js', '', javascriptmode.build_tokenizer(terminates="'"))
-    jsattr2 = SubTokenizer('sub-js', '', javascriptmode.build_tokenizer(terminates='"'))
+    jsattr1 = SubTokenizer(
+        'sub-js', '', javascriptmode.build_tokenizer(terminates="'"))
+    jsattr2 = SubTokenizer(
+        'sub-js', '', javascriptmode.build_tokenizer(terminates='"'))
 
-    styleattr1 = SubTokenizer('sub-css', '', cssmode.build_proptokenizer("'", 'html-attrvalue'))
-    styleattr2 = SubTokenizer('sub-css', '', cssmode.build_proptokenizer('"', 'html-attrvalue'))
+    styleattr1 = SubTokenizer(
+        'sub-css', '', cssmode.build_proptokenizer("'", 'html-attrvalue'))
+    styleattr2 = SubTokenizer(
+        'sub-css', '', cssmode.build_proptokenizer('"', 'html-attrvalue'))
 
     return [Tokenizer(
-        HTMLTOKENS(keywords, comment, xmlpi, xmldef, endtag, jsstart, cssstart, htmltag,
-                   jsattr1, jsattr2, styleattr1, styleattr2)),
-        jstokenizer, csstokenizer]
+        HTMLTOKENS(
+            keywords, comment, xmlpi, xmldef, endtag, jsstart, cssstart, htmltag,
+            jsattr1, jsattr2, styleattr1, styleattr2)),
+            jstokenizer, csstokenizer]
 
 
 class HTMLMode(defaultmode.DefaultMode):
     MODENAME = 'HTML'
+
     def init_themes(self):
         super().init_themes()
         self.themes.append(HTMLThemes)
@@ -205,4 +213,3 @@ class HTMLMode(defaultmode.DefaultMode):
 
     def init_tokenizers(self):
         self.tokenizers = build_tokenizers()
-

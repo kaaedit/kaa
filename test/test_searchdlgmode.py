@@ -4,10 +4,11 @@ import kaa
 from kaa.ui.searchdlg import searchdlgmode
 import kaa_testutils
 
+
 class TestSearchDlgMode(kaa_testutils._TestDocBase):
 
     def _getmodeclass(self):
-        return lambda :searchdlgmode.SearchDlgMode(
+        return lambda: searchdlgmode.SearchDlgMode(
             target=kaa_testutils._TestScreenBase()._getwnd(''))
 
     @patch('kaa.app', create=True)
@@ -53,7 +54,7 @@ class TestSearchDlgMode(kaa_testutils._TestDocBase):
 class TestReplaceDlg(kaa_testutils._TestDocBase):
 
     def _getmodeclass(self):
-        return lambda :searchdlgmode.ReplaceDlgMode(
+        return lambda: searchdlgmode.ReplaceDlgMode(
             target=kaa_testutils._TestScreenBase()._getwnd(''))
 
     @patch('kaa.app', create=True)
@@ -98,4 +99,3 @@ class TestReplaceDlg(kaa_testutils._TestDocBase):
         doc.mode.target.document.append('012345test string')
         doc.mode.search_next(None)
         assert doc.mode.target.screen.selection.get_selrange() == (6, 17)
-

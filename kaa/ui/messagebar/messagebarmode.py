@@ -4,15 +4,17 @@ from kaa.theme import Theme, Style
 
 MessageBarThemes = {
     'basic':
-        Theme([
-            Style('default', 'Base3', 'default'),
-            Style('rec', 'Base3', 'red'),
-        ]),
+    Theme([
+        Style('default', 'Base3', 'default'),
+        Style('rec', 'Base3', 'red'),
+    ]),
 }
+
 
 class MessageBarMode(modebase.ModeBase):
     USE_UNDO = False
     message = ''
+
     def init_themes(self):
         super().init_themes()
         self.themes.append(MessageBarThemes)
@@ -35,5 +37,3 @@ class MessageBarMode(modebase.ModeBase):
             self.document.append(' ', style_default)
 
         self.document.append(self.message, style_default)
-
-

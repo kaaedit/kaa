@@ -9,7 +9,7 @@ from kaa.keyboard import *
 class WordCompleteList(filterlist.FilterListMode):
     MAX_CAPTION_LEN = 30
     USE_PHRASE_STYLE = True
-    
+
     def _filter_items(self, query):
         if query:
             query = query.upper()
@@ -22,7 +22,7 @@ class WordCompleteList(filterlist.FilterListMode):
             items = self.candidates[:]
 
         return items
-    
+
 
 workcomplete_keys = {
     tab: 'filterlistdlg.next',
@@ -43,7 +43,7 @@ class WordCompleteInputMode(filterlist.FilterListInputDlgMode):
         mode = cls()
         doc.setmode(mode)
         mode.target = target
-        
+
         with dialogmode.FormBuilder(doc) as f:
             f.append_text('caption', 'Select word:')
             f.append_text('default', ' ')
@@ -54,7 +54,7 @@ class WordCompleteInputMode(filterlist.FilterListInputDlgMode):
     def init_keybind(self):
         super().init_keybind()
         self.keybind.add_keybind(workcomplete_keys)
-    
+
     def calc_position(self, wnd):
         w, h = wnd.getsize()
         height = self.calc_height(wnd)
@@ -62,11 +62,11 @@ class WordCompleteInputMode(filterlist.FilterListInputDlgMode):
 
         cury, curx = self.orgloc
         if self.stack_upper:
-            top = max(0, cury-height)
+            top = max(0, cury - height)
         else:
             top = cury + 1
 
-        return 0, top, wnd.mainframe.width, top+height
+        return 0, top, wnd.mainframe.width, top + height
 
     @command('wordcomplete.select')
     @norec
@@ -79,20 +79,20 @@ class WordCompleteInputMode(filterlist.FilterListInputDlgMode):
             s = sel.value
         else:
             s = self.get_query()
-            
+
         wnd.document.mode.edit_commands.replace_string(
-            self.target, self.wordpos[0], self.wordpos[1], 
+            self.target, self.wordpos[0], self.wordpos[1],
             s, update_cursor=True)
         wnd.get_label('popup').destroy()
-            
+
     def on_edited(self, wnd):
         super().on_edited(wnd)
         s = self.get_query()
         f, t = self.wordpos
         self.target.document.mode.edit_commands.replace_string(
             self.target, f, t, s, update_cursor=True)
-        self.wordpos = (f, f+len(s))
-        
+        self.wordpos = (f, f + len(s))
+
     def on_esc_pressed(self, wnd, event):
         self.target.screen.selection.clear()
         super().on_esc_pressed(wnd, event)
@@ -106,9 +106,9 @@ class WordCompleteInputMode(filterlist.FilterListInputDlgMode):
         word = self.target.document.mode.get_word_at(self.orgpos)
         if word:
             f, t, cg = word
-            if cg[0] in 'LMN': # Letter, Mark, Number
+            if cg[0] in 'LMN':  # Letter, Mark, Number
                 self.wordpos = (f, t)
-                
+
                 s = self.target.document.gettext(f, t)
                 if s:
                     self.target.screen.selection.set_range(f, t)
@@ -117,17 +117,17 @@ class WordCompleteInputMode(filterlist.FilterListInputDlgMode):
         words = self.target.document.mode.get_word_list()
         words.extend(kaa.app.get_clipboards())
 
-
         list.document.mode.set_candidates(words)
-        list.document.mode.candidates.sort(key=lambda v:v.text.upper())
+        list.document.mode.candidates.sort(key=lambda v: v.text.upper())
         list.document.mode.set_query(list, self.get_query())
         list.get_label('popup').on_console_resized()
+
 
 def show_wordlist(wnd):
     doc = WordCompleteInputMode.build(wnd)
     doc.mode.orgloc = wnd.get_cursor_loc()
 
-    if doc.mode.orgloc[0] > (wnd.mainframe.height//2):
+    if doc.mode.orgloc[0] > (wnd.mainframe.height // 2):
         doc.mode.stack_upper = True
     else:
         doc.mode.stack_upper = False
@@ -137,7 +137,7 @@ def show_wordlist(wnd):
     filterlistdoc = WordCompleteList.build()
     filterlistdoc.mode.SEP = ' '
     list = dlg.add_doc('dlg_filterlist', 0, filterlistdoc)
-    
+
     doc.mode.start(list)
-    
+
     return dlg

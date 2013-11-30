@@ -20,10 +20,10 @@ def show_expr(port, depth):
             port.show_expr(depth, s)
 
     hist = [s for s, info in kaa.app.config.hist_pythondebug_expr.get()]
-    doc = inputlinemode.InputlineMode.build('Python expression:', 
-                callback, history=hist)
+    doc = inputlinemode.InputlineMode.build('Python expression:',
+                                            callback, history=hist)
     kaa.app.show_dialog(doc)
-    
+
 
 breakpoints_keys = {
     'd': 'breakpoints.delete',
@@ -31,6 +31,7 @@ breakpoints_keys = {
     delete: 'breakpoints.delete',
     backspace: 'breakpoints.delete',
 }
+
 
 class BreakPoints(selectlist.SelectItemList):
     SEP = '\n'
@@ -50,14 +51,14 @@ class BreakPoints(selectlist.SelectItemList):
     def show_breakpoints(self, port):
         self.port = port
         breakpoints = self.port.get_breakpoints()
-        breakpoints.sort(key=lambda o:(o.filename, o.lineno))
+        breakpoints.sort(key=lambda o: (o.filename, o.lineno))
         items = []
         for bp in breakpoints:
-           caption = '{bp.filename}:{bp.lineno}'.format(bp=bp)
-           c = selectlist.SelectItem(
+            caption = '{bp.filename}:{bp.lineno}'.format(bp=bp)
+            c = selectlist.SelectItem(
                 'selectitem', 'selectitem-active', caption, bp)
-           items.append(c)
-            
+            items.append(c)
+
         self.update_doc(items)
 
     def on_esc_pressed(self, wnd, event):
@@ -88,19 +89,19 @@ class BreakPoints(selectlist.SelectItemList):
             sel = self.items[index]
         else:
             sel = self.items[-1]
-        
+
         self.update_sel(wnd, sel)
 
 DebugThemes = {
     'basic':
-        Theme([
-            Style('line', 'Cyan', None),
-            Style('line-active', 'Base02', 'Yellow'),
-            Style('filename', 'Default', None),
-            Style('lineno', 'Default', None),
-            Style('funcname', 'Default', None),
-            Style('dirname', 'Default', None),
-        ]),
+    Theme([
+        Style('line', 'Cyan', None),
+        Style('line-active', 'Base02', 'Yellow'),
+        Style('filename', 'Default', None),
+        Style('lineno', 'Default', None),
+        Style('funcname', 'Default', None),
+        Style('dirname', 'Default', None),
+    ]),
 }
 
 
@@ -132,7 +133,7 @@ class PythonCallStackMode(dialogmode.DialogMode):
     def init_keybind(self):
         super().init_keybind()
         self.keybind.add_keybind(callstack_keys)
-    
+
     def init_commands(self):
         super().init_commands()
 
@@ -146,16 +147,16 @@ class PythonCallStackMode(dialogmode.DialogMode):
         self._restore_highlight()
         super().close()
         self.port = None
-        
+
     def on_str(self, wnd, s):
         pass
 
     def calc_position(self, wnd):
         height = wnd.screen.get_total_height()
-        height = min(height, 
-            (wnd.mainframe.height - wnd.mainframe.MESSAGEBAR_HEIGHT)//2)
+        height = min(height,
+                     (wnd.mainframe.height - wnd.mainframe.MESSAGEBAR_HEIGHT) // 2)
         top = wnd.mainframe.height - height - wnd.mainframe.MESSAGEBAR_HEIGHT
-        return 0, top, wnd.mainframe.width, top+height
+        return 0, top, wnd.mainframe.width, top + height
 
     def build(self, stack):
         self.document.marks.clear()
@@ -163,59 +164,58 @@ class PythonCallStackMode(dialogmode.DialogMode):
 
         self.stack = tuple(stack or ())
         with dialogmode.FormBuilder(self.document) as f:
-            f.append_text('button', '[&Step]', 
+            f.append_text('button', '[&Step]',
                           shortcut_style='button.shortcut',
                           on_shortcut=self.on_step)
-    
-            f.append_text('button', '[&Next]', 
+
+            f.append_text('button', '[&Next]',
                           shortcut_style='button.shortcut',
                           on_shortcut=self.on_next)
-    
-            f.append_text('button', '[&Return]', 
+
+            f.append_text('button', '[&Return]',
                           shortcut_style='button.shortcut',
                           on_shortcut=self.on_return)
-    
-            f.append_text('button', '[&Continue]', 
+
+            f.append_text('button', '[&Continue]',
                           shortcut_style='button.shortcut',
                           on_shortcut=self.on_continue)
-    
-            f.append_text('button', '[&Expr]', 
+
+            f.append_text('button', '[&Expr]',
                           shortcut_style='button.shortcut',
                           on_shortcut=self.on_expr)
-    
-            f.append_text('button', '[&Breakpoint]', 
+
+            f.append_text('button', '[&Breakpoint]',
                           shortcut_style='button.shortcut',
                           on_shortcut=self.on_breakpoint)
-    
-            f.append_text('button', '[&Quit]', 
+
+            f.append_text('button', '[&Quit]',
                           shortcut_style='button.shortcut',
                           on_shortcut=self.on_quit)
-    
+
             f.append_text('default', '\n')
-    
+
             for n, (fname, lno, funcname, lines) in enumerate(self.stack):
                 s = self.document.endpos()
-                
+
                 line = (lines[0] if lines else '').strip()
                 if not line:
                     line = '(empty line)'
-                f.append_text('line', line.replace('&', '&&')+'\n')
-                
+                f.append_text('line', line.replace('&', '&&') + '\n')
+
                 t = self.document.endpos()
                 self.document.marks[('stack', n)] = (s, t)
-                
+
                 dirname, filename = os.path.split(fname)
                 f.append_text('filename', filename.replace('&', '&&'))
                 f.append_text('default', ':')
-    
+
                 f.append_text('lineno', str(lno))
                 f.append_text('default', ':')
-    
+
                 f.append_text('funcname', funcname.replace('&', '&&'))
                 f.append_text('default', ':')
-    
-                f.append_text('dirname', dirname.replace('&', '&&')+'\n')
 
+                f.append_text('dirname', dirname.replace('&', '&&') + '\n')
 
     def update(self, wnd, stack):
         self.build(stack)
@@ -225,15 +225,15 @@ class PythonCallStackMode(dialogmode.DialogMode):
     def update_sel(self, wnd, n):
         if self.cursel != n:
             f, t = self.document.marks.get(
-                    ('stack', self.cursel), (None, None))
+                ('stack', self.cursel), (None, None))
             if f is not None:
                 self.document.styles.setints(f, t, self.get_styleid('line'))
-                
+
         f, t = self.document.marks.get(('stack', n), (None, None))
         if f is not None:
             self.document.styles.setints(
                 f, t, self.get_styleid('line-active'))
-            
+
         self.cursel = n
         if n < len(self.stack):
             (fname, lno, funcname, lines) = self.stack[n]
@@ -242,7 +242,7 @@ class PythonCallStackMode(dialogmode.DialogMode):
 
             if f is not None:
                 wnd.screen.locate(f, middle=True)
-            
+
     def on_esc_pressed(self, wnd, event):
         super().on_esc_pressed(wnd, event)
         popup = wnd.get_label('popup')
@@ -253,7 +253,7 @@ class PythonCallStackMode(dialogmode.DialogMode):
         for w in self.updated_wnds:
             w.clear_line_overlay()
         self.updated_wnds = set()
-        
+
     def _locate_doc(self, wnd, doc, lineno):
         pos = doc.get_lineno_pos(lineno)
         tol = doc.gettol(pos)
@@ -275,22 +275,22 @@ class PythonCallStackMode(dialogmode.DialogMode):
         else:
             doc = kaa.app.storage.openfile(filename)
             wnd = kaa.app.show_doc(doc)
-        
+
         self._locate_doc(wnd, doc, lineno)
-       
+
     @command('callstack_keys.prev')
     @norec
     @norerun
     def stack_prev(self, wnd):
         if self.cursel:
-            self.update_sel(wnd, self.cursel-1)
-            
+            self.update_sel(wnd, self.cursel - 1)
+
     @command('callstack_keys.next')
     @norec
     @norerun
     def stack_next(self, wnd):
-        if self.cursel < len(self.stack)-1:
-            self.update_sel(wnd, self.cursel+1)
+        if self.cursel < len(self.stack) - 1:
+            self.update_sel(wnd, self.cursel + 1)
 
     def on_step(self, wnd):
         self.port.set_step()
@@ -310,10 +310,11 @@ class PythonCallStackMode(dialogmode.DialogMode):
     def on_breakpoint(self, wnd):
         doc = BreakPoints.build(self.port)
         kaa.app.show_dialog(doc)
-        
+
     def on_quit(self, wnd):
         self.port.close()
-        
+
+
 def show_callstack(port, stack):
     # update current breakpoints
     kaa.ui.pythondebug.port.update_breakpoints()
@@ -326,7 +327,7 @@ def show_callstack(port, stack):
 
     doc.setmode(mode)
     mode.build(stack)
-    
+
     dlg = kaa.app.show_inputline(doc)
     ret = dlg.get_label('editor')
     mode.update_sel(ret, 0)

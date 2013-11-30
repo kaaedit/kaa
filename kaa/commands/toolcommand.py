@@ -1,9 +1,13 @@
-import sys, os, curses, subprocess
+import sys
+import os
+import curses
+import subprocess
 import kaa
 from kaa.command import Commands, command, is_enable, norec, norerun
 
 
 class ToolCommands(Commands):
+
     @command('python.console')
     @norerun
     def pythonconsole(self, wnd):
@@ -57,25 +61,26 @@ class ToolCommands(Commands):
 
                 wnd.document.mode.edit_commands.put_string(wnd, ret)
                 wnd.screen.selection.clear()
-                
+
                 kaa.app.messagebar.set_message(
                     "{} letters inserted".format(len(ret)))
 
         hist = [s for s, info in kaa.app.config.hist_shellcommands.get()]
         from kaa.ui.inputline import inputlinemode
-        doc = inputlinemode.InputlineMode.build('Shell command:', 
-                    callback, history=hist)
+        doc = inputlinemode.InputlineMode.build('Shell command:',
+                                                callback, history=hist)
         kaa.app.messagebar.set_message('Execute shell command')
 
         kaa.app.show_dialog(doc)
 
     def _exec_cmd(self, cmd):
         # todo: move to util
-        import select, errno
+        import select
+        import errno
         master, slave = os.pipe()
-        with subprocess.Popen(cmd, shell=True, stdout=slave, 
-                stderr=slave, bufsize=1,
-                universal_newlines=True) as process:
+        with subprocess.Popen(cmd, shell=True, stdout=slave,
+                              stderr=slave, bufsize=1,
+                              universal_newlines=True) as process:
 
             os.close(slave)
 
@@ -90,7 +95,7 @@ class ToolCommands(Commands):
                         print(l, end='')
             finally:
                 output.close()
-                
+
             retcode = process.poll()
             if retcode:
                 code = errno.errorcode.get(retcode)
@@ -98,14 +103,14 @@ class ToolCommands(Commands):
                     code = '(%s):' % code
                 else:
                     code = ''
-                
+
                 msg = os.strerror(retcode)
                 kaa.app.messagebar.set_message(
                     '{code}{msg}'.format(
                         code=code, msg=msg, retcode=retcode))
 
             return ''.join(lines)
-            
+
     @command('tools.make')
     @norerun
     def execute_make(self, wnd):
@@ -129,8 +134,7 @@ class ToolCommands(Commands):
         hist = [s for s, info in kaa.app.config.hist_makecommands.get()]
         value = 'make' if not hist else hist[0]
         doc = inputlinemode.InputlineMode.build('Make command:', callback,
-                history=hist, value=value)
+                                                history=hist, value=value)
         kaa.app.messagebar.set_message('Execute command')
 
         kaa.app.show_dialog(doc)
-

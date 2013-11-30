@@ -1,8 +1,10 @@
 import os
 from kaa import config
 
+
 class TestHistory:
     filename = './test.db'
+
     def test_history(self):
         storage = config.KaaHistoryStorage(self.filename)
         try:
@@ -26,7 +28,7 @@ class TestHistory:
             hist = config.History('test', storage)
             storage.add_history(hist)
 
-            for i in range(config.History.MAX_HISTORY*2):
+            for i in range(config.History.MAX_HISTORY * 2):
                 hist.add(str(i))
             hist.close()
         finally:
@@ -42,5 +44,3 @@ class TestHistory:
         finally:
             storage.close()
             os.unlink(self.filename)
-
-           

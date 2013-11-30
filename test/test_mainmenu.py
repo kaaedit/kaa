@@ -4,6 +4,7 @@ import kaa
 from kaa.ui.mainmenu import menumode
 import kaa_testutils
 
+
 class TestMenuMode(kaa_testutils._TestDocBase):
 
     @patch('kaa.app', create=True)
@@ -16,4 +17,3 @@ class TestMenuMode(kaa_testutils._TestDocBase):
 
         name, args, kwargs = kaa.app.show_dialog.mock_calls[-1]
         assert args[0].mode.itemname == 'FILE'
-        

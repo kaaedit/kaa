@@ -2,11 +2,12 @@ from unittest.mock import patch
 from kaa import keyboard
 from kaa.keyboard import *
 
+
 class TestKeyBind:
 
     @patch('kaa.app', create=True)
     def _create_keybind(self, bind, mockapp):
-        mockapp.translate_key.side_effect=lambda mod, c: (mod, c)
+        mockapp.translate_key.side_effect = lambda mod, c: (mod, c)
 
         kb = keyboard.KeyBind()
         kb.add_keybind(bind)
@@ -47,13 +48,12 @@ class TestKeyBind:
             ([set(), right, set(), left], ['command']),
         ]
 
-
         kb = self._create_keybind({
             ((right,), (left,)): 'command'
         })
 
         assert kb.keylist == [
-            ([set(), right, set(), left,], ['command']),
+            ([set(), right, set(), left, ], ['command']),
         ]
 
     def test_mix(self):
@@ -117,7 +117,8 @@ class TestKeyBind:
 
     def test_callable(self):
 
-        def f(wnd):pass
+        def f(wnd):
+            pass
 
         kb = self._create_keybind({
             ((right,), 'a'): f

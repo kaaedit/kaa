@@ -5,9 +5,12 @@ import kaa
 from kaa.ui.framelist import framelistmode
 import kaa_testutils
 
+
 class _frame:
+
     def get_title(self):
         return 'title'
+
 
 @patch('kaa.app', new=kaa_testutils.DmyApp(), create=True)
 class TestFrameList(kaa_testutils._TestDocBase):
@@ -16,9 +19,8 @@ class TestFrameList(kaa_testutils._TestDocBase):
         with ExitStack() as st:
             frames = [_frame(), _frame()]
             st.enter_context(patch('kaa.app.get_frames',
-                            create=True, return_value=frames))
+                                   create=True, return_value=frames))
             st.enter_context(patch('kaa.app.get_activeframe',
-                            create=True, return_value=frames[0]))
+                                   create=True, return_value=frames[0]))
 
             doc = framelistmode.FrameListMode.build()
-

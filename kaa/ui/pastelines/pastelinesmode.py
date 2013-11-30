@@ -8,8 +8,8 @@ from kaa.keyboard import *
 
 PasteLinesThemes = {
     'basic':
-        Theme([
-        ]),
+    Theme([
+    ]),
 
 }
 
@@ -17,6 +17,7 @@ pastelines_keys = {
     (alt, '\r'): ('paste.lines'),
     (alt, '\n'): ('paste.lines'),
 }
+
 
 class PasteLinesMode(dialogmode.DialogMode):
     autoshrink = True
@@ -60,7 +61,7 @@ class PasteLinesMode(dialogmode.DialogMode):
         super().on_add_window(wnd)
 
         wnd.set_cursor(dialogmode.DialogCursor(wnd,
-                   [dialogmode.MarkRange('pastetext')]))
+                                               [dialogmode.MarkRange('pastetext')]))
 
         wnd.cursor.setpos(self.document.marks['pastetext'][0])
 
@@ -82,7 +83,7 @@ class PasteLinesMode(dialogmode.DialogMode):
         self.target.document.mode.edit_commands.put_string(self.target, s)
         w.screen.selection.clear()
 
-        kaa.app.messagebar.set_message("{} letters inserted".format(t-f))
+        kaa.app.messagebar.set_message("{} letters inserted".format(t - f))
 
         popup = w.get_label('popup')
         popup.destroy()
@@ -97,7 +98,8 @@ class PasteLinesMode(dialogmode.DialogMode):
 
         with dialogmode.FormBuilder(doc) as f:
             # caption
-            f.append_text('caption', 'Paste text here. Hit alt+Enter when finished:')
+            f.append_text('caption',
+                          'Paste text here. Hit alt+Enter when finished:')
             f.append_text('default', '\n')
             f.append_text('default', '', mark_pair='pastetext')
 

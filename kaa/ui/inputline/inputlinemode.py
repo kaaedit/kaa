@@ -8,6 +8,7 @@ from kaa.keyboard import *
 from kaa.ui.dialog import dialogmode
 from kaa.ui.selectlist import filterlist
 
+
 def number_filter(wnd, s):
     if s == '0':
         t = wnd.document.mode.get_input_text().strip()
@@ -18,8 +19,8 @@ def number_filter(wnd, s):
 
 InputlineThemes = {
     'basic':
-        Theme([
-        ]),
+    Theme([
+    ]),
 }
 
 inputline_keys = {
@@ -27,6 +28,7 @@ inputline_keys = {
     ('\n'): ('inputline'),
     up: ('inputline.history'),
 }
+
 
 class InputlineMode(dialogmode.DialogMode):
     autoshrink = True
@@ -65,14 +67,14 @@ class InputlineMode(dialogmode.DialogMode):
         super().on_add_window(wnd)
 
         wnd.set_cursor(dialogmode.DialogCursor(wnd,
-                   [dialogmode.MarkRange('inputtext')]))
+                                               [dialogmode.MarkRange('inputtext')]))
 
         f, t = self.document.marks['inputtext']
         wnd.cursor.setpos(f)
 
         if f != t:
             wnd.screen.selection.set_range(f, t)
-            
+
     def on_esc_pressed(self, wnd, event):
         # todo: run callback
         super().on_esc_pressed(wnd, event)
@@ -107,7 +109,7 @@ class InputlineMode(dialogmode.DialogMode):
         self.callback(w, s)
         popup = w.get_label('popup')
         popup.destroy()
-        
+
     @command.command('inputline.history')
     @command.norec
     @command.norerun
@@ -118,7 +120,6 @@ class InputlineMode(dialogmode.DialogMode):
         def callback(result):
             if result:
                 self.set_input_ext(wnd, result)
-            
 
         filterlist.show_listdlg(self.caption, self.history, callback)
 
@@ -140,4 +141,3 @@ class InputlineMode(dialogmode.DialogMode):
             f.append_text('default', value, mark_pair='inputtext')
 
         return doc
-

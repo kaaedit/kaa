@@ -1,20 +1,25 @@
-import os, unicodedata, sys, locale
+import os
+import unicodedata
+import sys
+import locale
 import kaa
 import kaa.log
 from kaa import document, encodingdef
 from kaa.filetype.default import defaultmode
 from kaa import consts
 
+
 class FileStorage:
+
     def adjust_encoding(self, encoding):
         if encoding.lower() == 'shiftjis':
             return 'cp932'
         return encoding
-        
+
     def guess_japanese_encoding(self, filename):
         import pyjf3
         ret = pyjf3.guess(open(filename, 'rb').read())
-        
+
         if ret == pyjf3.ASCII:
             return kaa.app.config.DEFAULT_ENCODING
         elif ret == pyjf3.UTF8:
@@ -29,15 +34,15 @@ class FileStorage:
             return 'utf-16le'
         elif ret == pyjf3.UTF16_BE:
             return 'utf-16be'
-        
+
     def get_textio(self, fileinfo, filemustexists=False):
         try:
             # use surrogateescape to preserve file contents intact.
             textio = open(fileinfo.fullpathname, 'r',
-                        encoding=self.adjust_encoding(fileinfo.encoding), 
-                        errors='surrogateescape', 
-                        newline=fileinfo.nlchars)
-        
+                          encoding=self.adjust_encoding(fileinfo.encoding),
+                          errors='surrogateescape',
+                          newline=fileinfo.nlchars)
+
         except FileNotFoundError:
             if filemustexists:
                 raise
@@ -48,13 +53,13 @@ class FileStorage:
     def get_fileinfo(self, filename, encoding=None, newline=None):
         if sys.platform == 'darwin':
             filename = unicodedata.normalize('NFC', filename)
-    
+
         if encoding is None:
             encoding = kaa.app.config.DEFAULT_ENCODING
-    
+
         if newline is None:
             newline = kaa.app.config.DEFAULT_NEWLINE
-    
+
         fileinfo = FileInfo()
 
         fullpath = os.path.abspath(filename)
@@ -72,9 +77,9 @@ class FileStorage:
 
         fileinfo.encoding = encoding
         fileinfo.newline = newline
-        
+
         return fileinfo
-        
+
     def listdir(self, dirname):
         dirs = []
         files = []
@@ -99,19 +104,20 @@ class FileStorage:
         kaa.app.last_dir = dirname
 
     def openfile(self, filename, encoding=None, newline=None, nohist=False,
-                    filemustexists=False):
+                 filemustexists=False):
         if not nohist:
             self._save_hist(filename)
         return openfile(filename, encoding, newline, filemustexists)
 
-    def save_document(self, doc, filename, encoding=None, newline=None, 
-                        nohist=False):
+    def save_document(self, doc, filename, encoding=None, newline=None,
+                      nohist=False):
         # todo: move most of codes to mode class.
         if not nohist:
             self._save_hist(filename)
 
         if not doc.fileinfo:
-            fileinfo = kaa.app.storage.get_fileinfo(filename, encoding, newline)
+            fileinfo = kaa.app.storage.get_fileinfo(
+                filename, encoding, newline)
         else:
             if encoding is not None:
                 doc.fileinfo.encoding = encoding
@@ -121,29 +127,29 @@ class FileStorage:
 
             if newline is not None:
                 doc.fileinfo.newline = newline
-                
+
             if doc.fileinfo.newline is None:
                 doc.fileinfo.newline = kaa.app.config.DEFAULT_NEWLINE
 
-        with open(filename, 'w', 
-                 encoding=self.adjust_encoding(doc.fileinfo.encoding),
-                 newline=consts.NEWLINE_CHARS[doc.fileinfo.newline],
-                 errors='surrogateescape') as f:
+        with open(filename, 'w',
+                  encoding=self.adjust_encoding(doc.fileinfo.encoding),
+                  newline=consts.NEWLINE_CHARS[doc.fileinfo.newline],
+                  errors='surrogateescape') as f:
 
             # TODO: save as another file and rename.
             # TODO: fsync
             f.write(doc.gettext(0, doc.endpos()))
 
-        fileinfo = self.get_fileinfo(filename, doc.fileinfo.encoding, 
-                                            doc.fileinfo.newline)
+        fileinfo = self.get_fileinfo(filename, doc.fileinfo.encoding,
+                                     doc.fileinfo.newline)
         doc.mode.on_file_saved(fileinfo)
-        
+
         doc.fileinfo = fileinfo
         doc.set_title(None)
         doc.provisional = False
         if doc.undo:
             doc.undo.saved()
-        
+
         mode = select_mode(filename)
         if type(doc.mode) is not mode:
             doc.setmode(mode())
@@ -170,7 +176,7 @@ class FileInfo:
 
     def __init__(self):
         self.encoding = kaa.app.config.DEFAULT_ENCODING
-        self.newline= kaa.app.config.DEFAULT_NEWLINE
+        self.newline = kaa.app.config.DEFAULT_NEWLINE
 
     def save_screenloc(self, pos):
         if self.fullpathname:
@@ -187,15 +193,16 @@ class FileInfo:
                 stat = os.stat(self.fullpathname)
             except Exception:
                 return
-    
+
             if stat.st_mtime == self.stat.st_mtime:
                 return
-            
+
             if stat.st_size == self.stat.st_size:
                 return
-            
+
             self.stat = stat
             return True
+
 
 def select_mode(filename):
     ext = os.path.splitext(filename)[1].lower()
@@ -232,6 +239,8 @@ def openfile(filename, encoding=None, newline=None, filemustexists=False):
     return doc
 
 NUM_NEWFILE = 1
+
+
 def newfile(mode=None, s='', provisional=False):
     buf = document.Buffer()
     if s:

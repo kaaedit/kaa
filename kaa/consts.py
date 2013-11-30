@@ -12,4 +12,3 @@ NEWLINE_CHARS = {
     'dos': '\r\n',
     'unix': '\n'
 }
-

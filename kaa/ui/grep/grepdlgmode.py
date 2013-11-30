@@ -1,4 +1,5 @@
-import re, os
+import re
+import os
 import kaa
 from kaa import encodingdef, consts
 from kaa.keyboard import *
@@ -13,8 +14,10 @@ from kaa.ui.selectfile import selectfile
 from kaa.ui.itemlist import itemlistmode
 from kaa.ui.grep import grepmode
 
+
 class GrepOption(modebase.SearchOption):
     RE = re
+
     def __init__(self):
         super().__init__()
         self.tree = True
@@ -26,8 +29,8 @@ class GrepOption(modebase.SearchOption):
     def clone(self):
         ret = super().clone()
         ret.tree = self.tree
-        ret.directory  = self.directory
-        ret.filenames  = self.filenames
+        ret.directory = self.directory
+        ret.filenames = self.filenames
         ret.encoding = self.encoding
         ret.newline = self.newline
         return ret
@@ -37,12 +40,13 @@ GrepOption.LASTOPTION = GrepOption()
 
 GrepDlgThemes = {
     'basic':
-        Theme([
-        ]),
+    Theme([
+    ]),
 }
 
 
 class GrepCommands(editorcommand.EditCommands):
+
     @command('grepdlg.field.next')
     @norec
     @norerun
@@ -63,7 +67,6 @@ class GrepCommands(editorcommand.EditCommands):
             wnd.cursor.setpos(searchfrom)
             wnd.screen.selection.set_range(searchfrom, searchto)
 
-        
     @command('grepdlg.history')
     @norec
     @norerun
@@ -80,10 +83,12 @@ class GrepCommands(editorcommand.EditCommands):
                     wnd.cursor.setpos(f)
                     f, t = wnd.document.marks['searchtext']
                     wnd.screen.selection.set_range(f, t)
-                    
-            filterlist.show_listdlg('Recent searches', 
-                [s for s, info in kaa.app.config.hist_grepstr.get()],
-                callback)
+
+            filterlist.show_listdlg('Recent searches',
+                                    [s for s,
+                                        info in kaa.app.config.hist_grepstr.get(
+                                        )],
+                                    callback)
 
         elif dirfrom <= wnd.cursor.pos <= dirto:
             def callback(result):
@@ -93,14 +98,14 @@ class GrepCommands(editorcommand.EditCommands):
                     wnd.cursor.setpos(f)
                     f, t = wnd.document.marks['directory']
                     wnd.screen.selection.set_range(f, t)
-       
+
             hist = []
             for p, info in kaa.app.config.hist_grepdir.get():
                 path = os.path.relpath(p)
                 hist.append(path if len(path) < len(p) else p)
-                
-            filterlist.show_listdlg('Recent directories', 
-                hist, callback)
+
+            filterlist.show_listdlg('Recent directories',
+                                    hist, callback)
 
         else:
             def callback(result):
@@ -110,10 +115,12 @@ class GrepCommands(editorcommand.EditCommands):
                     wnd.cursor.setpos(f)
                     f, t = wnd.document.marks['filenames']
                     wnd.screen.selection.set_range(f, t)
-                    
-            filterlist.show_listdlg('Recent filenames', 
-                [s for s, info in kaa.app.config.hist_grepfiles.get()],
-                callback)
+
+            filterlist.show_listdlg('Recent filenames',
+                                    [s for s,
+                                        info in kaa.app.config.hist_grepfiles.get(
+                                        )],
+                                    callback)
 
 
 grepdlg_keys = {
@@ -134,8 +141,9 @@ class GrepDlgMode(dialogmode.DialogMode):
         keybind.macro_command_keys,
         grepdlg_keys,
     ]
-    
+
     target = None
+
     def __init__(self, wnd=None):
         super().__init__()
         if isinstance(wnd.document.mode, grepmode.GrepMode):
@@ -159,9 +167,9 @@ class GrepDlgMode(dialogmode.DialogMode):
             grepfiles = config.hist_grepfiles.get()
             if grepfiles:
                 GrepOption.LASTOPTION.filenames = grepfiles[0][0]
-                    
+
         self.option = GrepOption.LASTOPTION
-        
+
     def close(self):
         super().close()
 
@@ -193,14 +201,14 @@ class GrepDlgMode(dialogmode.DialogMode):
         super().on_add_window(wnd)
 
         cursor = dialogmode.DialogCursor(wnd,
-                   [dialogmode.MarkRange('searchtext'), 
-                    dialogmode.MarkRange('directory'), 
-                    dialogmode.MarkRange('filenames')])
+                                         [dialogmode.MarkRange('searchtext'),
+                                          dialogmode.MarkRange('directory'),
+                                             dialogmode.MarkRange('filenames')])
         wnd.set_cursor(cursor)
         f, t = self.document.marks['searchtext']
         wnd.cursor.setpos(f)
         wnd.screen.selection.set_range(f, t)
-        
+
     def build_document(self):
         with dialogmode.FormBuilder(self.document) as f:
             # search text
@@ -208,78 +216,80 @@ class GrepDlgMode(dialogmode.DialogMode):
             f.append_text('default', ' ')
             f.append_text('default', self.option.text, mark_pair='searchtext')
             f.append_text('default', '\n')
-    
+
             # directory
             f.append_text('caption', 'Directory:')
             f.append_text('default', ' ')
-    
+
             path = self.option.directory
             if path:
                 p = os.path.relpath(path)
                 path = p if len(p) < len(path) else path
             f.append_text('default', path, mark_pair='directory')
             f.append_text('default', '\n')
-    
+
             # filename
             f.append_text('caption', 'Filenames:')
             f.append_text('default', ' ')
-            f.append_text('default', self.option.filenames, mark_pair='filenames')
+            f.append_text('default', self.option.filenames,
+                          mark_pair='filenames')
             f.append_text('default', '\n')
-    
+
             # working directory
             f.append_text('default', '(current dir)')
             f.append_text('default', ' ')
             f.append_text('default', os.getcwd())
             f.append_text('default', '\n')
-    
+
             # buttons
             f.append_text('checkbox', '[&Search]',
                           shortcut_style='checkbox.shortcut',
                           on_shortcut=self.run_grep)
-    
+
             f.append_text('checkbox', '[&Dir]',
                           mark_pair='select-dir',
                           shortcut_style='checkbox.shortcut',
                           on_shortcut=self._select_dir)
-    
+
             f.append_text('checkbox', '[&Tree]',
                           mark_pair='search-tree',
                           on_shortcut=self.toggle_option_tree,
                           shortcut_style='checkbox.shortcut',
                           shortcut_mark='shortcut-t')
-    
+
             f.append_text('checkbox', '[&Ignore case]',
                           mark_pair='ignore-case',
                           on_shortcut=self.toggle_option_ignorecase,
-    
+
                           shortcut_style='checkbox.shortcut',
                           shortcut_mark='shortcut-i')
-    
+
             f.append_text('checkbox', '[&Word]',
                           mark_pair='word',
                           on_shortcut=self.toggle_option_word,
                           shortcut_style='checkbox.shortcut',
                           shortcut_mark='shortcut-w')
-    
+
             f.append_text('checkbox', '[&Regex]',
                           mark_pair='regex',
                           on_shortcut=self.toggle_option_regex,
                           shortcut_style='checkbox.shortcut',
                           shortcut_mark='shortcut-r')
-    
-            f.append_text('checkbox', '[&Encoding:{}]'.format(self.option.encoding), 
-                          mark_pair='enc',
-                          shortcut_style='checkbox.shortcut',
-                          on_shortcut=lambda wnd:
-                                          wnd.document.mode.select_encoding(wnd))
-    
-            f.append_text('checkbox', '[&Newline:{}]'.format(self.option.newline), 
-                          mark_pair='newline',
-                          shortcut_style='checkbox.shortcut',
-                          on_shortcut=lambda wnd:
-                                          wnd.document.mode.select_newline(wnd))
-    
-    
+
+            f.append_text(
+                'checkbox', '[&Encoding:{}]'.format(self.option.encoding),
+                mark_pair='enc',
+                shortcut_style='checkbox.shortcut',
+                on_shortcut=lambda wnd:
+                wnd.document.mode.select_encoding(wnd))
+
+            f.append_text(
+                'checkbox', '[&Newline:{}]'.format(self.option.newline),
+                mark_pair='newline',
+                shortcut_style='checkbox.shortcut',
+                on_shortcut=lambda wnd:
+                wnd.document.mode.select_newline(wnd))
+
             self.update_option_style()
             kaa.app.messagebar.set_message(
                 "Hit alt+S to begin search. Hit up to show history.")
@@ -290,7 +300,7 @@ class GrepDlgMode(dialogmode.DialogMode):
         self.document.styles.setints(f, t, self.get_styleid(style))
 
         f = self.document.marks[shortcutmark]
-        self.document.styles.setints(f, f+1, self.get_styleid(shortcutstyle))
+        self.document.styles.setints(f, f + 1, self.get_styleid(shortcutstyle))
 
     def _get_optionstylename(self, f):
         if f:
@@ -300,27 +310,24 @@ class GrepDlgMode(dialogmode.DialogMode):
 
     def update_option_style(self):
         style = self._get_optionstylename(self.option.tree)
-        self._set_option_style('search-tree', 'checkbox'+style, 'shortcut-t',
-                               'checkbox.shortcut'+style)
+        self._set_option_style('search-tree', 'checkbox' + style, 'shortcut-t',
+                               'checkbox.shortcut' + style)
 
         style = self._get_optionstylename(self.option.ignorecase)
-        self._set_option_style('ignore-case', 'checkbox'+style, 'shortcut-i',
-                               'checkbox.shortcut'+style)
+        self._set_option_style('ignore-case', 'checkbox' + style, 'shortcut-i',
+                               'checkbox.shortcut' + style)
 
         style = self._get_optionstylename(self.option.word)
-        self._set_option_style('word', 'checkbox'+style, 'shortcut-w',
-                               'checkbox.shortcut'+style)
+        self._set_option_style('word', 'checkbox' + style, 'shortcut-w',
+                               'checkbox.shortcut' + style)
 
         style = self._get_optionstylename(self.option.regex)
-        self._set_option_style('regex', 'checkbox'+style, 'shortcut-r',
-                               'checkbox.shortcut'+style)
-
-
+        self._set_option_style('regex', 'checkbox' + style, 'shortcut-r',
+                               'checkbox.shortcut' + style)
 
     def _option_updated(self):
         self.update_option_style()
         self.document.style_updated()
-
 
     def _select_dir(self, wnd):
         def cb(dir):
@@ -359,11 +366,11 @@ class GrepDlgMode(dialogmode.DialogMode):
 
     def _get_encnames(self):
         return sorted(encodingdef.encodings + ['japanese'],
-                 key=lambda k:k.upper())
+                      key=lambda k: k.upper())
 
     def select_encoding(self, wnd):
         encnames = self._get_encnames()
-        
+
         def callback(n):
             if n is None:
                 return
@@ -374,7 +381,7 @@ class GrepDlgMode(dialogmode.DialogMode):
                 f, t = self.document.marks['enc']
                 # [Encoding:{mode}]
                 # 01234567890    10
-                self.document.replace(f+10, t-1, self.option.encoding)
+                self.document.replace(f + 10, t - 1, self.option.encoding)
 
         doc = itemlistmode.ItemListMode.build(
             'Select character encoding:',
@@ -395,7 +402,7 @@ class GrepDlgMode(dialogmode.DialogMode):
                 f, t = self.document.marks['newline']
                 # [Newline:{mode}]
                 # 0123456789    10
-                self.document.replace(f+9, t-1, self.option.newline)
+                self.document.replace(f + 9, t - 1, self.option.newline)
 
         doc = itemlistmode.ItemListMode.build(
             'Select newline mode:',
@@ -427,20 +434,19 @@ class GrepDlgMode(dialogmode.DialogMode):
         self.option.directory = self.get_dir()
         self.option.filenames = self.get_files()
 
-        if (self.option.text and self.option.directory and 
+        if (self.option.text and self.option.directory and
                 self.option.filenames):
 
             kaa.app.config.hist_grepstr.add(self.option.text)
             path = os.path.abspath(self.option.directory)
             kaa.app.config.hist_grepdir.add(path)
             kaa.app.config.hist_grepfiles.add(self.option.filenames)
-            
+
             grepmode.grep(self.option, self.target)
-        
+
         wnd.get_label('popup').destroy()
 
     def on_esc_pressed(self, wnd, event):
         super().on_esc_pressed(wnd, event)
         wnd.get_label('popup').destroy()
         kaa.app.messagebar.set_message("")
-

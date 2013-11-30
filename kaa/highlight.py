@@ -1,7 +1,9 @@
 from gappedbuf import re as gre
 import collections
 
+
 class Token:
+
     def __init__(self, name, stylename):
         self.name = name
         self.stylename = stylename
@@ -27,7 +29,7 @@ class Token:
                 self.get_tokenids(highlighter, tokenizer),
                 0, pos, comp_ne=True)
             if p != -1:
-                return p+1
+                return p + 1
         return 0
 
     def assign_tokenid(self, tokenizer, stylename):
@@ -40,6 +42,7 @@ class Token:
 
 
 class SingleToken(Token):
+
     def __init__(self, name, stylename, tokens):
         super().__init__(name, stylename)
         self.tokens = tokens
@@ -58,6 +61,7 @@ class SingleToken(Token):
 
 
 class Keywords(SingleToken):
+
     """Keyword tokens:
         ex) KeyWords('keyword', 'kwdstyle', keywords=['def', 'class', 'return'])
     """
@@ -67,18 +71,19 @@ class Keywords(SingleToken):
 
 
 class Span(Token):
+
     def __init__(self, name, stylename, start, end, escape=None,
-            capture_end=True):
-                
+                 capture_end=True):
+
         super().__init__(name, stylename)
 
         self.start = start
         self.escape = escape
         if escape:
             end = '({}.)|({})'.format(gre.escape(escape), end)
-        self.end = gre.compile(end, gre.X+gre.M+gre.S)
+        self.end = gre.compile(end, gre.X + gre.M + gre.S)
         self._capture_end = capture_end
-        
+
     def prepare(self, tokenizer):
         super().prepare(tokenizer)
 
@@ -91,7 +96,7 @@ class Span(Token):
 
     def _is_end(self, doc, m):
         return True
-        
+
     def on_start(self, tokenizer, doc, pos, match):
         yield (match.start(), match.end(), self.span_start)
 
@@ -103,20 +108,22 @@ class Span(Token):
                 if not self._is_end(doc, m):
                     continue
                 yield (match.end(), m.start(), self.span_mid)
-            
+
             if self._capture_end:
                 yield (m.start(), m.end(), self.span_end)
                 end = m.end()
             else:
                 end = m.start()
-                
+
             return end, None, False
 
         else:
             yield (match.end(), doc.endpos(), self.span_mid)
             return doc.endpos(), None, False
 
+
 class SubTokenizer(Token):
+
     def __init__(self, name, start, tokenizer):
         super().__init__(name, '')
         self.start = start
@@ -149,8 +156,8 @@ class SubTokenizer(Token):
     def resume_pos(self, highlighter, tokenizer, doc, pos):
         # Returns top of current keyword
         if 0 < pos < len(doc.styles):
-            p = doc.styles.rfindint(tuple(self.sub_tokens.keys()), 0, pos, 
-                    comp_ne=True)
+            p = doc.styles.rfindint(tuple(self.sub_tokens.keys()), 0, pos,
+                                    comp_ne=True)
             if p > 0:
                 return highlighter.get_resume_pos(doc, p)
         return 0
@@ -164,6 +171,7 @@ class SubTokenizer(Token):
 
 
 class SubSection(Token):
+
     def __init__(self, name, stylename, start, tokenizer):
         super().__init__(name, stylename)
 
@@ -183,6 +191,7 @@ class SubSection(Token):
 
 
 class EndSection(Token):
+
     def __init__(self, name, stylename, end):
         super().__init__(name, stylename)
 
@@ -203,6 +212,7 @@ class EndSection(Token):
 
 class Tokenizer:
     re_starts = None
+
     def __init__(self, tokens, terminates=None):
 
         self.groupnames = {}
@@ -225,11 +235,12 @@ class Tokenizer:
                 starts.append(r'(?P<{}>{})'.format(name, start))
 
         if self.terminates:
-            starts.insert(0, r'(?P<{}>{})'.format('TERMINATE', self.terminates))
+            starts.insert(
+                0, r'(?P<{}>{})'.format('TERMINATE', self.terminates))
             self.groupnames['TERMINATE'] = None
 
         if starts:
-            self.re_starts = gre.compile('|'.join(starts), gre.M+gre.X)
+            self.re_starts = gre.compile('|'.join(starts), gre.M + gre.X)
 
     def register_tokenid(self, obj):
         return self.highlighter.register_tokenid(self, obj)
@@ -252,7 +263,7 @@ class Tokenizer:
                 token = self.groupnames[m.lastgroup]
 
                 pos, childtokenizer, close = yield from token.on_start(
-                                                self, doc, pos, m)
+                    self, doc, pos, m)
                 if close:
                     return pos, None
 
@@ -269,6 +280,7 @@ class Tokenizer:
 class Section:
     parent = None
     end = None
+
     def __init__(self, pos, tokenizer):
         self.start = pos
         self.children = []
@@ -303,10 +315,12 @@ class Section:
 
         while section.parent:
             idx = section.parent.children.index(section)
-            del section.parent.children[idx+1:]
+            del section.parent.children[idx + 1:]
             section = section.parent
 
+
 class Highlighter:
+
     def __init__(self, tokenizers):
         self.tokenizers = tokenizers
         self.max_tokenid = 1
@@ -334,7 +348,7 @@ class Highlighter:
             return self.tokenids[tokenid][1]
 
     def update_style(self, doc, batch=None):
-        #todo: store 'doc' as attribute
+        # todo: store 'doc' as attribute
         if not self._highlighter:
             self._highlighter = self.highlight(doc, self.updatepos)
 
@@ -355,7 +369,7 @@ class Highlighter:
             if doc.endpos() == 0 or updated and (updatefrom != updateto):
                 doc.style_updated(updatefrom, updateto)
                 self.updatepos = updateto
-                
+
     def highlight(self, doc, pos):
         if not self.tokenizers:
             return
@@ -385,12 +399,12 @@ class Highlighter:
 
         # check a character proceeding to updated pos
         pos -= 1
-        style = doc.styles.getints(pos, pos+1)[0]
+        style = doc.styles.getints(pos, pos + 1)[0]
         if style == 0:
             # not highlighted yet.
             p = doc.styles.rfindint([0], 0, pos, comp_ne=True)
             if p != -1:
-                return p+1
+                return p + 1
             return 0
 
         pair = self.tokenids.get(style)
@@ -402,7 +416,7 @@ class Highlighter:
         if not token:
             p = doc.styles.rfindint([style], 0, pos, comp_ne=True)
             if p != -1:
-                return p+1
+                return p + 1
             return 0
 
         return token.resume_pos(self, tokenizer, doc, pos)

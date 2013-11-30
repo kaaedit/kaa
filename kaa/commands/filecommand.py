@@ -4,7 +4,9 @@ import kaa.log
 from kaa.command import Commands, command, is_enable, norec, norerun
 from kaa.ui.msgbox import msgboxmode
 
+
 class FileCommands(Commands):
+
     @command('file.new')
     @norec
     @norerun
@@ -20,8 +22,8 @@ class FileCommands(Commands):
                     MAX_FILENAMEMSG_LEN = 50
                     if len(filename) > MAX_FILENAMEMSG_LEN:
                         filename = '...{}'.format(
-                            filename[MAX_FILENAMEMSG_LEN*-1:])
-        
+                            filename[MAX_FILENAMEMSG_LEN * -1:])
+
                     kaa.app.messagebar.set_message(
                         "`{}` is already opened.".format(filename))
                     return doc
@@ -34,11 +36,11 @@ class FileCommands(Commands):
                 wnd.get_label('frame').bring_top()
                 wnd.activate()
             return True
-        
+
     def _restore_file_loc(self, wnd):
         if wnd.document.fileinfo:
             disp = kaa.app.config.hist_filedisp.find(
-                    wnd.document.fileinfo.fullpathname)
+                wnd.document.fileinfo.fullpathname)
             if disp:
                 loc = disp.get('pos', 0)
                 loc = min(loc, wnd.document.endpos())
@@ -51,17 +53,16 @@ class FileCommands(Commands):
         def cb(filename, encoding, newline):
             if not filename:
                 return
-                
+
             if self._activate_file(filename):
                 return
-            
+
             doc = kaa.app.storage.openfile(filename, encoding, newline)
             editor = kaa.app.show_doc(doc)
             self._restore_file_loc(editor)
-            
+
         from kaa.ui.selectfile import selectfile
         selectfile.show_fileopen(filename, cb)
-
 
     @command('file.info')
     @norec
@@ -86,12 +87,13 @@ class FileCommands(Commands):
         "Save document"
         try:
             if not document:
-                document=wnd.document
+                document = wnd.document
             if not filename:
                 filename = document.get_filename()
 
             if filename:
-                kaa.app.storage.save_document(document, filename, encoding, newline)
+                kaa.app.storage.save_document(
+                    document, filename, encoding, newline)
                 # notify file saved
                 if saved:
                     saved(canceled=False)
@@ -102,8 +104,8 @@ class FileCommands(Commands):
         except Exception as e:
             kaa.log.exception('File write error:')
             msgboxmode.MsgBoxMode.show_msgbox(
-                'File write error: '+str(e), ['&Ok'],
-                lambda c:saved(canceled=True) if saved else None,
+                'File write error: ' + str(e), ['&Ok'],
+                lambda c: saved(canceled=True) if saved else None,
                 keys=['\r', '\n'])
 
     @command('file.saveas')
@@ -118,7 +120,7 @@ class FileCommands(Commands):
             else:
                 if saved:
                     saved(canceled=True)
-                
+
         if not document:
             document = wnd.document
 
@@ -130,8 +132,9 @@ class FileCommands(Commands):
             encoding = document.fileinfo.encoding
         else:
             newline = encoding = None
-            
-        selectfile.show_filesaveas(document.get_filename(), newline, encoding, cb)
+
+        selectfile.show_filesaveas(
+            document.get_filename(), newline, encoding, cb)
 
     def ask_doc_close(self, wnd, document, callback, msg):
         def choice(c):
@@ -151,15 +154,14 @@ class FileCommands(Commands):
                 else:
                     cb()
 
-        if (document.mode.DOCUMENT_MODE 
-            and document.undo
-            and document.undo.is_dirty()):
-
+        if (document.mode.DOCUMENT_MODE
+                and document.undo
+                and document.undo.is_dirty()):
 
             items = ['&Yes', '&No', '&Cancel']
             if document.fileinfo and document.fileinfo.fullpathname:
                 items.append('View &Diff')
-            
+
             msgboxmode.MsgBoxMode.show_msgbox(
                 '{} [{}]: '.format(
                     msg, document.get_title()),
@@ -167,23 +169,23 @@ class FileCommands(Commands):
         else:
             callback(canceled=False)
 
-    def save_documents(self, wnd, docs, callback, 
+    def save_documents(self, wnd, docs, callback,
                        msg='Save file before close?', force=False):
 
         docs = list(docs)
         activeframe = kaa.app.get_activeframe()
-    
+
         def _save_documents(canceled):
             if canceled:
                 if activeframe and not activeframe.closed:
                     kaa.app.set_focus(activeframe)
                 callback(canceled=True)
                 return
-                
+
             if not docs:
                 if activeframe and not activeframe.closed:
                     kaa.app.set_focus(activeframe)
-                    
+
                 if callback:
                     callback(canceled=False)
             else:
@@ -192,14 +194,13 @@ class FileCommands(Commands):
                     w = doc.wnds[0]
                     if w and not w.closed:
                         w.activate()
-                        
+
                 if force:
                     self.file_save(wnd, saved=_save_documents, document=doc)
                 else:
                     self.ask_doc_close(wnd, doc, _save_documents, msg)
 
         _save_documents(canceled=False)
-
 
     def get_closed_docs(self, editors):
         alldocs = {e.document for e in editors}
@@ -210,7 +211,7 @@ class FileCommands(Commands):
             if not doc_editors:
                 docs.append(doc)
         return docs
-        
+
     def close_frame(self, frame, callback):
 
         editors = {e for e in frame.get_editors()}
@@ -220,7 +221,7 @@ class FileCommands(Commands):
             if not canceled:
                 frame.destroy()
                 callback(canceled=False)
-    
+
         self.save_documents(frame, docs, cb, 'Save file before close?')
 
     @command('file.close')
@@ -232,10 +233,11 @@ class FileCommands(Commands):
         import kaa.fileio
 
         frame = wnd.get_label('frame')
+
         def saved(canceled):
             if canceled:
-                return 
-                
+                return
+
             if frame.mainframe.childframes:
                 f = frame.mainframe.childframes[0]
                 f.bring_top()
@@ -245,14 +247,15 @@ class FileCommands(Commands):
                 kaa.app.show_doc(doc)
 
         self.close_frame(frame, saved)
-        
+
     def get_current_documents(self, wnd):
         docs = set()
         for frame in wnd.mainframe.childframes:
             editors = {e for e in frame.get_editors()}
-            docs |= {e.document for e in editors if e.document.mode.DOCUMENT_MODE}
+            docs |= {
+                e.document for e in editors if e.document.mode.DOCUMENT_MODE}
         return docs
-        
+
     @command('file.save.all')
     @norec
     @norerun
@@ -260,7 +263,7 @@ class FileCommands(Commands):
 
         def saved(canceled):
             pass
-        
+
         docs = self.get_current_documents(wnd)
         docs = [doc for doc in docs if doc.undo and doc.undo.is_dirty()]
         if docs:
@@ -274,7 +277,7 @@ class FileCommands(Commands):
         def callback(canceled):
             if canceled:
                 return
-                
+
             import kaa.fileio
             if frames:
                 f = frames.pop()
@@ -282,7 +285,7 @@ class FileCommands(Commands):
             else:
                 doc = kaa.fileio.newfile(provisional=True)
                 kaa.app.show_doc(doc)
-                
+
         frames = wnd.mainframe.childframes[:]
         callback(False)
 
@@ -293,8 +296,8 @@ class FileCommands(Commands):
             files.append(path if len(path) < len(p) else p)
 
         from kaa.ui.selectlist import filterlist
-        filterlist.show_listdlg('Recently used files:', 
-            files, callback)
+        filterlist.show_listdlg('Recently used files:',
+                                files, callback)
 
     @command('file.recently-used-files')
     @norec
@@ -305,7 +308,7 @@ class FileCommands(Commands):
                 filename = os.path.abspath(filename)
                 if self._activate_file(filename):
                     return
-                    
+
                 self.file_open(wnd, filename)
 
         self._select_recentry_used_files(cb)
@@ -317,8 +320,8 @@ class FileCommands(Commands):
             files.append(path if len(path) < len(p) else p)
 
         from kaa.ui.selectlist import filterlist
-        filterlist.show_listdlg('Recently used directories:', 
-            files, callback)
+        filterlist.show_listdlg('Recently used directories:',
+                                files, callback)
 
     @command('file.recently-used-directories')
     @norec
@@ -342,7 +345,7 @@ class FileCommands(Commands):
                 except Exception:
                     kaa.log.exception('Error in file.quit:')
                 kaa.app.quit()
-        
+
         docs = self.get_current_documents(wnd)
         self.save_documents(wnd, docs, saved, 'Save file before close?')
 
@@ -380,8 +383,8 @@ class FileCommands(Commands):
         items = ['&Yes', '&No', 'View &Diff']
         msg = 'File [{}] has been updated by other process. Reload file?: '
         msgboxmode.MsgBoxMode.show_msgbox(msg.format(document.get_title()),
-            items, choice)
-        
+                                          items, choice)
+
     def can_close_wnd(self, wnd, cb):
         if len(wnd.document.wnds) == 1:
             wnd.document.mode.file_commands.ask_doc_close(
@@ -393,7 +396,7 @@ class FileCommands(Commands):
         def cb(filename, encoding, newline):
             if not filename:
                 return
-                
+
             doc = self._find_file_doc(filename)
             if not doc:
                 doc = kaa.app.storage.openfile(filename, encoding, newline)
@@ -407,7 +410,7 @@ class FileCommands(Commands):
             func(cb)
 
         self.can_close_wnd(wnd, saved)
-        
+
     @command('file.new-to')
     @norec
     @norerun
@@ -435,15 +438,15 @@ class FileCommands(Commands):
 
             from kaa.ui.selectfile import selectfile
             selectfile.show_fileopen(filename, cb)
-        
+
     @command('file.recently-used-files-to')
     @norec
     @norerun
     def file_recently_used_files_to(self, wnd):
         def selectfile(cb):
             self._select_recentry_used_files(
-                lambda filename:self._show_selected_recentlyfile(cb, filename))
-            
+                lambda filename: self._show_selected_recentlyfile(cb, filename))
+
         self._open_file_to_wnd(wnd, selectfile)
 
     @command('file.recently-used-directories-to')
@@ -452,6 +455,6 @@ class FileCommands(Commands):
     def file_recently_used_dirs_to(self, wnd):
         def selectdir(cb):
             self._select_recentry_used_dirs(
-                lambda filename:self._show_selected_recentlyfile(cb, filename))
-            
+                lambda filename: self._show_selected_recentlyfile(cb, filename))
+
         self._open_file_to_wnd(wnd, selectdir)

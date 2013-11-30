@@ -14,15 +14,16 @@ import kaa.filetype.default.keybind
 
 FilterListThemes = {
     'basic':
-        Theme([
-        ]),
+    Theme([
+    ]),
 }
+
 
 class FilterListMode(selectlist.SelectItemList):
     SEP = '\n'
     MAX_CAPTION_LEN = None
     USE_PHRASE_STYLE = False
-    
+
     def init_themes(self):
         super().init_themes()
         self.themes.append(FilterListThemes)
@@ -50,10 +51,10 @@ class FilterListMode(selectlist.SelectItemList):
 
             if not self.USE_PHRASE_STYLE or not phrase:
                 c = selectlist.SelectItem(
-                        'selectitem', 'selectitem-active', caption, c)
+                    'selectitem', 'selectitem-active', caption, c)
             else:
                 c = selectlist.SelectItem(
-                        'selectphrase', 'selectphrase-active', caption, c)
+                    'selectphrase', 'selectphrase-active', caption, c)
             self.candidates.append(c)
 
     def _filter_items(self, query):
@@ -81,8 +82,8 @@ class FilterListMode(selectlist.SelectItemList):
 
 FilterListInputDlgThemes = {
     'basic':
-        Theme([
-        ]),
+    Theme([
+    ]),
 }
 
 
@@ -95,12 +96,13 @@ filterlistinputdlg_keys = {
     '\n': 'filterlistdlg.select',
 }
 
+
 class FilterListInputDlgMode(dialogmode.DialogMode):
     MAX_INPUT_HEIGHT = 4
     callback = None
     INITIAL_MESSAGE = "Hit up/down to select item."
     NO_WRAPINDENT = False
-    
+
     @classmethod
     def build(cls, caption, callback):
         buf = document.Buffer()
@@ -122,7 +124,8 @@ class FilterListInputDlgMode(dialogmode.DialogMode):
         self.themes.append(FilterListInputDlgThemes)
 
     def init_keybind(self):
-        self.keybind.add_keybind(kaa.filetype.default.keybind.edit_command_keys)
+        self.keybind.add_keybind(
+            kaa.filetype.default.keybind.edit_command_keys)
         self.keybind.add_keybind(kaa.filetype.default.keybind.cursor_keys)
         self.keybind.add_keybind(kaa.filetype.default.keybind.emacs_keys)
         self.keybind.add_keybind(filterlistinputdlg_keys)
@@ -134,7 +137,7 @@ class FilterListInputDlgMode(dialogmode.DialogMode):
         self.register_command(self.screen_commands)
 
         self.cursor_commands = editorcommand.CursorCommands()
-        self.register_command(self.cursor_commands )
+        self.register_command(self.cursor_commands)
 
         self.edit_commands = editorcommand.EditCommands()
         self.register_command(self.edit_commands)
@@ -144,7 +147,7 @@ class FilterListInputDlgMode(dialogmode.DialogMode):
 
         wnd.CURSOR_TO_MIDDLE_ON_SCROLL = False
         cursor = dialogmode.DialogCursor(wnd,
-                   [dialogmode.MarkRange('query')])
+                                         [dialogmode.MarkRange('query')])
 
         wnd.set_cursor(cursor)
         wnd.cursor.setpos(self.document.marks['query'][1])
@@ -156,7 +159,7 @@ class FilterListInputDlgMode(dialogmode.DialogMode):
         height = self.calc_height(wnd)
         height = min(height, self.MAX_INPUT_HEIGHT)
         top = wnd.mainframe.height - height - wnd.mainframe.MESSAGEBAR_HEIGHT
-        return 0, top, wnd.mainframe.width, top+height
+        return 0, top, wnd.mainframe.width, top + height
 
     def on_esc_pressed(self, wnd, event):
         super().on_esc_pressed(wnd, event)
@@ -179,7 +182,7 @@ class FilterListInputDlgMode(dialogmode.DialogMode):
         wnd.screen.selection.clear()
         f, t = self.document.marks['query']
         self.document.replace(f, t, s)
-        wnd.cursor.setpos(f+len(s))
+        wnd.cursor.setpos(f + len(s))
 
     @command('filterlistdlg.next')
     @norec
@@ -202,7 +205,7 @@ class FilterListInputDlgMode(dialogmode.DialogMode):
 
         if self.callback:
             self.callback(value)
-        
+
     @command('filterlistdlg.select')
     @norec
     @norerun
@@ -212,18 +215,18 @@ class FilterListInputDlgMode(dialogmode.DialogMode):
         if cur:
             self._selected(wnd, cur.value)
             return True
-        
+
 
 def show_listdlg(title, candidates, callback):
     doc = FilterListInputDlgMode.build(
-            title, callback)
+        title, callback)
     dlg = kaa.app.show_dialog(doc)
 
     filterlistdoc = FilterListMode.build()
     list = dlg.add_doc('dlg_filterlist', 0, filterlistdoc)
-    
+
     filterlistdoc.mode.set_candidates(candidates)
     filterlistdoc.mode.set_query(list, '')
     dlg.on_console_resized()
-    
+
     return dlg

@@ -1,37 +1,44 @@
-import weakref, re
+import weakref
+import re
 import gappedbuf
 
 
 def is_combine(c):
-    if (('\u0300' <= c <= '\u036f') or # Combining Diacritical Marks
-        ('\u1dc0' <= c <= '\u1dff') or # Combining Diacritical Marks Supplement
-        ('\u20d0' <= c <= '\u20ff') or # Combining Diacritical Marks for Symbols
-        ('\ufe20' <= c <= '\ufe2f')):  # Combining Half Marks
+    if (('\u0300' <= c <= '\u036f') or  # Combining Diacritical Marks
+            # Combining Diacritical Marks Supplement
+            ('\u1dc0' <= c <= '\u1dff') or
+            # Combining Diacritical Marks for Symbols
+        ('\u20d0' <= c <= '\u20ff') or
+            ('\ufe20' <= c <= '\ufe2f')):  # Combining Half Marks
 
         return True
 
+
 class LineNo:
+
     def __init__(self):
         self.buf = gappedbuf.GappedBuffer()
 
     def linecount(self):
-        return len(self.buf)+1
+        return len(self.buf) + 1
 
     def lineno(self, pos):
         return self.bisect_left(pos) + 1
 
     def getpos(self, lineno):
         if lineno <= len(self.buf):
-            return self.buf.getint(lineno-1)
+            return self.buf.getint(lineno - 1)
 
     def bisect_left(self, pos):
         lo = 0
         hi = len(self.buf)
 
         while lo < hi:
-            mid = (lo+hi)//2
-            if self.buf.getint(mid) < pos: lo = mid+1
-            else: hi = mid
+            mid = (lo + hi) // 2
+            if self.buf.getint(mid) < pos:
+                lo = mid + 1
+            else:
+                hi = mid
         return lo
 
     def inserted(self, pos, s):
@@ -42,15 +49,15 @@ class LineNo:
             if idx == -1:
                 break
             else:
-                lfs.append(pos+idx)
+                lfs.append(pos + idx)
             idx += 1
 
         lno = self.bisect_left(pos)
         self.buf.insertints(lno, lfs)
 
         d = len(s)
-        for p in range(lno+len(lfs), len(self.buf)):
-            self.buf.setints(p, p+1, self.buf.getint(p)+d)
+        for p in range(lno + len(lfs), len(self.buf)):
+            self.buf.setints(p, p + 1, self.buf.getint(p) + d)
 
     def deleted(self, delfrom, delto):
         lno = self.bisect_left(delfrom)
@@ -68,9 +75,11 @@ class LineNo:
         for p in range(lno, len(self.buf)):
             pos = self.buf.getint(p)
             d = min(delto, pos) - delfrom
-            self.buf.setints(p, p+1, pos-d)
+            self.buf.setints(p, p + 1, pos - d)
+
 
 class Buffer(gappedbuf.GappedBuffer):
+
     def __init__(self):
         self.listeners = []
         self.lineno = LineNo()
@@ -87,20 +96,21 @@ class Buffer(gappedbuf.GappedBuffer):
     def delete(self, begin, end):
         super().delete(begin, end)
         self.lineno.deleted(begin, end)
-        self._updated(begin, 0, end-begin)
+        self._updated(begin, 0, end - begin)
 
     def replace(self, begin, end, s):
         super().replace(begin, end, s)
         self.lineno.deleted(begin, end)
         self.lineno.inserted(begin, s)
-        self._updated(begin, len(s), end-begin)
-    
+        self._updated(begin, len(s), end - begin)
+
     def add_listener(self, listener):
         self.listeners.append(listener)
 
     def _updated(self, pos, inslen, dellen):
         for listener in self.listeners:
             listener(self, pos, inslen, dellen)
+
 
 class Document:
     all = weakref.WeakSet()  # should not be used!
@@ -125,7 +135,7 @@ class Document:
 
         self.styles = gappedbuf.GappedBuffer()
         if len(self.buf):
-            self.styles.insertints(0, [0]*len(self.buf))
+            self.styles.insertints(0, [0] * len(self.buf))
 
         self.undo = Undo()
         self.marks = Marks()
@@ -156,7 +166,7 @@ class Document:
 
         self.marks = self.buf = self.mode = None
         self.all.remove(self)
-        
+
     def use_undo(self, is_useundo):
         if is_useundo:
             if not self.undo:
@@ -166,7 +176,7 @@ class Document:
 
     def set_title(self, title):
         self.title = title
-        
+
     def get_title(self):
         title = '<untitled>'
 
@@ -197,10 +207,10 @@ class Document:
         if inslen:
             style = 0
             if 0 < pos <= len(self.styles):
-                style = self.styles.getints(pos-1, pos)[0]
-            self.styles.replaceints(pos, pos+dellen, [style]*inslen)
+                style = self.styles.getints(pos - 1, pos)[0]
+            self.styles.replaceints(pos, pos + dellen, [style] * inslen)
         else:
-            self.styles.delete(pos, pos+dellen)
+            self.styles.delete(pos, pos + dellen)
 
         self.marks.updated(pos, inslen, dellen)
         self.update_screen(pos, inslen, dellen)
@@ -215,7 +225,7 @@ class Document:
     def style_updated(self, posfrom=0, posto=None):
         if posto is None:
             posto = self.endpos()
-            
+
         for wnd in self.wnds:
             wnd.style_updated(posfrom, posto)
 
@@ -225,21 +235,21 @@ class Document:
 
     def findchr(self, pos, chars):
         return self.buf.findchr(chars, pos, len(self.buf))
-        
+
     def gettol(self, pos):
         """Returns top of line at pos"""
 
         if pos == 0:
             return 0
         tol = self.buf.rfindchr('\n', 0, pos)
-        return 0 if tol == -1 else tol+1
-   
+        return 0 if tol == -1 else tol + 1
+
     def find_newline(self, pos):
         eol = self.buf.findchr('\n', pos, len(self.buf))
         if eol == -1:
             eol = len(self.buf)
         return eol
-        
+
     def _findeol(self, pos):
         """Find next occurrence of newline"""
 
@@ -281,7 +291,7 @@ class Document:
     def insert(self, pos, s, style=None):
         self.buf.insert(pos, s)
         if style is not None:
-            self.styles.setints(pos, pos+len(s), style)
+            self.styles.setints(pos, pos + len(s), style)
 
     def append(self, s, style=None):
         self.insert(self.endpos(), s, style)
@@ -292,14 +302,14 @@ class Document:
     def replace(self, begin, end, s, style=None):
         self.buf.replace(begin, end, s)
         if style is not None:
-            self.styles.setints(begin, begin+len(s), style)
+            self.styles.setints(begin, begin + len(s), style)
 
     def get_nextpos(self, pos):
         pos += 1
         while pos < self.endpos():
             if not is_combine(self.buf[pos]):  # skip combine char
                 return pos
-            pos+= 1
+            pos += 1
         return self.endpos()
 
     def get_prevpos(self, pos):
@@ -320,8 +330,10 @@ class Document:
     def setstyle(self, start, end, style):
         self.styles.setints(start, end, style)
 
+
 class Marks(dict):
     locked = False
+
     def updated(self, pos, inslen, dellen):
 
         # don't update mark if locked
@@ -335,7 +347,7 @@ class Marks(dict):
             for name, markpos in self.items():
                 if isinstance(markpos, int):
                     if pos < markpos:
-                        self[name] = markpos+size
+                        self[name] = markpos + size
                 elif markpos is not None:
                     f, t = markpos
                     if pos < f:
@@ -351,34 +363,32 @@ class Marks(dict):
             for name, markpos in self.items():
                 if isinstance(markpos, int):
                     if pos < markpos:
-                        if pos+size > markpos:
+                        if pos + size > markpos:
                             self[name] = pos
                         else:
-                            self[name] = markpos-size
+                            self[name] = markpos - size
                 elif markpos is not None:
                     f, t = markpos
                     if pos < f:
-                        if pos+size > f:
+                        if pos + size > f:
                             f = pos
                         else:
-                            f = f-size
+                            f = f - size
                     if pos < t:
-                        if pos+size > t:
+                        if pos + size > t:
                             t = pos
                         else:
-                            t = t-size
+                            t = t - size
                     self[name] = (f, t)
-
 
 
 #            updated = ((name, pos if (pos+size > markpos) else (markpos-size))
 #                            for name, markpos in self.items()
 #                                if (markpos is not None) and (pos < markpos))
-
 #        for name, p in updated:
 #            self[name] = p
-
 class Undo:
+
     """Records edit history"""
 
     def __init__(self):
@@ -452,7 +462,7 @@ class Undo:
     def undo(self):
         """Perform undo action"""
 
-        action, args, kwargs = self._actions[self._next_undo-1]
+        action, args, kwargs = self._actions[self._next_undo - 1]
         self._next_undo -= 1
 
         if isinstance(action, Undo):
@@ -477,4 +487,3 @@ class Undo:
     def redo_all(self):
         while self.can_redo():
             yield from self.redo()
-

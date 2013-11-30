@@ -8,11 +8,11 @@ from kaa.ui.itemlist import itemlistmode
 
 FileInfoThemes = {
     'basic':
-        Theme([
-            Style('button', 'Base3', 'Blue'),
-            Style('shortcut', 'Base3', 'Orange', bold=True,
-                  underline=True, nowrap=True),
-        ]),
+    Theme([
+        Style('button', 'Base3', 'Blue'),
+        Style('shortcut', 'Base3', 'Orange', bold=True,
+              underline=True, nowrap=True),
+    ]),
 }
 
 
@@ -52,27 +52,27 @@ class FileInfoMode(dialogmode.DialogMode):
         with dialogmode.FormBuilder(self.document) as f:
             f.append_text('caption', '    File name: ')
             f.append_text('default', ' {}\n'.format(fname.replace('&', '&&')))
-    
+
             f.append_text('caption', '    Directory: ')
             f.append_text('default', ' {}\n'.format(dir.replace('&', '&&')))
-    
+
             f.append_text('default', '\n')
-    
+
             f.append_text('caption', '         Mode: ')
             f.append_text('default', ' {}     '.format(mode.MODENAME))
             f.append_text('button', '[Change &Mode]\n',
                           on_shortcut=self._on_update_mode,
                           shortcut_style='shortcut',
                           shortcut_need_alt=False)
-    
+
             f.append_text('caption', '     Encoding: ')
             f.append_text('default', ' {}\n'.format(
                 fileinfo.encoding if fileinfo else ''))
-    
+
             f.append_text('caption', '      Newline: ')
             f.append_text('default', ' {}\n'.format(
                 fileinfo.newline if fileinfo else ''))
-    
+
             f.append_text('caption', '  Line number: ')
             f.append_text('default', ' {}       '.format(
                 'Show' if mode.SHOW_LINENO else 'Hide'))
@@ -80,10 +80,9 @@ class FileInfoMode(dialogmode.DialogMode):
                           on_shortcut=self._on_update_lineno,
                           shortcut_style='shortcut',
                           shortcut_need_alt=False)
-    
-    
+
             f.append_text('default', '\n')
-    
+
             f.append_text('caption', '    Tab width: ',
                           shortcut_style='shortcut')
             f.append_text('default', ' {}          '.format(mode.tab_width))
@@ -91,7 +90,7 @@ class FileInfoMode(dialogmode.DialogMode):
                           on_shortcut=self._on_update_tab,
                           shortcut_style='shortcut',
                           shortcut_need_alt=False)
-    
+
             f.append_text('caption', ' Indent width: ',
                           shortcut_style='shortcut')
             f.append_text('default', ' {}          '.format(mode.indent_width))
@@ -99,8 +98,7 @@ class FileInfoMode(dialogmode.DialogMode):
                           on_shortcut=self._on_update_indent,
                           shortcut_style='shortcut',
                           shortcut_need_alt=False)
-    
-    
+
             f.append_text('caption', '      Use tab: ',
                           shortcut_style='shortcut')
             f.append_text('default', ' {}        {}'.format(
@@ -109,8 +107,7 @@ class FileInfoMode(dialogmode.DialogMode):
                           on_shortcut=self._on_update_usetab,
                           shortcut_style='shortcut',
                           shortcut_need_alt=False)
-    
-    
+
             f.append_text('caption', '  Auto Indent: ',
                           shortcut_style='shortcut')
             f.append_text('default', ' {}        {}'.format(
@@ -119,7 +116,6 @@ class FileInfoMode(dialogmode.DialogMode):
                           on_shortcut=self._on_update_autoindent,
                           shortcut_style='shortcut',
                           shortcut_need_alt=False)
-
 
     def is_cursor_visible(self):
         return 0   # hide cursor
@@ -159,6 +155,7 @@ class FileInfoMode(dialogmode.DialogMode):
 
     def _on_update_lineno(self, c):
         values = ['Hide', 'Show']
+
         def callback(n):
             if n is None:
                 return
@@ -179,6 +176,7 @@ class FileInfoMode(dialogmode.DialogMode):
 
     def _on_update_tab(self, c):
         values = [str(i) for i in range(2, 9)]
+
         def callback(n):
             if n is None:
                 return
@@ -199,6 +197,7 @@ class FileInfoMode(dialogmode.DialogMode):
 
     def _on_update_indent(self, c):
         values = [str(i) for i in range(2, 9)]
+
         def callback(n):
             if n is None:
                 return
@@ -219,6 +218,7 @@ class FileInfoMode(dialogmode.DialogMode):
 
     def _on_update_usetab(self, c):
         values = ['No', 'Yes']
+
         def callback(n):
             if n is None:
                 return
@@ -239,6 +239,7 @@ class FileInfoMode(dialogmode.DialogMode):
 
     def _on_update_autoindent(self, c):
         values = ['No', 'Yes']
+
         def callback(n):
             if n is None:
                 return
@@ -256,6 +257,7 @@ class FileInfoMode(dialogmode.DialogMode):
             callback)
 
         kaa.app.show_dialog(doc)
+
 
 def show_fileinfo(target):
     buf = document.Buffer()

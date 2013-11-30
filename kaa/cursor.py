@@ -1,4 +1,5 @@
 class Cursor:
+
     def __init__(self, wnd):
         self.wnd = wnd
         self.pos = 0
@@ -6,7 +7,8 @@ class Cursor:
         self.preferred_linecol = 0
 
     def refresh(self, top=None, middle=None, bottom=None):
-        self.pos, y, x = self.wnd.locate_cursor(self.pos, top=top, middle=middle, bottom=bottom)
+        self.pos, y, x = self.wnd.locate_cursor(
+            self.pos, top=top, middle=middle, bottom=bottom)
         assert self.pos is not None
 
     def setpos(self, pos, top=None, middle=None, bottom=None):
@@ -21,7 +23,7 @@ class Cursor:
         y, x = self.wnd.screen.getrowcol(self.pos)
         self.preferred_col = x
         self.preferred_linecol = self.wnd.screen.get_cursorcol(self.pos)
-        
+
     def up(self):
         # Ensure current position is displayed
         self.wnd.screen.locate(self.pos, middle=True, align_always=False)
@@ -34,7 +36,7 @@ class Cursor:
             if not self.wnd.lineup():
                 # First line of text file
                 return False
-            idx, prevrow = self.wnd.screen.getrow(row.posfrom-1)
+            idx, prevrow = self.wnd.screen.getrow(row.posfrom - 1)
         else:
             idx -= 1
         pos = self.wnd.screen.get_pos_above(idx, self.preferred_col)
@@ -50,7 +52,7 @@ class Cursor:
         if self.wnd.screen.is_lastrow(row):
             return False
 
-        if idx+1 >= self.wnd.screen.portto:
+        if idx + 1 >= self.wnd.screen.portto:
             # Scroll down a line
             if not self.wnd.linedown():
                 # last line of text file
@@ -68,13 +70,13 @@ class Cursor:
     def prev_line(self):
         tol = self.wnd.document.gettol(self.pos)
         if tol != 0:
-            self.wnd.screen.locate(tol-1, top=True)
+            self.wnd.screen.locate(tol - 1, top=True)
 
-            prev = self.wnd.document.gettol(tol-1)
+            prev = self.wnd.document.gettol(tol - 1)
             pos = self.wnd.screen.get_pos_at_cols(prev, self.preferred_linecol)
             pos = self.adjust_nextpos(self.pos, pos)
             self.wnd.screen.locate(pos, top=True)
-            
+
             self.setpos(pos)
             return True
 
@@ -86,7 +88,7 @@ class Cursor:
             pos = self.wnd.screen.get_pos_at_cols(next, self.preferred_linecol)
             pos = self.adjust_nextpos(self.pos, pos)
             self.wnd.screen.locate(pos, bottom=True)
-            
+
             self.setpos(pos)
             return True
 
@@ -99,7 +101,7 @@ class Cursor:
         for word in self.wnd.document.mode.split_word(pos):
             f, t, chars, cg = word
             nextpos = t
-            if f == pos: # first word
+            if f == pos:  # first word
                 # get next word
                 continue
             nextpos = f
@@ -177,8 +179,8 @@ class Cursor:
         y = idx - self.wnd.screen.portfrom
 
         if self.wnd.pagedown():
-            idx = max(0, min(self.wnd.screen.portto-1,
-                             self.wnd.screen.portfrom+y))
+            idx = max(0, min(self.wnd.screen.portto - 1,
+                             self.wnd.screen.portfrom + y))
             pos = self.wnd.screen.get_pos_under(idx, self.preferred_col)
 
             nextpos = self.adjust_nextpos(self.pos, pos)
@@ -194,8 +196,8 @@ class Cursor:
         y = idx - self.wnd.screen.portfrom
 
         if self.wnd.pageup():
-            idx = max(0, min(self.wnd.screen.portto-1,
-                             self.wnd.screen.portfrom+y))
+            idx = max(0, min(self.wnd.screen.portto - 1,
+                             self.wnd.screen.portfrom + y))
             pos = self.wnd.screen.get_pos_above(idx, self.preferred_col)
             nextpos = self.adjust_nextpos(self.pos, pos)
             self.setpos(nextpos)
@@ -219,7 +221,7 @@ class Cursor:
         if self.wnd.screen.is_lastrow(row):
             pos = self.wnd.document.endpos()
         else:
-            pos = row.posto-1
+            pos = row.posto - 1
 
         nextpos = self.adjust_nextpos(self.pos, pos)
         self.setpos(nextpos)
@@ -251,4 +253,3 @@ class Cursor:
         nextpos = self.adjust_nextpos(self.pos, nextpos)
         self.setpos(nextpos)
         self.savecol()
-

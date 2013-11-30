@@ -2,12 +2,14 @@ import kaa
 from kaa.command import Commands, command, is_enable, norec, norerun
 from kaa import document
 
-#todo: following imports should be defered
+# todo: following imports should be defered
 from kaa.ui.mainmenu import menumode
 from kaa.ui.itemlist import itemlistmode
 from kaa.ui.moveseparator import moveseparatormode
 
+
 class ApplicationCommands(Commands):
+
     @command('app.mainmenu')
     @norec
     @norerun
@@ -39,7 +41,7 @@ class ApplicationCommands(Commands):
             for w in curframe.get_editors():
                 if w is not wnd:
                     yield w
-        
+
         for frame in kaa.app.get_frames():
             if frame is not curframe:
                 for w in frame.get_editors():
@@ -60,7 +62,7 @@ class ApplicationCommands(Commands):
         for w in self._walk_all_wnds(wnd):
             if w.document.mode.on_global_next(w):
                 return
-        
+
     # todo: move following methods somewhere else
 
     @command('app.show-framelist')
@@ -100,7 +102,7 @@ class ApplicationCommands(Commands):
         if splitter:
             wnds = [wnd for s, wnd in splitter.walk() if wnd]
             try:
-                n = wnds.index(wnd)+1
+                n = wnds.index(wnd) + 1
             except ValueError:
                 return
 
@@ -115,12 +117,12 @@ class ApplicationCommands(Commands):
         if splitter:
             wnds = [wnd for s, wnd in splitter.walk() if wnd]
             try:
-                n = wnds.index(wnd)-1
+                n = wnds.index(wnd) - 1
             except ValueError:
                 return
 
             if n < 0:
-                n = len(wnds)-1
+                n = len(wnds) - 1
             wnds[n].activate()
 
     def save_splitterdocs(self, wnd, splitter, callback):
@@ -177,10 +179,11 @@ class ApplicationCommands(Commands):
         def saved(canceled):
             if canceled:
                 return
-                
+
             curdoc.mode.CLOSE_ON_DEL_WINDOW = False
             n = docs.index(wnd.document)
-            doc = itemlistmode.ItemListMode.build('', titles, n, callback, selchanged)
+            doc = itemlistmode.ItemListMode.build(
+                '', titles, n, callback, selchanged)
             kaa.app.show_dialog(doc)
 
         wnd.document.mode.file_commands.can_close_wnd(wnd, saved)

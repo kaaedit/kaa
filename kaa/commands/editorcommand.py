@@ -9,7 +9,7 @@ from gappedbuf import re as gre
 
 
 class CursorCommands(Commands):
-    
+
     @command('cursor.right')
     @norerun
     def right(self, wnd):
@@ -21,10 +21,10 @@ class CursorCommands(Commands):
                 wnd.cursor.right()
             else:
                 wnd.cursor.setpos(wnd.cursor.adjust_nextpos(
-                                    wnd.cursor.pos, range[1]))
+                    wnd.cursor.pos, range[1]))
         else:
             wnd.cursor.right()
-            
+
         wnd.screen.selection.end_cursor()
         wnd.screen.selection.set_to(wnd.cursor.pos)
 
@@ -46,13 +46,12 @@ class CursorCommands(Commands):
                 wnd.cursor.left()
             else:
                 wnd.cursor.setpos(wnd.cursor.adjust_nextpos(
-                                    wnd.cursor.pos, range[0]))
+                    wnd.cursor.pos, range[0]))
         else:
             wnd.cursor.left()
-            
+
         wnd.screen.selection.end_cursor()
         wnd.screen.selection.set_to(wnd.cursor.pos)
-
 
     @command('cursor.left.select')
     @norerun
@@ -246,21 +245,21 @@ class CursorCommands(Commands):
                 return
 
             wnd.screen.selection.end_cursor()
-            
+
             pos = wnd.document.get_lineno_pos(lineno)
             tol = wnd.document.gettol(pos)
             wnd.cursor.setpos(wnd.cursor.adjust_nextpos(wnd.cursor.pos, tol))
 
-
         from kaa.ui.inputline import inputlinemode
-        doc = inputlinemode.InputlineMode.build('Line number:', callback, 
-                filter=inputlinemode.number_filter)
+        doc = inputlinemode.InputlineMode.build('Line number:', callback,
+                                                filter=inputlinemode.number_filter)
         kaa.app.messagebar.set_message("Enter line number")
 
         kaa.app.show_dialog(doc)
 
 
 class ScreenCommands(Commands):
+
     @command('selection.begin-cursor')
     @norerun
     def selection_begin(self, wnd):
@@ -303,11 +302,11 @@ class ScreenCommands(Commands):
     @norerun
     def select_cur_line(self, wnd):
         tol = wnd.cursor.adjust_nextpos(
-                wnd.cursor.pos,
-                wnd.document.gettol(wnd.cursor.pos))
+            wnd.cursor.pos,
+            wnd.document.gettol(wnd.cursor.pos))
         eol = wnd.cursor.adjust_nextpos(
-                wnd.cursor.pos,
-                wnd.document.geteol(tol))
+            wnd.cursor.pos,
+            wnd.document.geteol(tol))
 
         wnd.screen.selection.set_range(tol, eol)
 
@@ -361,11 +360,11 @@ class ScreenCommands(Commands):
             pos = wnd.cursor.pos
             if pos < f:
                 tol = wnd.cursor.adjust_nextpos(
-                        wnd.document.gettol(pos))
+                    wnd.document.gettol(pos))
                 wnd.screen.selection.set_end(tol)
             else:
                 eol = wnd.cursor.adjust_nextpos(
-                        wnd.document.geteol(pos))
+                    wnd.document.geteol(pos))
                 wnd.screen.selection.set_end(eol)
 
 
@@ -385,7 +384,7 @@ class EditCommands(Commands):
         wnd.document.insert(pos, s)
 
         if update_cursor:
-            wnd.cursor.setpos(wnd.cursor.pos+len(s))
+            wnd.cursor.setpos(wnd.cursor.pos + len(s))
             wnd.cursor.savecol()
 
         if wnd.document.undo:
@@ -403,7 +402,7 @@ class EditCommands(Commands):
         wnd.document.replace(pos, posto, s)
 
         if update_cursor:
-            wnd.cursor.setpos(pos+len(s))
+            wnd.cursor.setpos(pos + len(s))
             wnd.cursor.savecol()
 
         if wnd.document.undo:
@@ -435,25 +434,25 @@ class EditCommands(Commands):
             wnd.document.undo.beginblock()
         try:
             (posfrom, posto, colfrom, colto
-                ) = wnd.screen.selection.get_rect_range()
+             ) = wnd.screen.selection.get_rect_range()
 
             for s in repto:
                 if posto <= posfrom:
                     break
-                    
+
                 sel = wnd.screen.selection.get_col_string(
-                        posfrom, colfrom, colto)
+                    posfrom, colfrom, colto)
                 if sel:
                     f, t, org = sel
                     if org.endswith('\n'):
-                        t = max(f, t-1)
+                        t = max(f, t - 1)
                     self.replace_string(wnd, f, t, s)
-                    posto += (len(s) - (t-f))
+                    posto += (len(s) - (t - f))
                 posfrom = wnd.document.geteol(posfrom)
         finally:
             if wnd.document.undo:
                 wnd.document.undo.endblock()
-            
+
     def put_string(self, wnd, s):
         s = wnd.document.mode.filter_string(wnd, s)
 
@@ -463,7 +462,7 @@ class EditCommands(Commands):
                     self.replace_rect(wnd, itertools.repeat(s))
                 else:
                     self.replace_rect(wnd, s.split('\n'))
-                    
+
             else:
                 sel = wnd.screen.selection.get_selrange()
                 f, t = sel
@@ -488,19 +487,19 @@ class EditCommands(Commands):
             wnd.document.undo.beginblock()
         try:
             (posfrom, posto, colfrom, colto
-                ) = wnd.screen.selection.get_rect_range()
+             ) = wnd.screen.selection.get_rect_range()
 
             while posfrom < posto:
                 sel = wnd.screen.selection.get_col_string(
-                        posfrom, colfrom, colto)
+                    posfrom, colfrom, colto)
                 if sel:
                     f, t, org = sel
                     if org.endswith('\n'):
-                        t = max(f, t-1)
+                        t = max(f, t - 1)
                     self.delete_string(wnd, f, t)
-                    posto -= (t-f)
+                    posto -= (t - f)
                 posfrom = wnd.document.geteol(posfrom)
-                
+
             return True
         finally:
             if wnd.document.undo:
@@ -531,7 +530,8 @@ class EditCommands(Commands):
     @command('edit.delete.line')
     def delete_line(self, wnd):
         pos = wnd.cursor.pos
-        nextpos = wnd.cursor.adjust_nextpos(pos, wnd.document.find_newline(pos))
+        nextpos = wnd.cursor.adjust_nextpos(
+            pos, wnd.document.find_newline(pos))
         if pos < nextpos:
             self.delete_string(wnd, pos, nextpos)
 
@@ -598,7 +598,7 @@ class EditCommands(Commands):
         else:
             cols = 0
 
-        s = mode.build_indent_str(cols+mode.indent_width)
+        s = mode.build_indent_str(cols + mode.indent_width)
         self.replace_string(wnd, f, t, s, True)
 
     @command('edit.indent')
@@ -622,13 +622,13 @@ class EditCommands(Commands):
                 else:
                     cols = 0
 
-                s = mode.build_indent_str(cols+mode.indent_width)
+                s = mode.build_indent_str(cols + mode.indent_width)
                 self.replace_string(wnd, f, t, s, False)
                 tol = doc.geteol(tol)
         finally:
             if wnd.document.undo:
                 wnd.document.undo.endblock()
-                
+
         f, t = wnd.screen.selection.get_selrange()
         wnd.cursor.setpos(f)
         wnd.cursor.savecol()
@@ -641,7 +641,7 @@ class EditCommands(Commands):
         else:
             cols = 0
 
-        s = mode.build_indent_str(max(0, cols-mode.indent_width))
+        s = mode.build_indent_str(max(0, cols - mode.indent_width))
         self.replace_string(wnd, f, t, s, True)
 
     @command('edit.dedent')
@@ -666,14 +666,14 @@ class EditCommands(Commands):
                     cols = 0
 
                 if cols:
-                    s = mode.build_indent_str(max(0, cols-mode.indent_width))
+                    s = mode.build_indent_str(max(0, cols - mode.indent_width))
                     self.replace_string(wnd, f, t, s, False)
 
                 tol = doc.geteol(tol)
         finally:
             if wnd.document.undo:
                 wnd.document.undo.endblock()
-                
+
         f, t = wnd.screen.selection.get_selrange()
         wnd.cursor.setpos(f)
         wnd.cursor.savecol()
@@ -682,11 +682,11 @@ class EditCommands(Commands):
         (action, args, kwargs) = rec
         if action == self.UNDO_INSERT:
             pos, s, cur_pos, newpos = args
-            wnd.document.delete(pos, pos+len(s))
+            wnd.document.delete(pos, pos + len(s))
             return cur_pos
         elif action == self.UNDO_REPLACE:
             pos, posto, s, deled, cur_pos, newpos = args
-            wnd.document.replace(pos, pos+len(s), deled)
+            wnd.document.replace(pos, pos + len(s), deled)
             return cur_pos
         else:
             pos, posto, deled, cur_pos, newpos = args
@@ -743,16 +743,16 @@ class EditCommands(Commands):
     def _get_sel(self, wnd):
         if wnd.screen.selection.is_selected():
             if not wnd.screen.selection.is_rectangular():
-                f, t =wnd.screen.selection.get_selrange()
+                f, t = wnd.screen.selection.get_selrange()
                 return wnd.document.gettext(f, t)
             else:
                 s = []
                 (posfrom, posto, colfrom, colto
-                    ) = wnd.screen.selection.get_rect_range()
-    
+                 ) = wnd.screen.selection.get_rect_range()
+
                 while posfrom < posto:
                     sel = wnd.screen.selection.get_col_string(
-                            posfrom, colfrom, colto)
+                        posfrom, colfrom, colto)
                     if sel:
                         f, t, org = sel
                         s.append(org.rstrip('\n'))
@@ -767,7 +767,7 @@ class EditCommands(Commands):
         if sel:
             kaa.app.set_clipboard(sel)
         return sel
-        
+
     @command('edit.copy')
     def copy(self, wnd):
         self._copy_sel(wnd)
@@ -829,28 +829,30 @@ class EditCommands(Commands):
         from kaa.ui.clipboardhist import clipboardhistmode
         clipboardhistmode.show_history(wnd)
 
+
 class CodeCommands(Commands):
+
     @command('code.region.linecomment')
     def linecomment(self, wnd):
         if not wnd.screen.selection.is_selected():
             tol = wnd.document.gettol(wnd.cursor.pos)
             wnd.document.mode.edit_commands.insert_string(
-                    wnd, tol, wnd.document.mode.LINE_COMMENT, 
-                    update_cursor=False)
+                wnd, tol, wnd.document.mode.LINE_COMMENT,
+                update_cursor=False)
             wnd.cursor.setpos(tol)
             wnd.cursor.savecol()
             return
         else:
             tol, eol = wnd.document.mode.get_line_sel(wnd)
             wnd.screen.selection.set_range(tol, eol)
-    
+
             if wnd.document.undo:
                 wnd.document.undo.beginblock()
             try:
                 mode = wnd.document.mode
                 while tol < wnd.screen.selection.get_end():
                     wnd.document.mode.edit_commands.insert_string(
-                        wnd, tol, wnd.document.mode.LINE_COMMENT, 
+                        wnd, tol, wnd.document.mode.LINE_COMMENT,
                         update_cursor=False)
                     tol = wnd.document.geteol(tol)
             finally:
@@ -863,9 +865,9 @@ class CodeCommands(Commands):
 
     def _is_comment_line(self, wnd, pos):
         reobj = gre.compile(r'[ \t]*({})'.format(
-                    gre.escape(wnd.document.mode.LINE_COMMENT)))
+            gre.escape(wnd.document.mode.LINE_COMMENT)))
         return reobj.match(wnd.document.buf, pos)
-        
+
     @command('code.region.unlinecomment')
     def uncomment(self, wnd):
         if not wnd.screen.selection.is_selected():
@@ -879,7 +881,7 @@ class CodeCommands(Commands):
         else:
             tol, eol = wnd.document.mode.get_line_sel(wnd)
             wnd.screen.selection.set_range(tol, eol)
-    
+
             if wnd.document.undo:
                 wnd.document.undo.beginblock()
             try:
@@ -899,7 +901,9 @@ class CodeCommands(Commands):
             wnd.cursor.setpos(f)
             wnd.cursor.savecol()
 
+
 class MacroCommands(Commands):
+
     @command('macro.start-record')
     @norec
     @norerun
@@ -939,6 +943,7 @@ class MacroCommands(Commands):
 
 
 class SearchCommands(Commands):
+
     @command('search.showsearch')
     @norec
     @norerun
@@ -985,16 +990,18 @@ class SearchCommands(Commands):
             return
         range = wnd.screen.selection.get_selrange()
         if range:
-            start = range[0]+1
+            start = range[0] + 1
         else:
-            start =  wnd.cursor.pos
+            start = wnd.cursor.pos
 
-        ret = wnd.document.mode.search_next(start, modebase.SearchOption.LAST_SEARCH)
+        ret = wnd.document.mode.search_next(
+            start, modebase.SearchOption.LAST_SEARCH)
         self._show_searchresult(wnd, ret)
 
         if not ret:
             if start != 0:
-                ret = wnd.document.mode.search_next(0, modebase.SearchOption.LAST_SEARCH)
+                ret = wnd.document.mode.search_next(
+                    0, modebase.SearchOption.LAST_SEARCH)
                 self._show_searchresult(wnd, ret)
 
     @command('search.prev')
@@ -1006,11 +1013,12 @@ class SearchCommands(Commands):
             return
         range = wnd.screen.selection.get_selrange()
         if range:
-            start = range[1]-1
+            start = range[1] - 1
         else:
-            start =  wnd.cursor.pos
+            start = wnd.cursor.pos
 
-        ret = wnd.document.mode.search_prev(start, modebase.SearchOption.LAST_SEARCH)
+        ret = wnd.document.mode.search_prev(
+            start, modebase.SearchOption.LAST_SEARCH)
         self._show_searchresult(wnd, ret)
 
         if not ret:
@@ -1032,5 +1040,3 @@ class SearchCommands(Commands):
         mode.build_document()
 
         kaa.app.show_dialog(doc)
-
-

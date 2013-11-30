@@ -6,8 +6,8 @@ from kaa.keyboard import *
 
 ItemListThemes = {
     'basic':
-        Theme([
-        ]),
+    Theme([
+    ]),
 }
 
 itemlist_keys = {
@@ -21,7 +21,9 @@ itemlist_keys = {
     '\n': 'itemlist.close',
 }
 
+
 class ItemListCommands(Commands):
+
     @command('itemlist.prev')
     @norec
     @norerun
@@ -49,7 +51,7 @@ class ItemListCommands(Commands):
             cur = mode.cursel
             if mode.cursel is None:
                 mode.cursel = 0
-            elif mode.cursel < len(mode.items)-1:
+            elif mode.cursel < len(mode.items) - 1:
                 mode.cursel += 1
 
             if cur is None or cur != mode.cursel:
@@ -72,6 +74,7 @@ class ItemListCommands(Commands):
 
         callback(cursel)
 
+
 class ItemListMode(dialogmode.DialogMode):
     autoshrink = True
     CAPTIONSEP = '\n'
@@ -90,11 +93,11 @@ class ItemListMode(dialogmode.DialogMode):
         mode.onchange = onchange
 
         with dialogmode.FormBuilder(doc) as f:
-    
+
             if caption:
                 f.append_text('caption', caption.replace('&', '&&'))
                 f.append_text('default', cls.CAPTIONSEP)
-    
+
             for i, item in enumerate(items):
                 f.append_text('default', item.replace('&', '&&'), mark_pair=i)
                 f.append_text('default', cls.ITEMSEP)
@@ -149,14 +152,9 @@ class ItemListMode(dialogmode.DialogMode):
         while cont:
             if cursel < 0:
                 cont = False
-            for i in range(cursel+1, len(self.items)):
+            for i in range(cursel + 1, len(self.items)):
                 if self.items[i].startswith(c):
                     self.cursel = i
                     self._update_style(wnd)
                     return
             cursel = -1
-
-
-
-
-

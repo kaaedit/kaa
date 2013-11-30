@@ -2,12 +2,14 @@ import kaa
 from kaa.filetype.default import modebase
 from kaa.theme import Theme, Style
 
+
 class StatusInfo:
     updated = False
+
     def __init__(self):
         self.infos = {
-            'filename':'',
-            'modified':'',
+            'filename': '',
+            'modified': '',
             'lineno': 1,
             'linecount': 1,
             'col': 1,
@@ -32,16 +34,16 @@ class StatusInfo:
         return self.infos.get(name, default)
 
 
-
 StatusBarThemes = {
     'basic':
-        Theme([
-            Style('default', 'Red', 'Base02'),
-            Style('filename', 'LightBlue', 'Base02'),
-            Style('msg', 'Red', 'Base02'),
-            Style('editmode', 'Green', 'Base02', rjust=True),
-        ]),
+    Theme([
+        Style('default', 'Red', 'Base02'),
+        Style('filename', 'LightBlue', 'Base02'),
+        Style('msg', 'Red', 'Base02'),
+        Style('editmode', 'Green', 'Base02', rjust=True),
+    ]),
 }
+
 
 class StatusBarMode(modebase.ModeBase):
     USE_UNDO = False
@@ -75,7 +77,8 @@ class StatusBarMode(modebase.ModeBase):
             self.document.append('*',  style_filename)
 
         self.document.append(' ', style_default)
-        self.document.append('[{lineno}:{col}] {linecount}'.format(**d), style_filename)
+        self.document.append(
+            '[{lineno}:{col}] {linecount}'.format(**d), style_filename)
 
         self.document.append(d['editmode'], style_editmode)
 

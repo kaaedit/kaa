@@ -1,4 +1,5 @@
-import keyword, copy
+import keyword
+import copy
 from kaa.filetype.default import defaultmode, theme
 from kaa.highlight import Tokenizer, Keywords, Span, SingleToken
 from kaa.theme import Theme, Style
@@ -9,9 +10,9 @@ from kaa.ui.pythondebug import port
 
 PythonThemes = {
     'basic':
-        Theme([
-            Style('python-bytes', 'blue', 'default'),
-        ]),
+    Theme([
+        Style('python-bytes', 'blue', 'default'),
+    ]),
 }
 
 PYTHONMENU = [
@@ -27,18 +28,19 @@ python_keys = {
 }
 
 KEYWORDS = ['and', 'as', 'assert', 'break', 'class', 'continue', 'def',
-            'del', 'elif', 'else', 'except', 'finally', 'for', 'from', 
-            'global', 'if', 'import', 'in', 'is', 'lambda', 'nonlocal', 
-            'not', 'or', 'pass', 'raise', 'return', 'try', 'while', 
+            'del', 'elif', 'else', 'except', 'finally', 'for', 'from',
+            'global', 'if', 'import', 'in', 'is', 'lambda', 'nonlocal',
+            'not', 'or', 'pass', 'raise', 'return', 'try', 'while',
             'with', 'yield']
 
 CONSTANTS = ['False', 'None', 'True']
+
 
 class PythonMode(defaultmode.DefaultMode):
     MODENAME = 'Python'
     re_begin_block = gre.compile(r"[^#]*:\s*(#.*)?$")
     LINE_COMMENT = '#'
-    
+
     def init_keybind(self):
         super().init_keybind()
         self.register_keys(self.keybind, [python_keys])
@@ -56,17 +58,21 @@ class PythonMode(defaultmode.DefaultMode):
             Keywords('python-statement', 'keyword', KEYWORDS),
             Keywords('python-constant', 'constant', CONSTANTS),
             SingleToken('python-numeric', 'number',
-                         [r'\b[0-9]+(\.[0-9]*)*\b', r'\b\.[0-9]+\b']), 
+                        [r'\b[0-9]+(\.[0-9]*)*\b', r'\b\.[0-9]+\b']),
             Span('python-comment', 'comment', r'\#', '$', escape='\\'),
             Span('python-string31', 'string', 'r?"""', '"""', escape='\\'),
             Span('python-string32', 'string', "r?'''", "'''", escape='\\'),
             Span('python-string11', 'string', 'r?"', '"', escape='\\'),
             Span('python-string12', 'string', "r?'", "'", escape='\\'),
 
-            Span('python-bytes31', 'python-bytes', '(br?|r?b)"""', '"', escape='\\'),
-            Span('python-bytes32', 'python-bytes', "(br?|r?b)'''", "'''", escape='\\'),
-            Span('python-bytes11', 'python-bytes', '(br?|r?b)"', '"', escape='\\'),
-            Span('python-bytes12', 'python-bytes', "(br?|r?b)'", "'", escape='\\'),
+            Span('python-bytes31', 'python-bytes',
+                 '(br?|r?b)"""', '"', escape='\\'),
+            Span('python-bytes32', 'python-bytes',
+                 "(br?|r?b)'''", "'''", escape='\\'),
+            Span('python-bytes11', 'python-bytes',
+                 '(br?|r?b)"', '"', escape='\\'),
+            Span('python-bytes12', 'python-bytes',
+                 "(br?|r?b)'", "'", escape='\\'),
         ])]
 
     def on_set_document(self, document):
@@ -78,14 +84,14 @@ class PythonMode(defaultmode.DefaultMode):
             for bp in bps:
                 pos = self.document.get_lineno_pos(bp.lineno)
                 self.document.marks[bp] = pos
-            
+
     def on_del_window(self, wnd):
         super().on_del_window(wnd)
         self.update_python_breakpoints()
-        
+
     def get_line_overlays(self):
         ret = super().get_line_overlays()
-        
+
         for k, v in self.get_breakpoints():
             ret[v] = 'breakpoint'
         return ret
@@ -95,8 +101,9 @@ class PythonMode(defaultmode.DefaultMode):
             self._clear_breakpoints()
 
         super().on_file_saved(fileinfo)
-            
+
     RE_BEGIN_NEWBLOCK = gre.compile(r"[^#]*\:\s*(#.*)?$", gre.M)
+
     def on_auto_indent(self, wnd):
         pos = wnd.cursor.pos
         tol = self.document.gettol(pos)
@@ -107,15 +114,16 @@ class PythonMode(defaultmode.DefaultMode):
             f, t = self.get_indent_range(pos)
             t = min(t, pos)
             cols = self.calc_cols(f, t)
-            indent = self.build_indent_str(cols+self.indent_width)
-            indent = '\n'+indent
-            self.edit_commands.insert_string(wnd, pos, indent, 
-                    update_cursor=False)
-            wnd.cursor.setpos(pos+len(indent))
-            
+            indent = self.build_indent_str(cols + self.indent_width)
+            indent = '\n' + indent
+            self.edit_commands.insert_string(wnd, pos, indent,
+                                             update_cursor=False)
+            wnd.cursor.setpos(pos + len(indent))
+
             wnd.cursor.savecol()
 
     RE_SEARCH_NAME = gre.compile(r'(\\.)|(\w+)|(\S)')
+
     def _py_getname(self, pos):
         while True:
             m = self.RE_SEARCH_NAME.search(self.document.buf, pos)
@@ -151,7 +159,7 @@ class PythonMode(defaultmode.DefaultMode):
                 return m.end()
             else:
                 pos = m.end()
-            
+
     def _py_end_string(self, m):
         close = r'\\.|(?P<CLOSE>%s)' % m.group()
         reobj = gre.compile(close)
@@ -165,14 +173,14 @@ class PythonMode(defaultmode.DefaultMode):
                 return m.end()
             else:
                 pos = m.end()
-            
+
     TOKENIZE_SEARCH_CLOSE = r'''
             (?P<BACKSLASH>\\.)|(?P<PARENTHESIS>[\{\[\(])|
             (?P<COMMENT>\#)|(?P<STRING>\"|\"\"\"|\'|\'\'\')'''
 
     def _py_close_parenthesis(self, m):
         close = '|(?P<CLOSE>\\%s)' % self.PARENSIS_PAIR[m.group()]
-        reobj = gre.compile(self.TOKENIZE_SEARCH_CLOSE+close, gre.X)
+        reobj = gre.compile(self.TOKENIZE_SEARCH_CLOSE + close, gre.X)
         pos = m.end()
         while True:
             m = reobj.search(self.document.buf, pos)
@@ -192,7 +200,7 @@ class PythonMode(defaultmode.DefaultMode):
                 pos = self._py_end_comment(m)
             else:
                 assert 0
-        
+
     RE_TOKENIZE_SEARCH = gre.compile(
         r'''(?P<BACKSLASH>\\.)|(?P<CLASS>\bclass\b)|
             (?P<DEF>\bdef\b)|(?P<PARENTHESIS>[\{\[\(])|
@@ -219,14 +227,15 @@ class PythonMode(defaultmode.DefaultMode):
                 pos = self._py_end_comment(m)
             else:
                 assert 0
-                
+
     def get_headers(self):
         stack = []
         for token, pos, indent, name in self._py_tokenize():
-            dispname = name if token is 'class' else name+'()'
+            dispname = name if token is 'class' else name + '()'
             headertype = 'namespace' if token == 'class' else 'function'
             if not stack:
-                header = self.HeaderInfo(headertype, None, name, dispname, None, pos)
+                header = self.HeaderInfo(
+                    headertype, None, name, dispname, None, pos)
                 yield header
                 stack.append((indent, header))
                 continue
@@ -237,15 +246,16 @@ class PythonMode(defaultmode.DefaultMode):
                     break
 
             if stack:
-                parents = tuple(header for (_, header) in stack 
-                                    if header.token == 'namespace')
+                parents = tuple(header for (_, header) in stack
+                                if header.token == 'namespace')
                 parent = parents[-1] if parents else None
                 fullname = '.'.join([stack[-1][1].name, name])
                 header = self.HeaderInfo(
-                    headertype, parent, fullname, 
+                    headertype, parent, fullname,
                     dispname, None, pos)
             else:
-                header = self.HeaderInfo(headertype, None, name, dispname, None, pos)
+                header = self.HeaderInfo(
+                    headertype, None, name, dispname, None, pos)
 
             yield header
             stack.append((indent, header))
@@ -266,13 +276,13 @@ class PythonMode(defaultmode.DefaultMode):
         filename = self.document.get_filename()
         if not filename:
             return
-            
+
         bps = []
         for k, v in self.get_breakpoints():
             lineno = self.document.buf.lineno.lineno(v)
             k.lineno = lineno
             bps.append(k)
-    
+
         port.set_breakpoints(filename, bps)
 
     def _clear_breakpoints(self):
@@ -298,4 +308,3 @@ class PythonMode(defaultmode.DefaultMode):
                 self.document.marks[bp] = tol
 
         self.document.style_updated()
-        

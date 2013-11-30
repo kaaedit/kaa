@@ -11,12 +11,13 @@ from kaa.ui.messagebar import messagebarmode
 
 from kaa.exceptions import KaaError
 
+
 class CuiApp:
     SHOW_MENU_MESSAGE = 'Type F1 or alt+/ for menu.'
     DEFAULT_THEME = 'basic'
     DEFAULT_PALETTE = 'dark'
     MAX_CLIPBOARD = 10
-    
+
     def __init__(self, config):
         self.config = config
         self.colors = None
@@ -28,15 +29,15 @@ class CuiApp:
         self.theme = self.DEFAULT_THEME
         self.last_dir = '.'
         self._input_readers = []
-        
+
     def init(self, mainframe):
         if self.config.palette:
             self.set_palette(self.config.palette)
         elif not self.colors:
             self.set_palette(self.DEFAULT_PALETTE)
-            
+
         self.config.init_history()
-        
+
         self.messagebar = messagebarmode.MessageBarMode()
 
         buf = document.Buffer()
@@ -53,7 +54,7 @@ class CuiApp:
 
     def on_shutdown(self):
         self.config.close()
-        
+
     def get_current_theme(self):
         return self.theme
 
@@ -66,7 +67,7 @@ class CuiApp:
             return color.LightPalette()
         else:
             return color.DarkPalette()
-            
+
     def quit(self):
         self._quit = True
 
@@ -113,7 +114,7 @@ class CuiApp:
         try:
             if not isinstance(key, int):
                 key = ord(key)
-                
+
             return str(curses.keyname(key), 'utf-8', 'replace')
         except Exception:
             return '?'
@@ -139,9 +140,9 @@ class CuiApp:
                 if not (0x40 <= ord(c) <= 0x5f):
                     raise KaaError(
                         'Cannot use control key for character: {!r}'.format((mod, c)))
-                return meta+chr(ord(c)-0x40)
+                return meta + chr(ord(c) - 0x40)
             else:
-                return meta+c
+                return meta + c
         else:
             ret = keydef.keyfromname(c, ctrl, shift)
             if ret is None:
@@ -167,7 +168,7 @@ class CuiApp:
         '''
         ret = self.mainframe.show_doc(doc)
         return ret
-        
+
     def show_inputline(self, doc):
         self._idleprocs = None  # Reschedule idle procs
         dlg = dialog.DialogWnd(parent=self.mainframe, doc=doc)
@@ -194,14 +195,13 @@ class CuiApp:
 
     def get_clipboard(self):
         return self._clipboard[0] if self._clipboard else ''
-        
+
     def get_clipboards(self):
         return iter(self._clipboard)
-        
+
     def set_clipboard(self, s):
         self._clipboard.insert(0, s)
         del self._clipboard[self.MAX_CLIPBOARD:]
-
 
     def add_input_reader(self, reader):
         self._input_readers.append(reader)
@@ -209,9 +209,9 @@ class CuiApp:
     def del_input_reader(self, reader):
         if reader in self._input_readers:
             self._input_readers.remove(reader)
-        
+
     def run(self):
-        
+
         nonblocking = True
         while not self._quit:
             try:
@@ -230,8 +230,8 @@ class CuiApp:
 
                 try:
                     rlist, _, _ = select.select(
-                            [sys.stdin]+rd, [], [], 
-                            0 if nonblocking else None)
+                        [sys.stdin] + rd, [], [],
+                        0 if nonblocking else None)
 
                 except InterruptedError:
                     pass
@@ -266,10 +266,9 @@ class CuiApp:
                         nonblocking = False
                 else:
                     self.set_idlejob()  # Reschedule idle procs
-                    
+
             except Exception as e:
                 kaa.log.error('Unhandled exception', exc_info=True)
                 kaa.app.messagebar.set_message(str(e))
 
                 nonblocking = True
-

@@ -1,10 +1,12 @@
 import functools
 
+
 def command(cmdid):
     def _f(f):
         f.COMMAND_ID = cmdid
-        return f 
+        return f
     return _f
+
 
 def is_enable(cmdid):
     def _f(f):
@@ -12,15 +14,17 @@ def is_enable(cmdid):
         return f
     return _f
 
+
 def norec(f):
     f.NOREC = True
-    return f 
+    return f
+
 
 def norerun(f):
     f.NORERUN = True
     return f
 
-#def repeat(f):
+# def repeat(f):
 #    def rep(self, wnd, *args, **kwargs):
 #        n = 1 if not wnd.editmode.has_repeat() else wnd.editmode.get_repeat()
 #        for i in range(n):
@@ -28,7 +32,9 @@ def norerun(f):
 #    functools.update_wrapper(rep, f)
 #    return rep
 
+
 class Commands:
+
     def _find_funcs(self, attrname):
         for name in dir(self):
             f = getattr(self, name)
@@ -41,7 +47,3 @@ class Commands:
 
     def get_commands_is_enable(self):
         yield from self._find_funcs('COMMAND_IS_ENABLE')
-
-
-
-

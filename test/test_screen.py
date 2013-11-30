@@ -1,9 +1,12 @@
 from kaa import screen, document
 import kaa_testutils
 
+
 class TestTranslateChars:
+
     def test_transform(self):
-        chrs, cols, positions, intervals = screen.translate_chars(10, 'abcdefg', 8, 2)
+        chrs, cols, positions, intervals = screen.translate_chars(
+            10, 'abcdefg', 8, 2)
 
         assert chrs == 'abcdefg'
         assert cols == [1] * 7
@@ -11,7 +14,8 @@ class TestTranslateChars:
         assert intervals == [0] * 7
 
     def test_tab(self):
-        chrs, cols, positions, intervals = screen.translate_chars(10, 'ab\t\tc', 4, 2)
+        chrs, cols, positions, intervals = screen.translate_chars(
+            10, 'ab\t\tc', 4, 2)
 
         assert chrs == 'ab      c'
         assert cols == [1] * 9
@@ -19,17 +23,18 @@ class TestTranslateChars:
         assert intervals == [0, 0, 0, 1, 0, 1, 2, 3, 0]
 
     def test_ctrlchars(self):
-        chrs, cols, positions, intervals = screen.translate_chars(10, '\x01\x02\x03\x7f', 8, 2)
+        chrs, cols, positions, intervals = screen.translate_chars(
+            10, '\x01\x02\x03\x7f', 8, 2)
 
         assert chrs == r'\x01\x02\x03\x7f'
         assert cols == [1] * 16
         assert positions == [
-                10, 10, 10, 10, 11, 11, 11, 11, 
-                12, 12, 12, 12, 13, 13, 13, 13]
+            10, 10, 10, 10, 11, 11, 11, 11,
+            12, 12, 12, 12, 13, 13, 13, 13]
         assert intervals == [0, 1, 2, 3] * 4
 
-
-        chrs, cols, positions, intervals = screen.translate_chars(10, '\r\n', 8, 2)
+        chrs, cols, positions, intervals = screen.translate_chars(
+            10, '\r\n', 8, 2)
 
         assert chrs == '\\r\n'
         assert cols == [1] * 3
@@ -38,19 +43,21 @@ class TestTranslateChars:
 
 
 class TestColumnSplitter:
+
     def test_split(self):
-        rows = screen.col_splitter(6, 0, '0123456789', [1]*10, list(range(10)), [0]*10, [0]*10, {})
+        rows = screen.col_splitter(
+            6, 0, '0123456789', [1] * 10, list(range(10)), [0] * 10, [0] * 10, {})
 
         row1, row2 = rows
         assert row1.chars == '01234'
-        assert row1.cols == [1,1,1,1,1]
-        assert row1.positions == [0,1,2,3,4]
+        assert row1.cols == [1, 1, 1, 1, 1]
+        assert row1.positions == [0, 1, 2, 3, 4]
         assert row1.posfrom == 0
         assert row1.posto == 5
 
         assert row2.chars == '56789'
-        assert row2.cols == [1,1,1,1,1]
-        assert row2.positions == [5,6,7,8,9]
+        assert row2.cols == [1, 1, 1, 1, 1]
+        assert row2.positions == [5, 6, 7, 8, 9]
         assert row2.posfrom == 5
         assert row2.posto == 10
 
@@ -65,18 +72,21 @@ class TestColumnSplitter:
         assert row.posto == 0
 
     def test_newline(self):
-        rows = screen.col_splitter(5, 0, '0123\n', [1]*5, list(range(5)), [1]*5, [0]*5, {})
+        rows = screen.col_splitter(
+            5, 0, '0123\n', [1] * 5, list(range(5)), [1] * 5, [0] * 5, {})
 
         row, = rows
         assert row.chars == '0123\n'
-        assert row.cols == [1,1,1,1,1]
-        assert row.positions == [0,1,2,3,4]
+        assert row.cols == [1, 1, 1, 1, 1]
+        assert row.positions == [0, 1, 2, 3, 4]
         assert row.posfrom == 0
         assert row.posto == 5
 
     def test_controlchr(self):
-        chrs, cols, positions, intervals = screen.translate_chars(0, '\x01\x02\x03\x7f', 8, 2)
-        rows = screen.col_splitter(6, 0, chrs, cols, positions, intervals, [0]*4, {})
+        chrs, cols, positions, intervals = screen.translate_chars(
+            0, '\x01\x02\x03\x7f', 8, 2)
+        rows = screen.col_splitter(
+            6, 0, chrs, cols, positions, intervals, [0] * 4, {})
 
         row1, row2, row3, row4 = rows
         assert row1.chars == '\\x01\\'
@@ -88,9 +98,9 @@ class TestColumnSplitter:
         class C:
             nowrap = True
 
-        rows = screen.col_splitter(4, 0, '0123456789', [1]*10,
-                                   list(range(10)), [0]*10,
-                                   [0, 0, 1, 1, 1, 0, 0, 0, 0, 0], {1:C})
+        rows = screen.col_splitter(4, 0, '0123456789', [1] * 10,
+                                   list(range(10)), [0] * 10,
+                                   [0, 0, 1, 1, 1, 0, 0, 0, 0, 0], {1: C})
 
         row1, row2, row3, row4 = rows
         assert row1.chars == '01'
@@ -98,9 +108,9 @@ class TestColumnSplitter:
         assert row3.chars == '567'
         assert row4.chars == '89'
 
-        rows = screen.col_splitter(3, 0, '0123456789', [1]*10,
-                                   list(range(10)), [0]*10,
-                                   [1, 1, 1, 1, 1, 0, 0, 0, 0, 0], {1:C})
+        rows = screen.col_splitter(3, 0, '0123456789', [1] * 10,
+                                   list(range(10)), [0] * 10,
+                                   [1, 1, 1, 1, 1, 0, 0, 0, 0, 0], {1: C})
 
         row1, row2, row3, row4, row5 = rows
         assert row1.chars == '01'
@@ -109,9 +119,9 @@ class TestColumnSplitter:
         assert row4.chars == '67'
         assert row5.chars == '89'
 
-        rows = screen.col_splitter(3, 0, '0123456789', [1]*10,
-                                   list(range(10)), [0]*10,
-                                   [0, 0, 1, 1, 1, 0, 0, 0, 0, 0], {1:C})
+        rows = screen.col_splitter(3, 0, '0123456789', [1] * 10,
+                                   list(range(10)), [0] * 10,
+                                   [0, 0, 1, 1, 1, 0, 0, 0, 0, 0], {1: C})
 
         row1, row2, row3, row4, row5 = rows
         assert row1.chars == '01'
@@ -121,13 +131,14 @@ class TestColumnSplitter:
         assert row5.chars == '89'
 
     def test_combine(self):
-        rows = screen.col_splitter(3, 0, '0\u0300\u0300\u0300\u0300\u0300\u030012',
-                                    [1,0,0,0,0,0,0,1,1], list(range(9)), [0]*9, [0]*9, {})
+        rows = screen.col_splitter(
+            3, 0, '0\u0300\u0300\u0300\u0300\u0300\u030012',
+            [1, 0, 0, 0, 0, 0, 0, 1, 1], list(range(9)), [0] * 9, [0] * 9, {})
 
         row1, row2 = rows
         assert row1.chars == '0\u0300\u0300\u0300\u0300\u0300\u03001'
-        assert row1.cols == [1,0,0,0,0,0,0,1]
-        assert row1.positions == [0,1,2,3,4,5,6,7]
+        assert row1.cols == [1, 0, 0, 0, 0, 0, 0, 1]
+        assert row1.positions == [0, 1, 2, 3, 4, 5, 6, 7]
         assert row1.posfrom == 0
         assert row1.posto == 8
 
@@ -137,7 +148,9 @@ class TestColumnSplitter:
         assert row2.posfrom == 8
         assert row2.posto == 9
 
+
 class TestScreen(kaa_testutils._TestScreenBase):
+
     def test_build(self):
         scrn = self._getscreen("abc")
 
@@ -155,9 +168,8 @@ class TestScreen(kaa_testutils._TestScreenBase):
         assert row2.posfrom == 8
         assert row2.posto == 18
 
-
     def test_wrapindent(self):
-        scrn = self._getscreen('    ' + '0123456789'*16, width=80)
+        scrn = self._getscreen('    ' + '0123456789' * 16, width=80)
         row1, row2, row3 = scrn.get_visible_rows()
         assert row1.posfrom == 0
         assert row1.posto == 79
@@ -244,8 +256,6 @@ class TestScreen(kaa_testutils._TestScreenBase):
         scrn = self._getscreen("\t\t", width=3)
         assert scrn.get_pos_above(1, 0) == 0
 
-
-
     def test_getpos_fromrowcol(self):
         return
         scrn = self._getscreen("\u3042\u3043\u3044\n")
@@ -275,17 +285,17 @@ class TestScreen(kaa_testutils._TestScreenBase):
         assert scrn.getpos_fromrowcol(1, 3) == 3
         assert scrn.getpos_fromrowcol(1, 4) == 3
 
-        scrn = self._getscreen('\t'*2 + '01234567890', width=9)
+        scrn = self._getscreen('\t' * 2 + '01234567890', width=9)
         assert scrn.getpos_fromrowcol(0, 7) == 1
 
     def test_get_pos_at_cols(self):
         scrn = self._getscreen("012345\nabcdef", width=4, height=3)
-        ret = scrn.get_pos_at_cols(7,4)
+        ret = scrn.get_pos_at_cols(7, 4)
         assert ret == 11
-        
+
     def test_newline(self):
         scrn = self._getscreen("abc\n")
-        
+
         row1, row2 = scrn.get_visible_rows()
         assert row1.posfrom == 0
         assert row1.posto == 4
@@ -385,7 +395,7 @@ class TestScreen(kaa_testutils._TestScreenBase):
         row, = scrn.get_visible_rows()
         assert scrn.pos == row.posfrom == 4
         assert row.posto == 4
-        
+
         scrn = self._getscreen("abc\ndef", height=1)
         assert scrn.linedown()
 
@@ -449,4 +459,3 @@ class TestScreen(kaa_testutils._TestScreenBase):
         scrn.apply_updates()
 
         assert scrn.pos == 5
-

@@ -9,44 +9,46 @@ from kaa.keyboard import *
 
 RstThemes = {
     'basic':
-        Theme([
-            Style('header', 'Blue', None),
-            Style('block', 'Orange', None),
-            Style('directive', 'Green', None),
-            Style('table', 'Cyan', None),
-            Style('strong', 'Magenta', None),
-            Style('emphasis', 'Blue', None),
-            Style('literal', 'Cyan', None),
-            Style('reference', 'Red', None),
-            Style('role', 'Cyan', None),
-            Style('substitution', 'Green', None),
-        ]),
+    Theme([
+        Style('header', 'Blue', None),
+        Style('block', 'Orange', None),
+        Style('directive', 'Green', None),
+        Style('table', 'Cyan', None),
+        Style('strong', 'Magenta', None),
+        Style('emphasis', 'Blue', None),
+        Style('literal', 'Cyan', None),
+        Style('reference', 'Red', None),
+        Style('role', 'Cyan', None),
+        Style('substitution', 'Green', None),
+    ]),
 }
+
 
 class RstInline(Span):
     WS = ' \t\r\n'
     STARTS = '\'"([{<' + WS
     ENDS = '\'".,:;!?-)]}/\\>' + WS
-    
-    def on_start(self, tokenizer, doc, pos, match):
-        if ((pos and (doc.gettext(pos-1, pos) not in self.STARTS)) or 
-            (pos >= doc.endpos()-1) or
-            (doc.gettext(pos+1, pos+2) in self.WS)):
 
-            yield pos, pos+1, tokenizer.nulltoken
-            return pos+1, None, False
-                
+    def on_start(self, tokenizer, doc, pos, match):
+        if ((pos and (doc.gettext(pos - 1, pos) not in self.STARTS)) or
+                (pos >= doc.endpos() - 1) or
+                (doc.gettext(pos + 1, pos + 2) in self.WS)):
+
+            yield pos, pos + 1, tokenizer.nulltoken
+            return pos + 1, None, False
+
         ret = yield from super().on_start(tokenizer, doc, pos, match)
         return ret
 
     def _is_end(self, doc, m):
         pos = m.end()
         if pos < doc.endpos():
-            return (doc.gettext(pos, pos+1) in self.ENDS)
+            return (doc.gettext(pos, pos + 1) in self.ENDS)
         return True
-        
+
 
 class TableToken(SingleToken):
+
     def on_start(self, tokenizer, doc, pos, match):
         in_table = False
         tol = doc.gettol(pos)
@@ -55,7 +57,7 @@ class TableToken(SingleToken):
         else:
             # check if previous line is table
             if tol > 1:
-                laststyle = doc.getstyles(tol-2, tol-1)[0]
+                laststyle = doc.getstyles(tol - 2, tol - 1)[0]
                 token = tokenizer.highlighter.get_token(laststyle)
                 if isinstance(token, TableToken):
                     in_table = True
@@ -63,53 +65,58 @@ class TableToken(SingleToken):
             ret = yield from super().on_start(tokenizer, doc, pos, match)
             return ret
         else:
-            yield pos, pos+1, tokenizer.nulltoken
-            return pos+1, None, False
-    
+            yield pos, pos + 1, tokenizer.nulltoken
+            return pos + 1, None, False
+
 
 RST_HEADERS = r'=\-`:\'"~^_*+#<>'
+
+
 def build_tokenizer():
-    RSTTOKENS = namedtuple('rsttokens', 
-                            ['escape', 'header1', 'header2', 
-                             'directive', 'block', 'tableborder',
-                             'tablerow',
-                             'strong', 'emphasis', 
-                             'literal', 'interpreted', 'reference',  
-                             'role',
-                             'target', 'substitution', 'citation',
-                         ])
+    RSTTOKENS = namedtuple('rsttokens',
+                           ['escape', 'header1', 'header2',
+                            'directive', 'block', 'tableborder',
+                            'tablerow',
+                            'strong', 'emphasis',
+                            'literal', 'interpreted', 'reference',
+                            'role',
+                            'target', 'substitution', 'citation',
+                            ])
 
     return Tokenizer(
-            RSTTOKENS(
+        RSTTOKENS(
             # escape
             SingleToken('escape', 'default', [r'\\.']),
-            
+
             # header token
-            SingleToken('header1', 'header', 
-                [r'^(?P<H>[{}])(?P=H)+\n.+\n(?P=H)+$'.format(RST_HEADERS)]),
-            SingleToken('header2', 'header', 
-                [r'^.+\n(?P<H2>[{}])(?P=H2)+$'.format(RST_HEADERS)]),
+            SingleToken('header1', 'header',
+                        [r'^(?P<H>[{}])(?P=H)+\n.+\n(?P=H)+$'.format(RST_HEADERS)]),
+            SingleToken('header2', 'header',
+                        [r'^.+\n(?P<H2>[{}])(?P=H2)+$'.format(RST_HEADERS)]),
 
             # block
-            Span('directive', 'directive', r'\.\.\s+\S+::', '^\S', 
-                escape='\\', capture_end=False),
+            Span('directive', 'directive', r'\.\.\s+\S+::', '^\S',
+                 escape='\\', capture_end=False),
             SingleToken('block', 'block', [r'::[\ \t]*$']),
 
-            #table
+            # table
             TableToken('rst-table-border', 'table', [r'\+[+\-=]+(\s+|$)']),
             TableToken('rst-table-row', 'table', [r'\|(\s+|$)']),
-            
+
             # inline token
-            RstInline('rst-strong', 'strong', r'\*\*', r'\*\*', escape='\\'),
-            RstInline('rst-emphasis', 'emphasis', r'\*', r'\*', escape='\\'),
+            RstInline('rst-strong', 'strong',
+                      r'\*\*', r'\*\*', escape='\\'),
+            RstInline('rst-emphasis', 'emphasis',
+                      r'\*', r'\*', escape='\\'),
             RstInline('rst-literal', 'literal', r'``', r'``', escape='\\'),
-            RstInline('rst-interpreted', 'reference', r'`', r'`_?_?', 
-                    escape='\\'),
-            SingleToken('rst-reference', 'reference', 
-                    [r'\b[a-zA-Z0-9]+__?\b']),
-            RstInline('rst-role', 'role', r':[a-zA-Z0-9]+:`', r'`', 
-                escape='\\'),
-            RstInline('rst-target', 'reference', r'_`\w', r'`', escape='\\'),
+            RstInline('rst-interpreted', 'reference', r'`', r'`_?_?',
+                      escape='\\'),
+            SingleToken('rst-reference', 'reference',
+                        [r'\b[a-zA-Z0-9]+__?\b']),
+            RstInline('rst-role', 'role', r':[a-zA-Z0-9]+:`', r'`',
+                      escape='\\'),
+            RstInline('rst-target', 'reference',
+                      r'_`\w', r'`', escape='\\'),
             SingleToken('rst-substitution', 'substitution', [r'\|\w+\|']),
             SingleToken('rst-citation', 'reference', [r'\[\w+\]_\b']),
 
@@ -123,6 +130,7 @@ RSTMENU = [
 rst_keys = {
     (ctrl, 't'): 'toc.showlist',
 }
+
 
 class RstMode(defaultmode.DefaultMode):
     MODENAME = 'Rst'
@@ -148,8 +156,8 @@ class RstMode(defaultmode.DefaultMode):
 
     HEADER2 = r'''^(?P<TITLE2>.+)\n
                 (?P<H2>[{}])(?P=H2)+$'''.format(RST_HEADERS)
-    
-    RE_HEADER = gre.compile('|'.join([HEADER1, HEADER2]), gre.X|gre.M)
+
+    RE_HEADER = gre.compile('|'.join([HEADER1, HEADER2]), gre.X | gre.M)
 
     def get_headers(self):
         levels = {}
@@ -159,7 +167,7 @@ class RstMode(defaultmode.DefaultMode):
             m = self.RE_HEADER.search(self.document.buf, pos)
             if not m:
                 break
-    
+
             pos = m.end()
             name = m.group('TITLE') or m.group('TITLE2')
             name = name.strip()
@@ -172,8 +180,8 @@ class RstMode(defaultmode.DefaultMode):
                 level = levels[bar]
 
             if not stack:
-                header = self.HeaderInfo('namespace', None, name, name, 
-                            None, m.start())
+                header = self.HeaderInfo('namespace', None, name, name,
+                                         None, m.start())
                 yield header
                 stack.append((level, header))
                 continue
@@ -189,11 +197,10 @@ class RstMode(defaultmode.DefaultMode):
                 parent = None
 
             header = self.HeaderInfo(
-                'namespace', parent, name, 
+                'namespace', parent, name,
                 name, None, m.start())
             yield header
             stack.append((level, header))
-            
 
     @command('toc.showlist')
     @norec
@@ -202,4 +209,3 @@ class RstMode(defaultmode.DefaultMode):
         from kaa.ui.toclist import toclistmode
         headers = list(self.get_headers())
         toclistmode.show_toclist(wnd, headers)
-

@@ -11,14 +11,15 @@ from gappedbuf.sre_constants import error as gre_error
 
 SearchThemes = {
     'basic':
-        Theme([
-        ]),
+    Theme([
+    ]),
 
 }
 
 
 class SearchCommands(editorcommand.EditCommands):
     # todo: move commands to mode class
+
     @command('searchdlg.search.next')
     @norec
     @norerun
@@ -33,10 +34,9 @@ class SearchCommands(editorcommand.EditCommands):
         mode = wnd.document.mode
         mode.search_prev(wnd)
 
-    
     def _show_histdlg(self, wnd, title, candidates, callback):
         filterlist.show_listdlg(title, candidates, callback)
-        
+
     @command('searchdlg.history')
     @norec
     @norerun
@@ -46,11 +46,12 @@ class SearchCommands(editorcommand.EditCommands):
                 f, t = wnd.document.marks['searchtext']
                 wnd.document.replace(f, t, result)
                 wnd.cursor.setpos(f)
-            
-        self._show_histdlg(wnd, 'Recent searches', 
-                [s for s, info in kaa.app.config.hist_searchstr.get()],
-                callback)
-        
+
+        self._show_histdlg(wnd, 'Recent searches',
+                           [s for s,
+                               info in kaa.app.config.hist_searchstr.get()],
+                           callback)
+
     @command('searchdlg.toggle.ignorecase')
     @norec
     @norerun
@@ -78,6 +79,7 @@ searchdlg_keys = {
     up: ('searchdlg.history'),
 }
 
+
 class SearchDlgMode(dialogmode.DialogMode):
     autoshrink = True
 
@@ -88,6 +90,7 @@ class SearchDlgMode(dialogmode.DialogMode):
         keybind.macro_command_keys,
     ]
     _last_searchstr = ''
+
     def __init__(self, target):
         super().__init__()
 
@@ -139,7 +142,7 @@ class SearchDlgMode(dialogmode.DialogMode):
 
     def create_cursor(self, wnd):
         return dialogmode.DialogCursor(wnd,
-                   [dialogmode.MarkRange('searchtext')])
+                                       [dialogmode.MarkRange('searchtext')])
 
     def on_add_window(self, wnd):
         super().on_add_window(wnd)
@@ -190,13 +193,14 @@ class SearchDlgMode(dialogmode.DialogMode):
             self._build_input(f)
             self._build_buttons(f)
             self._build_options(f)
-    
+
             self.document.insert(
                 self.document.marks['searchtext'][0], self.option.text)
-    
+
             self.update_option_style()
 
-        kaa.app.messagebar.set_message("Hit alt+N/alt+P to search Next/Prev. Hit up to show history.")
+        kaa.app.messagebar.set_message(
+            "Hit alt+N/alt+P to search Next/Prev. Hit up to show history.")
 
     def _set_option_style(self, mark, style,
                           shortcutmark, shortcutstyle):
@@ -204,7 +208,7 @@ class SearchDlgMode(dialogmode.DialogMode):
         self.document.styles.setints(f, t, self.get_styleid(style))
 
         f = self.document.marks[shortcutmark]
-        self.document.styles.setints(f, f+1, self.get_styleid(shortcutstyle))
+        self.document.styles.setints(f, f + 1, self.get_styleid(shortcutstyle))
 
     def _get_optionstylename(self, f):
         if f:
@@ -214,16 +218,16 @@ class SearchDlgMode(dialogmode.DialogMode):
 
     def update_option_style(self):
         style = self._get_optionstylename(self.option.ignorecase)
-        self._set_option_style('ignore-case', 'checkbox'+style, 'shortcut-i',
-                               'checkbox.shortcut'+style)
+        self._set_option_style('ignore-case', 'checkbox' + style, 'shortcut-i',
+                               'checkbox.shortcut' + style)
 
         style = self._get_optionstylename(self.option.word)
-        self._set_option_style('word', 'checkbox'+style, 'shortcut-w',
-                               'checkbox.shortcut'+style)
+        self._set_option_style('word', 'checkbox' + style, 'shortcut-w',
+                               'checkbox.shortcut' + style)
 
         style = self._get_optionstylename(self.option.regex)
-        self._set_option_style('regex', 'checkbox'+style, 'shortcut-r',
-                               'checkbox.shortcut'+style)
+        self._set_option_style('regex', 'checkbox' + style, 'shortcut-r',
+                               'checkbox.shortcut' + style)
 
     def _option_updated(self):
         self.update_option_style()
@@ -259,7 +263,6 @@ class SearchDlgMode(dialogmode.DialogMode):
             self._last_searchstr = s
         except gre_error as e:
             kaa.app.messagebar.set_message(str(e))
-            
 
     def _show_searchresult(self, hit):
         if hit:
@@ -304,7 +307,7 @@ class SearchDlgMode(dialogmode.DialogMode):
         s = self.get_search_str()
         if s:
             kaa.app.config.hist_searchstr.add(s)
-        
+
     def search_next(self, wnd):
         self._save_searchstr()
         return self._search_next(wnd)
@@ -371,10 +374,11 @@ class ReplaceCommands(SearchCommands):
                 f, t = wnd.document.marks['replacetext']
                 wnd.document.replace(f, t, result)
                 wnd.cursor.setpos(f)
-                
-        self._show_histdlg(wnd, 'Recent replace strings', 
-                [s for s, info in kaa.app.config.hist_replstr.get()],
-                callback)
+
+        self._show_histdlg(wnd, 'Recent replace strings',
+                           [s for s,
+                               info in kaa.app.config.hist_replstr.get()],
+                           callback)
 
     @command('replacedlg.history')
     @norec
@@ -414,8 +418,8 @@ class ReplaceDlgMode(SearchDlgMode):
 
     def create_cursor(self, wnd):
         return dialogmode.DialogCursor(wnd,
-                  [dialogmode.MarkRange('searchtext'),
-                   dialogmode.MarkRange('replacetext')])
+                                       [dialogmode.MarkRange('searchtext'),
+                                        dialogmode.MarkRange('replacetext')])
 
     def on_add_window(self, wnd):
         super().on_add_window(wnd)
@@ -444,18 +448,19 @@ class ReplaceDlgMode(SearchDlgMode):
             self._build_input(f)
             self._build_buttons(f)
             self._build_options(f)
-    
+
             self.document.insert(
                 self.document.marks['searchtext'][0], self.option.text)
-    
+
             self.document.insert(
                 self.document.marks['replacetext'][0], self.option.replace_to)
-    
+
             self.update_option_style()
 
-        kaa.app.messagebar.set_message("Hit enter to move field. Hit up to show history.`")
+        kaa.app.messagebar.set_message(
+            "Hit enter to move field. Hit up to show history.`")
         return
-            
+
     def get_replace_str(self):
         f, t = self.document.marks['replacetext']
         return self.document.gettext(f, t)
@@ -486,7 +491,7 @@ class ReplaceDlgMode(SearchDlgMode):
 
     def _save_replstr(self):
         kaa.app.config.hist_replstr.add(self.get_replace_str())
-        
+
     def search_next(self, wnd):
         if not self.get_search_str():
             return
@@ -494,12 +499,13 @@ class ReplaceDlgMode(SearchDlgMode):
         self.option.replace_to = self.get_replace_str()
         self._save_searchstr()
         self._save_replstr()
-        
+
         if self.lastsearch is None:
             self._search_next(wnd)
 
         if self.lasthit:
-            self._show_replace_msg(wnd, self.replace_and_next, self.skip_and_next)
+            self._show_replace_msg(
+                wnd, self.replace_and_next, self.skip_and_next)
         else:
             self._show_search_again(wnd, self.skip_and_next)
 
@@ -519,11 +525,11 @@ class ReplaceDlgMode(SearchDlgMode):
             s = self.lastmatch.expand(self.option.replace_to)
         else:
             s = self.option.replace_to
-            
+
         self.target.document.mode.edit_commands.replace_string(
             self.target, f, t, s, update_cursor=update_cursor)
 
-        self.lasthit = (f, f+len(s))
+        self.lasthit = (f, f + len(s))
 
     def replace_and_next(self, wnd):
         self._repl_str(update_cursor=True)
@@ -545,7 +551,8 @@ class ReplaceDlgMode(SearchDlgMode):
         self._search_prev(wnd)
 
         if self.lasthit:
-            self._show_replace_msg(wnd, self.replace_and_prev, self.skip_and_prev)
+            self._show_replace_msg(
+                wnd, self.replace_and_prev, self.skip_and_prev)
         else:
             self._show_search_again(wnd, self.skip_and_prev)
 

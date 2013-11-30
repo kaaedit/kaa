@@ -1,4 +1,5 @@
 class Context:
+
     def iter_roots(self):
         c = self
         while c:
@@ -27,7 +28,9 @@ class Context:
             del self.context[name]
             return True
 
+
 class ContextRoot(Context):
+
     def __init__(self):
         super().__init__()
         self.context = {}

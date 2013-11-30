@@ -1,4 +1,5 @@
-import os, functools
+import os
+import functools
 
 
 def ignore_errors(f):
@@ -13,7 +14,8 @@ def ignore_errors(f):
                 # Ignore error completely...
                 pass
     return wrapper
-    
+
+
 def split_existing_dirs(path):
     path, p = os.path.split(path)
     rights = [p]

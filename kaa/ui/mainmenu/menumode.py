@@ -15,14 +15,14 @@ class MenuMode(msgboxmode.MsgBoxMode):
         if not items:
             return
 
-        items = [item for (item, submenu, commandid) in items 
-                    if not submenu or mode.get_menu(submenu)]
-                    
-        doc = cls.build_msgbox('', items, lambda c:doc.mode._selected(c))
+        items = [item for (item, submenu, commandid) in items
+                 if not submenu or mode.get_menu(submenu)]
+
+        doc = cls.build_msgbox('', items, lambda c: doc.mode._selected(c))
         doc.mode.target = wnd
         doc.mode.itemname = itemname
         doc.mode.parentitems = parentitems
-        
+
         kaa.app.show_dialog(doc)
         return doc
 
@@ -36,20 +36,19 @@ class MenuMode(msgboxmode.MsgBoxMode):
                 doc = MenuMode.show_menu(
                     self.target, self.parentitems[-1], self.parentitems[:-1])
             return
-        
+
         itemname = self.shortcuts[c]
         menus = self.target.document.mode.get_menu(self.itemname)
         if not menus:
             return
-            
+
         for item, submenu, commandid in menus:
             if itemname == item:
                 if submenu:
                     parents = self.parentitems if self.parentitems else []
                     parents.append(self.itemname)
-                    
+
                     MenuMode.show_menu(self.target, submenu, parents)
                 else:
                     self.target.document.mode.on_commands(
                         self.target, [commandid])
-                    

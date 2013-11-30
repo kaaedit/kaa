@@ -10,9 +10,11 @@ clipboardhist_keys = {
     '\n': 'clipboardhist.select',
 }
 
+
 class ClipboardHist(filterlist.FilterListMode):
     MAX_CAPTION_LEN = 256
-    SCREEN_NOWRAP = True    
+    SCREEN_NOWRAP = True
+
     def init_keybind(self):
         super().init_keybind()
         self.keybind.add_keybind(clipboardhist_keys)
@@ -26,7 +28,7 @@ class ClipboardHist(filterlist.FilterListMode):
             if len(caption) > self.MAX_CAPTION_LEN:
                 caption = caption[:self.MAX_CAPTION_LEN] + '...'
             c = selectlist.SelectItem(
-                    'selectitem', 'selectitem-active', caption, c)
+                'selectitem', 'selectitem-active', caption, c)
             self.candidates.append(c)
 
     def _filter_items(self, query):
@@ -43,7 +45,7 @@ class ClipboardHist(filterlist.FilterListMode):
         else:
             items = self.candidates[:]
         return items
-    
+
     def on_esc_pressed(self, wnd, event):
 
         super().on_esc_pressed(wnd, event)
@@ -56,7 +58,8 @@ class ClipboardHist(filterlist.FilterListMode):
     @norerun
     def on_selected(self, wnd):
         if self.cursel:
-            self.target.document.mode.edit_commands.put_string(self.target, self.cursel.value)
+            self.target.document.mode.edit_commands.put_string(
+                self.target, self.cursel.value)
             self.target.screen.selection.clear()
 
         popup = wnd.get_label('popup')
@@ -68,14 +71,14 @@ def show_history(wnd):
     words = list(kaa.app.get_clipboards())
     if not words:
         return
-        
+
     doc = ClipboardHist.build()
     dlg = kaa.app.show_dialog(doc)
     doc.mode.target = wnd
     doc.mode.set_candidates(words)
     doc.mode.set_query(dlg.get_label('editor'), '')
-    
+
     dlg.on_console_resized()
     kaa.app.messagebar.set_message("Hit tab/shift+tab to select text. ")
-    
+
     return dlg

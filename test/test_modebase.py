@@ -3,6 +3,7 @@ from kaa.filetype.default import defaultmode, modebase
 
 
 class TestDefaultMode(kaa_testutils._TestScreenBase):
+
     def test_getwords(self):
         mode = self._getmode()
         doc = self._getdoc('0123   \tabc ::::あいうえおカキクケコ[[')
@@ -56,7 +57,6 @@ class TestDefaultMode(kaa_testutils._TestScreenBase):
         ret = w.document.mode.search_next(0, opt)
         assert ret is None
 
-
     def test_search_prev(self):
         w = self._getwnd('abcdefgabcdefg/efg/EFG01234567890')
 
@@ -75,27 +75,28 @@ class TestDefaultMode(kaa_testutils._TestScreenBase):
         ret = w.document.mode.search_prev(endpos, opt)
         assert ret is None
 
-
     def test_iter_parenthsis(self):
         doc = self._getdoc("({[]})")
-        doc.styles.replaceints(0, doc.endpos(), [1,2,3,4,5,6])
+        doc.styles.replaceints(0, doc.endpos(), [1, 2, 3, 4, 5, 6])
 
-        ret =[(pos, c, attr) for pos, c, attr in doc.mode.iter_parenthesis(0)]
+        ret = [(pos, c, attr) for pos, c, attr in doc.mode.iter_parenthesis(0)]
 
-        assert ret == [(0,'(',1), (1,'{',2), (2,'[',3),
-                (3,']',4), (4,'}',5), (5,')',6)]
+        assert ret == [(0, '(', 1), (1, '{', 2), (2, '[', 3),
+                       (3, ']', 4), (4, '}', 5), (5, ')', 6)]
 
     def test_iter_rev_parenthsis(self):
         doc = self._getdoc("({[]})")
-        doc.styles.replaceints(0, doc.endpos(), [1,2,3,4,5,6])
+        doc.styles.replaceints(0, doc.endpos(), [1, 2, 3, 4, 5, 6])
 
-        ret =[(pos, c, attr) for pos, c, attr in doc.mode.iter_rev_parenthesis(5)]
+        ret = [(pos, c, attr)
+               for pos, c, attr in doc.mode.iter_rev_parenthesis(5)]
 
-        assert ret == [(5,')',6), (4,'}',5), (3,']',4),
-                       (2,'[',3), (1,'{',2), (0,'(',1)]
+        assert ret == [(5, ')', 6), (4, '}', 5), (3, ']', 4),
+                       (2, '[', 3), (1, '{', 2), (0, '(', 1)]
 
     def test_find_pair_parenthesis(self):
         doc = self._getdoc("({[({[]})]})")
-        doc.styles.replaceints(0, doc.endpos(), [1,1,1,2,2,2,2,2,2,1,1,1])
+        doc.styles.replaceints(
+            0, doc.endpos(), [1, 1, 1, 2, 2, 2, 2, 2, 2, 1, 1, 1])
 
         assert doc.mode.find_match_parenthesis(0) == 11

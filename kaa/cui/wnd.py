@@ -1,4 +1,5 @@
-import curses, curses.panel
+import curses
+import curses.panel
 import collections
 
 from kaa import log
@@ -6,7 +7,9 @@ from kaa.cui import keydef
 import kaa.context
 from kaa import editmode
 
+
 class Window(kaa.context.Context):
+
     """Base class to wrapper of curses.window object
 
     Class attributes:
@@ -15,9 +18,10 @@ class Window(kaa.context.Context):
 
     mainframe = None
 
-    WAITINPUTFOR = 1000 # wait 1000ms for input
+    WAITINPUTFOR = 1000  # wait 1000ms for input
     closed = False
     editmode = None
+
     def __init__(self, parent, wnd=None, pos=None):
         """Wrap window object wnd. Create new window if wnd was omitted."""
 
@@ -47,7 +51,7 @@ class Window(kaa.context.Context):
         if self.parent:
             self.parent.children.append(self)
 
-        self.rect = (x, y, x+w, y+h)
+        self.rect = (x, y, x + w, y + h)
 
         self._oninit()
 
@@ -84,6 +88,7 @@ class Window(kaa.context.Context):
 
     _lasterror = ''
     _skipped = 0
+
     def do_input(self, nonblocking):
         """Get an input from curses"""
         self.bring_top()
@@ -117,7 +122,8 @@ class Window(kaa.context.Context):
             else:
                 self._skipped += 1
                 if self._skipped % 500 == 0:
-                    log.debug('Too much input-error skips!: {} times'.format(self._skipped))
+                    log.debug(
+                        'Too much input-error skips!: {} times'.format(self._skipped))
             return []
 
         self._lasterror = ''
@@ -152,7 +158,7 @@ class Window(kaa.context.Context):
         """Activate wnd"""
         self.bring_top()
         kaa.app.set_focus(self)
-        
+
     def set_rect(self, l, t, r, b):
         """Set window coordinate"""
 
@@ -160,11 +166,11 @@ class Window(kaa.context.Context):
             assert t <= self.splitter.rect[1]
 
         try:
-            self._cwnd = curses.newwin(b-t, r-l, t, l)
+            self._cwnd = curses.newwin(b - t, r - l, t, l)
             self.rect = (l, t, r, b)
         except curses.error as e:
             log.debug('error on resizing window: {} {}'.format(self,
-                                       (l, t, r, b), exc_info=True))
+                                                               (l, t, r, b), exc_info=True))
             # shrink window to avoid segfault in curses
             self._cwnd = curses.newwin(1, 1, 0, 0)
             self.rect = (0, 0, 1, 1)
@@ -178,7 +184,6 @@ class Window(kaa.context.Context):
 
         self._panel = curses.panel.new_panel(self._cwnd)
         self.on_setrect(*self.rect)
-
 
     def draw_screen(self, force=False):
         pass
@@ -209,4 +214,3 @@ class Window(kaa.context.Context):
 
     def on_killfocus(self):
         pass
-

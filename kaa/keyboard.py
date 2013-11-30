@@ -5,6 +5,7 @@ import kaa
 from kaa import log
 from kaa.exceptions import KaaError
 
+
 class KeyBind:
     translator = None
 
@@ -21,7 +22,7 @@ class KeyBind:
             if isinstance(k, Modifier):
                 if k in mods:
                     raise KaaError(
-                            'Multiple modifiers: {!r}'.format(key))
+                        'Multiple modifiers: {!r}'.format(key))
                 mods.add(k)
             else:
                 if ch is not None:
@@ -82,9 +83,9 @@ class KeyBind:
                 yield cmdkeys, commands
 
 
-
 class Modifier:
     keys = {}
+
     def __init__(self, name):
         self.name = name
         self.keys[name] = self
@@ -92,8 +93,10 @@ class Modifier:
     def __repr__(self):
         return '<Modifier:{}>'.format(self.name)
 
+
 class SpecialKey:
     keys = {}
+
     def __init__(self, name):
         self.name = name
         self.keys[name] = self
@@ -143,5 +146,3 @@ f21 = SpecialKey('f21')
 f22 = SpecialKey('f22')
 f23 = SpecialKey('f23')
 f24 = SpecialKey('f24')
-
-

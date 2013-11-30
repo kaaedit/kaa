@@ -1,6 +1,7 @@
 import kaa
 import string
 
+
 class EditMode:
     MODENAME = 'Insert'
 
@@ -36,16 +37,16 @@ class EditMode:
     def _get_command(self, wnd, event):
         self.pending_keys.append(event.key)
         candidates = [(keys, command)
-                        for keybind in self._get_keybinds(wnd)
-                            for keys, command
-                                in keybind.get_candidates(self.pending_keys)]
+                      for keybind in self._get_keybinds(wnd)
+                      for keys, command
+                      in keybind.get_candidates(self.pending_keys)]
 
         if not candidates:
             if len(self.pending_keys) == 1:
                 if isinstance(event.key, str):
                     s = event.key
                     return s, None, candidates
-                    
+
         elif len(candidates[0][0]) == len(self.pending_keys):
             return None, candidates[0][1], candidates
 
@@ -65,7 +66,7 @@ class EditMode:
             else:
                 s = kaa.app.get_keyname(k)
                 if alt:
-                    s = 'alt-'+s
+                    s = 'alt-' + s
                     alt = False
                 ret.append(s)
         return ret
@@ -76,16 +77,16 @@ class EditMode:
         else:
             cur = self._keys_to_str(self.pending_keys)
             curlen = len(cur)
-            nextkeys = set(self._keys_to_str(k)[curlen:curlen+1][0]
-                            for k, commands in candidates)
-            
-            msg =  ' '.join(cur) + ' [%s]' % (', '.join(sorted(nextkeys)))
+            nextkeys = set(self._keys_to_str(k)[curlen:curlen + 1][0]
+                           for k, commands in candidates)
+
+            msg = ' '.join(cur) + ' [%s]' % (', '.join(sorted(nextkeys)))
             kaa.app.messagebar.set_message(msg)
-        
+
     def on_key_pressed(self, wnd, event):
         s, commands, candidate = self._get_command(wnd, event)
         s, commands, candidate = wnd.document.mode.on_keypressed(
-                                    wnd, event, s, commands, candidate)
+            wnd, event, s, commands, candidate)
 
         self._show_pending_keys(s, commands, candidate)
         try:
@@ -143,6 +144,7 @@ class EditMode:
     def set_repeat(self, n):
         self.repeat = n
 
+
 class CommandMode(EditMode):
     MODENAME = 'Command'
 
@@ -163,13 +165,16 @@ class CommandMode(EditMode):
     def flush_pending_str(self, wnd):
         self.pending_str = ''
 
+
 class VisualMode(CommandMode):
     MODENAME = 'Visual'
+
     def _get_keybinds(self, wnd):
         return [wnd.document.mode.keybind_vi_visualmode]
 
+
 class VisualLinewiseMode(CommandMode):
     MODENAME = 'Visual(Line)'
+
     def _get_keybinds(self, wnd):
         return [wnd.document.mode.keybind_vi_visuallinewisemode]
-

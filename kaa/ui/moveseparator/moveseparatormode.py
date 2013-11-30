@@ -6,8 +6,8 @@ from kaa.keyboard import *
 
 MoveSeparatorThemes = {
     'basic':
-        Theme([
-        ]),
+    Theme([
+    ]),
 }
 
 moveseparator_keys = {
@@ -23,7 +23,9 @@ moveseparator_keys = {
     '\n': 'moveseparator.close',
 }
 
+
 class MoveSeparatorCommands(Commands):
+
     @command('moveseparator.prev')
     @norec
     @norerun
@@ -53,6 +55,7 @@ class MoveSeparatorCommands(Commands):
 
         org_wnd.activate()
 
+
 class MoveSeparatorMode(dialogmode.DialogMode):
     USE_UNDO = False
 
@@ -67,7 +70,8 @@ class MoveSeparatorMode(dialogmode.DialogMode):
         mode.target = target.splitter.parent
 
         with dialogmode.FormBuilder(doc) as f:
-            f.append_text('caption', 'Hit cursor left/right key to resize window.')
+            f.append_text('caption',
+                          'Hit cursor left/right key to resize window.')
         return doc
 
     def init_keybind(self):
@@ -93,7 +97,7 @@ class MoveSeparatorMode(dialogmode.DialogMode):
     def on_str(self, wnd, s):
         pass
 
+
 def move_separator(wnd):
     doc = MoveSeparatorMode.build(wnd)
     kaa.app.show_dialog(doc)
-

@@ -7,7 +7,7 @@ from kaa.filetype.rst import rstmode
 class TestRstHighlight(kaa_testutils._TestDocBase):
     tokenizers = [rstmode.build_tokenizer()]
     tokens = tokenizers[0].tokens
-    
+
     def test_inline(self):
         hl = highlight.Highlighter(tokenizers=self.tokenizers)
 
@@ -63,7 +63,7 @@ class TestRstHighlight(kaa_testutils._TestDocBase):
 
     def test_inline_delim(self):
         hl = highlight.Highlighter(tokenizers=self.tokenizers)
-        
+
         doc = self._getdoc('abc*abc')
         assert [
             (0, 3, self.tokenizers[0].nulltoken),
@@ -115,5 +115,3 @@ class TestRstHighlight(kaa_testutils._TestDocBase):
                 (4,  6, self.tokens.tablerow.tokenid),
                 (6,  7, self.tokens.tablerow.tokenid),
             ] == list((f, t, style) for f, t, style in hl.highlight(doc, 0))
-
-

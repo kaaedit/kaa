@@ -4,6 +4,7 @@ import kaa
 from kaa.ui.msgbox import msgboxmode
 import kaa_testutils
 
+
 class TestSearchDlgMode(kaa_testutils._TestDocBase):
 
     @patch('kaa.app', create=True)
@@ -16,5 +17,5 @@ class TestSearchDlgMode(kaa_testutils._TestDocBase):
             'caption', ['&Yes', '&No', '&All', '&Cancel'], cb)
 
         assert doc.mode.shortcuts == {
-            'y':'&Yes', 'n':'&No', 'a':'&All', 'c':'&Cancel'
-    }
+            'y': '&Yes', 'n': '&No', 'a': '&All', 'c': '&Cancel'
+        }

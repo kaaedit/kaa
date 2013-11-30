@@ -161,7 +161,8 @@ class TestHTMLHighlight(kaa_testutils._TestDocBase):
             (3, 6, hl.tokenizers[0].tokens.htmltag.span_attrname),
             (6, 7, hl.tokenizers[0].tokens.htmltag.span_elemws),
             (7, 8, hl.tokenizers[0].tokens.htmltag.span_attrvalue),
-            (8, 10, hl.tokenizers[0].tokens.jsattr1.subtokenizer.tokens.keywords.tokenid),
+            (8, 10, hl.tokenizers[0]
+             .tokens.jsattr1.subtokenizer.tokens.keywords.tokenid),
             (10, 11, hl.tokenizers[0].tokens.htmltag.span_attrvalue),
             (11, 12, hl.tokenizers[0].tokens.htmltag.span_gt),
         ] == list((f, t, style) for f, t, style in hl.highlight(doc, 0))
@@ -176,7 +177,8 @@ class TestHTMLHighlight(kaa_testutils._TestDocBase):
             (3, 6, hl.tokenizers[0].tokens.htmltag.span_attrname),
             (6, 7, hl.tokenizers[0].tokens.htmltag.span_elemws),
             (7, 8, hl.tokenizers[0].tokens.htmltag.span_attrvalue),
-            (8, 10, hl.tokenizers[0].tokens.jsattr2.subtokenizer.tokens.keywords.tokenid),
+            (8, 10, hl.tokenizers[0]
+             .tokens.jsattr2.subtokenizer.tokens.keywords.tokenid),
             (10, 11, hl.tokenizers[0].tokens.htmltag.span_attrvalue),
             (11, 12, hl.tokenizers[0].tokens.htmltag.span_gt),
         ] == list((f, t, style) for f, t, style in hl.highlight(doc, 0))
@@ -205,7 +207,8 @@ class TestHTMLHighlight(kaa_testutils._TestDocBase):
             (3, 8, hl.tokenizers[0].tokens.htmltag.span_attrname),
             (8, 9, hl.tokenizers[0].tokens.htmltag.span_elemws),
             (9, 10, hl.tokenizers[0].tokens.htmltag.span_attrvalue),
-            (10, 11, hl.tokenizers[0].tokens.cssattr1.subtokenizer.tokens[0].span_close),
+            (10, 11, hl.tokenizers[0]
+             .tokens.cssattr1.subtokenizer.tokens[0].span_close),
             (11, 12, hl.tokenizers[0].tokens.htmltag.span_gt),
         ] == list((f, t, style) for f, t, style in hl.highlight(doc, 0))
 
@@ -225,4 +228,3 @@ class TestHTMLHighlight(kaa_testutils._TestDocBase):
             (2, 21, self.tokenizers[0].tokens.xmldef.span_mid),
             (21, 22, self.tokenizers[0].tokens.xmldef.span_end),
         ] == list((f, t, style) for f, t, style in hl.highlight(doc, 0))
-

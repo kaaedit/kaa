@@ -1,15 +1,19 @@
-import itertools, curses, curses.panel
+import itertools
+import curses
+import curses.panel
 from kaa.cui.wnd import Window
 import kaa
 import kaa.log
 from kaa import screen, cursor
 from kaa.cui.color import ColorName
 
+
 class TextEditorWindow(Window):
+
     """Text editor window"""
 
     OVERLAY_CURSORROW = 'cursor_row'  # Name of overlay style of theme
-    
+
     show_lineno = True
     splitter = None
     document = None
@@ -17,7 +21,7 @@ class TextEditorWindow(Window):
     editmode = None
     visible = True
     highlight_cursor_row = False
-    
+
     def _oninit(self):
         super()._oninit()
 
@@ -32,7 +36,7 @@ class TextEditorWindow(Window):
         self.charattrs = {}
         self.highlight_cursor_row = False
         self.line_overlays = {}
-        
+
     def destroy(self):
         if self.document:
             self.document.del_window(self)
@@ -103,7 +107,7 @@ class TextEditorWindow(Window):
             self.line_overlays = {}
             self._drawn_rows = {}
             self.refresh()
-            
+
     def bring_top(self):
         if curses.panel.top_panel() is not self._panel:
             super().bring_top()
@@ -118,7 +122,7 @@ class TextEditorWindow(Window):
         self.cursor = cursor
 
     def set_visible(self, visible):
-        self.visible =  visible
+        self.visible = visible
         self.draw_screen(force=True)
 
     def _flush_pending_str(self):
@@ -162,7 +166,7 @@ class TextEditorWindow(Window):
 
             tokenid = self.charattrs.get(pos, None)
             if tokenid is None:
-                tokenid = self.document.styles.getints(pos, pos+1)[0]
+                tokenid = self.document.styles.getints(pos, pos + 1)[0]
 
             style = self.document.mode.get_style(tokenid)
             color = None
@@ -170,7 +174,7 @@ class TextEditorWindow(Window):
                 color = style.cui_overlays.get(line_overlay, None)
             if color is None:
                 color = style.cui_colorattr
-                
+
             if style.underline:
                 color += curses.A_UNDERLINE
             if style.bold:
@@ -179,7 +183,7 @@ class TextEditorWindow(Window):
             yield (color + attr, style.rjust)
 
             ncols += cols
-            
+
     def draw_screen(self, force=False):
         try:
             self._draw_screen(force=force)
@@ -216,16 +220,16 @@ class TextEditorWindow(Window):
         lineno_width = 0
         lineno = self.document.buf.lineno.lineno(self.screen.pos)
         if self.document.mode.SHOW_LINENO:
-            lineno_color = self.document.mode.theme.get_style('lineno').cui_colorattr
+            lineno_color = self.document.mode.theme.get_style(
+                'lineno').cui_colorattr
             lineno_width = screen.calc_lineno_width(self.screen)
-        
-        _, cursorrow = self.screen.getrow(self.cursor.pos)
 
+        _, cursorrow = self.screen.getrow(self.cursor.pos)
 
         tol = rows[0].tol
         eol = self.document.geteol(tol)
         endpos = self.document.endpos()
-        
+
         rectangular = self.screen.selection.is_rectangular()
         selfrom = selto = colfrom = colto = -1
 
@@ -237,7 +241,7 @@ class TextEditorWindow(Window):
             selrect = self.screen.selection.get_rect_range()
             if selrect:
                 selfrom, selto, colfrom, colto = selrect
-        
+
         theme = self.document.mode.theme
         defaultcolor = theme.get_style('default').cui_colorattr
 
@@ -250,7 +254,7 @@ class TextEditorWindow(Window):
             if drawn.get(row) == (n, cur_sel):
                 # The raw was already drawn.
                 continue
-            
+
             updated = True
             s = 0
 
@@ -260,8 +264,8 @@ class TextEditorWindow(Window):
 
             line_overlay = None
             if row is cursorrow and (
-                self.highlight_cursor_row or
-                self.document.mode.HIGHLIGHT_CURSOR_ROW):
+                    self.highlight_cursor_row or
+                    self.document.mode.HIGHLIGHT_CURSOR_ROW):
 
                 line_overlay = self.OVERLAY_CURSORROW
             else:
@@ -278,7 +282,7 @@ class TextEditorWindow(Window):
             else:
                 style = theme.get_style('default')
                 erase_attr = style.cui_overlays.get(line_overlay, defaultcolor)
-                
+
             self._cwnd.chgat(n, 0, -1, erase_attr)
 
             if not self.visible:
@@ -289,18 +293,19 @@ class TextEditorWindow(Window):
                 self._cwnd.move(n, 0)
 
                 if row.posfrom == row.tol:
-                    self.add_str(str(lineno).rjust(lineno_width-1), lineno_color)
+                    self.add_str(str(lineno).rjust(lineno_width - 1),
+                                 lineno_color)
                 else:
-                    self.add_str(' ' * (lineno_width-1), lineno_color)
+                    self.add_str(' ' * (lineno_width - 1), lineno_color)
 
                 self.add_str(' ', defaultcolor)
 
             # move cursor to top of row
-            self._cwnd.move(n, row.wrapindent+lineno_width)
+            self._cwnd.move(n, row.wrapindent + lineno_width)
             rjust = False
 
             for (attr, attr_rjust), group in itertools.groupby(
-                    self._getcharattrs(row, rectangular, selfrom, selto, 
+                    self._getcharattrs(row, rectangular, selfrom, selto,
                                        colfrom, colto, line_overlay)):
 
                 if not rjust and attr_rjust:
@@ -308,10 +313,10 @@ class TextEditorWindow(Window):
 
                     rest = sum(row.cols[s:])
                     cy, cx = self._cwnd.getyx()
-                    self._cwnd.move(cy, w-rest)
+                    self._cwnd.move(cy, w - rest)
 
                 slen = len(tuple(group))
-                letters = ''.join(row.chars[s:s+slen]).rstrip('\n')
+                letters = ''.join(row.chars[s:s + slen]).rstrip('\n')
                 self.add_str(letters, attr)
                 s += slen
 
@@ -319,7 +324,7 @@ class TextEditorWindow(Window):
                 if selfrom <= row.posfrom < selto:
                     if not rectangular or (colfrom == 0):
                         self.add_str(' ', curses.A_REVERSE)
-            
+
             self._drawn_rows[row] = (n, cur_sel)
 
         if len(rows) < h:
@@ -347,6 +352,7 @@ class TextEditorWindow(Window):
                 self.refresh()
 
     CURSOR_TO_MIDDLE_ON_SCROLL = True
+
     def locate_cursor(self, pos, top=None, middle=None, bottom=None):
 
         if top is middle is bottom is None:
@@ -367,7 +373,7 @@ class TextEditorWindow(Window):
 
         if (y, screenx) != self._cwnd.getyx():
             h, w = self._cwnd.getmaxyx()
-            if y < h and screenx < w and y >=0 and screenx >= 0:
+            if y < h and screenx < w and y >= 0 and screenx >= 0:
                 self._cwnd.move(y, screenx)
 
         self.document.mode.on_cursor_located(self, retpos, y, x)
@@ -376,8 +382,8 @@ class TextEditorWindow(Window):
     def get_cursor_loc(self):
         y, x = self._cwnd.getyx()
         u, l = self._cwnd.getbegyx()
-        return u+y, x+l
-        
+        return u + y, x + l
+
     def linedown(self):
         if self.screen.linedown():
             self.draw_screen()
@@ -405,11 +411,11 @@ class TextEditorWindow(Window):
     def on_setrect(self, l, t, r, b):
         self._drawn_rows = {}
         if self.document:
-            w = max(2, r-l)
-            h = max(1, b-t)
+            w = max(2, r - l)
+            h = max(1, b - t)
             self.screen.setsize(w, h)
             self.draw_screen()
-            self.cursor.setpos(self.cursor.pos) # relocate cursor
+            self.cursor.setpos(self.cursor.pos)  # relocate cursor
             self.cursor.savecol()
 
             self.refresh()
@@ -456,9 +462,8 @@ class TextEditorWindow(Window):
                 filename=self.document.get_title(),
                 modified=modified,
                 lineno=lineno,
-                col=col+1,
+                col=col + 1,
                 linecount=linecount,
                 editmode=self.editmode.MODENAME,
             )
             return updated
-

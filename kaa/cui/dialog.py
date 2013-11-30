@@ -1,8 +1,10 @@
 import kaa
 from . import wnd, editor
 
+
 class _dialogwnd(wnd.Window, kaa.context.ContextRoot):
     focused_child = None
+
     def __init__(self, parent, pos=None):
 
         if pos is None:
@@ -16,7 +18,7 @@ class _dialogwnd(wnd.Window, kaa.context.ContextRoot):
         if not parent:
             parent = self.mainframe
         l, t, r, b = parent.rect
-        return (max(0, l), max(0, b-2))
+        return (max(0, l), max(0, b - 2))
 
     def destroy(self):
         # Am I a active dialog?
@@ -35,7 +37,7 @@ class _dialogwnd(wnd.Window, kaa.context.ContextRoot):
             del self.mainframe.popups[index]
             if update_focus:
                 if index > 0:
-                    kaa.app.set_focus(self.mainframe.popups[index-1])
+                    kaa.app.set_focus(self.mainframe.popups[index - 1])
                 elif not self.mainframe.closed:
                     kaa.app.set_focus(self.mainframe)
 
@@ -54,7 +56,9 @@ class _dialogwnd(wnd.Window, kaa.context.ContextRoot):
         if self.parent and not self.parent.closed:
             self.parent.focused_child = self
 
+
 class DialogWnd(_dialogwnd):
+
     def __init__(self, parent, doc, pos=None):
         super().__init__(parent, pos)
         self.inputs = []
@@ -83,13 +87,13 @@ class DialogWnd(_dialogwnd):
         """Resize wnds"""
 
         rc_input, rects = self.input.document.mode.resize_inputs(
-                                                self.input, self.inputs)
+            self.input, self.inputs)
         l, t, r, b = rc_input
         if rects:
             t = min(t, rects[0][1])
             b = max(b, rects[-1][3])
         self.set_rect(l, t, r, b)
-        
+
         for w, (l, t, r, b) in zip(self.inputs, rects):
             w.set_rect(l, t, r, b)
 

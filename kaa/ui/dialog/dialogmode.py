@@ -1,46 +1,49 @@
-import re, string
+import re
+import string
 from kaa import cursor, keyboard
 from kaa.filetype.default import modebase
 from kaa.theme import Theme, Style
 
 DialogThemes = {
     'basic':
-        Theme([
-            Style('default', 'Base3', 'Base02', False, False),
-            Style('caption', 'Orange', 'Base02', nowrap=True),
+    Theme([
+        Style('default', 'Base3', 'Base02', False, False),
+        Style('caption', 'Orange', 'Base02', nowrap=True),
 
-            Style('activemark', 'Base02', 'Yellow', nowrap=True),
-            Style('nonactivemark', 'Yellow', 'Base02', nowrap=True),
+        Style('activemark', 'Base02', 'Yellow', nowrap=True),
+        Style('nonactivemark', 'Yellow', 'Base02', nowrap=True),
 
-            Style('button', 'Base3', 'Base01', nowrap=True),
-            Style('button.shortcut', 'Base3', 'Base01', underline=True,
-                    nowrap=True),
+        Style('button', 'Base3', 'Base01', nowrap=True),
+        Style('button.shortcut', 'Base3', 'Base01', underline=True,
+              nowrap=True),
 
-            Style('checkbox', 'Base3', 'Base01', rjust=True, nowrap=True),
-            Style('checkbox.checked', 'Base3', 'Orange', rjust=True,
-                  nowrap=True),
-            Style('checkbox.shortcut', 'Base3', 'Base01', underline=True,
-                  rjust=True, nowrap=True),
-            Style('checkbox.shortcut.checked', 'Base3', 'Orange', 
-                  underline=True, rjust=True, nowrap=True),
+        Style('checkbox', 'Base3', 'Base01', rjust=True, nowrap=True),
+        Style('checkbox.checked', 'Base3', 'Orange', rjust=True,
+              nowrap=True),
+        Style('checkbox.shortcut', 'Base3', 'Base01', underline=True,
+              rjust=True, nowrap=True),
+        Style('checkbox.shortcut.checked', 'Base3', 'Orange',
+              underline=True, rjust=True, nowrap=True),
 
-            Style('selectitem', 'Cyan', 'Base02', nowrap=True),
-            Style('selectitem2', 'Yellow', 'Base02', nowrap=True),
-            Style('selectitem-active', 'Base02', 'Yellow', nowrap=True),
+        Style('selectitem', 'Cyan', 'Base02', nowrap=True),
+        Style('selectitem2', 'Yellow', 'Base02', nowrap=True),
+        Style('selectitem-active', 'Base02', 'Yellow', nowrap=True),
 
-            Style('selectphrase', 'Black', 'Cyan', nowrap=True),
-            Style('selectphrase2', 'Yellow', 'Base02', nowrap=True),
-            Style('selectphrase-active', 'Base02', 'Yellow', nowrap=True),
+        Style('selectphrase', 'Black', 'Cyan', nowrap=True),
+        Style('selectphrase2', 'Yellow', 'Base02', nowrap=True),
+        Style('selectphrase-active', 'Base02', 'Yellow', nowrap=True),
     ]),
 }
 
+
 class DialogCursor(cursor.Cursor):
+
     def __init__(self, wnd, ranges):
         super().__init__(wnd)
         self.ranges = ranges
 
     def _findrange(self, curpos):
-        for func  in self.ranges:
+        for func in self.ranges:
             f, t = func(self)
             if f <= curpos <= t:
                 return f, t
@@ -54,11 +57,14 @@ class DialogCursor(cursor.Cursor):
             return f
         return nextpos
 
+
 def _MarkRange(mark, cursor):
     return cursor.wnd.document.marks[mark]
 
+
 def MarkRange(mark):
-    return lambda cursor:_MarkRange(mark, cursor)
+    return lambda cursor: _MarkRange(mark, cursor)
+
 
 class DialogMode(modebase.ModeBase):
     NO_WRAPINDENT = False
@@ -67,7 +73,7 @@ class DialogMode(modebase.ModeBase):
     stack_upper = True
 
     min_height = 1
-    
+
     def init_themes(self):
         super().init_themes()
         self.themes.append(DialogThemes)
@@ -78,7 +84,7 @@ class DialogMode(modebase.ModeBase):
     def on_add_window(self, wnd):
         super().on_add_window(wnd)
 
-        wnd.screen.build_entire_rows = True # todo: use mode.
+        wnd.screen.build_entire_rows = True  # todo: use mode.
 
     def calc_width(self, wnd):
         return wnd.mainframe.getsize()[0]
@@ -98,13 +104,13 @@ class DialogMode(modebase.ModeBase):
 
         top = wnd.mainframe.messagebar.rect[1] - height
 
-        return 0, top, wnd.mainframe.width, top+height
+        return 0, top, wnd.mainframe.width, top + height
 
     def resize_inputs(self, wnd, inputs):
         rects = [w.document.mode.calc_position(w) for w in inputs]
         rc_input = self.calc_position(wnd)
 
-        heights = [b-t for (l, t, r, b) in rects]
+        heights = [b - t for (l, t, r, b) in rects]
 
         l, t, r, b = rc_input
 
@@ -120,7 +126,7 @@ class DialogMode(modebase.ModeBase):
             t = b + 1
 
         return rc_input, positions
-        
+
     def on_start(self, wnd):
         pass
 
@@ -138,20 +144,22 @@ class DialogMode(modebase.ModeBase):
                     # display as many rows as we can
                     wnd.screen.locate(t, bottom=True, align_always=True)
                     wnd.cursor.setpos(wnd.cursor.pos)
-        
+
     def on_document_updated(self, pos, inslen, dellen):
         super().on_document_updated(pos, inslen, dellen)
 
         if self.autoshrink:
             if not self.suspend_autoshrink:
                 self.run_autoshrink()
-            
+
+
 class FormBuilder:
     re_accel = re.compile(r'&.')
+
     def __init__(self, document):
         self.document = document
         self.doc_autoshrink = getattr(self.document.mode, 'autoshrink', None)
-        
+
     def __enter__(self):
         if self.doc_autoshrink:
             self.document.mode.suspend_autoshrink = True
@@ -159,12 +167,13 @@ class FormBuilder:
 
     def __exit__(self, type, value, traceback):
         if self.document.mode.suspend_autoshrink:
-             self.document.mode.suspend_autoshrink = False
-             self.document.mode.run_autoshrink()
-    
-    def append_text(self, stylename, text, mark_start=None, mark_end=None, mark_pair=None,
-                    on_shortcut=None, shortcut_style=None, shortcut_mark=None,
-                    shortcut_need_alt=True):
+            self.document.mode.suspend_autoshrink = False
+            self.document.mode.run_autoshrink()
+
+    def append_text(
+            self, stylename, text, mark_start=None, mark_end=None, mark_pair=None,
+            on_shortcut=None, shortcut_style=None, shortcut_mark=None,
+            shortcut_need_alt=True):
 
         # marks should not be moved until the document completed.
         self.document.marks.locked = True
@@ -177,7 +186,8 @@ class FormBuilder:
             if stylename:
                 style_id = self.document.mode.get_styleid(stylename)
             if shortcut_style:
-                shortcut_style_id = self.document.mode.get_styleid(shortcut_style)
+                shortcut_style_id = self.document.mode.get_styleid(
+                    shortcut_style)
 
             # convert & escape to char and build shortcut dict
             lastpos = 0
@@ -207,7 +217,7 @@ class FormBuilder:
 
                 self.document.append(c)
                 if shortcut_style:
-                   self.document.styles.setints(f, f+1, shortcut_style_id)
+                    self.document.styles.setints(f, f + 1, shortcut_style_id)
 
                 lastpos = m.end()
 
@@ -217,7 +227,7 @@ class FormBuilder:
                     self.document.append(text[lastpos:])
                     if stylename:
                         self.document.styles.setints(f, self.document.endpos(),
-                                                 style_id)
+                                                     style_id)
 
             if mark_start is not None:
                 self.document.marks[mark_start] = start
@@ -226,7 +236,8 @@ class FormBuilder:
                 self.document.marks[mark_end] = self.document.endpos()
 
             if mark_pair is not None:
-                self.document.marks[mark_pair] = (start, self.document.endpos())
+                self.document.marks[mark_pair] = (
+                    start, self.document.endpos())
 
             # Dialog texts are not undoable
             if self.document.undo:
@@ -234,4 +245,3 @@ class FormBuilder:
 
         finally:
             self.document.marks.locked = False
-

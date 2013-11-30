@@ -1,26 +1,31 @@
-import itertools, re, math
+import itertools
+import re
+import math
 from unicodedata import east_asian_width
 
 import kaa
 from kaa import document
 from kaa.document import is_combine
 
+
 def calc_lineno_width(screen):
     if not screen.rows:
         return 0
 
     lineno = screen.document.buf.lineno.lineno(screen.rows[-1].posfrom)
-    digits = int(math.log10(lineno)+1)
+    digits = int(math.log10(lineno) + 1)
     digits += 2     # one space left and right of line number.
     return digits
+
 
 class Row:
     height = 1
     bgcolor = None
-    def __init__(self, posfrom, tol, colfrom, wrapindent, chars, cols, 
-            positions, intervals):
+
+    def __init__(self, posfrom, tol, colfrom, wrapindent, chars, cols,
+                 positions, intervals):
         self.posfrom = posfrom
-        self.posto = positions[-1]+1 if positions else posfrom
+        self.posto = positions[-1] + 1 if positions else posfrom
         self.colfrom = colfrom
         self.tol = tol
         self.wrapindent = wrapindent
@@ -35,7 +40,6 @@ class Row:
             if p == pos:
                 ret.append(c)
         return ''.join(ret)
-
 
 
 def translate_chars(posfrom, chars, tab_width, ambiguous_width):
@@ -55,14 +59,15 @@ def translate_chars(posfrom, chars, tab_width, ambiguous_width):
     double_width = set('WF')
     if ambiguous_width == 2:
         double_width.add('A')
-        
+
     pos = posfrom
-#    return chars, [1]*len(chars), [(posfrom+i) for i in range(len(chars))], [0]*len(chars)
+# return chars, [1]*len(chars), [(posfrom+i) for i in range(len(chars))],
+# [0]*len(chars)
 
     for c in chars:
         if c == '\t':
             dispstr = ' ' * (tab_width - (curcol % tab_width))
-        elif (((c != '\n') and (c < '\x20')) # control chars
+        elif (((c != '\n') and (c < '\x20'))  # control chars
               or (c == '\x7f')                     # backspace
               or ('\ud800' <= c <= '\udfff')):     # surrogate pair
             dispstr = repr(c)[1:-1]
@@ -73,7 +78,8 @@ def translate_chars(posfrom, chars, tab_width, ambiguous_width):
         for i, d in enumerate(dispstr):
             positions.append(pos)
             intervals.append(i)
-            if curcol and is_combine(c):  # first char of line never be combined
+            # first char of line never be combined
+            if curcol and is_combine(c):
                 cols = 0
             else:
                 w = east_asian_width(d)
@@ -82,11 +88,13 @@ def translate_chars(posfrom, chars, tab_width, ambiguous_width):
             curcol += cols
         pos += 1
 
-#    return chars, [1]*len(chars), [(posfrom+i) for i in range(len(chars))], [0]*len(chars)
+# return chars, [1]*len(chars), [(posfrom+i) for i in range(len(chars))],
+# [0]*len(chars)
     return dispchrs, dispcols, positions, intervals
 
 
 MIN_WRAPCOLS = 10
+
 
 def col_splitter(maxcol, tol, dispchrs, dispcols, positions, intervals, styles, stylemap, nowrap=False, nowrapindent=False):
     """Split string by column"""
@@ -118,11 +126,11 @@ def col_splitter(maxcol, tol, dispchrs, dispcols, positions, intervals, styles, 
 
             if rowto < len(positions):
 
-                curpos = positions[rowto-1]
+                curpos = positions[rowto - 1]
                 nextpos = positions[rowto]
 
-                tokenid = styles[curpos-tol]
-                nexttokenid = styles[nextpos-tol]
+                tokenid = styles[curpos - tol]
+                nexttokenid = styles[nextpos - tol]
 
                 style = stylemap.get(tokenid, None)
                 if style and style.nowrap:
@@ -139,21 +147,25 @@ def col_splitter(maxcol, tol, dispchrs, dispcols, positions, intervals, styles, 
             if (rowto >= len(dispchrs)) or (dispchrs[rowto] != '\n'):
 
                 if wrappos is None:
-                    # No wrappable position found. So, fill as many chars as we can.
+                    # No wrappable position found. So, fill as many chars as we
+                    # can.
                     wrappos = rowto
                     sumcols_at_wrappos = sumcols
 
                 assert rowfrom != wrappos
-                row = Row(posfrom, tol, colfrom, wrapindent, dispchrs[rowfrom:wrappos],
-                        dispcols[rowfrom:wrappos], positions[rowfrom:wrappos],
-                        intervals[rowfrom:wrappos])
-                        
+                row = Row(
+                    posfrom, tol, colfrom, wrapindent, dispchrs[
+                        rowfrom:wrappos],
+                    dispcols[rowfrom:wrappos], positions[
+                        rowfrom:wrappos],
+                    intervals[rowfrom:wrappos])
+
                 ret.append(row)
                 colfrom += sum(dispcols[rowfrom:wrappos])
 
                 rowfrom = wrappos
                 sumcols = sumcols - sumcols_at_wrappos
-            
+
                 wrappos = None
                 sumcols_at_wrappos = None
 
@@ -163,20 +175,23 @@ def col_splitter(maxcol, tol, dispchrs, dispcols, positions, intervals, styles, 
                 if not nowrapindent and len(ret) == 1:
                     wrapindent = re.match(r' *', dispchrs).end()
                     if wrapindent + MIN_WRAPCOLS > maxcol:
-                        wrapindent = max(0, maxcol-MIN_WRAPCOLS)
+                        wrapindent = max(0, maxcol - MIN_WRAPCOLS)
 
         sumcols += col
         rowto += 1
 
     if rowfrom != len(dispcols) or not dispchrs:
-        row = Row(posfrom, tol, colfrom, wrapindent, dispchrs[rowfrom:], dispcols[rowfrom:],
-                positions[rowfrom:], intervals[rowfrom:])
+        row = Row(
+            posfrom, tol, colfrom, wrapindent, dispchrs[
+                rowfrom:], dispcols[rowfrom:],
+            positions[rowfrom:], intervals[rowfrom:])
         ret.append(row)
 
     return ret
 
 
 class Selection:
+
     def __init__(self, screen):
         self._marks = document.Marks()
         self.screen = screen
@@ -187,12 +202,12 @@ class Selection:
 
     def _set_cursor_start(self, pos):
         self._marks['start'] = pos
-        
+
     def _is_cursor_started(self):
         """Return True if range was selected"""
 
         return self._get_cursor_start() is not None
-    
+
     def get_end(self):
         return self._marks.get('end', None)
 
@@ -201,22 +216,23 @@ class Selection:
 
     def _set_mark(self, pos):
         self._marks['mark'] = pos
-        
+
     def _get_mark(self):
         return self._marks.get('mark', None)
-        
+
     def has_mark(self):
         return self._get_mark() is not None
-        
+
     def is_selected(self):
         if self._is_cursor_started() or self.has_mark():
             sel = self.get_selrange()
             if sel:
                 f, t, = sel
                 return f != t
+
     def is_rectangular(self):
         return self._rectangular
-        
+
     def set_mark(self, pos):
         cur = self.get_selrange()
         self._rectangular = False
@@ -227,20 +243,20 @@ class Selection:
         if cur != self.get_selrange():
             self.screen.style_updated()
             return True
-            
+
     def set_rectangle_mark(self, pos):
         ret = self.set_mark(pos)
         self._rectangular = True
-            
+
     def begin_cursor(self, pos):
         """Start cursor range selection if it was not started"""
-        
+
         if self.has_mark():
             return
-        
+
         if self._is_cursor_started():
             return
-            
+
         self._rectangular = False
         self._set_cursor_start(pos)
         self._set_end(pos)
@@ -255,12 +271,12 @@ class Selection:
 
         if changed:
             self.screen.style_updated()
-        
+
     def end_cursor(self):
         """Clear selection"""
 
         changed = self._is_cursor_started()
-        
+
         self._set_cursor_start(None)
         self._set_end(None)
 
@@ -272,8 +288,8 @@ class Selection:
 
         changed = self._is_cursor_started() is not None
         if not changed:
-            changed =  self._get_mark() is not None
-            
+            changed = self._get_mark() is not None
+
         self._set_cursor_start(None)
         self._set_end(None)
         self._set_mark(None)
@@ -285,7 +301,7 @@ class Selection:
         start = self._get_cursor_start()
         if start is None:
             start = self._get_mark()
-            
+
         end = self.get_end()
         if start is None or end is None or (start == end):
             return None
@@ -306,7 +322,7 @@ class Selection:
         tol = self.screen.document.gettol(pos)
         eol, s = self.screen.document.getline(tol)
         (dispchrs, dispcols, positions, intervals) = translate_chars(
-            tol, s, self.screen.document.mode.tab_width, 
+            tol, s, self.screen.document.mode.tab_width,
             kaa.app.config.AMBIGUOUS_WIDTH)
 
         if pos < eol:
@@ -322,13 +338,13 @@ class Selection:
         posfrom, _, col1 = self._calc_col(sel[0])
         _, posto, col2 = self._calc_col(sel[1])
         colfrom, colto = (col1, col2) if (col1 < col2) else (col2, col1)
-        
+
         return posfrom, posto, colfrom, colto
-        
+
     def get_col_string(self, tol, colfrom, colto):
         eol, s = self.screen.document.getline(tol)
         (dispchrs, dispcols, positions, intervals) = translate_chars(
-            tol, s, self.screen.document.mode.tab_width, 
+            tol, s, self.screen.document.mode.tab_width,
             kaa.app.config.AMBIGUOUS_WIDTH)
 
         col = 0
@@ -351,13 +367,14 @@ class Selection:
 
         toppos = positions[top] if top < len(dispcols) else eol
         endpos = positions[end] if end < len(dispcols) else eol
-        return toppos, endpos, s[toppos-tol:endpos-tol]
-        
+        return toppos, endpos, s[toppos - tol:endpos - tol]
+
     def on_document_updated(self, pos, inslen, dellen):
         self._marks.updated(pos, inslen, dellen)
 
 
 class Screen:
+
     """
     Attributes:
         rows --  list of Row objects.
@@ -428,18 +445,18 @@ class Screen:
 
     def _buildrow(self, pos, s, styles):
         dispchrs, dispcols, positions, intervals = translate_chars(
-            pos, s, self.document.mode.tab_width, 
+            pos, s, self.document.mode.tab_width,
             kaa.app.config.AMBIGUOUS_WIDTH)
-            
+
         if self.document.mode.SHOW_LINENO:
             linenowidth = calc_lineno_width(self)
         else:
             linenowidth = 0
-        
+
         nowrapindent = self.document.mode.NO_WRAPINDENT
-        width = max(2, self.width-linenowidth)
+        width = max(2, self.width - linenowidth)
         return col_splitter(width, pos, dispchrs, dispcols,
-                positions, intervals, styles, self.document.mode.stylemap, nowrap=self.nowrap, nowrapindent=nowrapindent)
+                            positions, intervals, styles, self.document.mode.stylemap, nowrap=self.nowrap, nowrapindent=nowrapindent)
 
     def _set_rowport(self):
 
@@ -463,10 +480,10 @@ class Screen:
                     self.portto -= i
                     break
 
-            portend = self.rows[self.portto-1].tol
+            portend = self.rows[self.portto - 1].tol
             for i, row in enumerate(self.rows[self.portto:]):
                 if row.tol != portend:
-                    del self.rows[self.portto+i:]
+                    del self.rows[self.portto + i:]
                     break
 
     def on_document_updated(self, pos, inslen, dellen):
@@ -492,9 +509,9 @@ class Screen:
                 if pos + deleted > self.updated_pos:
                     self.updated_pos = pos
                 else:
-                    tol = self.document.gettol(self.updated_pos - deleted) 
+                    tol = self.document.gettol(self.updated_pos - deleted)
                     if tol != self.document.gettol(pos):
-                        # Position of top of screen is not changed 
+                        # Position of top of screen is not changed
                         # if deleted on same physical line.
                         self.updated_pos -= deleted
 
@@ -512,7 +529,7 @@ class Screen:
 
         if self.updated_pos is not None:
             ret = self.locate(self.updated_pos,
-                        top=True, refresh=True) or ret
+                              top=True, refresh=True) or ret
         self.updated_pos = None
         return ret
 
@@ -583,7 +600,7 @@ class Screen:
                 if row.posfrom <= pos < row.posto:
                     return i, row
             if self.rows and self.is_lastrow(self.rows[-1]):
-                return len(self.rows)-1, self.rows[-1]
+                return len(self.rows) - 1, self.rows[-1]
 
         return -1, None
 
@@ -596,7 +613,7 @@ class Screen:
                 col = row.positions.index(pos)
             except ValueError:
                 col = len(row.positions)
-            return idx, sum(c for c in row.cols[:col])+row.wrapindent
+            return idx, sum(c for c in row.cols[:col]) + row.wrapindent
 
     def get_cursorcol(self, pos):
         idx, row = self.getrow(pos)
@@ -611,7 +628,7 @@ class Screen:
         else:
             cols = 0
 
-        for n in range(idx-1, -1, -1):
+        for n in range(idx - 1, -1, -1):
             nrow = self.rows[n]
             if nrow.tol != row.tol:
                 return cols
@@ -637,7 +654,7 @@ class Screen:
                 p += charcols
 
         return self.document.find_newline(tol)
-        
+
     def _fillscreen(self):
         while True:
             bottomrow = self.rows[-1]
@@ -651,7 +668,7 @@ class Screen:
             eol, s = self.document.getline(bottomrow.posto)
             styles = self.document.getstyles(bottomrow.posto, eol)
             self.rows.extend(self._buildrow(bottomrow.posto, s, styles))
-       
+
         self._set_rowport()
 
     def locate(self, pos, top=False, middle=False, bottom=False,
@@ -707,7 +724,7 @@ class Screen:
 
         if rowbottom > 0:
             # build rows above target row
-            height = sum(row.height for row in self.rows[:rowidx+1])
+            height = sum(row.height for row in self.rows[:rowidx + 1])
 
             while height <= rowbottom:
                 curtop = self.rows[0].posfrom
@@ -716,7 +733,7 @@ class Screen:
                     break
 
                 # build previous line
-                top = self.document.gettol(curtop-1)
+                top = self.document.gettol(curtop - 1)
                 eol, s = self.document.getline(top)
                 styles = self.document.getstyles(top, eol)
                 rows = self._buildrow(top, s, styles)
@@ -760,13 +777,13 @@ class Screen:
             return True
 
         elif self.pos > 0:
-            tol = self.document.gettol(self.pos-1)
+            tol = self.document.gettol(self.pos - 1)
             eol, s = self.document.getline(tol)
             styles = self.document.getstyles(tol, eol)
             rows = self._buildrow(tol, s, styles)
             self.rows[0:0] = rows
             self.pos = rows[-1].posfrom
-            self.portfrom = len(rows)-1
+            self.portfrom = len(rows) - 1
             self._fillscreen()
             return True
 
@@ -775,11 +792,10 @@ class Screen:
     def pagedown(self):
         if self.height != 1:
             curpos = self.pos
-            self.vert_align(self.portto-1, top=True)
+            self.vert_align(self.portto - 1, top=True)
             return self.pos != curpos
         else:
             return self.linedown()
-
 
     def pageup(self):
         if self.height != 1:

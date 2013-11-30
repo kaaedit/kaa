@@ -1,13 +1,23 @@
 import kaa.log
-import cProfile, pstats, io, sys, contextlib, time, traceback, pprint, inspect
+import cProfile
+import pstats
+import io
+import sys
+import contextlib
+import time
+import traceback
+import pprint
+import inspect
+
 
 def _show_profile(f, *args, **kwargs):
     prof = cProfile.Profile()
     ret = prof.runcall(f, *args, **kwargs)
 
     out = io.StringIO()
-    pstats.Stats(prof, stream=out).strip_dirs().sort_stats('cumulative').print_stats()
-    _trace('\n'+out.getvalue())
+    pstats.Stats(prof, stream=out).strip_dirs().sort_stats(
+        'cumulative').print_stats()
+    _trace('\n' + out.getvalue())
 
     return ret
 
@@ -18,10 +28,12 @@ def _get_caller(n=2):
 
     return "{}:{} {} - {}".format(fname, lno, funcname, lines[0])
 
+
 def _get_stack(limit=None):
     out = io.StringIO()
     traceback.print_stack(sys._getframe(2), limit=limit, file=out)
     _trace(out.getvalue())
+
 
 def _print_exc():
     out = io.StringIO()
@@ -31,6 +43,7 @@ def _print_exc():
 
 def _trace(*args):
     kaa.log.debug(' '.join(str(o) for o in args))
+
 
 @contextlib.contextmanager
 def _stime(header='--------------'):
@@ -44,7 +57,9 @@ def _stime(header='--------------'):
     _trace(_get_caller(3), header)
 
     f = time.clock()
+
     class ll:
+
         def __init__(self):
             self.values = []
             self.start = time.clock()
@@ -55,11 +70,11 @@ def _stime(header='--------------'):
         def L(self, name):
             self.values.append((name, time.clock()))
             if len(self.values) == 1:
-                _trace(' - {}: {:.6}'.format(o.values[0][0], o.values[0][1]-o.start))
+                _trace(
+                    ' - {}: {:.6}'.format(o.values[0][0], o.values[0][1] - o.start))
             else:
                 t1, t2 = o.values[-2:]
-                _trace('{} - {}: {:.6}'.format(t1[0], t2[0], t2[1]-t1[1]))
-
+                _trace('{} - {}: {:.6}'.format(t1[0], t2[0], t2[1] - t1[1]))
 
     o = ll()
     yield o
@@ -68,7 +83,8 @@ def _stime(header='--------------'):
     if o.values:
         _trace('{} - : {:.6}'.format(o.values[-1][0], o.fin - o.values[-1][1]))
 
-    _trace('total: {:.6}'.format(o.fin-o.start))
+    _trace('total: {:.6}'.format(o.fin - o.start))
+
 
 def _pprint(obj):
     out = io.StringIO()
@@ -79,7 +95,7 @@ def _pprint(obj):
 import builtins
 builtins._show_profile = _show_profile
 builtins._get_caller = _get_caller
-builtins._get_stack= _get_stack
+builtins._get_stack = _get_stack
 builtins._trace = _trace
 builtins._stime = _stime
 builtins._pprint = _pprint

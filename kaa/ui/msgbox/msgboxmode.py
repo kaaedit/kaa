@@ -7,14 +7,15 @@ from kaa.ui.dialog import dialogmode
 
 MsgBoxThemes = {
     'basic':
-        Theme([
-            Style('underline', 'Base3', 'Base02', underline=True),
-            Style('separator', 'LightBlue', 'Base02', nowrap=False),
-            Style('button', 'LightBlue', 'Base02', nowrap=True),
-            Style('button.shortcut', 'LightBlue', 'Base02', underline=True,
-                   nowrap=True),
-        ]),
+    Theme([
+        Style('underline', 'Base3', 'Base02', underline=True),
+        Style('separator', 'LightBlue', 'Base02', nowrap=False),
+        Style('button', 'LightBlue', 'Base02', nowrap=True),
+        Style('button.shortcut', 'LightBlue', 'Base02', underline=True,
+              nowrap=True),
+    ]),
 }
+
 
 class MsgBoxMode(dialogmode.DialogMode):
     autoshrink = True
@@ -37,7 +38,7 @@ class MsgBoxMode(dialogmode.DialogMode):
         pass
 
     def on_start(self, wnd):
-        wnd.cursor.setpos(self.document.endpos()-1)
+        wnd.cursor.setpos(self.document.endpos() - 1)
 
     def on_str(self, wnd, s):
         for c in s:
@@ -79,31 +80,32 @@ class MsgBoxMode(dialogmode.DialogMode):
         doc = document.Document(buf)
         mode = cls()
         mode.callback = callback
-        mode.keys  = keys
+        mode.keys = keys
         doc.setmode(mode)
 
         with dialogmode.FormBuilder(doc) as f:
-    
+
             # caption
             if caption:
                 f.append_text('caption', caption)
                 f.append_text('default', ' ')
-    
+
             mode.shortcuts = {}
             for n, option in enumerate(options):
                 m = re.search(r'&([^&])', option)
                 shortcut = m.group(1)
                 mode.shortcuts[shortcut.lower()] = option
-    
+
                 f.append_text('button',
                               option,
                               on_shortcut=
-                                lambda wnd, key=shortcut:mode.on_shortcut(wnd, key),
+                              lambda wnd, key=shortcut: mode.on_shortcut(
+                                  wnd, key),
                               shortcut_style='button.shortcut')
-    
-                if n < len(options)-1:
+
+                if n < len(options) - 1:
                     f.append_text('separator', cls.SEPARATOR)
-    
+
             f.append_text('default', ' ')
             f.append_text('underline', ' ')
 

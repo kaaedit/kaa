@@ -9,12 +9,12 @@ from kaa.keyboard import *
 class TOCList(filterlist.FilterListMode):
     MAX_CAPTION_LEN = 30
     USE_PHRASE_STYLE = True
-    
+
     def set_candidates(self, candidates):
         self.candidates = [
             selectlist.SelectItem(
-                    'selectitem' if c.token != 'namespace' else 'selectitem2', 'selectitem-active', c.dispname, c)
-                for c in candidates]
+                'selectitem' if c.token != 'namespace' else 'selectitem2', 'selectitem-active', c.dispname, c)
+            for c in candidates]
 
     def _filter_items(self, query):
         if query:
@@ -51,22 +51,22 @@ class TOCList(filterlist.FilterListMode):
             for item in self.items:
                 if item.value.token == 'namespace':
                     if prev:
-                        f.append_text('default', 
-                                '\n'+'  '*len(item.value.get_parents()))
+                        f.append_text('default',
+                                      '\n' + '  ' * len(item.value.get_parents()))
                     f.append_text(item.style, item.text, mark_pair=item)
-    
+
                 else:
-                    if prev and (prev.value.token =='namespace' or 
-                             prev.value.get_parents() != item.value.get_parents()):
-     
-                        f.append_text('default', 
-                                      '\n'+'  '*(len(item.value.get_parents())))
-    
+                    if prev and (prev.value.token == 'namespace' or
+                                 prev.value.get_parents() != item.value.get_parents()):
+
+                        f.append_text('default',
+                                      '\n' + '  ' * (len(item.value.get_parents())))
+
                     f.append_text(item.style, item.text, mark_pair=item)
                     f.append_text('default', ' ')
-    
+
                 prev = item
-    
+
     def sel_next_namespace(self, wnd):
         if not self.items:
             newsel = None
@@ -114,10 +114,9 @@ class TOCList(filterlist.FilterListMode):
 
             if not newsel:
                 newsel = self.items[-1]
-                
+
         self.update_sel(wnd, newsel, bottom=bottom)
         return newsel
-        
 
 
 toclistdlg_keys = {
@@ -129,10 +128,10 @@ toclistdlg_keys = {
 
 
 class TOCListInputDlgMode(filterlist.FilterListInputDlgMode):
+
     def init_keybind(self):
         super().init_keybind()
         self.keybind.add_keybind(toclistdlg_keys)
-
 
     @command('toclistdlg.next_namespace')
     @norec
@@ -148,18 +147,19 @@ class TOCListInputDlgMode(filterlist.FilterListInputDlgMode):
         filterlist = wnd.get_label('filterlist')
         filterlist.document.mode.sel_prev_namespace(filterlist)
 
+
 def show_toclist(wnd, toclist):
     def callback(result):
         if result:
             wnd.cursor.setpos(result.pos)
-        
+
     doc = TOCListInputDlgMode.build(
-            'Search:', callback)
+        'Search:', callback)
     dlg = kaa.app.show_dialog(doc)
-    
+
     filterlistdoc = TOCList.build()
     list = dlg.add_doc('dlg_filterlist', 0, filterlistdoc)
-    
+
     filterlistdoc.mode.set_candidates(toclist)
     filterlistdoc.mode.set_query(list, '')
     dlg.on_console_resized()

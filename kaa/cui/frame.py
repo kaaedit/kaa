@@ -1,4 +1,5 @@
-import curses, itertools
+import curses
+import itertools
 
 import kaa
 import kaa.context
@@ -7,9 +8,11 @@ from kaa.cui import splitter, editor
 from kaa.ui.messagebar import messagebarmode
 from kaa import document
 
+
 class ChildFrame(Window, kaa.context.ContextRoot):
     splitter = None
     active_editor = None
+
     def __init__(self, parent, pos=None):
         super().__init__(parent, pos=pos)
 
@@ -73,7 +76,7 @@ class ChildFrame(Window, kaa.context.ContextRoot):
     def on_focus(self):
         super().on_focus()
         self.mainframe.set_activeframe(self)
-        
+
         if self.active_editor:
             self.active_editor.activate()
         elif self.splitter:
@@ -87,6 +90,7 @@ class ChildFrame(Window, kaa.context.ContextRoot):
 
 
 class MainFrame(Window, kaa.context.ContextRoot):
+
     """The main frame of application
 
     Attributes:
@@ -130,9 +134,9 @@ class MainFrame(Window, kaa.context.ContextRoot):
 
         if self.inputline and not self.inputline.closed:
             w, h = self.inputline.getsize()
-            editorheight = max(1, self.height - h-self.MESSAGEBAR_HEIGHT)
+            editorheight = max(1, self.height - h - self.MESSAGEBAR_HEIGHT)
         else:
-            editorheight = max(1, self.height-self.MESSAGEBAR_HEIGHT)
+            editorheight = max(1, self.height - self.MESSAGEBAR_HEIGHT)
 
         if self.activeframe:
             self.activeframe.set_rect(0, 0, self.width, editorheight)
@@ -140,7 +144,8 @@ class MainFrame(Window, kaa.context.ContextRoot):
         for popup in self.popups:
             popup.on_console_resized()
 
-        self.messagebar.set_rect(0, self.height-self.MESSAGEBAR_HEIGHT, self.width, self.height)
+        self.messagebar.set_rect(
+            0, self.height - self.MESSAGEBAR_HEIGHT, self.width, self.height)
 
     def _get_provisional_frame(self):
         # if kaa has only one frame and the frame has provisional document,
@@ -164,7 +169,7 @@ class MainFrame(Window, kaa.context.ContextRoot):
 
     def is_idle(self):
         return not self.popups and not self.inputline
-        
+
     def show_doc(self, doc):
         frame = self._get_provisional_frame()
         if frame:
@@ -185,7 +190,7 @@ class MainFrame(Window, kaa.context.ContextRoot):
 
     def set_activeframe(self, frame):
         self.activeframe = frame
-        
+
     def add_popup(self, popup):
         self.popups.append(popup)
 
@@ -228,4 +233,3 @@ class MainFrame(Window, kaa.context.ContextRoot):
             for child in self.walk_children():
                 if not child.closed:
                     child.update_window()
-
