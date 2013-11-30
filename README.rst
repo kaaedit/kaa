@@ -538,15 +538,17 @@ Output of ``make`` displayed on the window. You can traverse source files cause 
 Python debugger
 ---------------
 
+Kaa can be used as front-end of Python debugger module(``bdb``) running in another process. Although kaa itself requires Python 3.3 or later, you can use Python 2.6 or later in the target process. 
+
 Starting debugger
 ++++++++++++++++++
 
 There are three ways to start debugger.
 
-Remote runner
+kaadbg.run module
 ~~~~~~~~~~~~~~~~~~~~~~~~
 
-Remote runnner executes Python script and connect to kaa debugger.
+Execute ``kaadbg`` package in Python interpreter to connect target program with kaa debugger. ``kaadbg`` is Python package installed as a part of kaa. To use other Python interpreter than kaa installed, copy ``kaadbg`` package to appropriate library directory. Currentry, ``kaadbg`` supports from Python 2.6 to Python 3.x.
 
 To activate kaa remote debugger, select ``[Tools]|Python debugger server`` and enter port number to connect debugger(default 28110).
 
@@ -557,16 +559,17 @@ Next, open new terminal window and run following command in the terminal window.
     $ python -m kaadbg.run my_test_stript.py arg1 args
 
 
-``kaadbg.run`` is Python module bundled with kaa, which connects Python script specified in argument to kaa debugger. If you need use other port than `28110`, you should provide port number with ``-p`` option.
+If you need use other port than `28110`, you should provide port number with ``-p`` option.
 
 ::
 
     $ python -m kaadbg.run -p 29000 my_test_stript.py arg1 args
 
+
 set_trace
 ~~~~~~~~~~~~~~~~~~~~~~~~
 
-Like Python's standard ``pdb`` module, you can import remote runner and call ``set_trace()`` to start debug session.
+Like Python's standard ``pdb`` module, you can import ``kaadbg`` package and call ``set_trace()`` to start debug session.
 
 You should start activate kaa remote debugger by menu ``[Tools]|Python debugger server`` and enter port number to connect debugger(default 28110).
 
@@ -596,7 +599,7 @@ To start child process, select ``[Tools]|Python debugger`` in kaa menu and speci
 
 ::
 
-    python3.3 -m kaadbg.run myscript.py arg1 arg2
+    python2.7 -m kaadbg.run myscript.py arg1 arg2
 
 Command line should starts with Python interpreter you use and ``-m kaadbg.run``. Name of target script and arguments follows.
 
@@ -607,7 +610,7 @@ Breakpoints
 
 To set/unset breakpoints, select ``[Code]|Toggle Breakpoint`` in menu in editor. By default, ``f8`` key is bounded to this menu item.
 
-While debugger window is opend, you can suspend the debugger window by escape key. After you finish to update breakpoints with editor window, select ``[Tools]|Python debugger`` menu again to resume debugger.
+While debugger window is opend, you can suspend the debugger window by escape key. After you finish to update breakpoints in editor window, select ``[Tools]|Python debugger`` menu again to resume debugger. To view list of current breakpoints, select *breakpoints* button with ``alt+E`` key.
 
 Inspect variables
 ++++++++++++++++++
