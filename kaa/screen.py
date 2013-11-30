@@ -96,7 +96,8 @@ def translate_chars(posfrom, chars, tab_width, ambiguous_width):
 MIN_WRAPCOLS = 10
 
 
-def col_splitter(maxcol, tol, dispchrs, dispcols, positions, intervals, styles, stylemap, nowrap=False, nowrapindent=False):
+def col_splitter(maxcol, tol, dispchrs, dispcols, positions,
+                 intervals, styles, stylemap, nowrap=False, nowrapindent=False):
     """Split string by column"""
 
     if nowrap:

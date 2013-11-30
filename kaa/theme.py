@@ -51,7 +51,8 @@ class Style:
 
 class Overlay(Style):
 
-    def __init__(self, name, fgcolor=None, bgcolor=None, underline=None, bold=None):
+    def __init__(self, name, fgcolor=None, bgcolor=None,
+                 underline=None, bold=None):
         super().__init__(name, fgcolor, bgcolor, underline, bold)
 
     def fill(self, default):

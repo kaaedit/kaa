@@ -160,7 +160,8 @@ class CommandMode(EditMode):
         super().on_key_pressed(wnd, event)
 
     def _get_keybinds(self, wnd):
-        return [wnd.document.mode.keybind_vi_commandmode, wnd.document.mode.keybind]
+        return [wnd.document.mode.keybind_vi_commandmode,
+                wnd.document.mode.keybind]
 
     def flush_pending_str(self, wnd):
         self.pending_str = ''

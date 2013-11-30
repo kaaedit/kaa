@@ -180,12 +180,18 @@ visual_linewise_mode_keys = {
     pagedown: ('screen.lineselection.begin', 'cursor.pagedown', 'screen.lineselection.set-end'),
     pageup: ('screen.lineselection.begin', 'cursor.pageup', 'screen.lineselection.set-end'),
 
-    'h': ('screen.lineselection.begin', 'cursor.left', 'screen.lineselection.set-end'),
-    'l': ('screen.lineselection.begin', 'cursor.right', 'screen.lineselection.set-end'),
-    'k': ('screen.lineselection.begin', 'cursor.up', 'screen.lineselection.set-end'),
-    'j': ('screen.lineselection.begin', 'cursor.down', 'screen.lineselection.set-end'),
+    'h': ('screen.lineselection.begin', 'cursor.left',
+          'screen.lineselection.set-end'),
+    'l': ('screen.lineselection.begin', 'cursor.right',
+          'screen.lineselection.set-end'),
+    'k': ('screen.lineselection.begin', 'cursor.up',
+          'screen.lineselection.set-end'),
+    'j': ('screen.lineselection.begin', 'cursor.down',
+          'screen.lineselection.set-end'),
 
-    'gg': ('screen.lineselection.begin', 'cursor.top-of-file', 'screen.lineselection.set-end'),
-    'G': ('screen.lineselection.begin', 'cursor.end-of-file', 'screen.lineselection.set-end'),
+    'gg': ('screen.lineselection.begin', 'cursor.top-of-file',
+           'screen.lineselection.set-end'),
+    'G': ('screen.lineselection.begin', 'cursor.end-of-file',
+          'screen.lineselection.set-end'),
 
 }

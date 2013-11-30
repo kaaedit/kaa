@@ -316,7 +316,9 @@ class ModeBase:
 
     def run_highlight(self):
         if self.highlight:
-            return self.highlight.update_style(self.document, batch=self.HIGHLIGHTBATCH)
+            return self.highlight.update_style(
+                self.document,
+                batch=self.HIGHLIGHTBATCH)
 
     def _split_chars(self, begin, end):
         """split characters by character category."""

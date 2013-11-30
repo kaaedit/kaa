@@ -73,7 +73,8 @@ class SelectItemList(dialogmode.DialogMode):
                 if n != (len(self.items) - 1):
                     f.append_text('default', self.SEP)
 
-    def _update_item_style(self, wnd, item, activate, middle=None, bottom=None):
+    def _update_item_style(
+            self, wnd, item, activate, middle=None, bottom=None):
 
         if item not in self.document.marks:
             return

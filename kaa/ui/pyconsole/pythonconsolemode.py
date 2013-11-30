@@ -69,7 +69,7 @@ class PythonConsoleMode(pythonmode.PythonMode):
 
     def _eval_str(self, s):
         try:
-            comp = compile(s,  '<interactive input>', 'eval')
+            comp = compile(s, '<interactive input>', 'eval')
         except SyntaxError:
             return
 
@@ -86,7 +86,7 @@ class PythonConsoleMode(pythonmode.PythonMode):
 
     def _exec_str(self, s):
         try:
-            comp = compile(s,  '<interactive input>', 'exec')
+            comp = compile(s, '<interactive input>', 'exec')
         except SyntaxError:
             traceback.print_exc()
             return

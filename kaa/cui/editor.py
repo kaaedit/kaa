@@ -142,7 +142,8 @@ class TextEditorWindow(Window):
         if self.document:
             self.document.mode.on_focus(self)
 
-    def _getcharattrs(self, row, rectangular, selfrom, selto, colfrom, colto, line_overlay):
+    def _getcharattrs(self, row, rectangular, selfrom,
+                      selto, colfrom, colto, line_overlay):
         # returns character attributes of each characters in row.
         ncols = row.colfrom
         for pos, cols in zip(row.positions, row.cols):

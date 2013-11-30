@@ -1,0 +1,2 @@
+#!/bin/sh
+autopep8 -r -i -a --ignore=E721 kaa

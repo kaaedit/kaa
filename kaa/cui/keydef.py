@@ -36,7 +36,7 @@ BUTTONNAMES = {
 class KeyEvent:
 
     """ Stores information of keyboard input event.
-    
+
     Attributes:
         wnd -- Windows object of the event
         key -- key code returned by curses.
@@ -46,8 +46,8 @@ class KeyEvent:
     }
 
     def __init__(self, wnd, key, no_trailing_char):
-        """ 
-        
+        """
+
         Auguments:
             wnd -- Windows object of the event
             key -- key code returned by curses.
@@ -70,7 +70,7 @@ class KeyEvent:
 class MouseEvent:
 
     """ Stores information of mouse input event.
-    
+
     Attributes:
         wnd -- Windows object of the event
         x, y -- Event coordinates
