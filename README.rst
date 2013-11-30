@@ -682,16 +682,22 @@ Links
 Version history
 =================
 
+0.15.1 - 2013.11.30
+--------------------
+
+- Removed debugging code.
+
+
+Past versions
+--------------
+
 0.15 - 2013.11.29
-------------------
++++++++++++++++++++++
 
 - Python debugger now runs 20+ times faster than in 0.14.
 
 - Highlight Python constant.
 
-
-Past versions
---------------
 
 0.14 - 2013.11.27
 +++++++++++++++++++++
