@@ -68,7 +68,8 @@ def view_diff(curdoc, callback=None):
     orig = kaa.app.storage.openfile(
         curdoc.fileinfo.fullpathname,
         curdoc.fileinfo.encoding,
-        curdoc.fileinfo.newline)
+        curdoc.fileinfo.newline,
+        nohist=True)
 
     cur_lines = list(curdoc.iterlines(0))
     org_lines = list(orig.iterlines(0))

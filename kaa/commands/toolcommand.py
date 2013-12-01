@@ -77,7 +77,11 @@ class ToolCommands(Commands):
         # todo: move to util
         import select
         import errno
+        # http://stackoverflow.com/a/12207447
+        # This page sujests bare os pipes is never buffered.
+        # Is it true? Looks works fine, though.
         master, slave = os.pipe()
+        # todo: Make these handles not inherited in Python 3.3.
         with subprocess.Popen(cmd, shell=True, stdout=slave,
                               stderr=slave, bufsize=1,
                               universal_newlines=True) as process:
