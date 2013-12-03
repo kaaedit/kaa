@@ -67,7 +67,7 @@ To run kaa, you need following component:
 
 * Headers and libraries for Python and ncurses with wide character support. Consult documentation of your platform for details. For Debian/Ubuntu, you can install ncurses library by ::
 
-  $ sudo apt-get install python3-dev libncursesw5-dev 
+  $ sudo apt-get install python3-dev libncurses5-dev libncursesw5-dev 
 
 * UTF-8 locales
 
