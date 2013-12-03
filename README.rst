@@ -730,14 +730,20 @@ Links
 Version history
 =================
 
-0.15.1 - 2013.11.30
+0.16.0 - 2013.12.03
 --------------------
 
-- Removed debugging code.
+- Defer to save history information. Kaa now works much smoother than ever on PC with slow hard disk. 
 
 
 Past versions
 --------------
+
+0.15.1 - 2013.11.30
++++++++++++++++++++++
+
+- Removed debugging code.
+
 
 0.15 - 2013.11.29
 +++++++++++++++++++++
