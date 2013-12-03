@@ -667,6 +667,54 @@ Change color palette to ``light``.
    kaa.app.DEFAULT_PALETTE = 'light'  # Use `light' palette. Default is `dark'
 
 
+Hacking
+==========
+
+You can get the recent source code from `github <https://github.com/kaaedit/kaa.git>`_.
+
+.. code:: sh
+
+   $ git clone https://github.com/kaaedit/kaa.git
+
+To run test, you need to install `py.test <http://pytest.org/latest/>`_
+
+.. code:: sh
+
+   $ pip-3.3 install -U pytest
+   $ cd kaa
+   $ py.test
+
+There is an expreimental script to run freeze to build standalone kaa binary file.
+To freeze kaa,  You must proceed with the following steps: 
+
+1. Apply following two patches to your Python 3.3 installation.
+
+   - http://bugs.python.org/issue11824
+   - http://bugs.python.org/issue16047
+
+2. Clone kaa source code.
+
+.. code:: sh
+
+   $ git clone https://github.com/kaaedit/kaa.git
+
+3. In source directory of kaa, cd to kaa/freezing directory.
+
+.. code:: sh
+
+   $ cd kaa/freezing
+
+4. Edit PYTHON variable in build.sh for your environment.
+
+5. run build.sh
+
+.. code:: sh
+
+   $ ./build.sh
+
+6. Check if freezing/dist/kaa exists.
+
+
 Links
 ==========
 
