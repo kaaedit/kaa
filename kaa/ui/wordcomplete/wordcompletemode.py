@@ -103,18 +103,23 @@ class WordCompleteInputMode(filterlist.FilterListInputDlgMode):
         self.wordpos = (self.orgpos, self.orgpos)
         wnd = self.document.wnds[0]
 
+        curword = ''
         word = self.target.document.mode.get_word_at(self.orgpos)
         if word:
             f, t, cg = word
             if cg[0] in 'LMN':  # Letter, Mark, Number
                 self.wordpos = (f, t)
 
-                s = self.target.document.gettext(f, t)
-                if s:
+                curword = self.target.document.gettext(f, t)
+                if curword:
                     self.target.screen.selection.set_range(f, t)
-                    self.set_query(wnd, s)
+                    self.set_query(wnd, curword)
 
-        words = self.target.document.mode.get_word_list()
+        # build word list
+        # word at cursor position should not appear in the list.
+        words = [w for w in self.target.document.mode.get_word_list()
+                    if w != curword]
+                    
         words.extend(kaa.app.get_clipboards())
 
         list.document.mode.set_candidates(words)
