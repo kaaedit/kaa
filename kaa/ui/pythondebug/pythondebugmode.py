@@ -16,10 +16,10 @@ def show_expr(port, depth):
     def callback(w, s):
         s = s.strip()
         if s:
-            kaa.app.config.hist_pythondebug_expr.add(s)
+            kaa.app.config.hist('pythondebug_expr').add(s)
             port.show_expr(depth, s)
 
-    hist = [s for s, info in kaa.app.config.hist_pythondebug_expr.get()]
+    hist = [s for s, info in kaa.app.config.hist('pythondebug_expr').get()]
     doc = inputlinemode.InputlineMode.build('Python expression:',
                                             callback, history=hist)
     kaa.app.show_dialog(doc)

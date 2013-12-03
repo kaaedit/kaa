@@ -1,3 +1,4 @@
+import kaa
 import os
 import functools
 
@@ -10,9 +11,10 @@ def ignore_errors(f):
         except Exception:
             try:
                 kaa.log.exception('')
-            except Exception:
+            except Exception as e:
                 # Ignore error completely...
                 pass
+
     return wrapper
 
 

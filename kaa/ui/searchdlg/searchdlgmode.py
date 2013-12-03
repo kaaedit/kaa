@@ -49,7 +49,7 @@ class SearchCommands(editorcommand.EditCommands):
 
         self._show_histdlg(wnd, 'Recent searches',
                            [s for s,
-                               info in kaa.app.config.hist_searchstr.get()],
+                               info in kaa.app.config.hist('search_text').get()],
                            callback)
 
     @command('searchdlg.toggle.ignorecase')
@@ -306,7 +306,7 @@ class SearchDlgMode(dialogmode.DialogMode):
     def _save_searchstr(self):
         s = self.get_search_str()
         if s:
-            kaa.app.config.hist_searchstr.add(s)
+            kaa.app.config.hist('search_text').add(s)
 
     def search_next(self, wnd):
         self._save_searchstr()
@@ -377,7 +377,7 @@ class ReplaceCommands(SearchCommands):
 
         self._show_histdlg(wnd, 'Recent replace strings',
                            [s for s,
-                               info in kaa.app.config.hist_replstr.get()],
+                               info in kaa.app.config.hist('repl_text').get()],
                            callback)
 
     @command('replacedlg.history')
@@ -490,7 +490,7 @@ class ReplaceDlgMode(SearchDlgMode):
             'Search failed. Resume again?', ['&Resume', '&Cancel'], cb)
 
     def _save_replstr(self):
-        kaa.app.config.hist_replstr.add(self.get_replace_str())
+        kaa.app.config.hist('repl_text').add(self.get_replace_str())
 
     def search_next(self, wnd):
         if not self.get_search_str():

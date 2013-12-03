@@ -39,7 +39,7 @@ class FileCommands(Commands):
 
     def _restore_file_loc(self, wnd):
         if wnd.document.fileinfo:
-            disp = kaa.app.config.hist_filedisp.find(
+            disp = kaa.app.config.hist('filedisp').find(
                 wnd.document.fileinfo.fullpathname)
             if disp:
                 loc = disp.get('pos', 0)
@@ -291,7 +291,7 @@ class FileCommands(Commands):
 
     def _select_recentry_used_files(self, callback):
         files = []
-        for p, info in kaa.app.config.hist_files.get():
+        for p, info in kaa.app.config.hist('filename').get():
             path = os.path.relpath(p)
             files.append(path if len(path) < len(p) else p)
 
@@ -315,7 +315,7 @@ class FileCommands(Commands):
 
     def _select_recentry_used_dirs(self, callback):
         files = []
-        for p, info in kaa.app.config.hist_dirs.get():
+        for p, info in kaa.app.config.hist('dirname').get():
             path = os.path.relpath(p)
             files.append(path if len(path) < len(p) else p)
 

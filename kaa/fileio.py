@@ -99,8 +99,8 @@ class FileStorage:
         if dirname.endswith(os.pathsep):
             dirname = dirname[:-1]
 
-        kaa.app.config.hist_files.add(abspath)
-        kaa.app.config.hist_dirs.add(dirname)
+        kaa.app.config.hist('filename').add(abspath)
+        kaa.app.config.hist('dirname').add(dirname)
         kaa.app.last_dir = dirname
 
     def openfile(self, filename, encoding=None, newline=None, nohist=False,
@@ -180,11 +180,11 @@ class FileInfo:
 
     def save_screenloc(self, pos):
         if self.fullpathname:
-            info = kaa.app.config.hist_filedisp.find(self.fullpathname)
+            info = kaa.app.config.hist('filedisp').find(self.fullpathname)
             if not info:
                 info = {}
             info['pos'] = pos
-            kaa.app.config.hist_filedisp.add(
+            kaa.app.config.hist('filedisp').add(
                 self.fullpathname, info)
 
     def check_update(self):

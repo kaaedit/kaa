@@ -86,7 +86,7 @@ class GrepCommands(editorcommand.EditCommands):
 
             filterlist.show_listdlg('Recent searches',
                                     [s for s,
-                                        info in kaa.app.config.hist_grepstr.get(
+                                        info in kaa.app.config.hist('grep_text').get(
                                         )],
                                     callback)
 
@@ -100,7 +100,7 @@ class GrepCommands(editorcommand.EditCommands):
                     wnd.screen.selection.set_range(f, t)
 
             hist = []
-            for p, info in kaa.app.config.hist_grepdir.get():
+            for p, info in kaa.app.config.hist('grep_dirname').get():
                 path = os.path.relpath(p)
                 hist.append(path if len(path) < len(p) else p)
 
@@ -118,7 +118,7 @@ class GrepCommands(editorcommand.EditCommands):
 
             filterlist.show_listdlg('Recent filenames',
                                     [s for s,
-                                        info in kaa.app.config.hist_grepfiles.get(
+                                        info in kaa.app.config.hist('grep_filename').get(
                                         )],
                                     callback)
 
@@ -160,11 +160,11 @@ class GrepDlgMode(dialogmode.DialogMode):
                     if s:
                         GrepOption.LASTOPTION.text = s
 
-            grepdir = config.hist_grepdir.get()
+            grepdir = config.hist('grep_dirname').get()
             if grepdir:
                 GrepOption.LASTOPTION.directory = grepdir[0][0]
 
-            grepfiles = config.hist_grepfiles.get()
+            grepfiles = config.hist('grep_filename').get()
             if grepfiles:
                 GrepOption.LASTOPTION.filenames = grepfiles[0][0]
 
@@ -437,10 +437,10 @@ class GrepDlgMode(dialogmode.DialogMode):
         if (self.option.text and self.option.directory and
                 self.option.filenames):
 
-            kaa.app.config.hist_grepstr.add(self.option.text)
+            kaa.app.config.hist('grep_text').add(self.option.text)
             path = os.path.abspath(self.option.directory)
-            kaa.app.config.hist_grepdir.add(path)
-            kaa.app.config.hist_grepfiles.add(self.option.filenames)
+            kaa.app.config.hist('grep_dirname').add(path)
+            kaa.app.config.hist('grep_filename').add(self.option.filenames)
 
             grepmode.grep(self.option, self.target)
 

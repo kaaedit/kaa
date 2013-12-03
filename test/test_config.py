@@ -3,44 +3,48 @@ from kaa import config
 
 
 class TestHistory:
-    filename = './test.db'
-
     def test_history(self):
-        storage = config.KaaHistoryStorage(self.filename)
+        storage = config.KaaHistoryStorage('')
         try:
-            hist = config.History('test', storage)
-            storage.add_history(hist)
+            hist = storage.get_history('hist1')
+            hist.add('1', 1)
+            hist.add('2', 2)
+            hist.add('1', 1)
 
-            hist.add('1')
-            hist.add('2')
-            hist.add('1')
-            hist.add('2')
+            assert hist.get() == [('1', 1), ('2', 2)]
+            assert hist.find('1') == 1
+            
+            storage.flush()
+            assert hist.get() == [('1', 1), ('2', 2)]
+            assert hist.find('1') == 1
 
-            assert hist.get() == [('2', None), ('1', None)]
-            hist.close()
+            hist.add('1', 1)
+            hist.add('3', 3)
+            assert hist.get() == [('3', 3), ('1', 1), ('2', 2),]
+
+            storage.flush()
+            assert hist.get() == [('3', 3), ('1', 1), ('2', 2),]
+            
         finally:
             storage.close()
-            os.unlink(self.filename)
 
     def test_histclose(self):
-        storage = config.KaaHistoryStorage(self.filename)
+        storage = config.KaaHistoryStorage('test.db')
         try:
-            hist = config.History('test', storage)
-            storage.add_history(hist)
+            hist = storage.get_history('hist2')
 
-            for i in range(config.History.MAX_HISTORY * 2):
+            for i in range(config.History.MAX_HISTORY * 3):
                 hist.add(str(i))
-            hist.close()
         finally:
+            storage.flush()
             storage.close()
 
-        storage = config.KaaHistoryStorage(self.filename)
+        storage = config.KaaHistoryStorage('test.db')
         try:
-            hist = config.History('test', storage)
-            storage.add_history(hist)
+            hist = storage.get_history('hist2')
 
             assert len(hist.get()) == config.History.MAX_HISTORY
             hist.close()
         finally:
             storage.close()
-            os.unlink(self.filename)
+            os.unlink('test.db')

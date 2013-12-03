@@ -53,7 +53,7 @@ class ToolCommands(Commands):
         def callback(w, s):
             s = s.strip()
             if s:
-                kaa.app.config.hist_shellcommands.add(s)
+                kaa.app.config.hist('shellcommand').add(s)
                 ret = subprocess.check_output(
                     s, stderr=subprocess.STDOUT,
                     shell=True,
@@ -65,7 +65,7 @@ class ToolCommands(Commands):
                 kaa.app.messagebar.set_message(
                     "{} letters inserted".format(len(ret)))
 
-        hist = [s for s, info in kaa.app.config.hist_shellcommands.get()]
+        hist = [s for s, info in kaa.app.config.hist('shellcommand').get()]
         from kaa.ui.inputline import inputlinemode
         doc = inputlinemode.InputlineMode.build('Shell command:',
                                                 callback, history=hist)
@@ -121,7 +121,7 @@ class ToolCommands(Commands):
         def callback(w, s):
             s = s.strip()
             if s:
-                kaa.app.config.hist_makecommands.add(s)
+                kaa.app.config.hist('makecommand').add(s)
                 # todo: move these lines to kaa.cui.*
                 curses.def_prog_mode()
                 curses.endwin()
@@ -135,7 +135,7 @@ class ToolCommands(Commands):
                 makeoutputmode.show(s, ret)
 
         from kaa.ui.inputline import inputlinemode
-        hist = [s for s, info in kaa.app.config.hist_makecommands.get()]
+        hist = [s for s, info in kaa.app.config.hist('makecommand').get()]
         value = 'make' if not hist else hist[0]
         doc = inputlinemode.InputlineMode.build('Make command:', callback,
                                                 history=hist, value=value)

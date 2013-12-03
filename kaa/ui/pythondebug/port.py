@@ -98,10 +98,10 @@ def run():
 
             init_reader()
 
-            kaa.app.config.hist_pythondebugcommands.add(s)
+            kaa.app.config.hist('pythondebug_cmdline').add(s)
             DEBUGGER.run(s)
 
-    hist = [s for s, info in kaa.app.config.hist_pythondebugcommands.get()]
+    hist = [s for s, info in kaa.app.config.hist('pythondebug_cmdline').get()]
     if hist:
         value = hist[0]
     else:

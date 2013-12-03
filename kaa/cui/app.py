@@ -1,3 +1,4 @@
+import time
 import socket
 import pickle
 import sys
@@ -29,7 +30,8 @@ class CuiApp:
         self.theme = self.DEFAULT_THEME
         self.last_dir = '.'
         self._input_readers = []
-
+        self._tasks = []
+        
     def init(self, mainframe):
         if self.config.palette:
             self.set_palette(self.config.palette)
@@ -71,17 +73,36 @@ class CuiApp:
     def quit(self):
         self._quit = True
 
+    def call_later(self, secs, f):
+       self._tasks.append((time.time()+secs, f))
+
+    SCHEDULE_WAIT_MARGIN = 0.05
+    def _next_sheduled_task(self):
+        tasks = sorted(t for t, f in self._tasks)
+        if tasks:
+            wait = max(0, tasks[0] - time.time())
+            return wait + wait*self.SCHEDULE_WAIT_MARGIN
+        else:
+            None
+
+    def _run_scheduled_task(self):
+        now = time.time()
+        for n, (t, f) in enumerate(self._tasks):
+            if t <= now:
+                del self._tasks[n]
+                f()
+                return
+        
     def set_idlejob(self):
         self._idleprocs = [
             doc.mode.on_idle for doc in document.Document.all if doc.mode]
-
+        
     def on_idle(self):
         if self._idleprocs:
             proc = self._idleprocs.pop(0)
             # proc() returns True if proc() still has job to be done.
             if proc():
                 self._idleprocs.append(proc)
-                return True
 
         if self._idleprocs:
             return True
@@ -231,18 +252,23 @@ class CuiApp:
                 try:
                     rlist, _, _ = select.select(
                         [sys.stdin] + rd, [], [],
-                        0 if nonblocking else None)
+                        0 if nonblocking else self._next_sheduled_task())
 
                 except InterruptedError:
                     pass
 
-                else:
-                    ready = [r for r in rlist if r is not sys.stdin]
-                    if ready:
-                        nonblocking = True
-                        for r in ready:
-                            idx = rd.index(r)
-                            self._input_readers[idx].read_input(r)
+                if not nonblocking and not rlist:
+                    # timeout
+                    self._run_scheduled_task()
+                    self.set_idlejob()  # Reschedule idle procs
+                    
+                ready = [r for r in rlist if r is not sys.stdin]
+                if ready:
+                    nonblocking = True
+                    for r in ready:
+                        idx = rd.index(r)
+                        self._input_readers[idx].read_input(r)
+                    self.set_idlejob()  # Reschedule idle procs
 
                 inputs = self.focus.do_input(nonblocking=True)
                 for c in inputs:

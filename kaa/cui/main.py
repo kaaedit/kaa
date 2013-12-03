@@ -99,9 +99,9 @@ def main(stdscr):
                 selectfile.show_fileopen(dirname, cb)
 
         kaa.app.run()
+        mainframe.destroy()
         kaa.app.on_shutdown()
 
-        mainframe.destroy()
 
     finally:
         _restore()
