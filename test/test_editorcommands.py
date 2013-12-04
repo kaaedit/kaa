@@ -75,6 +75,13 @@ class TestEdit(kaa_testutils._TestScreenBase):
         cmd.indent(wnd)
         assert wnd.document.gettext(0, 7) == '    abc'
 
+    def test_blockindentblanklines(self):
+        wnd = self._getwnd("abc\n\ndef method")
+        wnd.screen.selection.set_range(1, 6)
+        cmd = editorcommand.EditCommands()
+        cmd.indent(wnd)
+        assert wnd.document.gettext(0, 16) == "    abc\n\n    def"
+
     def test_undo_ins(self):
         wnd = self._getwnd("")
         cmd = editorcommand.EditCommands()

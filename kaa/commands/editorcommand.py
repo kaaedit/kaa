@@ -622,8 +622,10 @@ class EditCommands(Commands):
                 else:
                     cols = 0
 
-                s = mode.build_indent_str(cols + mode.indent_width)
-                self.replace_string(wnd, f, t, s, False)
+                eol = doc.geteol(tol)
+                if eol != t+1:
+                    s = mode.build_indent_str(cols + mode.indent_width)
+                    self.replace_string(wnd, f, t, s, False)
                 tol = doc.geteol(tol)
         finally:
             if wnd.document.undo:
