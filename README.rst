@@ -715,6 +715,14 @@ To freeze kaa,  You must proceed with the following steps:
 6. Check if freezing/dist/kaa exists.
 
 
+Acknowledgement
+=================
+
+I really appreciate for your help.
+
+* `Allan Clark <https://github.com/allanderek>`_
+
+
 Links
 ==========
 
