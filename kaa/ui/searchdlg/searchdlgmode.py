@@ -49,7 +49,8 @@ class SearchCommands(editorcommand.EditCommands):
 
         self._show_histdlg(wnd, 'Recent searches',
                            [s for s,
-                               info in kaa.app.config.hist('search_text').get()],
+                               info in kaa.app.config.hist(
+                                   'search_text').get()],
                            callback)
 
     @command('searchdlg.toggle.ignorecase')

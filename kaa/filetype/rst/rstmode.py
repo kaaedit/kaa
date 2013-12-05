@@ -27,12 +27,13 @@ RstThemes = {
 
 SEP_CHARS = ''.join(
     c for c in (chr(i) for i in range(0x12000))
-        if unicodedata.category(c) in {'Pd', 'Po', 'Ps', 'Pi', 'Pf'} )
+    if unicodedata.category(c) in {'Pd', 'Po', 'Ps', 'Pi', 'Pf'})
+
 
 class RstInline(Span):
     WS = ' \t\r\n'
-    STARTS = '\'"([{<' + WS+SEP_CHARS
-    ENDS = '\'".,:;!?-)]}/\\>' + WS+SEP_CHARS
+    STARTS = '\'"([{<' + WS + SEP_CHARS
+    ENDS = '\'".,:;!?-)]}/\\>' + WS + SEP_CHARS
 
     def on_start(self, tokenizer, doc, pos, match):
         if ((pos and (doc.gettext(pos - 1, pos) not in self.STARTS)) or

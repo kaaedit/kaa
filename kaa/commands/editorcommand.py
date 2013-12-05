@@ -625,10 +625,10 @@ class EditCommands(Commands):
                 endpos = doc.endpos()
                 eol = doc.geteol(tol)
 
-                if (t+1 < eol != endpos) or (t < eol == endpos):
+                if (t + 1 < eol != endpos) or (t < eol == endpos):
                     s = mode.build_indent_str(cols + mode.indent_width)
                     self.replace_string(wnd, f, t, s, False)
-                    tol = eol + (len(s) - (t-f))
+                    tol = eol + (len(s) - (t - f))
                 else:
                     tol = eol
         finally:

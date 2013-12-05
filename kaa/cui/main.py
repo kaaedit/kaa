@@ -102,7 +102,6 @@ def main(stdscr):
         mainframe.destroy()
         kaa.app.on_shutdown()
 
-
     finally:
         _restore()
 

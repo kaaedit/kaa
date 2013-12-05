@@ -118,8 +118,8 @@ class WordCompleteInputMode(filterlist.FilterListInputDlgMode):
         # build word list
         # word at cursor position should not appear in the list.
         words = [w for w in self.target.document.mode.get_word_list()
-                    if w != curword]
-                    
+                 if w != curword]
+
         words.extend(kaa.app.get_clipboards())
 
         list.document.mode.set_candidates(words)

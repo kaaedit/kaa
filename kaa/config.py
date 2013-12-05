@@ -8,7 +8,7 @@ from kaa import consts, utils
 
 class KaaHistoryStorage:
     # todo: lock directory for network drives?
-    
+
     def __init__(self, filename):
         self.filename = filename
         self.conn = sqlite3.connect(filename)
@@ -17,30 +17,31 @@ class KaaHistoryStorage:
         ''')
         self.hists = {}
         self._updated = False
-        
+
     BUFFER_DURATION = 10
+
     def updated(self):
         if not self._updated:
             kaa.app.call_later(self.BUFFER_DURATION, self.flush)
             self._updated = True
-    
+
     def flush(self):
         for hist in self.hists.values():
             hist.flush()
         self.conn.commit()
         self._updated = False
-        
+
     def close(self):
         for hist in self.hists.values():
             hist.flush()
 
         for hist in self.hists.values():
             hist.close()
-            
+
         self.conn.commit()
         self.conn.close()
         self.hists = None
-        
+
     def get_history(self, name):
         if name not in self.hists:
             hist = History(self, name)
@@ -59,7 +60,7 @@ class History:
 
         self._register()
         self.buffer = []
-        
+
     def _register(self):
         self.storage.conn.execute('''
             CREATE TABLE IF NOT EXISTS {}
@@ -71,7 +72,7 @@ class History:
     def close(self):
         ret = self.storage.conn.execute('''
             SELECT id FROM {} ORDER BY id DESC LIMIT ?
-            '''.format(self.table_name), (self.MAX_HISTORY*2, ))
+            '''.format(self.table_name), (self.MAX_HISTORY * 2, ))
         recs = [value for value in ret]
         if recs:
             last, = recs[-1]
@@ -87,17 +88,17 @@ class History:
                 break
         self.buffer.insert(0, (value, info))
         self.storage.updated()
-        
+
     def get(self):
         buf_values = set(value for value, info in self.buffer)
-        
+
         ret = self.storage.conn.execute('''
             SELECT value, info FROM {} ORDER BY id DESC LIMIT ?
             '''.format(self.table_name),
             (self.MAX_HISTORY,))
-            
-        return self.buffer + [(value, json.loads(info)) 
-            for value, info in ret if value not in buf_values]
+
+        return self.buffer + [(value, json.loads(info))
+                              for value, info in ret if value not in buf_values]
 
     @utils.ignore_errors
     def find(self, value):
@@ -119,11 +120,12 @@ class History:
             ret = self.storage.conn.execute('''
                 DELETE FROM {} WHERE value = ?'''.format(self.table_name),
                                             (value, ))
-    
+
             self.storage.conn.execute('''
                 INSERT INTO {}(value, info) VALUES(?, ?)
                 '''.format(self.table_name), (value, json.dumps(info)))
         self.buffer = []
+
 
 class Config:
     FILETYPES = [
@@ -185,7 +187,7 @@ class Config:
 
     def close(self):
         self.hist_storage.close()
-        
+
 #        self.hist_files.close()
 #        self.hist_dirs.close()
 #        self.hist_searchstr.close()
