@@ -273,7 +273,7 @@ class PythonCallStackMode(dialogmode.DialogMode):
             wnd = doc.wnds[0]
             wnd.activate()
         else:
-            doc = kaa.app.storage.openfile(filename)
+            doc = kaa.app.storage.openfile(filename, nohist=True)
             wnd = kaa.app.show_doc(doc)
 
         self._locate_doc(wnd, doc, lineno)
