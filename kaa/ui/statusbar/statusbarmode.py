@@ -35,13 +35,12 @@ class StatusInfo:
 
 
 StatusBarThemes = {
-    'basic':
-    Theme([
+    'basic': [
         Style('default', 'Red', 'Base02'),
         Style('filename', 'LightBlue', 'Base02'),
         Style('msg', 'Red', 'Base02'),
         Style('editmode', 'Green', 'Base02', rjust=True),
-    ]),
+    ],
 }
 
 

@@ -5,8 +5,7 @@ from kaa.filetype.default import modebase
 from kaa.theme import Theme, Style
 
 DialogThemes = {
-    'basic':
-    Theme([
+    'basic': [
         Style('default', 'Base3', 'Base02', False, False),
         Style('caption', 'Orange', 'Base02', nowrap=True),
 
@@ -32,7 +31,7 @@ DialogThemes = {
         Style('selectphrase', 'Black', 'Cyan', nowrap=True),
         Style('selectphrase2', 'Yellow', 'Base02', nowrap=True),
         Style('selectphrase-active', 'Base02', 'Yellow', nowrap=True),
-    ]),
+    ],
 }
 
 

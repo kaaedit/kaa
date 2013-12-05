@@ -8,8 +8,7 @@ from kaa.command import Commands, command, norec, norerun
 from kaa.keyboard import *
 
 MarkdownThemes = {
-    'basic':
-    Theme([
+    'basic': [
         Style('header', 'Blue', None),
         Style('hr', 'Green', None),
         Style('strong', 'Magenta', None),
@@ -18,7 +17,7 @@ MarkdownThemes = {
         Style('reference', 'Red', None),
         Style('role', 'Cyan', None),
         Style('substitution', 'Green', None),
-    ]),
+    ],
 }
 
 

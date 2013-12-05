@@ -7,12 +7,11 @@ from kaa.filetype.default import keybind
 from kaa.ui.itemlist import itemlistmode
 
 FileInfoThemes = {
-    'basic':
-    Theme([
+    'basic': [
         Style('button', 'Base3', 'Blue'),
         Style('shortcut', 'Base3', 'Orange', bold=True,
               underline=True, nowrap=True),
-    ]),
+    ],
 }
 
 

@@ -39,9 +39,7 @@ GrepOption.LASTOPTION = GrepOption()
 
 
 GrepDlgThemes = {
-    'basic':
-    Theme([
-    ]),
+    'basic': [],
 }
 
 

@@ -15,11 +15,10 @@ pythonconsole_keys = {
 }
 
 PythonConsoleThemes = {
-    'basic':
-    Theme([
+    'basic': [
         Style('stdout', 'Default', 'Default'),
         Style('stderr', 'Magenta', 'Default'),
-    ]),
+    ],
 }
 
 

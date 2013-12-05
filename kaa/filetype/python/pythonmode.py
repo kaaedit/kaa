@@ -9,10 +9,9 @@ from kaa.keyboard import *
 from kaa.ui.pythondebug import port
 
 PythonThemes = {
-    'basic':
-    Theme([
+    'basic': [
         Style('python-bytes', 'blue', 'default'),
-    ]),
+    ],
 }
 
 PYTHONMENU = [

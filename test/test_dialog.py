@@ -66,10 +66,10 @@ class TestFormBuilder(kaa_testutils._TestScreenBase):
 
             doc = self._getdoc('')
 
-            doc.mode.themes = [{'basic': Theme([
+            doc.mode.themes = [{'basic': [
                 Style('default', 'default', 'default', False, False),
                 Style('shortcut', 'default', 'default', False, False),
-            ])}]
+            ]}]
             doc.mode._build_theme()
 
             f = dialogmode.FormBuilder(doc)

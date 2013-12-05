@@ -7,9 +7,7 @@ from kaa.command import Commands, command, norec, norerun
 from kaa.keyboard import *
 
 CThemes = {
-    'basic':
-    Theme([
-    ]),
+    'basic': []
 }
 
 c_keys = {

@@ -3,11 +3,10 @@ from kaa.filetype.default import modebase
 from kaa.theme import Theme, Style
 
 MessageBarThemes = {
-    'basic':
-    Theme([
+    'basic': [
         Style('default', 'Base3', 'default'),
         Style('rec', 'Base3', 'red'),
-    ]),
+    ],
 }
 
 

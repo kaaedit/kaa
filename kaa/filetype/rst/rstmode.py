@@ -9,8 +9,7 @@ from kaa.command import Commands, command, norec, norerun
 from kaa.keyboard import *
 
 RstThemes = {
-    'basic':
-    Theme([
+    'basic': [
         Style('header', 'Blue', None),
         Style('block', 'Orange', None),
         Style('directive', 'Green', None),
@@ -21,7 +20,7 @@ RstThemes = {
         Style('reference', 'Red', None),
         Style('role', 'Cyan', None),
         Style('substitution', 'Green', None),
-    ]),
+    ],
 }
 
 

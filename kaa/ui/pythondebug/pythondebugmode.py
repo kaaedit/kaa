@@ -93,15 +93,14 @@ class BreakPoints(selectlist.SelectItemList):
         self.update_sel(wnd, sel)
 
 DebugThemes = {
-    'basic':
-    Theme([
+    'basic': [
         Style('line', 'Cyan', None),
         Style('line-active', 'Base02', 'Yellow'),
         Style('filename', 'Default', None),
         Style('lineno', 'Default', None),
         Style('funcname', 'Default', None),
         Style('dirname', 'Default', None),
-    ]),
+    ],
 }
 
 

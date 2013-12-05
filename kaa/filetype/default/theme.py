@@ -1,8 +1,7 @@
 from kaa.theme import Theme, Style, Overlay
 
 DefaultThemes = {
-    'basic':
-    Theme([
+    'basic': [
         Style('default', 'default', 'default'),
         Style('lineno', 'White', 'Blue'),
         Style('parenthesis_cur', 'White', 'Blue'),
@@ -18,6 +17,5 @@ DefaultThemes = {
         Overlay('cursor_row', None, 'Base02'),
         Overlay('breakpoint', None, 'Base02'),
         Overlay('current_row', None, 'Yellow'),
-    ]),
-
+    ],
 }

@@ -5,11 +5,7 @@ from kaa.highlight import Tokenizer, Span, Keywords, EndSection, SingleToken
 from kaa.theme import Theme, Style
 
 JavaScriptThemes = {
-    'basic':
-    Theme([
-        # None defined
-    ]),
-
+    'basic': [],
 }
 
 

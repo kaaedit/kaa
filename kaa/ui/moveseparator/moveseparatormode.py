@@ -5,9 +5,7 @@ from kaa.theme import Theme, Style
 from kaa.keyboard import *
 
 MoveSeparatorThemes = {
-    'basic':
-    Theme([
-    ]),
+    'basic': [],
 }
 
 moveseparator_keys = {

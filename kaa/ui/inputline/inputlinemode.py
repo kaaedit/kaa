@@ -18,9 +18,7 @@ def number_filter(wnd, s):
 
 
 InputlineThemes = {
-    'basic':
-    Theme([
-    ]),
+    'basic': []
 }
 
 inputline_keys = {

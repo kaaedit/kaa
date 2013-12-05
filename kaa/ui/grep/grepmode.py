@@ -242,10 +242,9 @@ def grep(option, target):
 
 
 GrepThemes = {
-    'basic':
-    Theme([
+    'basic': [
         Style('grep-match', 'Orange', None),
-    ]),
+    ],
 }
 
 

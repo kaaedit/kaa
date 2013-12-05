@@ -6,14 +6,13 @@ from kaa.theme import Theme, Style
 from kaa.ui.dialog import dialogmode
 
 MsgBoxThemes = {
-    'basic':
-    Theme([
+    'basic': [
         Style('underline', 'Base3', 'Base02', underline=True),
         Style('separator', 'LightBlue', 'Base02', nowrap=False),
         Style('button', 'LightBlue', 'Base02', nowrap=True),
         Style('button.shortcut', 'LightBlue', 'Base02', underline=True,
               nowrap=True),
-    ]),
+    ],
 }
 
 

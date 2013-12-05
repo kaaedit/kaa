@@ -9,11 +9,10 @@ from kaa.command import command, Commands, norec, norerun
 from kaa.commands import editorcommand
 
 FilenameIndexThemes = {
-    'basic':
-    Theme([
+    'basic': [
         Style('filenameindex-filename', 'Green', 'Default'),
         Style('filenameindex-lineno', 'Green', 'Default'),
-    ]),
+    ],
 }
 
 filenameindex_keys = {

@@ -13,9 +13,7 @@ import kaa.filetype.default.keybind
 
 
 FilterListThemes = {
-    'basic':
-    Theme([
-    ]),
+    'basic': [],
 }
 
 
@@ -81,9 +79,7 @@ class FilterListMode(selectlist.SelectItemList):
 
 
 FilterListInputDlgThemes = {
-    'basic':
-    Theme([
-    ]),
+    'basic': [],
 }
 
 

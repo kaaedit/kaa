@@ -21,8 +21,7 @@ class Theme:
 
     def update(self, rhs):
         default = self.styles.get('default', None)
-        self.add_styles(s.fill(default) for s in rhs.styles.values())
-        self.add_styles(s.fill(default) for s in rhs.overlays.values())
+        self.add_styles(s.fill(default) for s in rhs)
 
 
 class Style:

@@ -3,8 +3,7 @@ from kaa.highlight import Tokenizer, Span
 from kaa.theme import Theme, Style
 
 DiffThemes = {
-    'basic':
-    Theme([
+    'basic': [
         Style('default', 'Base00', None),
         Style('fromfile', 'Orange', None),
         Style('tofile', 'Yellow', None),
@@ -12,7 +11,7 @@ DiffThemes = {
         Style('remove', 'Orange', None, bold=True),
         Style('add', 'Yellow', None, bold=True),
         Style('header', 'Orange', None),
-    ]),
+    ],
 }
 
 
