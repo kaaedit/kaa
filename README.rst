@@ -745,14 +745,23 @@ Links
 Version history
 =================
 
-0.16.0 - 2013.12.03
+0.17.0 - 2013.12.06
 --------------------
 
-- Defer to save history information. Kaa now works much smoother than ever on PC with slow hard disk. 
+- reStructuredText Mode: Recognize non-ASCII punctuation as separater of inline mark ups.
 
+- Indent command: Don't indent blank line. (Contributed by `allanderek <https://github.com/kaaedit/kaa/pull/94>`_)
+
+- Separate `kaadbg <https://pypi.python.org/pypi/kaadbg>`_ as new package.
 
 Past versions
 --------------
+
+0.16.0 - 2013.12.03
++++++++++++++++++++++
+
+- Defer to save history information. Kaa now works much smoother than ever on PC with slow hard disk. 
+
 
 0.15.1 - 2013.11.30
 +++++++++++++++++++++
