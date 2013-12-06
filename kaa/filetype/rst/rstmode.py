@@ -24,15 +24,25 @@ RstThemes = {
 }
 
 
-SEP_CHARS = ''.join(
-    c for c in (chr(i) for i in range(0x12000))
-    if unicodedata.category(c) in {'Pd', 'Po', 'Ps', 'Pi', 'Pf'})
+def _build_seps():
+    starts = []
+    ends = []
+    
+    for i in range(0x12000):
+        c = chr(i)
+        category = unicodedata.category(c)
+        if category in {'Pd', 'Po', 'Ps', 'Pi', 'Pf'}:
+            starts.append(c)
+        if category in {'Pd', 'Po', 'Pe', 'Pi', 'Pf'}:
+            ends.append(c)
+    return ''.join(starts), ''.join(ends)
 
+SEP_STARTS, SEP_ENDS = _build_seps()
 
 class RstInline(Span):
     WS = ' \t\r\n'
-    STARTS = '\'"([{<' + WS + SEP_CHARS
-    ENDS = '\'".,:;!?-)]}/\\>' + WS + SEP_CHARS
+    STARTS = '\'"([{<' + WS + SEP_STARTS
+    ENDS = '\'".,:;!?-)]}/\\>' + WS + SEP_ENDS
 
     def on_start(self, tokenizer, doc, pos, match):
         if ((pos and (doc.gettext(pos - 1, pos) not in self.STARTS)) or
