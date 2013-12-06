@@ -36,10 +36,11 @@ setup(
             "Programming Language :: Python :: 3",
             "Development Status :: 3 - Alpha",
             "Topic :: Text Editors",
+            "Topic :: Software Development :: Debuggers",
             "Environment :: Console :: Curses",
             "License :: OSI Approved :: MIT License", ],
     license='MIT License',
-    install_requires=['curses_ex', 'pyjf3', 'setproctitle'],
+    install_requires=['curses_ex', 'pyjf3', 'setproctitle', 'kaadbg'],
     packages = find_packages(),
     ext_modules = [ext],
     entry_points = {

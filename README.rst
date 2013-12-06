@@ -73,13 +73,13 @@ To run kaa, you need following component:
 
 * (optional) Cython
 
+
 Installation
 -------------
 
 Use easy_install3 or pip3 to install kaa from PyPI ::
 
    $ sudo easy_install3 -U kaaedit
-
 
 
 Command line options
@@ -548,7 +548,14 @@ There are three ways to start debugger.
 kaadbg.run module
 ~~~~~~~~~~~~~~~~~~~~~~~~
 
-Execute ``kaadbg`` package in Python interpreter to connect target program with kaa debugger. ``kaadbg`` is Python package installed as a part of kaa. To use other Python interpreter than kaa installed, copy ``kaadbg`` package to appropriate library directory. Currentry, ``kaadbg`` supports from Python 2.6 to Python 3.x.
+Execute ``kaadbg`` package in Python interpreter to connect target program with kaa debugger. ``kaadbg`` is Python package installed as a part of kaa. To use another Python interpreter than kaa installed, you can install ``kaadbg`` separetely.
+
+::
+
+   $ sudo pip install -U kaadbg
+
+
+Currentry, ``kaadbg`` supports from Python 2.6 to Python 3.x.
 
 To activate kaa remote debugger, select ``[Tools]|Python debugger server`` and enter port number to connect debugger(default 28110).
 
