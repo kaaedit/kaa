@@ -360,7 +360,7 @@ class TextEditorWindow(Window):
             middle = self.CURSOR_TO_MIDDLE_ON_SCROLL
             bottom = not self.CURSOR_TO_MIDDLE_ON_SCROLL
 
-        updated = self.screen.apply_updates()
+        self.screen.apply_updates()
         self.screen.locate(pos, top=top, middle=middle, bottom=bottom)
 
         idx, x = self.screen.getrowcol(pos)
@@ -431,7 +431,6 @@ class TextEditorWindow(Window):
 
         self.screen.apply_updates()
         if self.draw_screen():
-            self.refresh()
             self.cursor.refresh()
             return True
 
