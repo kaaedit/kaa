@@ -21,8 +21,8 @@ class EditMode:
             pending = self.pending_str
             self.pending_str = ''
             wnd.document.mode.on_str(wnd, pending)
-            if not wnd.closed:
-                wnd.update_window()
+#            if not wnd.closed:
+#                wnd.update_window()
             return True
 
     def on_keyevent(self, wnd, event):

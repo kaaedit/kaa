@@ -199,6 +199,7 @@ class TextEditorWindow(Window):
                 return
 
         self.screen.apply_updates()
+        self.screen.row_drawn()
 
         # save cursor position
         if kaa.app.focus:
@@ -348,9 +349,10 @@ class TextEditorWindow(Window):
         f, t = self.screen.get_visible_range()
         if posfrom <= t and f <= posto:
             self.screen.style_updated()
-            updated = self.screen.apply_updates()
-            if updated:
-                self.refresh()
+#            updated = self.screen.apply_updates()
+
+#            if updated:
+#                self.refresh()
 
     CURSOR_TO_MIDDLE_ON_SCROLL = True
 
@@ -430,9 +432,10 @@ class TextEditorWindow(Window):
                 return
 
         self.screen.apply_updates()
-        if self.draw_screen():
-            self.cursor.refresh()
-            return True
+        if self.screen.is_row_updated():
+            if self.draw_screen():
+                self.cursor.refresh()
+                return True
 
     def on_killfocus(self):
         self._drawn_rows = {}

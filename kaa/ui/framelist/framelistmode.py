@@ -114,11 +114,11 @@ class FrameListMode(dialogmode.DialogMode):
 
             f, t = self.document.marks['childframe' + markname]
             if activeframe is frame:
-                self.document.styles.setints(
+                self.document.setstyles(
                     f, t, self.get_styleid('activemark'))
                 cursorpos = f
             else:
-                self.document.styles.setints(
+                self.document.setstyles(
                     f, t, self.get_styleid('nonactivemark'))
 
         if wnd and cursorpos is not None:

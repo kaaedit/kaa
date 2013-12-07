@@ -5,7 +5,6 @@ import kaa
 from kaa.commands import (appcommand, filecommand, editorcommand,
                           editmodecommand, toolcommand)
 from . import keybind, theme, modebase, menu
-from kaa import highlight
 
 
 class DefaultMode(modebase.ModeBase):

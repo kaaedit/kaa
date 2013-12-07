@@ -203,10 +203,10 @@ class SearchDlgMode(dialogmode.DialogMode):
     def _set_option_style(self, mark, style,
                           shortcutmark, shortcutstyle):
         f, t = self.document.marks[mark]
-        self.document.styles.setints(f, t, self.get_styleid(style))
+        self.document.setstyles(f, t, self.get_styleid(style))
 
         f = self.document.marks[shortcutmark]
-        self.document.styles.setints(f, f + 1, self.get_styleid(shortcutstyle))
+        self.document.setstyles(f, f + 1, self.get_styleid(shortcutstyle))
 
     def _get_optionstylename(self, f):
         if f:
@@ -229,7 +229,7 @@ class SearchDlgMode(dialogmode.DialogMode):
 
     def _option_updated(self):
         self.update_option_style()
-        self.document.style_updated()
+#        self.document.style_updated()
 
     def toggle_option_ignorecase(self, wnd):
         self.option.ignorecase = not self.option.ignorecase

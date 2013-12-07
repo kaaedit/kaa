@@ -23,8 +23,9 @@ class MessageBarMode(modebase.ModeBase):
         doc.undo = None
 
     def set_message(self, msg):
-        self.message = msg
-        self.update()
+        if msg != self.message:
+            self.message = msg
+            self.update()
 
     def update(self):
         style_default = self.get_styleid('default')

@@ -85,7 +85,7 @@ class SelectItemList(dialogmode.DialogMode):
             style = item.style
 
         f, t = self.document.marks[item]
-        self.document.styles.setints(f, t, self.get_styleid(style))
+        self.document.setstyles(f, t, self.get_styleid(style))
         if activate:
             wnd.screen.apply_updates()
             top = not middle and not bottom

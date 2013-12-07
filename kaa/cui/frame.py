@@ -85,6 +85,9 @@ class ChildFrame(Window, kaa.context.ContextRoot):
             kaa.app.set_focus(self)
 
     def draw_screen(self):
+        if kaa.app.get_activeframe() is not self:
+            return
+
         if self.splitter:
             self.splitter.draw()
 
@@ -229,7 +232,7 @@ class MainFrame(Window, kaa.context.ContextRoot):
                 if not child.closed:
                     if child.on_idle():
                         return True
-
+            
             for child in self.walk_children():
                 if not child.closed:
                     child.update_window()

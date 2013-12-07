@@ -365,6 +365,7 @@ class Highlighter:
                     return True
             else:
                 return False
+
         finally:
             if doc.endpos() == 0 or updated and (updatefrom != updateto):
                 doc.style_updated(updatefrom, updateto)

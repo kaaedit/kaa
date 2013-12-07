@@ -408,7 +408,8 @@ class Screen:
         self.pos = 0        # Position of top-left corner
         self.updated_pos = None
         self._style_updated = False
-
+        self._need_redraw = False
+        
         self.selection = Selection(self)
 
     def set_document(self, doc):
@@ -425,7 +426,11 @@ class Screen:
         return self.rows[self.portfrom:self.portto]
 
     def get_visible_range(self):
+        if not self.rows:
+            return
         rows = self.get_visible_rows()
+        if not rows:
+            return -1, -1
         return (rows[0].posfrom, rows[-1].posto)
 
     def get_total_height(self):
@@ -520,7 +525,10 @@ class Screen:
 
     def style_updated(self):
         self._style_updated = True
-
+        if self.updated_pos is None:
+            if len(self.rows) > self.portfrom:
+                self.updated_pos = self.rows[self.portfrom].posfrom
+            
     def apply_updates(self):
         if not self.rows:
             self.locate(0, top=True)
@@ -533,6 +541,12 @@ class Screen:
                               top=True, refresh=True) or ret
         self.updated_pos = None
         return ret
+
+    def is_row_updated(self):
+        return self._need_redraw
+
+    def row_drawn(self):
+        self._need_redraw = False
 
     def is_lastrow(self, row):
         if row.posto == self.document.endpos():
@@ -705,6 +719,7 @@ class Screen:
             self.rows = self._buildrow(tol, s, styles)
             posidx, posrow = self.getrow(pos)
 
+        self._need_redraw = True
         self.vert_align(posidx, top, middle, bottom)
 
         return True
@@ -713,6 +728,7 @@ class Screen:
         assert top or middle or bottom
         # move the row to middle or bottom
 
+        old_range = self.get_visible_range()
         targetrow = self.rows[rowidx]
 
         if top:
@@ -757,16 +773,23 @@ class Screen:
 
         self._fillscreen()
 
+        ret = old_range != self.get_visible_range()
+        if ret:
+            self._need_redraw = True
+        return ret
+
     def linedown(self):
         if self.portfrom < len(self.rows) - 1:
             self.portfrom += 1
             self.pos = self.rows[self.portfrom].posfrom
             self._fillscreen()
+            self._need_redraw = True
             return True
         else:
             currow = self.rows[self.portfrom]
             if not self.is_lastrow(currow):
                 self.locate(currow.posto, top=True)
+                self._need_redraw = True
                 return True
         return False
 
@@ -775,6 +798,7 @@ class Screen:
             self.portfrom -= 1
             self.pos = self.rows[self.portfrom].posfrom
             self._fillscreen()
+            self._need_redraw = True
             return True
 
         elif self.pos > 0:
@@ -786,6 +810,7 @@ class Screen:
             self.pos = rows[-1].posfrom
             self.portfrom = len(rows) - 1
             self._fillscreen()
+            self._need_redraw = True
             return True
 
         return False
@@ -794,7 +819,10 @@ class Screen:
         if self.height != 1:
             curpos = self.pos
             self.vert_align(self.portto - 1, top=True)
-            return self.pos != curpos
+            ret = self.pos != curpos
+            if ret:
+                self._need_redraw = True
+            return ret
         else:
             return self.linedown()
 
@@ -802,6 +830,9 @@ class Screen:
         if self.height != 1:
             curpos = self.pos
             self.vert_align(self.portfrom, bottom=True)
-            return self.pos != curpos
+            ret = self.pos != curpos
+            if ret:
+                self._need_redraw = True
+            return ret
         else:
             return self.lineup()

@@ -196,8 +196,8 @@ class FormBuilder:
                     f = self.document.endpos()
                     self.document.append(text[lastpos:span[0]])
                     if stylename:
-                        self.document.styles.setints(
-                            f, self.document.endpos(), style_id)
+                        self.document.setstyles(
+                            f, self.document.endpos(), style_id, update=False)
 
                 f = self.document.endpos()
                 c = m.group()[1]
@@ -216,7 +216,7 @@ class FormBuilder:
 
                 self.document.append(c)
                 if shortcut_style:
-                    self.document.styles.setints(f, f + 1, shortcut_style_id)
+                    self.document.setstyles(f, f + 1, shortcut_style_id, update=False)
 
                 lastpos = m.end()
 
@@ -225,8 +225,8 @@ class FormBuilder:
                     f = self.document.endpos()
                     self.document.append(text[lastpos:])
                     if stylename:
-                        self.document.styles.setints(f, self.document.endpos(),
-                                                     style_id)
+                        self.document.setstyles(f, self.document.endpos(),
+                                                     style_id, update=False)
 
             if mark_start is not None:
                 self.document.marks[mark_start] = start

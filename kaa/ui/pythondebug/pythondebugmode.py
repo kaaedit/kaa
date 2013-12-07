@@ -226,11 +226,11 @@ class PythonCallStackMode(dialogmode.DialogMode):
             f, t = self.document.marks.get(
                 ('stack', self.cursel), (None, None))
             if f is not None:
-                self.document.styles.setints(f, t, self.get_styleid('line'))
+                self.document.setstyles(f, t, self.get_styleid('line'))
 
         f, t = self.document.marks.get(('stack', n), (None, None))
         if f is not None:
-            self.document.styles.setints(
+            self.document.setstyles(
                 f, t, self.get_styleid('line-active'))
 
         self.cursel = n

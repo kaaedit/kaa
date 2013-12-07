@@ -19,10 +19,10 @@ def show(commandline, s):
 
     for m in mode.RE_FILENAME.finditer(doc.buf):
         f, t = m.span('FILENAME')
-        doc.setstyle(f, t, style_filename)
+        doc.setstyles(f, t, style_filename, update=False)
 
         f, t = m.span('LINENO')
-        doc.setstyle(f, t, style_lineno)
+        doc.setstyles(f, t, style_lineno, update=False)
 
     kaa.app.show_doc(doc)
 

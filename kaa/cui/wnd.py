@@ -196,7 +196,7 @@ class Window(kaa.context.Context):
         self.mainframe.request_refresh()
 
     def update_window(self):
-        self.draw_screen()
+        return self.draw_screen()
 
     def update_status(self):
         return False

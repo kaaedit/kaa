@@ -327,8 +327,11 @@ class Document:
         else:
             return self.buf.lineno.getpos(lineno)
 
-    def setstyle(self, start, end, style):
+    def setstyles(self, start, end, style, update=True):
         self.styles.setints(start, end, style)
+        if update:
+            self.style_updated(start, end)
+            
 
 
 class Marks(dict):

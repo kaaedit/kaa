@@ -115,7 +115,7 @@ class ItemListMode(dialogmode.DialogMode):
                 if cursor is None:
                     cursor = f
 
-            self.document.styles.setints(f, t, self.get_styleid(style))
+            self.document.setstyles(f, t, self.get_styleid(style))
 
         if wnd and cursor is not None:
             wnd.get_label('editor').cursor.setpos(cursor)
