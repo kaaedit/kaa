@@ -525,22 +525,23 @@ class Screen:
 
     def style_updated(self):
         self._style_updated = True
-        if self.updated_pos is None:
-            if len(self.rows) > self.portfrom:
-                self.updated_pos = self.rows[self.portfrom].posfrom
+#        if self.updated_pos is None:
+#            if len(self.rows) > self.portfrom:
+#                self.updated_pos = self.rows[self.portfrom].posfrom
             
     def apply_updates(self):
         if not self.rows:
             self.locate(0, top=True)
             return True
-        ret = self._style_updated
-        self._style_updated = False
 
         if self.updated_pos is not None:
             ret = self.locate(self.updated_pos,
                               top=True, refresh=True) or ret
         self.updated_pos = None
-        return ret
+
+        if self._style_updated:
+            self._need_redraw = True
+            self._style_updated = False
 
     def is_row_updated(self):
         return self._need_redraw
@@ -693,8 +694,6 @@ class Screen:
         if self.updated_pos is not None:
             refresh = True
             self.updated_pos = None
-
-        self._style_updated = False
 
         posidx = -1
         if not refresh:

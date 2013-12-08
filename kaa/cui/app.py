@@ -105,8 +105,9 @@ class CuiApp:
             if proc():
                 self._idleprocs.append(proc)
 
-        if self._idleprocs:
             return True
+        else:
+            return False
 
     def translate_theme(self, theme):
         overlays = {}
@@ -233,7 +234,6 @@ class CuiApp:
             self._input_readers.remove(reader)
 
     def run(self):
-
         nonblocking = True
         while not self._quit:
             try:
@@ -285,10 +285,9 @@ class CuiApp:
                 if not inputs:
                     if self.mainframe.on_idle():
                         continue
+
                     # no input
                     if not self.on_idle():
-                        if self.mainframe.on_idle():
-                            continue
                         # No more idle jobs
                         nonblocking = False
                 else:

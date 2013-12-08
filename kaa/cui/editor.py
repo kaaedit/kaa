@@ -32,7 +32,6 @@ class TextEditorWindow(Window):
         self.screen.setsize(*self.getsize())
         self.cursor = cursor.Cursor(self)
         self.pending_str = ''
-        self._drawn_rows = {}
         self.charattrs = {}
         self.highlight_cursor_row = False
         self.line_overlays = {}
@@ -60,7 +59,6 @@ class TextEditorWindow(Window):
         self.screen.set_document(doc)
         self.document.add_window(self)
 
-        self._drawn_rows = {}
         self.draw_screen()
         self.refresh()
         self.cursor.refresh(middle=True)
@@ -92,20 +90,17 @@ class TextEditorWindow(Window):
         if pos is not None:
             if self.line_overlays.get(pos, '') != overlay:
                 self.line_overlays[pos] = overlay
-                self._drawn_rows = {}
                 self.refresh()
                 return True
         else:
             if pos in self.line_overlays:
                 del self.line_overlays[pos]
-                self._drawn_rows = {}
                 self.refresh()
                 return True
 
     def clear_line_overlay(self):
         if self.line_overlays:
             self.line_overlays = {}
-            self._drawn_rows = {}
             self.refresh()
 
     def bring_top(self):
@@ -211,14 +206,6 @@ class TextEditorWindow(Window):
         rows = list(self.screen.get_visible_rows())
         cur_sel = self.screen.selection.get_selrange()
 
-        if force or not self.visible:
-            drawn = {}
-            updated = True
-        else:
-            updated = len(rows) != len(self._drawn_rows)
-            drawn = self._drawn_rows
-        self._drawn_rows = {}
-
         lineno_width = 0
         lineno = self.document.buf.lineno.lineno(self.screen.pos)
         if self.document.mode.SHOW_LINENO:
@@ -253,12 +240,8 @@ class TextEditorWindow(Window):
         for n, row in enumerate(rows):
             if n > h:
                 break
-            if drawn.get(row) == (n, cur_sel):
-                # The raw was already drawn.
-                continue
 
-            updated = True
-            s = 0
+            spos = 0
 
             if tol != row.tol:
                 tol = row.tol
@@ -313,21 +296,20 @@ class TextEditorWindow(Window):
                 if not rjust and attr_rjust:
                     rjust = True
 
-                    rest = sum(row.cols[s:])
+                    rest = sum(row.cols[spos:])
                     cy, cx = self._cwnd.getyx()
                     self._cwnd.move(cy, w - rest)
 
                 slen = len(tuple(group))
-                letters = ''.join(row.chars[s:s + slen]).rstrip('\n')
+                letters = ''.join(row.chars[spos:spos + slen]).rstrip('\n')
                 self.add_str(letters, attr)
-                s += slen
+                spos += slen
 
             if row.chars == '\n':
                 if selfrom <= row.posfrom < selto:
                     if not rectangular or (colfrom == 0):
                         self.add_str(' ', curses.A_REVERSE)
 
-            self._drawn_rows[row] = (n, cur_sel)
 
         if len(rows) < h:
             self._cwnd.move(len(rows), 0)
@@ -337,7 +319,7 @@ class TextEditorWindow(Window):
             if self.document.mode.is_cursor_visible():
                 kaa.app.focus._cwnd.move(cury, curx)
 
-        return updated
+        return
 
     def on_document_updated(self, pos, inslen, dellen):
         self.screen.on_document_updated(pos, inslen, dellen)
@@ -349,10 +331,6 @@ class TextEditorWindow(Window):
         f, t = self.screen.get_visible_range()
         if posfrom <= t and f <= posto:
             self.screen.style_updated()
-#            updated = self.screen.apply_updates()
-
-#            if updated:
-#                self.refresh()
 
     CURSOR_TO_MIDDLE_ON_SCROLL = True
 
@@ -389,30 +367,34 @@ class TextEditorWindow(Window):
 
     def linedown(self):
         if self.screen.linedown():
-            self.draw_screen()
+            self._cwnd.scrollok(True)
+            try:
+                self._cwnd.scroll(1)
+            finally:
+                self._cwnd.scrollok(False)
+
             self.refresh()
             return True
 
     def lineup(self):
         if self.screen.lineup():
-            self.draw_screen()
-            self.refresh()
+            self._cwnd.scrollok(True)
+            try:
+                self._cwnd.scroll(-1)
+            finally:
+                self._cwnd.scrollok(False)
+
             return True
 
     def pagedown(self):
         if self.screen.pagedown():
-            self.draw_screen()
-            self.refresh()
             return True
 
     def pageup(self):
         if self.screen.pageup():
-            self.draw_screen()
-            self.refresh()
             return True
 
     def on_setrect(self, l, t, r, b):
-        self._drawn_rows = {}
         if self.document:
             w = max(2, r - l)
             h = max(1, b - t)
@@ -435,10 +417,10 @@ class TextEditorWindow(Window):
         if self.screen.is_row_updated():
             if self.draw_screen():
                 self.cursor.refresh()
+                self.refresh()
                 return True
 
     def on_killfocus(self):
-        self._drawn_rows = {}
         self._flush_pending_str()
 
     def on_idle(self):

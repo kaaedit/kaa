@@ -90,7 +90,8 @@ class SelectItemList(dialogmode.DialogMode):
             wnd.screen.apply_updates()
             top = not middle and not bottom
             wnd.screen.locate(f, top=top, middle=middle, bottom=bottom)
-
+            wnd.update_window()
+            
     def update_sel(self, wnd, newsel, middle=None, bottom=None):
         if self.cursel is not None:
             self._update_item_style(wnd, self.cursel, False)

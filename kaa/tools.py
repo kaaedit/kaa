@@ -10,7 +10,7 @@ import pprint
 import inspect
 
 
-def _show_profile(f, *args, **kwargs):
+def _profile(f, *args, **kwargs):
     prof = cProfile.Profile()
     ret = prof.runcall(f, *args, **kwargs)
 
@@ -93,7 +93,7 @@ def _pprint(obj):
 
 
 import builtins
-builtins._show_profile = _show_profile
+builtins._profile = _profile
 builtins._get_caller = _get_caller
 builtins._get_stack = _get_stack
 builtins._trace = _trace
