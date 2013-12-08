@@ -39,9 +39,11 @@ class Cursor:
             idx, prevrow = self.wnd.screen.getrow(row.posfrom - 1)
         else:
             idx -= 1
+
         pos = self.wnd.screen.get_pos_above(idx, self.preferred_col)
         pos = self.adjust_nextpos(self.pos, pos)
         self.setpos(pos)
+
         return True
 
     def down(self):

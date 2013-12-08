@@ -1,3 +1,4 @@
+import re
 import itertools
 import unicodedata
 import collections
@@ -69,7 +70,8 @@ class ModeBase:
     theme = None
     highlight = None
     _check_fileupdate = 0
-
+    _last_autoindent = None
+    
     def __init__(self):
         self.commands = {}
         self.is_availables = {}
@@ -136,6 +138,7 @@ class ModeBase:
         self.document.use_undo(self.USE_UNDO)
 
     def on_document_updated(self, pos, inslen, dellen):
+        self._last_autoindent = None
         if self.highlight:
             self.highlight.updated(self.document, pos, inslen, dellen)
 
@@ -441,6 +444,19 @@ class ModeBase:
         else:
             return ' ' * col
 
+    def cancel_auto_indent(self, wnd):
+        if self._last_autoindent:
+            f, t = (min(max(0, p), self.document.endpos())
+                      for p in self._last_autoindent)
+            self._last_autoindent = None
+            if f != t and wnd.cursor.pos == t:
+                s = self.document.gettext(f, t)
+                m = re.match(self.RE_WHITESPACE, s)
+                if m and m.group() == s:
+                    self.edit_commands.delete_string(
+                        wnd, f, t, update_cursor=False)
+                    wnd.cursor.setpos(f)
+                    
     def on_auto_indent(self, wnd):
         pos = wnd.cursor.pos
         f, t = self.get_indent_range(pos)
@@ -449,12 +465,15 @@ class ModeBase:
             self.edit_commands.insert_string(wnd, f, '\n',
                                              update_cursor=False)
             wnd.cursor.setpos(wnd.cursor.pos + 1)
+            wnd.cursor.savecol()
         else:
             indent = '\n' + indent
             self.edit_commands.insert_string(wnd, pos, indent,
                                              update_cursor=False)
             wnd.cursor.setpos(pos + len(indent))
-
+            wnd.cursor.savecol()
+            self._last_autoindent = (pos+1, wnd.cursor.pos)
+            
         wnd.cursor.savecol()
 
     def calc_cols(self, f, t):

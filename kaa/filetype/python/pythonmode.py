@@ -118,8 +118,8 @@ class PythonMode(defaultmode.DefaultMode):
             self.edit_commands.insert_string(wnd, pos, indent,
                                              update_cursor=False)
             wnd.cursor.setpos(pos + len(indent))
-
             wnd.cursor.savecol()
+            self._last_autoindent = (pos+1, wnd.cursor.pos)
 
     RE_SEARCH_NAME = gre.compile(r'(\\.)|(\w+)|(\S)')
 
