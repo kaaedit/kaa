@@ -93,6 +93,7 @@ class ModeBase:
         self.tokenizers = []
         self.init_tokenizers()
         self.stylemap = {}
+        self.stylenamemap = {}
         self.highlight = highlight.Highlighter(self.tokenizers)
 
         self.setup()
@@ -127,8 +128,11 @@ class ModeBase:
                 style = self.theme.get_style(stylename)
 
                 self.stylemap[tokenid] = style
+                self.stylenamemap[style.name] = tokenid
             else:
-                self.stylemap[tokenid] = self.theme.get_style('default')
+                style = self.theme.get_style('default')
+                self.stylemap[tokenid] = style
+                self.stylenamemap[style.name] = tokenid
 
     def on_set_document(self, document):
         self.document = document
@@ -206,16 +210,19 @@ class ModeBase:
         if stylename == 'default':
             return 0
 
-        for styleid, style in self.stylemap.items():
-            if style.name == stylename:
-                return styleid
+        styleid = self.stylenamemap.get(stylename, None)
+        if styleid is not None:
+            return styleid
+            
+        if not self.stylemap:
+            ret = 1
         else:
-            if not self.stylemap:
-                ret = 1
-            else:
-                ret = max(self.stylemap.keys()) + 1
-            self.stylemap[ret] = self.theme.get_style(stylename)
-            return ret
+            ret = max(self.stylemap.keys()) + 1
+            
+        style = self.theme.get_style(stylename)
+        self.stylemap[ret] = style
+        self.stylenamemap[stylename] = ret
+        return ret
 
     def select_theme(self, theme_name, themes):
         theme = themes.get(theme_name, None)

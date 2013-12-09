@@ -140,6 +140,14 @@ class TextEditorWindow(Window):
     def _getcharattrs(self, row, rectangular, selfrom,
                       selto, colfrom, colto, line_overlay):
         # returns character attributes of each characters in row.
+
+        ret = []
+        if not row.positions:
+            return ret
+            
+        posfrom = row.positions[0]
+        styles = self.document.styles.getints(posfrom, row.positions[-1]+1)
+
         ncols = row.colfrom
         for pos, cols in zip(row.positions, row.cols):
             attr = 0
@@ -156,14 +164,10 @@ class TextEditorWindow(Window):
             if sel:
                 attr = curses.A_REVERSE
 
-            color = kaa.app.colors.get_color(
-                ColorName.DEFAULT,
-                ColorName.DEFAULT)
-
             tokenid = self.charattrs.get(pos, None)
             if tokenid is None:
-                tokenid = self.document.styles.getints(pos, pos + 1)[0]
-
+                tokenid = styles[pos-posfrom]
+                
             style = self.document.mode.get_style(tokenid)
             color = None
             if line_overlay:
@@ -176,10 +180,11 @@ class TextEditorWindow(Window):
             if style.bold:
                 color += curses.A_BOLD
 
-            yield (color + attr, style.rjust)
+            ret.append((color + attr, style.rjust))
 
             ncols += cols
-
+        return ret
+        
     def draw_screen(self, force=False):
         try:
             self._draw_screen(force=force)

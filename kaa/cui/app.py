@@ -1,3 +1,4 @@
+import gc
 import time
 import socket
 import pickle
@@ -234,6 +235,11 @@ class CuiApp:
             self._input_readers.remove(reader)
 
     def run(self):
+#        def f(t, i):
+#            _trace(t, i)
+#        gc.callbacks.append(f)
+        gc.set_threshold(2000, 10, 10)
+
         nonblocking = True
         while not self._quit:
             try:
@@ -258,6 +264,8 @@ class CuiApp:
                 except InterruptedError:
                     pass
 
+                l = time.time()
+
                 if not nonblocking and not rlist:
                     # timeout
                     self._run_scheduled_task()
@@ -281,7 +289,8 @@ class CuiApp:
 
                         if self.focus.editmode:
                             self.focus.editmode.on_keyevent(self.focus, c)
-
+                            self.focus.update_window()
+                
                 if not inputs:
                     if self.mainframe.on_idle():
                         continue
