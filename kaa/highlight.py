@@ -110,7 +110,8 @@ class Span(Token):
                 yield (match.end(), m.start(), self.span_mid)
 
             if self._capture_end:
-                yield (m.start(), m.end(), self.span_end)
+                if m.start() != m.end():
+                    yield (m.start(), m.end(), self.span_end)
                 end = m.end()
             else:
                 end = m.start()

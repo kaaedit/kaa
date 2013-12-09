@@ -147,7 +147,7 @@ class HTMLTag(Token):
 
         pos = match.end()
         for f, t, tokenid in self.iter_tokens(tokenizer, doc, match.end()):
-            assert f < t
+            assert f <= t
             assert pos <= f
             if pos != f:
                 yield (pos, f, self.span_elemws)

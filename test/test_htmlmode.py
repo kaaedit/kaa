@@ -197,6 +197,23 @@ class TestHTMLHighlight(kaa_testutils._TestDocBase):
             (10, 11, hl.tokenizers[0].tokens.htmltag.span_gt),
         ] == list((f, t, style) for f, t, style in hl.highlight(doc, 0))
 
+    def test_javascriptattr4(self):
+        hl = highlight.Highlighter(tokenizers=self.tokenizers)
+        doc = self._getdoc('''<a ona='//\n\'''')
+
+        assert [
+            (0, 1, hl.tokenizers[0].tokens.htmltag.span_lt),
+            (1, 2, hl.tokenizers[0].tokens.htmltag.span_elemname),
+            (2, 3, hl.tokenizers[0].tokens.htmltag.span_elemws),
+            (3, 6, hl.tokenizers[0].tokens.htmltag.span_attrname),
+            (6, 7, hl.tokenizers[0].tokens.htmltag.span_elemws),
+            (7, 8, hl.tokenizers[0].tokens.htmltag.span_attrvalue),
+            (8, 10, hl.tokenizers[0].
+                     tokens.jsattr1.subtokenizer.tokens.comment2.span_start),
+            (10, 11, hl.tokenizers[0].tokens.jsattr1.subtokenizer.nulltoken),
+            (11, 12, hl.tokenizers[0].tokens.htmltag.span_attrvalue),
+        ] == list((f, t, style) for f, t, style in hl.highlight(doc, 0))
+
     def test_cssattr(self):
         hl = highlight.Highlighter(tokenizers=self.tokenizers)
         doc = self._getdoc("<a style=''>")
