@@ -69,13 +69,14 @@ class FilterListMode(selectlist.SelectItemList):
         else:
             items = self.candidates[:]
 
-        return items
+        sel = items[0] if items else None
+        return sel, items
 
     def set_query(self, wnd, query):
-        items = self._filter_items(query)
+        sel, items = self._filter_items(query)
         self.update_doc(items)
-        if items:
-            self.update_sel(wnd, items[0])
+        if sel:
+            self.update_sel(wnd, sel)
 
 
 FilterListInputDlgThemes = {

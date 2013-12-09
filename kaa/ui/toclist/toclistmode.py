@@ -17,6 +17,7 @@ class TOCList(filterlist.FilterListMode):
             for c in candidates]
 
     def _filter_items(self, query):
+        first = None
         if query:
             query = query.upper().split()
             matches = self.candidates[:]
@@ -26,6 +27,8 @@ class TOCList(filterlist.FilterListMode):
                     if q not in u:
                         matches[i] = False
                         break
+                    if not first:
+                        first = s
 
             ns = None
             for i in range(len(self.candidates)):
@@ -37,8 +40,9 @@ class TOCList(filterlist.FilterListMode):
             items = [m for m in matches if m]
         else:
             items = self.candidates[:]
+            first = items[0] if items else None
 
-        return items
+        return first, items
 
     def update_doc(self, items):
         self.items = list(items)
@@ -90,9 +94,6 @@ class TOCList(filterlist.FilterListMode):
         self.update_sel(wnd, newsel, bottom=True)
         return newsel
 
-    @command('toclistdlg.prev_namespace')
-    @norec
-    @norerun
     def sel_prev_namespace(self, wnd):
         bottom = None
         if not self.items:

@@ -44,7 +44,9 @@ class ClipboardHist(filterlist.FilterListMode):
                     items.append(s)
         else:
             items = self.candidates[:]
-        return items
+
+        sel = items[0] if items else None
+        return sel, items
 
     def on_esc_pressed(self, wnd, event):
 
