@@ -59,7 +59,7 @@ class ToolCommands(Commands):
                     shell=True,
                     universal_newlines=True)
 
-                wnd.document.mode.edit_commands.put_string(wnd, ret)
+                wnd.document.mode.put_string(wnd, ret)
                 wnd.screen.selection.clear()
 
                 kaa.app.messagebar.set_message(

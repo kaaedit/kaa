@@ -115,8 +115,7 @@ class PythonMode(defaultmode.DefaultMode):
             cols = self.calc_cols(f, t)
             indent = self.build_indent_str(cols + self.indent_width)
             indent = '\n' + indent
-            self.edit_commands.insert_string(wnd, pos, indent,
-                                             update_cursor=False)
+            self.insert_string(wnd, pos, indent, update_cursor=False)
             wnd.cursor.setpos(pos + len(indent))
             wnd.cursor.savecol()
             self._last_autoindent = (pos+1, wnd.cursor.pos)

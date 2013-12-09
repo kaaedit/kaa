@@ -363,6 +363,9 @@ class TextEditorWindow(Window):
                 self._cwnd.move(y, screenx)
 
         self.document.mode.on_cursor_located(self, retpos, y, x)
+        if self.document.mode.HIGHLIGHT_CURSOR_ROW:
+            self.screen.style_updated()
+
         return retpos, y, x
 
     def get_cursor_loc(self):

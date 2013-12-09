@@ -47,7 +47,7 @@ class Macro:
         mode = wnd.document.mode
         for cmd in self.commands:
             if isinstance(cmd, str):
-                wnd.document.mode.edit_commands.put_string(wnd, cmd)
+                wnd.document.mode.put_string(wnd, cmd)
                 wnd.screen.selection.clear()
             elif isinstance(cmd, (int, type(None))):
                 wnd.editmode.set_repeat(cmd)

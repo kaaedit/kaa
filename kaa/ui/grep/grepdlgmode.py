@@ -420,7 +420,7 @@ class GrepDlgMode(dialogmode.DialogMode):
 
     def set_dir(self, wnd, dir):
         f, t = self.document.marks['directory']
-        self.edit_commands.replace_string(
+        self.replace_string(
             wnd, f, t, dir, update_cursor=True)
 
     def get_files(self):

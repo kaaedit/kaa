@@ -27,8 +27,7 @@ class TestEdit(kaa_testutils._TestScreenBase):
     def test_putstring(self):
         wnd = self._getwnd("abc\ndef\n")
 
-        cmd = editorcommand.EditCommands()
-        cmd.put_string(wnd, '12345')
+        wnd.document.mode.put_string(wnd, '12345')
         assert wnd.document.gettext(0, 5) == '12345'
 
     def test_delete(self):
@@ -91,7 +90,7 @@ class TestEdit(kaa_testutils._TestScreenBase):
         wnd = self._getwnd("")
         cmd = editorcommand.EditCommands()
 
-        cmd.put_string(wnd, 'abc')
+        wnd.document.mode.put_string(wnd, 'abc')
 
         cmd.undo(wnd)
         assert wnd.document.endpos() == 0

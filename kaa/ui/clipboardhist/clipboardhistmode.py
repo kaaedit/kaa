@@ -58,7 +58,7 @@ class ClipboardHist(filterlist.FilterListMode):
     @norerun
     def on_selected(self, wnd):
         if self.cursel:
-            self.target.document.mode.edit_commands.put_string(
+            self.target.document.mode.put_string(
                 self.target, self.cursel.value)
             self.target.screen.selection.clear()
 

@@ -123,7 +123,7 @@ class PythonConsoleMode(pythonmode.PythonMode):
         if not is_sel:
             endpos = self.document.endpos()
             if not self.document.gettext(endpos - 1, endpos).endswith('\n'):
-                self.edit_commands.insert_string(wnd, self.document.endpos(),
+                self.insert_string(wnd, self.document.endpos(),
                                                  '\n', update_cursor=False)
             wnd.screen.selection.set_range(0, endpos)
 

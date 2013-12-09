@@ -49,6 +49,10 @@ SearchOption.LAST_SEARCH = SearchOption()
 
 
 class ModeBase:
+    (UNDO_INSERT,
+     UNDO_REPLACE,
+     UNDO_DELETE) = range(3)
+
     CLOSE_ON_DEL_WINDOW = True
 
     SCREEN_NOWRAP = False
@@ -258,7 +262,7 @@ class ModeBase:
         pass
 
     def on_str(self, wnd, s):
-        self.edit_commands.put_string(wnd, s)
+        self.put_string(wnd, s)
         wnd.screen.selection.clear()
 
         if kaa.app.macro.is_recording():
@@ -305,6 +309,102 @@ class ModeBase:
 
     def on_cursor_located(self, wnd, pos, y, x):
         pass
+
+    def insert_string(self, wnd, pos, s, update_cursor=True):
+        """Insert string"""
+
+        cur_pos = wnd.cursor.pos
+
+        wnd.document.insert(pos, s)
+
+        if update_cursor:
+            wnd.cursor.setpos(wnd.cursor.pos + len(s))
+            wnd.cursor.savecol()
+
+        if wnd.document.undo:
+            wnd.document.undo.add(self.UNDO_INSERT, pos, s,
+                                  cur_pos, wnd.cursor.pos)
+
+        self.on_edited(wnd)
+
+    def replace_string(self, wnd, pos, posto, s, update_cursor=True):
+        """Replace string"""
+
+        cur_pos = wnd.cursor.pos
+
+        deled = wnd.document.gettext(pos, posto)
+        wnd.document.replace(pos, posto, s)
+
+        if update_cursor:
+            wnd.cursor.setpos(pos + len(s))
+            wnd.cursor.savecol()
+
+        if wnd.document.undo:
+            wnd.document.undo.add(self.UNDO_REPLACE, pos, posto, s,
+                                  deled, cur_pos, wnd.cursor.pos)
+
+        self.on_edited(wnd)
+
+    def delete_string(self, wnd, pos, posto, update_cursor=True):
+        """Delete string"""
+
+        cur_pos = wnd.cursor.pos
+
+        if pos < posto:
+            deled = wnd.document.gettext(pos, posto)
+            wnd.document.delete(pos, posto)
+
+            if update_cursor:
+                wnd.cursor.setpos(pos)
+                wnd.cursor.savecol()
+
+            if wnd.document.undo:
+                wnd.document.undo.add(self.UNDO_DELETE, pos, posto, deled,
+                                      cur_pos, wnd.cursor.pos)
+            self.on_edited(wnd)
+
+
+    def replace_rect(self, wnd, repto):
+        if wnd.document.undo:
+            wnd.document.undo.beginblock()
+        try:
+            (posfrom, posto, colfrom, colto
+             ) = wnd.screen.selection.get_rect_range()
+
+            for s in repto:
+                if posto <= posfrom:
+                    break
+
+                sel = wnd.screen.selection.get_col_string(
+                    posfrom, colfrom, colto)
+                if sel:
+                    f, t, org = sel
+                    if org.endswith('\n'):
+                        t = max(f, t - 1)
+                    self.replace_string(wnd, f, t, s)
+                    posto += (len(s) - (t - f))
+                posfrom = wnd.document.geteol(posfrom)
+        finally:
+            if wnd.document.undo:
+                wnd.document.undo.endblock()
+
+    def put_string(self, wnd, s):
+        s = wnd.document.mode.filter_string(wnd, s)
+
+        if wnd.screen.selection.is_selected():
+            if wnd.screen.selection.is_rectangular():
+                if '\n' not in s:
+                    self.replace_rect(wnd, itertools.repeat(s))
+                else:
+                    self.replace_rect(wnd, s.split('\n'))
+
+            else:
+                sel = wnd.screen.selection.get_selrange()
+                f, t = sel
+                self.replace_string(wnd, f, t, s)
+        else:
+            self.insert_string(wnd, wnd.cursor.pos, s)
+
 
     def update_charattr(self, wnd):
         if wnd.charattrs:
@@ -460,7 +560,7 @@ class ModeBase:
                 s = self.document.gettext(f, t)
                 m = re.match(self.RE_WHITESPACE, s)
                 if m and m.group() == s:
-                    self.edit_commands.delete_string(
+                    self.delete_string(
                         wnd, f, t, update_cursor=False)
                     wnd.cursor.setpos(f)
                     
@@ -469,14 +569,12 @@ class ModeBase:
         f, t = self.get_indent_range(pos)
         indent = self.document.gettext(f, min(pos, t))
         if pos <= t:
-            self.edit_commands.insert_string(wnd, f, '\n',
-                                             update_cursor=False)
+            self.insert_string(wnd, f, '\n', update_cursor=False)
             wnd.cursor.setpos(wnd.cursor.pos + 1)
             wnd.cursor.savecol()
         else:
             indent = '\n' + indent
-            self.edit_commands.insert_string(wnd, pos, indent,
-                                             update_cursor=False)
+            self.insert_string(wnd, pos, indent, update_cursor=False)
             wnd.cursor.setpos(pos + len(indent))
             wnd.cursor.savecol()
             self._last_autoindent = (pos+1, wnd.cursor.pos)

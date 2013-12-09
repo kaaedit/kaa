@@ -524,7 +524,7 @@ class ReplaceDlgMode(SearchDlgMode):
         else:
             s = self.option.replace_to
 
-        self.target.document.mode.edit_commands.replace_string(
+        self.target.document.mode.replace_string(
             self.target, f, t, s, update_cursor=update_cursor)
 
         self.lasthit = (f, f + len(s))

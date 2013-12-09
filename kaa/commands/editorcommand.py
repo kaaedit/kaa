@@ -398,107 +398,6 @@ class ScreenCommands(Commands):
 
 
 class EditCommands(Commands):
-    (UNDO_INSERT,
-     UNDO_REPLACE,
-     UNDO_DELETE) = range(3)
-
-    def on_edited(self, wnd):
-        wnd.document.mode.on_edited(wnd)
-
-    def insert_string(self, wnd, pos, s, update_cursor=True):
-        """Insert string"""
-
-        cur_pos = wnd.cursor.pos
-
-        wnd.document.insert(pos, s)
-
-        if update_cursor:
-            wnd.cursor.setpos(wnd.cursor.pos + len(s))
-            wnd.cursor.savecol()
-
-        if wnd.document.undo:
-            wnd.document.undo.add(self.UNDO_INSERT, pos, s,
-                                  cur_pos, wnd.cursor.pos)
-
-        self.on_edited(wnd)
-
-    def replace_string(self, wnd, pos, posto, s, update_cursor=True):
-        """Replace string"""
-
-        cur_pos = wnd.cursor.pos
-
-        deled = wnd.document.gettext(pos, posto)
-        wnd.document.replace(pos, posto, s)
-
-        if update_cursor:
-            wnd.cursor.setpos(pos + len(s))
-            wnd.cursor.savecol()
-
-        if wnd.document.undo:
-            wnd.document.undo.add(self.UNDO_REPLACE, pos, posto, s,
-                                  deled, cur_pos, wnd.cursor.pos)
-
-        self.on_edited(wnd)
-
-    def delete_string(self, wnd, pos, posto, update_cursor=True):
-        """Delete string"""
-
-        cur_pos = wnd.cursor.pos
-
-        if pos < posto:
-            deled = wnd.document.gettext(pos, posto)
-            wnd.document.delete(pos, posto)
-
-            if update_cursor:
-                wnd.cursor.setpos(pos)
-                wnd.cursor.savecol()
-
-            if wnd.document.undo:
-                wnd.document.undo.add(self.UNDO_DELETE, pos, posto, deled,
-                                      cur_pos, wnd.cursor.pos)
-            self.on_edited(wnd)
-
-    def replace_rect(self, wnd, repto):
-        if wnd.document.undo:
-            wnd.document.undo.beginblock()
-        try:
-            (posfrom, posto, colfrom, colto
-             ) = wnd.screen.selection.get_rect_range()
-
-            for s in repto:
-                if posto <= posfrom:
-                    break
-
-                sel = wnd.screen.selection.get_col_string(
-                    posfrom, colfrom, colto)
-                if sel:
-                    f, t, org = sel
-                    if org.endswith('\n'):
-                        t = max(f, t - 1)
-                    self.replace_string(wnd, f, t, s)
-                    posto += (len(s) - (t - f))
-                posfrom = wnd.document.geteol(posfrom)
-        finally:
-            if wnd.document.undo:
-                wnd.document.undo.endblock()
-
-    def put_string(self, wnd, s):
-        s = wnd.document.mode.filter_string(wnd, s)
-
-        if wnd.screen.selection.is_selected():
-            if wnd.screen.selection.is_rectangular():
-                if '\n' not in s:
-                    self.replace_rect(wnd, itertools.repeat(s))
-                else:
-                    self.replace_rect(wnd, s.split('\n'))
-
-            else:
-                sel = wnd.screen.selection.get_selrange()
-                f, t = sel
-                self.replace_string(wnd, f, t, s)
-        else:
-            self.insert_string(wnd, wnd.cursor.pos, s)
-
     def delete_sel(self, wnd):
         if wnd.screen.selection.is_selected():
             if not wnd.screen.selection.is_rectangular():
@@ -506,7 +405,7 @@ class EditCommands(Commands):
                 wnd.screen.selection.clear()
                 if sel:
                     f, t = sel
-                    self.delete_string(wnd, f, t)
+                    wnd.document.mode.delete_string(wnd, f, t)
                     return True
             else:
                 return self._delete_rect_sel(wnd)
@@ -525,7 +424,7 @@ class EditCommands(Commands):
                     f, t, org = sel
                     if org.endswith('\n'):
                         t = max(f, t - 1)
-                    self.delete_string(wnd, f, t)
+                    wnd.document.mode.delete_string(wnd, f, t)
                     posto -= (t - f)
                 posfrom = wnd.document.geteol(posfrom)
 
@@ -543,7 +442,7 @@ class EditCommands(Commands):
         nextpos = wnd.document.get_nextpos(pos)
         nextpos = wnd.cursor.adjust_nextpos(pos, nextpos)
         if pos < nextpos:
-            self.delete_string(wnd, pos, nextpos)
+            wnd.document.mode.delete_string(wnd, pos, nextpos)
 
     @command('edit.delete.word')
     def delete_word(self, wnd):
@@ -554,7 +453,7 @@ class EditCommands(Commands):
         wnd.cursor.right(word=True)
         nextpos = wnd.cursor.pos
         if pos < nextpos:
-            self.delete_string(wnd, pos, nextpos)
+            wnd.document.mode.delete_string(wnd, pos, nextpos)
 
     @command('edit.delete.line')
     def delete_line(self, wnd):
@@ -562,7 +461,7 @@ class EditCommands(Commands):
         nextpos = wnd.cursor.adjust_nextpos(
             pos, wnd.document.find_newline(pos))
         if pos < nextpos:
-            self.delete_string(wnd, pos, nextpos)
+            wnd.document.mode.delete_string(wnd, pos, nextpos)
 
     @command('edit.delete.currentline')
     def delete_currentline(self, wnd):
@@ -571,7 +470,7 @@ class EditCommands(Commands):
         t = wnd.cursor.adjust_nextpos(pos, wnd.document.geteol(f))
 
         if f < t:
-            self.delete_string(wnd, f, t)
+            wnd.document.mode.delete_string(wnd, f, t)
 
     @command('edit.backspace')
     def backspace(self, wnd):
@@ -586,7 +485,7 @@ class EditCommands(Commands):
                 # locate cursor before delete to scroll half page up
                 wnd.cursor.setpos(prevpos)
 
-            self.delete_string(wnd, prevpos, pos)
+            wnd.document.mode.delete_string(wnd, prevpos, pos)
 
     @command('edit.backspace.word')
     def backspace_word(self, wnd):
@@ -601,13 +500,13 @@ class EditCommands(Commands):
                 # locate cursor before delete to scroll half page up
                 wnd.cursor.setpos(prevpos)
 
-            self.delete_string(wnd, prevpos, pos)
+            wnd.document.mode.delete_string(wnd, prevpos, pos)
 
     @command('edit.newline')
     @norerun
     def newline(self, wnd):
         if not wnd.document.mode.auto_indent:
-            self.put_string(wnd, '\n')
+            wnd.document.mode.put_string(wnd, '\n')
             wnd.screen.selection.clear()
             return
 
@@ -618,7 +517,7 @@ class EditCommands(Commands):
         mode = wnd.document.mode
         f, t = mode.get_indent_range(pos)
         if pos > t:
-            self.put_string(wnd, '\t')
+            wnd.document.mode.put_string(wnd, '\t')
             wnd.screen.selection.clear()
             return
 
@@ -628,7 +527,7 @@ class EditCommands(Commands):
             cols = 0
 
         s = mode.build_indent_str(cols + mode.indent_width)
-        self.replace_string(wnd, f, t, s, True)
+        mode.replace_string(wnd, f, t, s, True)
 
     @command('edit.indent')
     def indent(self, wnd):
@@ -656,7 +555,7 @@ class EditCommands(Commands):
 
                 if (t + 1 < eol != endpos) or (t < eol == endpos):
                     s = mode.build_indent_str(cols + mode.indent_width)
-                    self.replace_string(wnd, f, t, s, False)
+                    mode.replace_string(wnd, f, t, s, False)
                     tol = eol + (len(s) - (t - f))
                 else:
                     tol = eol
@@ -677,7 +576,7 @@ class EditCommands(Commands):
             cols = 0
 
         s = mode.build_indent_str(max(0, cols - mode.indent_width))
-        self.replace_string(wnd, f, t, s, True)
+        mode.replace_string(wnd, f, t, s, True)
 
     @command('edit.dedent')
     def dedent(self, wnd):
@@ -702,7 +601,7 @@ class EditCommands(Commands):
 
                 if cols:
                     s = mode.build_indent_str(max(0, cols - mode.indent_width))
-                    self.replace_string(wnd, f, t, s, False)
+                    mode.replace_string(wnd, f, t, s, False)
 
                 tol = doc.geteol(tol)
         finally:
@@ -715,11 +614,11 @@ class EditCommands(Commands):
 
     def _undo(self, wnd, rec):
         (action, args, kwargs) = rec
-        if action == self.UNDO_INSERT:
+        if action == wnd.document.mode.UNDO_INSERT:
             pos, s, cur_pos, newpos = args
             wnd.document.delete(pos, pos + len(s))
             return cur_pos
-        elif action == self.UNDO_REPLACE:
+        elif action == wnd.document.mode.UNDO_REPLACE:
             pos, posto, s, deled, cur_pos, newpos = args
             wnd.document.replace(pos, pos + len(s), deled)
             return cur_pos
@@ -742,15 +641,15 @@ class EditCommands(Commands):
                 wnd.cursor.setpos(pos)
                 wnd.cursor.savecol()
 
-            self.on_edited(wnd)
+            wnd.document.mode.on_edited(wnd)
 
     def _redo(self, wnd, rec):
         (action, args, kwargs) = rec
-        if action == self.UNDO_INSERT:
+        if action == wnd.document.mode.UNDO_INSERT:
             pos, s, cur_pos, newpos = args
             wnd.document.insert(pos, s)
             return newpos
-        elif action == self.UNDO_REPLACE:
+        elif action == wnd.document.mode.UNDO_REPLACE:
             pos, posto, s, deled, cur_pos, newpos = args
             wnd.document.replace(pos, posto, s)
             return pos
@@ -773,7 +672,7 @@ class EditCommands(Commands):
                 wnd.cursor.setpos(pos)
                 wnd.cursor.savecol()
 
-            self.on_edited(wnd)
+            wnd.document.mode.on_edited(wnd)
 
     def _get_sel(self, wnd):
         if wnd.screen.selection.is_selected():
@@ -818,28 +717,28 @@ class EditCommands(Commands):
     def paste(self, wnd):
         s = kaa.app.get_clipboard()
         if s:
-            self.put_string(wnd, s)
+            wnd.document.mode.put_string(wnd, s)
             wnd.screen.selection.clear()
 
     @command('edit.conv.upper')
     def conv_upper(self, wnd):
         s = self._get_sel(wnd)
         if s:
-            self.put_string(wnd, s.upper())
+            wnd.document.mode.put_string(wnd, s.upper())
             wnd.screen.selection.clear()
 
     @command('edit.conv.lower')
     def conv_lower(self, wnd):
         s = self._get_sel(wnd)
         if s:
-            self.put_string(wnd, s.lower())
+            wnd.document.mode.put_string(wnd, s.lower())
             wnd.screen.selection.clear()
 
     @command('edit.conv.nfkc')
     def conv_nfkc(self, wnd):
         s = self._get_sel(wnd)
         if s:
-            self.put_string(wnd, unicodedata.normalize('NFKC', s))
+            wnd.document.mode.put_string(wnd, unicodedata.normalize('NFKC', s))
             wnd.screen.selection.clear()
 
     @command('edit.conv.full-width')
@@ -847,7 +746,7 @@ class EditCommands(Commands):
         import pyjf3
         s = self._get_sel(wnd)
         if s:
-            self.put_string(wnd, pyjf3.tofull(s))
+            wnd.document.mode.put_string(wnd, pyjf3.tofull(s))
             wnd.screen.selection.clear()
 
     @command('edit.word-complete')
@@ -871,7 +770,7 @@ class CodeCommands(Commands):
     def linecomment(self, wnd):
         if not wnd.screen.selection.is_selected():
             tol = wnd.document.gettol(wnd.cursor.pos)
-            wnd.document.mode.edit_commands.insert_string(
+            wnd.document.mode.insert_string(
                 wnd, tol, wnd.document.mode.LINE_COMMENT,
                 update_cursor=False)
             wnd.cursor.setpos(tol)
@@ -886,7 +785,7 @@ class CodeCommands(Commands):
             try:
                 mode = wnd.document.mode
                 while tol < wnd.screen.selection.get_end():
-                    wnd.document.mode.edit_commands.insert_string(
+                    wnd.document.mode.insert_string(
                         wnd, tol, wnd.document.mode.LINE_COMMENT,
                         update_cursor=False)
                     tol = wnd.document.geteol(tol)
@@ -910,7 +809,7 @@ class CodeCommands(Commands):
             m = self._is_comment_line(wnd, tol)
             if m:
                 f, t = m.span(1)
-                wnd.document.mode.edit_commands.delete_string(
+                wnd.document.mode.delete_string(
                     wnd, f, t)
             return
         else:
@@ -925,7 +824,7 @@ class CodeCommands(Commands):
                     m = self._is_comment_line(wnd, tol)
                     if m:
                         f, t = m.span(1)
-                        wnd.document.mode.edit_commands.delete_string(
+                        wnd.document.mode.delete_string(
                             wnd, f, t, update_cursor=False)
                     tol = wnd.document.geteol(tol)
             finally:

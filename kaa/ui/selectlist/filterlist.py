@@ -184,7 +184,6 @@ class FilterListInputDlgMode(dialogmode.DialogMode):
     @norec
     @norerun
     def next(self, wnd):
-
         filterlist = wnd.get_label('filterlist')
         filterlist.document.mode.sel_next(filterlist)
 

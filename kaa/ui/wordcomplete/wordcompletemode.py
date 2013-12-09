@@ -80,7 +80,7 @@ class WordCompleteInputMode(filterlist.FilterListInputDlgMode):
         else:
             s = self.get_query()
 
-        wnd.document.mode.edit_commands.replace_string(
+        self.target.document.mode.replace_string(
             self.target, self.wordpos[0], self.wordpos[1],
             s, update_cursor=True)
         wnd.get_label('popup').destroy()
@@ -89,7 +89,7 @@ class WordCompleteInputMode(filterlist.FilterListInputDlgMode):
         super().on_edited(wnd)
         s = self.get_query()
         f, t = self.wordpos
-        self.target.document.mode.edit_commands.replace_string(
+        self.target.document.mode.replace_string(
             self.target, f, t, s, update_cursor=True)
         self.wordpos = (f, f + len(s))
 
