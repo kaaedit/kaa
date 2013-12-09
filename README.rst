@@ -538,6 +538,10 @@ Output of ``make`` displayed on the window. You can traverse source files cause 
 Python debugger
 ---------------
 
+.. warning::
+   Python debugger is highly exprimental at this point.
+    
+
 Kaa can be used as front-end of Python debugger module(``bdb``) running in another process. Although kaa itself requires Python 3.3 or later, you can use Python 2.6 or later in the target process. 
 
 Starting debugger
