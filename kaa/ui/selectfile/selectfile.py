@@ -202,19 +202,6 @@ class FileOpenDlgCommands(Commands):
         self.show_filename(wnd, filename)
 
 
-class FilenameEditCommands(editorcommand.EditCommands):
-
-    def on_edited(self, wnd):
-        super().on_edited(wnd)
-
-        filename = wnd.document.mode.get_filename()
-        if os.sep not in filename:
-            filelist = wnd.get_label('filelist')
-            filelist.document.mode.set_filename(filename)
-            filelist.document.mode.show_files(wnd)
-            filelist.get_label('popup').on_console_resized()
-
-
 class OpenFilenameDlgMode(dialogmode.DialogMode):
     MAX_INPUT_HEIGHT = 4
     autoshrink = True
@@ -275,9 +262,6 @@ class OpenFilenameDlgMode(dialogmode.DialogMode):
         self.fileopendlg_commands = FileOpenDlgCommands()
         self.register_command(self.fileopendlg_commands)
 
-        self.edit_commands = FilenameEditCommands()
-        self.register_command(self.edit_commands)
-
         self.screen_commands = editorcommand.ScreenCommands()
         self.register_command(self.screen_commands)
 
@@ -297,6 +281,16 @@ class OpenFilenameDlgMode(dialogmode.DialogMode):
 
         wnd.set_label('filename_field', self)
         kaa.app.messagebar.set_message("Hit tab/shift+tab to complete.")
+
+    def on_edited(self, wnd):
+        super().on_edited(wnd)
+
+        filename = wnd.document.mode.get_filename()
+        if os.sep not in filename:
+            filelist = wnd.get_label('filelist')
+            filelist.document.mode.set_filename(filename)
+            filelist.document.mode.show_files(wnd)
+            filelist.get_label('popup').on_console_resized()
 
     def calc_position(self, wnd):
         w, h = wnd.getsize()
