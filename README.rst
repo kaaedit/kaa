@@ -749,8 +749,23 @@ Links
 Version history
 =================
 
-0.17.0 - 2013.12.06
+0.18.0 - 2013.12.10
 --------------------
+
+- Optimizations. Kaa responds quicker than previous version.
+
+- Error highlighting javascipt attribute in html mode was fixed.
+
+- White space characters inserted by auto-indent are automatically removed if cursor moved to another position without entering a character.
+
+- reStructuredText Mode: Non-ASCII punctuations were not recognized as separater of inline mark ups.
+
+
+Past versions
+--------------
+
+0.17.0 - 2013.12.06
++++++++++++++++++++++
 
 - reStructuredText Mode: Recognize non-ASCII punctuation as separater of inline mark ups.
 
@@ -758,8 +773,6 @@ Version history
 
 - Separate `kaadbg <https://pypi.python.org/pypi/kaadbg>`_ as new package.
 
-Past versions
---------------
 
 0.16.0 - 2013.12.03
 +++++++++++++++++++++
