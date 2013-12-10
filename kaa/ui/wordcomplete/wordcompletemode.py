@@ -121,7 +121,7 @@ class WordCompleteInputMode(filterlist.FilterListInputDlgMode):
         words = [w for w in self.target.document.mode.get_word_list()
                  if w != curword]
 
-        words.extend(kaa.app.get_clipboards())
+        words.extend(kaa.app.clipboard.get_all())
 
         list.document.mode.set_candidates(words)
         list.document.mode.candidates.sort(key=lambda v: v.text.upper())

@@ -699,7 +699,7 @@ class EditCommands(Commands):
     def _copy_sel(self, wnd):
         sel = self._get_sel(wnd)
         if sel:
-            kaa.app.set_clipboard(sel)
+            kaa.app.clipboard.set(sel)
         return sel
 
     @command('edit.copy')
@@ -715,7 +715,7 @@ class EditCommands(Commands):
 
     @command('edit.paste')
     def paste(self, wnd):
-        s = kaa.app.get_clipboard()
+        s = kaa.app.clipboard.get()
         if s:
             wnd.document.mode.put_string(wnd, s)
             wnd.screen.selection.clear()

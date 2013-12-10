@@ -8,7 +8,7 @@ import curses
 import kaa
 import kaa.log
 from . import keydef, color, dialog
-from kaa import config, keyboard, document, macro
+from kaa import config, keyboard, document, macro, clipboard
 from kaa.ui.messagebar import messagebarmode
 
 from kaa.exceptions import KaaError
@@ -18,15 +18,14 @@ class CuiApp:
     SHOW_MENU_MESSAGE = 'Type F1 or alt+/ for menu.'
     DEFAULT_THEME = 'basic'
     DEFAULT_PALETTE = 'dark'
-    MAX_CLIPBOARD = 10
 
     def __init__(self, config):
         self.config = config
+        self.clipboard = clipboard.select_clipboard()
         self.colors = None
         self._idleprocs = None
         self.lastcommands = ()
         self.focus = None
-        self._clipboard = []
         self._quit = False
         self.theme = self.DEFAULT_THEME
         self.last_dir = '.'
@@ -217,16 +216,16 @@ class CuiApp:
             # curses.curs_set() occasionally fails if $TERM=xterm-color
             pass
 
-    def get_clipboard(self):
-        return self._clipboard[0] if self._clipboard else ''
-
-    def get_clipboards(self):
-        return iter(self._clipboard)
-
-    def set_clipboard(self, s):
-        self._clipboard.insert(0, s)
-        del self._clipboard[self.MAX_CLIPBOARD:]
-
+#    def get_clipboard(self):
+#        return self._clipboard[0] if self._clipboard else ''
+#
+#    def get_clipboards(self):
+#        return iter(self._clipboard)
+#
+#    def set_clipboard(self, s):
+#        self._clipboard.insert(0, s)
+#        del self._clipboard[self.MAX_CLIPBOARD:]
+#
     def add_input_reader(self, reader):
         self._input_readers.append(reader)
 

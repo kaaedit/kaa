@@ -70,7 +70,7 @@ class ClipboardHist(filterlist.FilterListMode):
 
 
 def show_history(wnd):
-    words = list(kaa.app.get_clipboards())
+    words = list(kaa.app.clipboard.get_all())
     if not words:
         return
 
