@@ -65,9 +65,17 @@ To run kaa, you need following component:
 
 * Python 3.3 or later
 
-* Headers and libraries for Python and ncurses with wide character support. Consult documentation of your platform for details. For Debian/Ubuntu, you can install ncurses library by ::
+* Headers and libraries for Python and ncurses with wide character support. Consult documentation of your platform for details. For Debian/Ubuntu, you can install libraries by
 
-  $ sudo apt-get install python3-dev libncurses5-dev libncursesw5-dev 
+.. code:: sh
+
+   $ sudo apt-get install python3-dev libncurses5-dev libncursesw5-dev 
+
+* Kaa can use system clipboard. To use clipboard on Unix platform, `xsel` command should be installed. For Ubuntu linux, following command installs `xsel` command.
+
+.. code:: sh
+
+   $ sudo apt-get install xsel
 
 * UTF-8 locales
 
@@ -150,7 +158,7 @@ Otherwise, you should manually update terminal setting. e.g., If you use bash, a
 
 .. code:: sh
 
-    export TERM=xterm-256color
+   $ export TERM=xterm-256color
 
 For detail, see http://www.pixelbeat.org/docs/terminal_colours/#256 to enable 256 color on your terminal.
 
@@ -749,8 +757,17 @@ Links
 Version history
 =================
 
-0.18.0 - 2013.12.10
+0.19.0 - 2013.12.11
 --------------------
+
+- Support system clipboard.
+
+
+Past versions
+--------------
+
+0.18.0 - 2013.12.10
++++++++++++++++++++++
 
 - Optimizations. Kaa responds quicker than previous version.
 
@@ -760,9 +777,6 @@ Version history
 
 - reStructuredText Mode: Non-ASCII punctuations were not recognized as separater of inline mark ups.
 
-
-Past versions
---------------
 
 0.17.0 - 2013.12.06
 +++++++++++++++++++++
