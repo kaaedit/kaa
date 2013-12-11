@@ -3,7 +3,7 @@ import kaa
 from kaa import document
 from kaa.filetype.default import defaultmode
 from kaa.ui.dialog import dialogmode
-from kaa.theme import Theme, Style
+from kaa.theme import Theme, Style, Overlay
 from kaa.command import command, norec, norerun
 from kaa.keyboard import *
 from kaa.commands import (appcommand, filecommand)
@@ -94,12 +94,13 @@ class BreakPoints(selectlist.SelectItemList):
 
 DebugThemes = {
     'basic': [
-        Style('line', 'Cyan', None),
-        Style('line-active', 'Base02', 'Yellow'),
-        Style('filename', 'Default', None),
-        Style('lineno', 'Default', None),
-        Style('funcname', 'Default', None),
-        Style('dirname', 'Default', None),
+        Style('line', None, None),
+        Style('filename', 'Blue', None),
+        Style('lineno', 'Blue', None),
+        Style('funcname', 'Blue', None),
+        Style('dirname', 'Blue', None),
+        Style('status', 'Base3', 'Red', nowrap=True),
+        Overlay('current_stack', 'Black', 'Yellow'),
     ],
 }
 
@@ -191,18 +192,12 @@ class PythonCallStackMode(dialogmode.DialogMode):
                           shortcut_style='button.shortcut',
                           on_shortcut=self.on_quit)
 
+            f.append_text('status', '-Waiting-', mark_pair='status')
+
             f.append_text('default', '\n')
 
             for n, (fname, lno, funcname, lines) in enumerate(self.stack):
                 s = self.document.endpos()
-
-                line = (lines[0] if lines else '').strip()
-                if not line:
-                    line = '(empty line)'
-                f.append_text('line', line.replace('&', '&&') + '\n')
-
-                t = self.document.endpos()
-                self.document.marks[('stack', n)] = (s, t)
 
                 dirname, filename = os.path.split(fname)
                 f.append_text('filename', filename.replace('&', '&&'))
@@ -216,6 +211,15 @@ class PythonCallStackMode(dialogmode.DialogMode):
 
                 f.append_text('dirname', dirname.replace('&', '&&') + '\n')
 
+                line = (lines[0] if lines else '').strip()
+                if not line:
+                    line = '(empty line)'
+                f.append_text('line', line.replace('&', '&&') + '\n')
+
+                t = self.document.endpos()
+                self.document.marks[('stack', n)] = (s, t)
+
+
     def update(self, wnd, stack):
         self.build(stack)
         self.update_sel(wnd, 0)
@@ -226,12 +230,11 @@ class PythonCallStackMode(dialogmode.DialogMode):
             f, t = self.document.marks.get(
                 ('stack', self.cursel), (None, None))
             if f is not None:
-                self.document.setstyles(f, t, self.get_styleid('line'))
+                wnd.set_line_overlay(f, None)
 
         f, t = self.document.marks.get(('stack', n), (None, None))
         if f is not None:
-            self.document.setstyles(
-                f, t, self.get_styleid('line-active'))
+            wnd.set_line_overlay(f, 'current_stack')
 
         self.cursel = n
         if n < len(self.stack):
@@ -276,6 +279,13 @@ class PythonCallStackMode(dialogmode.DialogMode):
             wnd = kaa.app.show_doc(doc)
 
         self._locate_doc(wnd, doc, lineno)
+
+    def set_status(self, wnd, status):
+        f, t = self.document.marks['status']
+        styleid = self.get_styleid('status')
+        self.document.replace(f, t, status, styleid)
+        wnd.clear_line_overlay()
+        self.update_sel(wnd, 0)
 
     @command('callstack_keys.prev')
     @norec

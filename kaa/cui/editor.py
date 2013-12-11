@@ -86,22 +86,22 @@ class TextEditorWindow(Window):
             self.refresh()
         return ret
 
-    def set_line_overlay(self, pos, overlay):
-        if pos is not None:
+    def set_line_overlay(self, pos, overlay=None):
+        if overlay is not None:
             if self.line_overlays.get(pos, '') != overlay:
                 self.line_overlays[pos] = overlay
-                self.refresh()
+                self.screen.style_updated()
                 return True
         else:
             if pos in self.line_overlays:
                 del self.line_overlays[pos]
-                self.refresh()
+                self.screen.style_updated()
                 return True
 
     def clear_line_overlay(self):
         if self.line_overlays:
             self.line_overlays = {}
-            self.refresh()
+            self.screen.style_updated()
 
     def bring_top(self):
         if curses.panel.top_panel() is not self._panel:

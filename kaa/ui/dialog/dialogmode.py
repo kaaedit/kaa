@@ -170,9 +170,9 @@ class FormBuilder:
             self.document.mode.run_autoshrink()
 
     def append_text(
-            self, stylename, text, mark_start=None, mark_end=None, mark_pair=None,
-            on_shortcut=None, shortcut_style=None, shortcut_mark=None,
-            shortcut_need_alt=True):
+            self, stylename, text, mark_start=None, mark_end=None, 
+            mark_pair=None, on_shortcut=None, shortcut_style=None, 
+            shortcut_mark=None, shortcut_need_alt=True):
 
         # marks should not be moved until the document completed.
         self.document.marks.locked = True

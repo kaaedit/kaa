@@ -1,5 +1,3 @@
-import os
-import curses
 import subprocess
 import collections
 import socket
@@ -35,7 +33,7 @@ def init_reader():
     kaa.app.add_input_reader(InputReader())
 
 
-def _check_running():
+def _checkrunning():
     if DEBUGGER:
         if DEBUGGER.session:
             DEBUGGER.show_callstack()
@@ -44,7 +42,7 @@ def _check_running():
 
 def init_server():
     global DEBUGGER
-    if _check_running():
+    if _checkrunning():
         return
 
     if isinstance(DEBUGGER, RemoteDebugger):
@@ -81,7 +79,7 @@ def init_server():
 
 def run():
     global DEBUGGER
-    if _check_running():
+    if _checkrunning():
         return
 
     if DEBUGGER:
@@ -146,11 +144,28 @@ class Debugger:
     session = None
     current_frames = None
     debugpage = None
+    running = False
 
     def _close_page(self):
         if self.debugpage and not self.debugpage.closed:
             self.debugpage.get_label('popup').destroy()
         self.debugpage = None
+
+    def show_status(self):
+        if self.debugpage and not self.debugpage.closed:
+            if not self.port and self.is_idle():
+                status = '-Closed-'
+            elif self.is_idle():
+                status = '-Accepting-'
+            elif not self.running:
+                status = '-BREAK-'
+            else:
+                status = '-RUNNING-'
+
+            self.debugpage.document.mode.set_status(self.debugpage, status)
+    
+    def set_running(self, running):
+        self.running = running
 
     def is_idle(self):
         return not self.session
@@ -158,9 +173,6 @@ class Debugger:
     def close(self):
         global DEBUGGER
         DEBUGGER = None
-
-#        if hasattr(self, 'process'):
-#            _trace(self.process.stdout.read())
 
         self.current_frames = None
         self._close_page()
@@ -232,9 +244,15 @@ class Debugger:
             self.debugpage.document.mode.update(
                 self.debugpage, self.current_frames)
 
+        self.show_status()
+
     def show_expr_result(self, value):
+        def callback(c):
+            self.show_callstack()
+
+        self.show_status()
         msgboxmode.MsgBoxMode.show_msgbox(
-            'Value: {}'.format(value), ['&Ok'], None, ['\r', '\n'])
+            'Value: {}'.format(value), ['&Ok'], callback, ['\r', '\n'])
 
     def read_command(self):
         datalen = self.readline()
@@ -253,6 +271,8 @@ class Debugger:
 
             datalen -= len(c)
             data.append(c)
+
+        self.set_running(False)
 
         type, value = json.loads(str(b''.join(data), 'utf-8'))
         if type == 'frame':
@@ -279,6 +299,7 @@ self.set_break({bp.filename!r}, {bp.lineno})
 
     def set_step(self):
         self.set_breakpoints()
+        self.show_status()
 
         command = '''
 self.set_step()
@@ -288,6 +309,8 @@ ret.append(True)
 
     def set_next(self):
         self.set_breakpoints()
+        self.set_running(True)
+        self.show_status()
 
         command = '''
 self.set_next(frame)
@@ -297,6 +320,8 @@ ret.append(True)
 
     def set_return(self):
         self.set_breakpoints()
+        self.set_running(True)
+        self.show_status()
 
         command = '''
 self.set_return(frame)
@@ -306,6 +331,8 @@ ret.append(True)
 
     def set_continue(self):
         self.set_breakpoints()
+        self.set_running(True)
+        self.show_status()
 
         command = '''
 self.set_continue()
@@ -335,6 +362,8 @@ except Exception:
     self.send((u'expr', get_tb()))
 '''.format(expr=expr, depth=depth)
 
+        self.set_running(True)
+        self.show_status()
         self.send(('script', command))
 
 
@@ -378,17 +407,22 @@ class ChildDebugger(Debugger):
         env = {
             'KAADBG_DOMAINPORT': str(self.child.fileno())
         }
-        self.process = subprocess.Popen(s, stdout=subprocess.PIPE,
-                                        stderr=subprocess.STDOUT, shell=True,
-                                        universal_newlines=True, pass_fds=(self.child.fileno(),),
-                                        env=env)
+        self.set_running(True)
+        self.process = subprocess.Popen(s, shell=True,
+                    pass_fds=(self.child.fileno(),),
+                    env=env)
         self.child.close()
         kaa.app.messagebar.set_message("Process started.")
 
     def close(self):
+        self.set_running(False)
         if self.session:
             try:
                 self.set_quit()
             except BrokenPipeError:
                 pass
         super().close()
+        if self.process:
+            self.process.wait()
+        kaa.app.mainframe.refresh()
+
