@@ -42,9 +42,9 @@ class KaaHistoryStorage:
         self.conn.close()
         self.hists = None
 
-    def get_history(self, name):
+    def get_history(self, name, max_hist=None):
         if name not in self.hists:
-            hist = History(self, name)
+            hist = History(self, name, max_hist)
             self.hists[name] = hist
 
         return self.hists[name]
@@ -53,12 +53,16 @@ class KaaHistoryStorage:
 class History:
     MAX_HISTORY = 1000
 
-    def __init__(self, storage, name):
+    def __init__(self, storage, name, max_history):
         self.storage = storage
         self.name = name
         self.table_name = 'hist_' + self.name
 
         self._register()
+        self._max_history = max_history
+        if not self._max_history:
+            self._max_history = self.MAX_HISTORY
+
         self.buffer = []
 
     def _register(self):
@@ -72,7 +76,7 @@ class History:
     def close(self):
         ret = self.storage.conn.execute('''
             SELECT id FROM {} ORDER BY id DESC LIMIT ?
-            '''.format(self.table_name), (self.MAX_HISTORY * 2, ))
+            '''.format(self.table_name), (self._max_history * 2, ))
         recs = [value for value in ret]
         if recs:
             last, = recs[-1]
@@ -95,7 +99,7 @@ class History:
         ret = self.storage.conn.execute('''
             SELECT value, info FROM {} ORDER BY id DESC LIMIT ?
             '''.format(self.table_name),
-            (self.MAX_HISTORY,))
+            (self._max_history,))
 
         return self.buffer + [(value, json.loads(info))
                               for value, info in ret if value not in buf_values]
@@ -173,8 +177,8 @@ class Config:
     def close(self):
         self.hist_storage.close()
 
-    def hist(self, name):
-        return self.hist_storage.get_history(name)
+    def hist(self, name, max_hist=None):
+        return self.hist_storage.get_history(name, max_hist=max_hist)
 
     def get_mode_packages(self):
         for pkgname in self.FILETYPES:

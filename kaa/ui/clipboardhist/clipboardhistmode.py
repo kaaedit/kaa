@@ -63,7 +63,8 @@ class ClipboardHist(filterlist.FilterListMode):
             self.target.document.mode.put_string(
                 self.target, self.cursel.value)
             self.target.screen.selection.clear()
-
+            kaa.app.clipboard.set(self.cursel.value)
+            
         popup = wnd.get_label('popup')
         popup.destroy()
         kaa.app.messagebar.set_message("")

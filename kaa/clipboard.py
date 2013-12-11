@@ -1,6 +1,7 @@
 import sys
 import subprocess
 import shutil
+import kaa
 
 def select_clipboard():
     if sys.platform == 'darwin':
@@ -13,23 +14,21 @@ def select_clipboard():
 class Clipboard:
     MAX_CLIPBOARD = 10
 
-    def __init__(self):
-        self._clipboard = []
+    def _get_hist(self):
+        return kaa.app.config.hist('clipboard', max_hist=self.MAX_CLIPBOARD)
 
     def get(self):
-        self._clipboard[0] if self._clipboard else ''
+        all = self.get_all()
+        ret = all[0] if all else ''
+        if ret:
+            self._get_hist.add(ret)
+        return ret
 
     def get_all(self):
-        return self._clipboard[:]
+        return [s for s, i in self._get_hist().get() if s]
 
     def _set(self, s):
-        try:
-            self._clipboard.remove(s)
-        except ValueError:
-            pass
-
-        self._clipboard.insert(0, s)
-        del self._clipboard[self.MAX_CLIPBOARD:]
+        self._get_hist().add(s)
 
     def set(self, s):
         self._set(s)
@@ -38,7 +37,8 @@ class NativeClipboard(Clipboard):
     def get(self):
         try:
             s = self._get_native_clipboard()
-            self._set(s)
+            if s:
+                self._set(s)
             return s
         except Exception:
             return super().get()
@@ -47,7 +47,8 @@ class NativeClipboard(Clipboard):
         super().set(s)
         try:
             self._set_native_clipboard(s)
-        except Exception:
+        except Exception as e:
+            _trace(e)
             pass
 
 class MacClipboard(NativeClipboard):
