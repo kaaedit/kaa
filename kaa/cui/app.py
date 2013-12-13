@@ -216,16 +216,6 @@ class CuiApp:
             # curses.curs_set() occasionally fails if $TERM=xterm-color
             pass
 
-#    def get_clipboard(self):
-#        return self._clipboard[0] if self._clipboard else ''
-#
-#    def get_clipboards(self):
-#        return iter(self._clipboard)
-#
-#    def set_clipboard(self, s):
-#        self._clipboard.insert(0, s)
-#        del self._clipboard[self.MAX_CLIPBOARD:]
-#
     def add_input_reader(self, reader):
         self._input_readers.append(reader)
 
@@ -262,8 +252,6 @@ class CuiApp:
 
                 except InterruptedError:
                     pass
-
-                l = time.time()
 
                 if not nonblocking and not rlist:
                     # timeout

@@ -6,7 +6,7 @@ import kaa
 def select_clipboard():
     if sys.platform == 'darwin':
         return MacClipboard()
-    elif shutil.which(X11Clipboard.CLIPCOMMAND):
+    elif X11Clipboard.check():
         return X11Clipboard()
     else:
         return Clipboard()
@@ -21,7 +21,7 @@ class Clipboard:
         all = self.get_all()
         ret = all[0] if all else ''
         if ret:
-            self._get_hist.add(ret)
+            self._get_hist().add(ret)
         return ret
 
     def get_all(self):
@@ -48,14 +48,13 @@ class NativeClipboard(Clipboard):
         try:
             self._set_native_clipboard(s)
         except Exception as e:
-            _trace(e)
             pass
 
 class MacClipboard(NativeClipboard):
     COPYCOMMAND = 'pbcopy'
     PASTECOMMAND = 'pbpaste'
     def _get_native_clipboard(self):
-        return subprocess.check_output(self.PASTECOMMAND, shell=True, 
+        return subprocess.check_output(cls.PASTECOMMAND, shell=True, 
                 universal_newlines=True)
 
     def _set_native_clipboard(self, s):
@@ -68,6 +67,20 @@ class X11Clipboard(NativeClipboard):
     CLIPCOMMAND = 'xsel'
     COPYCOMMAND = 'xsel -i -b'
     PASTECOMMAND = 'xsel -o -b'
+
+    @classmethod
+    def check(cls):
+        if not shutil.which(X11Clipboard.CLIPCOMMAND):
+            return False
+
+        ret = subprocess.call(cls.CLIPCOMMAND, stdin=subprocess.PIPE, 
+                universal_newlines=True, stdout=subprocess.PIPE,
+                stderr=subprocess.PIPE, shell=True)
+        if ret:
+            return False
+
+        return True
+
     def _get_native_clipboard(self):
         return subprocess.check_output(self.PASTECOMMAND, shell=True, 
                 universal_newlines=True)
