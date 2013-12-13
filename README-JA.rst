@@ -37,6 +37,7 @@ kaa は簡単かつ高機能なテキストエディタで、次のような機�
 
 http://kaaedit.github.io にもスクリーンショットが公開されています。
 
+
 Kaa is easy!
 ------------
 
@@ -65,7 +66,7 @@ MS-WindowsのCygwinは、現在のところサポートしていません。今�
 
 * Pythonの開発用ヘッダ・ライブラリと、ワイド文字をサポートした ncurses ライブラリが必要です。Debian/Ubuntuでは、 ::
 
-    $ sudo apt-get install python3-dev libncurses5-dev libncursesw5-dev 
+    $ sudo apt-get install python3-dev libcursesw5 libncurses5-dev libncursesw5-dev 
 
   で必要なファイルをインストールできます。
 

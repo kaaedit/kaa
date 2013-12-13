@@ -18,7 +18,9 @@ CURSES_ESCDELAY = '50'
 def _init(stdscr):
     if not hasattr(stdscr, 'get_wch'):
         raise RuntimeError(
-            'Kaa requires curses library with wide charater support.')
+'''Wide characters are not supported by curses module. Please install 
+ncursesw package and rebuild Python.
+See https://pypi.python.org/pypi/kaaedit/#requirements for detail.''')
 
     curses.start_color()
     curses.use_default_colors()

@@ -69,7 +69,9 @@ To run kaa, you need following component:
 
 .. code:: sh
 
-   $ sudo apt-get install python3-dev libncurses5-dev libncursesw5-dev 
+   $ sudo apt-get install python3-dev libncursesw5 libncurses5-dev libncursesw5-dev 
+
+After theses packages are installed, rebuild Python installation to take effect.
 
 * Kaa can use system clipboard. To use clipboard on Unix platform, `xsel` command should be installed. For Ubuntu linux, following command installs `xsel` command.
 
@@ -757,14 +759,22 @@ Links
 Version history
 =================
 
-0.19.0 - 2013.12.11
+0.20.0 - 2013.12.13
 --------------------
 
-- Support system clipboard.
+- Save clipboard history to disk.
+
+- Python debugger: Display status of target process.
 
 
 Past versions
 --------------
+
+0.19.0 - 2013.12.11
++++++++++++++++++++++
+
+- Support system clipboard.
+
 
 0.18.0 - 2013.12.10
 +++++++++++++++++++++
