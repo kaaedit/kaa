@@ -114,7 +114,7 @@ class Buffer(gappedbuf.GappedBuffer):
 
 class Document:
     all = weakref.WeakSet()  # should not be used!
-    provisional = False
+    temporary = False
     closed = False
     fileinfo = None
 

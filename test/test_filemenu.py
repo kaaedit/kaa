@@ -5,7 +5,6 @@ import kaa
 import kaa_testutils
 
 
-@patch('kaa.app', new=kaa_testutils.DmyApp(), create=True)
 class TestSaveAll(kaa_testutils._TestScreenBase):
 
     def test_saveall(self):

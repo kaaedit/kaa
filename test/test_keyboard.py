@@ -5,9 +5,7 @@ from kaa.keyboard import *
 
 class TestKeyBind:
 
-    @patch('kaa.app', create=True)
-    def _create_keybind(self, bind, mockapp):
-        mockapp.translate_key.side_effect = lambda mod, c: (mod, c)
+    def _create_keybind(self, bind):
 
         kb = keyboard.KeyBind()
         kb.add_keybind(bind)

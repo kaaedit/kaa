@@ -1,9 +1,10 @@
+import unittest.mock
 from unittest.mock import patch
 
 import kaa
 import kaa.config
 import kaa.options
-from kaa import screen, document, cursor, context, editmode
+from kaa import screen, document, cursor, context, editmode, fileio
 from kaa.filetype.default import defaultmode
 
 
@@ -58,14 +59,18 @@ class DmyFrame:
         return self.docs
 
 
-class DmyApp:
+class DmyApp(unittest.mock.Mock):
     option = kaa.options.build_parser().parse_args([])
     config = kaa.config.Config(option)
+    config.hist_storage = unittest.mock.Mock()
+
     last_dir = ''
     DEFAULT_THEME = 'basic'
+    storage = fileio.FileStorage()
+    NUM_NEWFILE = 1
 
     def translate_key(self, mod, char):
-        return ()
+        return (mod, char)
 
     def get_current_theme(self):
         return 'default'
@@ -76,6 +81,9 @@ class DmyApp:
     def set_focus(self, wnd):
         pass
 
+kaa.app = DmyApp()
+
+
 
 class _TestDocBase:
     DEFAULTMODECLASS = defaultmode.DefaultMode
@@ -84,18 +92,12 @@ class _TestDocBase:
         return repr(self)
 
     def _getdoc(self, s=''):
-        import kaa
-        if not hasattr(kaa, 'app'):
-            kaa.app = DmyApp()
         mode = self._getmode()
-        import kaa.fileio
-        return kaa.fileio.newfile(mode, s)
+        return kaa.app.storage.newfile(mode, s)
 
     def _getmode(self):
-        with patch('kaa.app', create=True):
-            kaa.app.DEFAULT_THEME = 'basic'
-            cls = self._getmodeclass()
-            return self._createmode(cls)
+        cls = self._getmodeclass()
+        return self._createmode(cls)
 
     def _getmodeclass(self):
         return self.DEFAULTMODECLASS

@@ -12,7 +12,6 @@ class _frame:
         return 'title'
 
 
-@patch('kaa.app', new=kaa_testutils.DmyApp(), create=True)
 class TestFrameList(kaa_testutils._TestDocBase):
 
     def test_framelist(self):

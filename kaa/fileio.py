@@ -103,11 +103,50 @@ class FileStorage:
         kaa.app.config.hist('dirname').add(dirname)
         kaa.app.last_dir = dirname
 
+    def newfile(self, mode=None, s='', temporary=False):
+        buf = document.Buffer()
+        if s:
+            buf.insert(0, s)
+
+        doc = document.Document(buf)
+        doc.temporary = temporary
+
+        doc.title = '<Untitled {}>'.format(kaa.app.NUM_NEWFILE)
+        kaa.app.NUM_NEWFILE += 1
+
+        doc.fileinfo = FileInfo()
+        if not mode:
+            mode = defaultmode.DefaultMode()
+        doc.setmode(mode)
+        return doc
+
     def openfile(self, filename, encoding=None, newline=None, nohist=False,
                  filemustexists=False):
         if not nohist:
             self._save_hist(filename)
-        return openfile(filename, encoding, newline, filemustexists)
+
+        fileinfo = self.get_fileinfo(filename, encoding, newline)
+        textio = self.get_textio(fileinfo, filemustexists)
+
+        buf = document.Buffer()
+        if textio:
+            src = textio.read()
+            if fileinfo.nlchars is not None:
+                src = src.replace(fileinfo.nlchars, '\n')
+            buf.insert(0, src)
+
+        doc = document.Document(buf)
+        doc.fileinfo = fileinfo
+        doc.setmode(select_mode(filename)())
+
+        dir, file = os.path.split(fileinfo.fullpathname)
+        if not dir.endswith(os.path.sep):
+            dir += os.path.sep
+
+        kaa.app.messagebar.set_message('Read from {}({})'.format(file, dir))
+
+        return doc
+
 
     def save_document(self, doc, filename, encoding=None, newline=None,
                       nohist=False):
@@ -146,7 +185,7 @@ class FileStorage:
 
         doc.fileinfo = fileinfo
         doc.set_title(None)
-        doc.provisional = False
+        doc.temporary = False
         if doc.undo:
             doc.undo.saved()
 
@@ -214,47 +253,46 @@ def select_mode(filename):
     return defaultmode.DefaultMode
 
 
-def openfile(filename, encoding=None, newline=None, filemustexists=False):
-    # Open file
-    fileinfo = kaa.app.storage.get_fileinfo(filename, encoding, newline)
-    textio = kaa.app.storage.get_textio(fileinfo, filemustexists)
+#def openfile(filename, encoding=None, newline=None, filemustexists=False):
+#    # Open file
+#    fileinfo = kaa.app.storage.get_fileinfo(filename, encoding, newline)
+#    textio = kaa.app.storage.get_textio(fileinfo, filemustexists)
+#
+#    buf = document.Buffer()
+#    if textio:
+#        src = textio.read()
+#        if fileinfo.nlchars is not None:
+#            src = src.replace(fileinfo.nlchars, '\n')
+#        buf.insert(0, src)
+#
+#    doc = document.Document(buf)
+#    doc.fileinfo = fileinfo
+#    doc.setmode(select_mode(filename)())
+#
+#    dir, file = os.path.split(fileinfo.fullpathname)
+#    if not dir.endswith(os.path.sep):
+#        dir += os.path.sep
+#
+#    kaa.app.messagebar.set_message('Read from {}({})'.format(file, dir))
+#
+#    return doc
+#
 
-    buf = document.Buffer()
-    if textio:
-        src = textio.read()
-        if fileinfo.nlchars is not None:
-            src = src.replace(fileinfo.nlchars, '\n')
-        buf.insert(0, src)
-
-    doc = document.Document(buf)
-    doc.fileinfo = fileinfo
-    doc.setmode(select_mode(filename)())
-
-    dir, file = os.path.split(fileinfo.fullpathname)
-    if not dir.endswith(os.path.sep):
-        dir += os.path.sep
-
-    kaa.app.messagebar.set_message('Read from {}({})'.format(file, dir))
-
-    return doc
-
-NUM_NEWFILE = 1
-
-
-def newfile(mode=None, s='', provisional=False):
-    buf = document.Buffer()
-    if s:
-        buf.insert(0, s)
-
-    doc = document.Document(buf)
-    doc.provisional = provisional
-
-    global NUM_NEWFILE
-    doc.title = '<Untitled {}>'.format(NUM_NEWFILE)
-    NUM_NEWFILE += 1
-
-    doc.fileinfo = FileInfo()
-    if not mode:
-        mode = defaultmode.DefaultMode()
-    doc.setmode(mode)
-    return doc
+#
+#def newfile(mode=None, s='', provisional=False):
+#    buf = document.Buffer()
+#    if s:
+#        buf.insert(0, s)
+#
+#    doc = document.Document(buf)
+#    doc.provisional = provisional
+#
+#    global NUM_NEWFILE
+#    doc.title = '<Untitled {}>'.format(NUM_NEWFILE)
+#    NUM_NEWFILE += 1
+#
+#    doc.fileinfo = FileInfo()
+#    if not mode:
+#        mode = defaultmode.DefaultMode()
+#    doc.setmode(mode)
+#    return doc

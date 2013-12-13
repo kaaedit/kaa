@@ -7,8 +7,7 @@ import kaa_testutils
 
 class TestMenuMode(kaa_testutils._TestDocBase):
 
-    @patch('kaa.app', create=True)
-    def test_msbbox(self, mock):
+    def test_msbbox(self):
         kaa.app.DEFAULT_THEME = 'basic'
 
         target = kaa_testutils._TestScreenBase()._getwnd('')

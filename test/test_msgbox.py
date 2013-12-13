@@ -7,8 +7,7 @@ import kaa_testutils
 
 class TestSearchDlgMode(kaa_testutils._TestDocBase):
 
-    @patch('kaa.app', create=True)
-    def test_msbbox(self, mock):
+    def test_msgbox(self):
         kaa.app.DEFAULT_THEME = 'basic'
 
         def cb(c):

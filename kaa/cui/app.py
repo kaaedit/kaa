@@ -18,6 +18,7 @@ class CuiApp:
     SHOW_MENU_MESSAGE = 'Type F1 or alt+/ for menu.'
     DEFAULT_THEME = 'basic'
     DEFAULT_PALETTE = 'dark'
+    NUM_NEWFILE = 1
 
     def __init__(self, config):
         self.config = config

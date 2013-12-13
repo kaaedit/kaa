@@ -11,8 +11,7 @@ class FileCommands(Commands):
     @norec
     @norerun
     def file_new(self, wnd):
-        from kaa import fileio
-        doc = fileio.newfile()
+        doc = kaa.app.storage.newfile()
         kaa.app.show_doc(doc)
 
     def _find_file_doc(self, filename):
@@ -243,7 +242,7 @@ class FileCommands(Commands):
                 f.bring_top()
                 kaa.app.set_focus(f)
             else:
-                doc = kaa.fileio.newfile(provisional=True)
+                doc = kaa.app.storage.newfile(temporary=True)
                 kaa.app.show_doc(doc)
 
         self.close_frame(frame, saved)
@@ -283,7 +282,7 @@ class FileCommands(Commands):
                 f = frames.pop()
                 self.close_frame(f, callback)
             else:
-                doc = kaa.fileio.newfile(provisional=True)
+                doc = kaa.app.storage.newfile(temporary=True)
                 kaa.app.show_doc(doc)
 
         frames = wnd.mainframe.childframes[:]
@@ -417,7 +416,7 @@ class FileCommands(Commands):
     def file_new_to(self, wnd):
         def openfile(cb):
             from kaa import fileio
-            doc = fileio.newfile()
+            doc = kaa.app.storage.newfile()
             wnd.show_doc(doc)
 
         self._open_file_to_wnd(wnd, openfile)

@@ -11,8 +11,7 @@ class TestSearchDlgMode(kaa_testutils._TestDocBase):
         return lambda: searchdlgmode.SearchDlgMode(
             target=kaa_testutils._TestScreenBase()._getwnd(''))
 
-    @patch('kaa.app', create=True)
-    def test_searchdlg(self, mock):
+    def test_searchdlg(self):
         doc = self._getdoc('')
         doc.mode.option.text = ''
 
@@ -34,8 +33,7 @@ class TestSearchDlgMode(kaa_testutils._TestDocBase):
 
         assert doc.mode.get_search_str() == 'test string'
 
-    @patch('kaa.app', create=True)
-    def test_execsearh(self, mock):
+    def test_execsearh(self):
         doc = self._getdoc('')
         doc.mode.build_document()
 
@@ -57,8 +55,7 @@ class TestReplaceDlg(kaa_testutils._TestDocBase):
         return lambda: searchdlgmode.ReplaceDlgMode(
             target=kaa_testutils._TestScreenBase()._getwnd(''))
 
-    @patch('kaa.app', create=True)
-    def test_replacedlg(self, mock):
+    def test_replacedlg(self):
 
         doc = self._getdoc('')
         doc.mode.option.text = ''
@@ -81,8 +78,7 @@ class TestReplaceDlg(kaa_testutils._TestDocBase):
 
         assert doc.mode.get_search_str() == 'test string'
 
-    @patch('kaa.app', create=True)
-    def test_execsearh(self, mock):
+    def test_execsearh(self):
         kaa.app.DEFAULT_THEME = 'basic'
 
         doc = self._getdoc('')

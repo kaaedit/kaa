@@ -5,7 +5,6 @@ import kaa
 import kaa_testutils
 
 
-@patch('kaa.app', new=kaa_testutils.DmyApp(), create=True)
 class TestSwitchSource(kaa_testutils._TestScreenBase):
 
     def test_switchsource(self):
@@ -31,7 +30,6 @@ class TestSwitchSource(kaa_testutils._TestScreenBase):
             assert args[0] is wnd.document
 
 
-@patch('kaa.app', new=kaa_testutils.DmyApp(), create=True)
 class TestJoinWindow(kaa_testutils._TestScreenBase):
 
     def test_joinwindow(self):

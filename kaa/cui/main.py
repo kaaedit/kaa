@@ -73,7 +73,7 @@ def main(stdscr):
 
         if not opt.file:
             # no file args. show new document.
-            doc = fileio.newfile(provisional=True)
+            doc = kaa.app.storage.newfile(temporary=True)
             kaa.app.show_doc(doc)
         else:
             dirname = None
@@ -95,7 +95,7 @@ def main(stdscr):
                         kaa.app.show_doc(doc)
                     else:
                         if not kaa.app.mainframe.childframes:
-                            doc = fileio.newfile(provisional=True)
+                            doc = kaa.app.storage.newfile(temporary=True)
                             kaa.app.show_doc(doc)
 
                 selectfile.show_fileopen(dirname, cb)

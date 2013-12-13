@@ -150,8 +150,8 @@ class MainFrame(Window, kaa.context.ContextRoot):
         self.messagebar.set_rect(
             0, self.height - self.MESSAGEBAR_HEIGHT, self.width, self.height)
 
-    def _get_provisional_frame(self):
-        # if kaa has only one frame and the frame has provisional document,
+    def _get_temporary_frame(self):
+        # if kaa has only one frame and the frame has temporary document,
         # then dispose the document and reuse the frame.
 
         frames = kaa.app.get_frames()
@@ -161,7 +161,7 @@ class MainFrame(Window, kaa.context.ContextRoot):
         wnd = frames[0].splitter.wnd
         if wnd and wnd.document:
             doc = wnd.document
-            if doc.provisional and not wnd.document.undo.is_dirty():
+            if doc.temporary and not wnd.document.undo.is_dirty():
                 if len(doc.wnds) == 1:
                     return frames[0]
 
@@ -174,7 +174,7 @@ class MainFrame(Window, kaa.context.ContextRoot):
         return not self.popups and not self.inputline
 
     def show_doc(self, doc):
-        frame = self._get_provisional_frame()
+        frame = self._get_temporary_frame()
         if frame:
             if frame.splitter.wnd.document is doc:
                 return

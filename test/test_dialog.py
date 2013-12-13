@@ -61,23 +61,22 @@ class TestFormBuilder(kaa_testutils._TestScreenBase):
         assert doc.gettext(doc.marks['mark3'], doc.marks['mark4']) == 'def'
 
     def test_build_shortcut(self):
-        with patch('kaa.app', create=True):
-            kaa.app.DEFAULT_THEME = 'basic'
+        kaa.app.DEFAULT_THEME = 'basic'
 
-            doc = self._getdoc('')
+        doc = self._getdoc('')
 
-            doc.mode.themes = [{'basic': [
-                Style('default', 'default', 'default', False, False),
-                Style('shortcut', 'default', 'default', False, False),
-            ]}]
-            doc.mode._build_theme()
+        doc.mode.themes = [{'basic': [
+            Style('default', 'default', 'default', False, False),
+            Style('shortcut', 'default', 'default', False, False),
+        ]}]
+        doc.mode._build_theme()
 
-            f = dialogmode.FormBuilder(doc)
+        f = dialogmode.FormBuilder(doc)
 
-            def cb(wnd):
-                pass
-            f.append_text('default', 'ab&cdef', on_shortcut=cb,
-                          shortcut_style='shortcut', shortcut_mark='mark1')
+        def cb(wnd):
+            pass
+        f.append_text('default', 'ab&cdef', on_shortcut=cb,
+                      shortcut_style='shortcut', shortcut_mark='mark1')
 
         assert doc.gettext(0, doc.endpos()) == 'abcdef'
 
