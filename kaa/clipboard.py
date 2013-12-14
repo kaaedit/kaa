@@ -41,6 +41,7 @@ class NativeClipboard(Clipboard):
                 self._set(s)
             return s
         except Exception:
+            kaa.log.error('Error to paste', exc_info=True)
             return super().get()
 
     def set(self, s):
@@ -54,7 +55,7 @@ class MacClipboard(NativeClipboard):
     COPYCOMMAND = 'pbcopy'
     PASTECOMMAND = 'pbpaste'
     def _get_native_clipboard(self):
-        return subprocess.check_output(cls.PASTECOMMAND, shell=True, 
+        return subprocess.check_output(self.PASTECOMMAND, shell=True, 
                 universal_newlines=True)
 
     def _set_native_clipboard(self, s):
