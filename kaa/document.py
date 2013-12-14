@@ -281,6 +281,12 @@ class Document:
         else:
             return (eol, self.buf[pos:eol])
 
+    def get_line_break(self, pos):
+        eol = self.buf.findchr('\n', pos, len(self.buf))
+        if eol == -1:
+            return len(self.buf)
+        return eol
+        
     def iterlines(self, pos):
         end = self.endpos()
         while pos < end:

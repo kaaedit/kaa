@@ -557,21 +557,30 @@ class ModeBase:
                       for p in self._last_autoindent)
             self._last_autoindent = None
             if f != t and wnd.cursor.pos == t:
-                s = self.document.gettext(f, t)
-                m = re.match(self.RE_WHITESPACE, s)
-                if m and m.group() == s:
-                    self.delete_string(
-                        wnd, f, t, update_cursor=False)
-                    wnd.cursor.setpos(f)
+                e = self.document.get_line_break(wnd.cursor.pos)
+                if e == t:
+                    s = self.document.gettext(f, t)
+                    m = re.match(self.RE_WHITESPACE, s)
+                    if m and m.group() == s:
+                        self.delete_string(
+                            wnd, f, t, update_cursor=False)
+                        wnd.cursor.setpos(f)
                     
     def on_auto_indent(self, wnd):
         pos = wnd.cursor.pos
         f, t = self.get_indent_range(pos)
         indent = self.document.gettext(f, min(pos, t))
         if pos <= t:
+            b = self.document.get_line_break(pos)
             self.insert_string(wnd, f, '\n', update_cursor=False)
             wnd.cursor.setpos(wnd.cursor.pos + 1)
             wnd.cursor.savecol()
+
+            # if new line don't hava non-ws char,
+            # thie line should be subject to cancel-indent.
+            if t == b:
+                self._last_autoindent = (f+1, wnd.cursor.pos)
+
         else:
             indent = '\n' + indent
             self.insert_string(wnd, pos, indent, update_cursor=False)
