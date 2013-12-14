@@ -108,7 +108,8 @@ class WordCompleteInputMode(filterlist.FilterListInputDlgMode):
         word = self.target.document.mode.get_word_at(self.orgpos)
         if word:
             f, t, cg = word
-            if cg[0] in 'LMN':  # Letter, Mark, Number
+            t = max(f, min(t, self.orgpos))
+            if f < t and cg[0] in 'LMN':  # Letter, Mark, Number
                 self.wordpos = (f, t)
 
                 curword = self.target.document.gettext(f, t)
