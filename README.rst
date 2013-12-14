@@ -65,13 +65,11 @@ To run kaa, you need following component:
 
 * Python 3.3 or later
 
-* Headers and libraries for Python and ncurses with wide character support. Consult documentation of your platform for details. For Debian/Ubuntu, you can install libraries by
+* Headers and libraries for Python and ncurses with wide character support. Consult documentation of your platform for details. For Debian/Ubuntu, you can install libraries by ::
 
-.. code:: sh
-
-   $ sudo apt-get install python3-dev libncursesw5 libncurses5-dev libncursesw5-dev 
-
-After theses packages are installed, rebuild Python installation to take effect.
+    $ sudo apt-get install python3-dev libncursesw5 libncurses5-dev libncursesw5-dev 
+ 
+  After theses packages are installed, rebuild Python installation to take effect.
 
 * Kaa can use system clipboard. To use clipboard on Unix platform, `xsel` command should be installed. For Ubuntu linux, following command installs `xsel` command.
 

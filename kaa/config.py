@@ -26,10 +26,14 @@ class KaaHistoryStorage:
             self._updated = True
 
     def flush(self):
-        for hist in self.hists.values():
-            hist.flush()
-        self.conn.commit()
-        self._updated = False
+        try:
+            if self._updated:
+                for hist in self.hists.values():
+                    hist.flush()
+                self.conn.commit()
+                self._updated = False
+        except Exception:
+            kaa.log.error('Error saving history', exc_info=True)
 
     def close(self):
         for hist in self.hists.values():

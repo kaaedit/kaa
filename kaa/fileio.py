@@ -7,13 +7,14 @@ import kaa.log
 from kaa import document, encodingdef
 from kaa.filetype.default import defaultmode
 from kaa import consts
-
+from kaa import encodingdef
 
 class FileStorage:
 
     def adjust_encoding(self, encoding):
         if encoding.lower() == 'shiftjis':
             return 'cp932'
+        encoding = encodingdef.normalize_encname(encoding)
         return encoding
 
     def guess_japanese_encoding(self, filename):
@@ -78,7 +79,8 @@ class FileStorage:
         fileinfo.encoding = encoding
         fileinfo.newline = newline
 
-        return fileinfo
+        modecls = select_mode(fileinfo)
+        return fileinfo, modecls
 
     def listdir(self, dirname):
         dirs = []
@@ -125,7 +127,7 @@ class FileStorage:
         if not nohist:
             self._save_hist(filename)
 
-        fileinfo = self.get_fileinfo(filename, encoding, newline)
+        fileinfo, modecls = self.get_fileinfo(filename, encoding, newline)
         textio = self.get_textio(fileinfo, filemustexists)
 
         buf = document.Buffer()
@@ -137,7 +139,7 @@ class FileStorage:
 
         doc = document.Document(buf)
         doc.fileinfo = fileinfo
-        doc.setmode(select_mode(filename)())
+        doc.setmode(modecls())
 
         dir, file = os.path.split(fileinfo.fullpathname)
         if not dir.endswith(os.path.sep):
@@ -145,6 +147,7 @@ class FileStorage:
 
         kaa.app.messagebar.set_message('Read from {}({})'.format(file, dir))
 
+        kaa.app.config.hist_storage.flush()
         return doc
 
 
@@ -155,7 +158,7 @@ class FileStorage:
             self._save_hist(filename)
 
         if not doc.fileinfo:
-            fileinfo = kaa.app.storage.get_fileinfo(
+            fileinfo, mocdecls = kaa.app.storage.get_fileinfo(
                 filename, encoding, newline)
         else:
             if encoding is not None:
@@ -179,7 +182,7 @@ class FileStorage:
             # TODO: fsync
             f.write(doc.gettext(0, doc.endpos()))
 
-        fileinfo = self.get_fileinfo(filename, doc.fileinfo.encoding,
+        fileinfo, modecls = self.get_fileinfo(filename, doc.fileinfo.encoding,
                                      doc.fileinfo.newline)
         doc.mode.on_file_saved(fileinfo)
 
@@ -189,15 +192,17 @@ class FileStorage:
         if doc.undo:
             doc.undo.saved()
 
-        mode = select_mode(filename)
+        mode = select_mode(fileinfo)
         if type(doc.mode) is not mode:
             doc.setmode(mode())
 
-        dir, file = os.path.split(filename)
+        dir, file = os.path.split(fileinfo.fullpathname)
         if not dir.endswith(os.path.sep):
             dir += os.path.sep
 
         kaa.app.messagebar.set_message('Written to {}({})'.format(file, dir))
+
+        kaa.app.config.hist_storage.flush()
 
 
 class FileInfo:
@@ -243,12 +248,13 @@ class FileInfo:
             return True
 
 
-def select_mode(filename):
-    ext = os.path.splitext(filename)[1].lower()
-
+def select_mode(fileinfo):
     for pkg in kaa.app.config.get_mode_packages():
-        if ext in getattr(pkg, 'FILE_EXT', ()):
-            return pkg.get_modetype()
+        if hasattr(pkg, 'FileTypeInfo'):
+            ret = pkg.FileTypeInfo.select_mode(fileinfo)
+            if ret:
+                pkg.FileTypeInfo.update_fileinfo(fileinfo)
+                return ret
 
     return defaultmode.DefaultMode
 

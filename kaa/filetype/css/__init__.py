@@ -1,6 +1,9 @@
-FILE_EXT = {'.css'}
+from kaa.filetype import filetypedef
 
+class FileTypeInfo(filetypedef.FileTypeInfo):
+    FILE_EXT = {'.css'}
 
-def get_modetype():
-    from kaa.filetype.css.cssmode import CSSMode
-    return CSSMode
+    @classmethod
+    def get_modetype(cls):
+        from kaa.filetype.css.cssmode import CSSMode
+        return CSSMode

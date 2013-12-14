@@ -131,7 +131,7 @@ class FileInfoMode(dialogmode.DialogMode):
     def _on_update_mode(self, c):
         modes = []
         for pkg in kaa.app.config.get_mode_packages():
-            modes.append(pkg.get_modetype())
+            modes.append(pkg.FileTypeInfo.get_modetype())
 
         names = [mode.MODENAME for mode in modes]
 

@@ -1,6 +1,9 @@
-FILE_EXT = {'.md'}
+from kaa.filetype import filetypedef
 
+class FileTypeInfo(filetypedef.FileTypeInfo):
+    FILE_EXT = {'.md'}
 
-def get_modetype():
-    from kaa.filetype.markdown.markdownmode import MarkdownMode
-    return MarkdownMode
+    @classmethod
+    def get_modetype(cls):
+        from kaa.filetype.markdown.markdownmode import MarkdownMode
+        return MarkdownMode

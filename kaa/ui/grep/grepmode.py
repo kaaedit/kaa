@@ -111,7 +111,7 @@ def _grep(filename, regex, encoding, newline):
         if encoding == 'japanese':
             encoding = _enc_japanese(filename)
 
-        fileinfo = kaa.app.storage.get_fileinfo(filename,
+        fileinfo, modecls = kaa.app.storage.get_fileinfo(filename,
                                                 encoding=encoding, newline=newline)
         f = kaa.app.storage.get_textio(fileinfo)
         if not f:

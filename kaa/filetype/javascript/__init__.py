@@ -1,6 +1,9 @@
-FILE_EXT = {'.js'}
+from kaa.filetype import filetypedef
 
+class FileTypeInfo(filetypedef.FileTypeInfo):
+    FILE_EXT = {'.js'}
 
-def get_modetype():
-    from kaa.filetype.javascript.javascriptmode import JavaScriptMode
-    return JavaScriptMode
+    @classmethod
+    def get_modetype(cls):
+        from kaa.filetype.javascript.javascriptmode import JavaScriptMode
+        return JavaScriptMode

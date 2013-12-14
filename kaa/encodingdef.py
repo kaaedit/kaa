@@ -1,3 +1,4 @@
+import kaa
 import codecs
 
 encodings = [
@@ -98,5 +99,24 @@ encodings = [
 canonical_names = {codecs.lookup(name).name: name for name in encodings}
 
 
+
+# from tokenize.py
+def _get_normal_name(orig_enc):
+    """Imitates get_normal_name in tokenizer.c."""
+    # Only care about the first 12 characters.
+    enc = orig_enc[:12].lower().replace("_", "-")
+    if enc == "utf-8" or enc.startswith("utf-8-"):
+        return "utf-8"
+    if enc in ("latin-1", "iso-8859-1", "iso-latin-1") or \
+       enc.startswith(("latin-1-", "iso-8859-1-", "iso-latin-1-")):
+        return "iso-8859-1"
+    return orig_enc
+
 def normalize_encname(name):
-    return canonical_names[codecs.lookup(name).name]
+    name = _get_normal_name(name)
+    try:
+        name = codecs.lookup(name).name
+    except LookupError:
+        kaa.log.error('Unknown encoding', exc_info=True)
+        name = 'utf-8'   # error fallback
+    return canonical_names[name]

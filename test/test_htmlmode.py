@@ -1,7 +1,7 @@
 import kaa_testutils
 from kaa import highlight
 from kaa.filetype.html import htmlmode
-
+from kaa.filetype.html import get_encoding
 
 class TestHTMLHighlight(kaa_testutils._TestDocBase):
     tokenizers = htmlmode.build_tokenizers()
@@ -245,3 +245,31 @@ class TestHTMLHighlight(kaa_testutils._TestDocBase):
             (2, 21, self.tokenizers[0].tokens.xmldef.span_mid),
             (21, 22, self.tokenizers[0].tokens.xmldef.span_end),
         ] == list((f, t, style) for f, t, style in hl.highlight(doc, 0))
+
+
+class TestEncDecl:
+    def test_html5(self):
+        assert b'UTF-8' == get_encoding(b'<meta charset="UTF-8">')
+        assert b'UTF-8' == get_encoding(b"<meta charset='UTF-8'>")
+        assert not  get_encoding(b"<meta charset='UTF-8>")
+
+    def test_html(self):
+        assert b'UTF-8' == get_encoding(
+            b'''<meta http-equiv="Content-type"
+            content="text/html;charset=UTF-8">''')
+
+        assert not get_encoding(
+            b'''<meta con="text/html;charset=UTF-8">''')
+
+        assert not get_encoding(
+            b'''<meta content="text/html;char=UTF-8">''')
+
+    def test_xml(self):
+        assert b'UTF-8' == get_encoding(
+                b'<?xml version="1.0" encoding="UTF-8"?>')
+
+        assert not get_encoding(
+                b'<?xm version="1.0" encoding="UTF-8"?>')
+
+        assert not get_encoding(
+                b'<?xml version="1.0" encoding=""?>')

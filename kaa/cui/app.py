@@ -277,7 +277,8 @@ class CuiApp:
 
                         if self.focus.editmode:
                             self.focus.editmode.on_keyevent(self.focus, c)
-                            self.focus.update_window()
+                            if self.focus:
+                                self.focus.update_window()
                 
                 if not inputs:
                     if self.mainframe.on_idle():
