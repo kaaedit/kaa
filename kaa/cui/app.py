@@ -282,6 +282,7 @@ class CuiApp:
                 
                 if not inputs:
                     if self.mainframe.on_idle():
+                        self.set_idlejob()  # Reschedule idle procs
                         continue
 
                     # no input

@@ -79,8 +79,7 @@ class FileStorage:
         fileinfo.encoding = encoding
         fileinfo.newline = newline
 
-        modecls = select_mode(fileinfo)
-        return fileinfo, modecls
+        return fileinfo
 
     def listdir(self, dirname):
         dirs = []
@@ -127,7 +126,10 @@ class FileStorage:
         if not nohist:
             self._save_hist(filename)
 
-        fileinfo, modecls = self.get_fileinfo(filename, encoding, newline)
+        fileinfo = self.get_fileinfo(filename, encoding, newline)
+        modecls = select_mode(fileinfo.fullpathname)
+        modecls.update_fileinfo(fileinfo)
+        
         textio = self.get_textio(fileinfo, filemustexists)
 
         buf = document.Buffer()
@@ -139,6 +141,7 @@ class FileStorage:
 
         doc = document.Document(buf)
         doc.fileinfo = fileinfo
+
         doc.setmode(modecls())
 
         dir, file = os.path.split(fileinfo.fullpathname)
@@ -158,8 +161,9 @@ class FileStorage:
             self._save_hist(filename)
 
         if not doc.fileinfo:
-            fileinfo, mocdecls = kaa.app.storage.get_fileinfo(
+            fileinfo = kaa.app.storage.get_fileinfo(
                 filename, encoding, newline)
+            doc.fileinfo = fileinfo
         else:
             if encoding is not None:
                 doc.fileinfo.encoding = encoding
@@ -173,6 +177,12 @@ class FileStorage:
             if doc.fileinfo.newline is None:
                 doc.fileinfo.newline = kaa.app.config.DEFAULT_NEWLINE
 
+        modecls = select_mode(filename)
+        if type(doc.mode) is not modecls:
+            doc.setmode(modecls())
+
+        doc.mode.update_fileinfo(doc.fileinfo, doc)
+
         with open(filename, 'w',
                   encoding=self.adjust_encoding(doc.fileinfo.encoding),
                   newline=consts.NEWLINE_CHARS[doc.fileinfo.newline],
@@ -182,7 +192,7 @@ class FileStorage:
             # TODO: fsync
             f.write(doc.gettext(0, doc.endpos()))
 
-        fileinfo, modecls = self.get_fileinfo(filename, doc.fileinfo.encoding,
+        fileinfo = self.get_fileinfo(filename, doc.fileinfo.encoding,
                                      doc.fileinfo.newline)
         doc.mode.on_file_saved(fileinfo)
 
@@ -192,10 +202,6 @@ class FileStorage:
         if doc.undo:
             doc.undo.saved()
 
-        mode = select_mode(fileinfo)
-        if type(doc.mode) is not mode:
-            doc.setmode(mode())
-
         dir, file = os.path.split(fileinfo.fullpathname)
         if not dir.endswith(os.path.sep):
             dir += os.path.sep
@@ -203,7 +209,6 @@ class FileStorage:
         kaa.app.messagebar.set_message('Written to {}({})'.format(file, dir))
 
         kaa.app.config.hist_storage.flush()
-
 
 class FileInfo:
     storage = None
@@ -248,12 +253,11 @@ class FileInfo:
             return True
 
 
-def select_mode(fileinfo):
+def select_mode(filename):
     for pkg in kaa.app.config.get_mode_packages():
         if hasattr(pkg, 'FileTypeInfo'):
-            ret = pkg.FileTypeInfo.select_mode(fileinfo)
+            ret = pkg.FileTypeInfo.select_mode(filename)
             if ret:
-                pkg.FileTypeInfo.update_fileinfo(fileinfo)
                 return ret
 
     return defaultmode.DefaultMode

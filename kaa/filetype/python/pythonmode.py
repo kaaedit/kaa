@@ -1,3 +1,4 @@
+import io
 import keyword
 import copy
 from kaa.filetype.default import defaultmode, theme
@@ -39,6 +40,22 @@ class PythonMode(defaultmode.DefaultMode):
     MODENAME = 'Python'
     re_begin_block = gre.compile(r"[^#]*:\s*(#.*)?$")
     LINE_COMMENT = '#'
+
+    @classmethod
+    def update_fileinfo(cls, fileinfo, document=None):
+        import tokenize
+        if not document:
+            try:
+                with open(fileinfo.fullpathname, 'rb') as buffer:
+                    encoding, lines = tokenize.detect_encoding(buffer.readline)
+                    fileinfo.encoding = encoding
+            except IOError:
+                pass
+        else:
+            s = document.gettext(0, 1024).encode('utf-8', errors='ignore')
+            buffer = io.BytesIO(s)
+            encoding, lines = tokenize.detect_encoding(buffer.readline)
+            fileinfo.encoding = encoding
 
     def init_keybind(self):
         super().init_keybind()

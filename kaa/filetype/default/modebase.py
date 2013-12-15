@@ -76,6 +76,10 @@ class ModeBase:
     _check_fileupdate = 0
     _last_autoindent = None
     
+    @classmethod
+    def update_fileinfo(cls, fileinfo, document=None):
+        pass
+
     def __init__(self):
         self.commands = {}
         self.is_availables = {}
