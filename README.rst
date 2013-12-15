@@ -65,17 +65,21 @@ To run kaa, you need following component:
 
 * Python 3.3 or later
 
-* Headers and libraries for Python and ncurses with wide character support. Consult documentation of your platform for details. For Debian/Ubuntu, you can install libraries by ::
+* Development files for Python 3.3. For recent Debian/Ubuntu, you can install required libraries by ::
 
-    $ sudo apt-get install python3-dev libncursesw5 libncurses5-dev libncursesw5-dev 
+    $ sudo apt-get install python3-dev
+
+* If your Python installation is not system-supplyed package but built by yourself, please ensure you have installed ncurses library with wide character support before you built Python. Consult documentation of your platform for details. For recent Debian/Ubuntu, you can install required libraries by ::
+
+    $ sudo apt-get install libncursesw5 libncurses5-dev libncursesw5-dev 
  
   After theses packages are installed, rebuild Python installation to take effect.
 
 * Kaa can use system clipboard. To use clipboard on Unix platform, `xsel` command should be installed. For Ubuntu linux, following command installs `xsel` command.
 
-.. code:: sh
+    .. code:: sh
 
-   $ sudo apt-get install xsel
+       $ sudo apt-get install xsel
 
 * UTF-8 locales
 
@@ -757,16 +761,24 @@ Links
 Version history
 =================
 
-0.20.0 - 2013.12.13
+0.21.0 - 2013.12.15
 --------------------
+
+- Respect encoding declaration on loading/saving file in HTML/Python mode.
+
+- Paste from OS clipboard didn't work on Mac.
+
+
+Past versions
+--------------
+
+0.20.0 - 2013.12.13
++++++++++++++++++++++
 
 - Save clipboard history to disk.
 
 - Python debugger: Display status of target process.
 
-
-Past versions
---------------
 
 0.19.0 - 2013.12.11
 +++++++++++++++++++++

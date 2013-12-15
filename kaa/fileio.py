@@ -197,6 +197,8 @@ class FileStorage:
         doc.mode.on_file_saved(fileinfo)
 
         doc.fileinfo = fileinfo
+        doc.fileinfo.check_update() # ensure timestamps updated
+
         doc.set_title(None)
         doc.temporary = False
         if doc.undo:

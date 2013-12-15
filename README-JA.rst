@@ -62,14 +62,19 @@ MS-WindowsのCygwinは、現在のところサポートしていません。今�
 動作環境
 ---------
 
-* Python 3.3以降
+* Python 3.3以降。
 
-* Pythonの開発用ヘッダ・ライブラリと、ワイド文字をサポートした ncurses ライブラリが必要です。Debian/Ubuntuでは、 ::
+* Python 3.3 開発用ライブラリ。Debian/Ubuntuでは、 ::
 
-    $ sudo apt-get install python3-dev libcursesw5 libncurses5-dev libncursesw5-dev 
+    $ sudo apt-get install python3-dev 
 
   で必要なファイルをインストールできます。
 
+* Pythonをパッケージ管理システムからインストールするのではなく、独自にビルドして利用する場合、ビルドする前に、ワイド文字をサポートした ncurses ライブラリをインストールしておく必要があります。Debian/Ubuntuでは、 ::
+
+    $ sudo apt-get install libcursesw5 libncurses5-dev libncursesw5-dev 
+
+  で必要なファイルをインストールできます。インストール後に、Pythonを再ビルドしてください。
 
 * UTF-8 locales(ja_JP.UTF-8など)
 

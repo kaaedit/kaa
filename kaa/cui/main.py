@@ -18,8 +18,9 @@ CURSES_ESCDELAY = '50'
 def _init(stdscr):
     if not hasattr(stdscr, 'get_wch'):
         raise RuntimeError(
-'''Wide characters are not supported by curses module. Please install 
-development package for ncursesw library and rebuild Python.
+'''Wide characters are not supported by curses module. 
+Please install development package for ncursesw library and rebuild Python.
+
 See https://pypi.python.org/pypi/kaaedit/#requirements for detail.
 ''')
 
