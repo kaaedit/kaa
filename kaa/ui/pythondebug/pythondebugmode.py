@@ -94,11 +94,11 @@ class BreakPoints(selectlist.SelectItemList):
 
 DebugThemes = {
     'basic': [
-        Style('line', None, None),
-        Style('filename', 'Blue', None),
-        Style('lineno', 'Blue', None),
-        Style('funcname', 'Blue', None),
-        Style('dirname', 'Blue', None),
+        Style('line', 'Orange', None),
+        Style('filename', 'Cyan', None),
+        Style('lineno', 'Cyan', None),
+        Style('funcname', 'Cyan', None),
+        Style('dirname', 'Cyan', None),
         Style('status', 'Base3', 'Red', nowrap=True),
         Overlay('current_stack', 'Black', 'Yellow'),
     ],
@@ -199,14 +199,14 @@ class PythonCallStackMode(dialogmode.DialogMode):
             for n, (fname, lno, funcname, lines) in enumerate(self.stack):
                 s = self.document.endpos()
 
+                f.append_text('funcname', funcname.replace('&', '&&'))
+                f.append_text('default', ':')
+
                 dirname, filename = os.path.split(fname)
                 f.append_text('filename', filename.replace('&', '&&'))
                 f.append_text('default', ':')
 
                 f.append_text('lineno', str(lno))
-                f.append_text('default', ':')
-
-                f.append_text('funcname', funcname.replace('&', '&&'))
                 f.append_text('default', ':')
 
                 f.append_text('dirname', dirname.replace('&', '&&') + '\n')

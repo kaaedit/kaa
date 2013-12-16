@@ -1,3 +1,4 @@
+import curses
 import kaa
 from . import wnd, editor
 
@@ -59,7 +60,8 @@ class _dialogwnd(wnd.Window, kaa.context.ContextRoot):
 
 class DialogWnd(_dialogwnd):
 
-    def __init__(self, parent, doc, pos=None):
+    def __init__(self, parent, doc, pos=None, border=False):
+        self.border = border
         super().__init__(parent, pos)
         self.inputs = []
         self.input = editor.TextEditorWindow(parent=self)
@@ -89,9 +91,17 @@ class DialogWnd(_dialogwnd):
         rc_input, rects = self.input.document.mode.resize_inputs(
             self.input, self.inputs)
         l, t, r, b = rc_input
+
         if rects:
             t = min(t, rects[0][1])
             b = max(b, rects[-1][3])
+
+        if self.input.document.mode.border:
+            l -= 1
+            t -= 1
+            r += 1
+            b += 1
+
         self.set_rect(l, t, r, b)
 
         for w, (l, t, r, b) in zip(self.inputs, rects):
@@ -109,3 +119,12 @@ class DialogWnd(_dialogwnd):
         input.show_doc(doc)
         self.inputs.insert(pos, input)
         return input
+
+
+    def draw_screen(self):
+        if self.input.document.mode.border:
+            border_attr = self.input.document.mode.theme.get_style(
+                'dialog-border').cui_colorattr
+
+            self._cwnd.attron(border_attr)
+            self._cwnd.border()

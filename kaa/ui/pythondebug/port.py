@@ -252,7 +252,8 @@ class Debugger:
 
         self.show_status()
         msgboxmode.MsgBoxMode.show_msgbox(
-            'Value: {}'.format(value), ['&Ok'], callback, ['\r', '\n'])
+            'Value: {}'.format(value), ['&Ok'], callback, ['\r', '\n'],
+            border=1)
 
     def read_command(self):
         datalen = self.readline()

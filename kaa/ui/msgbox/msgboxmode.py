@@ -74,12 +74,13 @@ class MsgBoxMode(dialogmode.DialogMode):
         kaa.app.show_dialog(self.document)
 
     @classmethod
-    def build_msgbox(cls, caption, options, callback, keys=None):
+    def build_msgbox(cls, caption, options, callback, keys=None, border=False):
         buf = document.Buffer()
         doc = document.Document(buf)
         mode = cls()
         mode.callback = callback
         mode.keys = keys
+        mode.border =  border
         doc.setmode(mode)
 
         with dialogmode.FormBuilder(doc) as f:
@@ -111,7 +112,7 @@ class MsgBoxMode(dialogmode.DialogMode):
         return doc
 
     @classmethod
-    def show_msgbox(cls, caption, options, callback, keys=None):
-        doc = cls.build_msgbox(caption, options, callback, keys)
+    def show_msgbox(cls, caption, options, callback, keys=None, border=False):
+        doc = cls.build_msgbox(caption, options, callback, keys, border)
         doc.mode._show_window()
         return doc

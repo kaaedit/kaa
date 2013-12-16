@@ -74,6 +74,7 @@ class ItemListCommands(Commands):
 
 
 class ItemListMode(dialogmode.DialogMode):
+    border = True
     autoshrink = True
     CAPTIONSEP = '\n'
     ITEMSEP = ' '

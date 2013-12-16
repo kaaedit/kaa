@@ -29,6 +29,7 @@ inputline_keys = {
 
 
 class InputlineMode(dialogmode.DialogMode):
+    border = True
     autoshrink = True
     USE_UNDO = True
     auto_indent = False

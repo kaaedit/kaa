@@ -31,6 +31,8 @@ DialogThemes = {
         Style('selectphrase', 'Black', 'Cyan', nowrap=True),
         Style('selectphrase2', 'Yellow', 'Base02', nowrap=True),
         Style('selectphrase-active', 'Base02', 'Yellow', nowrap=True),
+
+        Style('dialog-border', 'Blue', 'Base03'),
     ],
 }
 
@@ -70,7 +72,7 @@ class DialogMode(modebase.ModeBase):
     autoshrink = False
     suspend_autoshrink = False
     stack_upper = True
-
+    border = False
     min_height = 1
 
     def init_themes(self):
@@ -86,24 +88,35 @@ class DialogMode(modebase.ModeBase):
         wnd.screen.build_entire_rows = True  # todo: use mode.
 
     def calc_width(self, wnd):
-        return wnd.mainframe.getsize()[0]
+        ret = wnd.mainframe.getsize()[0]
+        if self.border:
+            ret -= 2
+        return ret
 
     def calc_height(self, wnd):
         height = wnd.screen.get_total_height()
         if height < self.min_height:
             return self.min_height
         maxw, maxh = wnd.mainframe.getsize()
-        return min(maxh, height)
+        ret =  min(maxh, height)
+        return ret
 
     def calc_position(self, wnd):
         w = self.calc_width(wnd)
+
+        # temporary set screen size
+        # should be resized later soon
         wnd.screen.setsize(w, wnd.screen.height)
+
         height = self.calc_height(wnd)
         height = min(height, wnd.mainframe.messagebar.rect[1])
 
-        top = wnd.mainframe.messagebar.rect[1] - height
-
-        return 0, top, wnd.mainframe.width, top + height
+        if not self.border:
+            top = wnd.mainframe.messagebar.rect[1] - height
+            return 0, top, wnd.mainframe.width, top + height
+        else:
+            top = wnd.mainframe.messagebar.rect[1] - height - 1
+            return 1, top, wnd.mainframe.width-1, top+height
 
     def resize_inputs(self, wnd, inputs):
         rects = [w.document.mode.calc_position(w) for w in inputs]
