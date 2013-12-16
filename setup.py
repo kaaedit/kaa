@@ -3,7 +3,9 @@ from setuptools import setup, find_packages, Extension
 
 
 if sys.version_info[:2] < (3, 3):
-    raise RuntimeError('Kaa requires Python 3.3 or later.')
+    raise RuntimeError('''Kaa requires Python 3.3 or later, with ncursesw support. 
+Please see https://pypi.python.org/pypi/kaaedit/#setup to install.
+''')
 
 try:
     from Cython.Distutils import build_ext
@@ -40,7 +42,7 @@ setup(
             "Environment :: Console :: Curses",
             "License :: OSI Approved :: MIT License", ],
     license='MIT License',
-    install_requires=['curses_ex', 'pyjf3', 'setproctitle', 'kaadbg'],
+    install_requires=['curses_ex', 'pyjf3', 'setproctitle', 'kaadbg >= 0.1.0'],
     packages = find_packages(),
     ext_modules = [ext],
     entry_points = {
