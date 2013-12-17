@@ -301,20 +301,40 @@ class PythonCallStackMode(dialogmode.DialogMode):
         if self.cursel < len(self.stack) - 1:
             self.update_sel(wnd, self.cursel + 1)
 
+    msg_notbreaking = 'Debug target is not breaking.'
+    def _cmd_not_breaked(self):
+        kaa.app.messagebar.set_message(self.msg_notbreaking)
+
     def on_step(self, wnd):
-        self.port.set_step()
+        _trace(self.port.is_breaking())
+        if self.port.is_breaking():
+            self.port.set_step()
+        else:
+            self._cmd_not_breaked()
 
     def on_next(self, wnd):
-        self.port.set_next()
+        if self.port.is_breaking():
+            self.port.set_next()
+        else:
+            self._cmd_not_breaked()
 
     def on_return(self, wnd):
-        self.port.set_return()
+        if self.port.is_breaking():
+            self.port.set_return()
+        else:
+            self._cmd_not_breaked()
 
     def on_continue(self, wnd):
-        self.port.set_continue()
+        if self.port.is_breaking():
+            self.port.set_continue()
+        else:
+            self._cmd_not_breaked()
 
     def on_expr(self, wnd):
-        show_expr(self.port, self.cursel)
+        if self.port.is_breaking():
+            show_expr(self.port, self.cursel)
+        else:
+            self._cmd_not_breaked()
 
     def on_breakpoint(self, wnd):
         doc = BreakPoints.build(self.port)

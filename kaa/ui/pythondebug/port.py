@@ -164,6 +164,9 @@ class Debugger:
 
             self.debugpage.document.mode.set_status(self.debugpage, status)
     
+    def is_breaking(self):
+        return self.session and not self.running
+
     def set_running(self, running):
         self.running = running
 
