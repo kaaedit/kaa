@@ -42,7 +42,7 @@ setup(
             "Environment :: Console :: Curses",
             "License :: OSI Approved :: MIT License", ],
     license='MIT License',
-    install_requires=['curses_ex', 'pyjf3', 'setproctitle', 'kaadbg >= 0.1.0'],
+    install_requires=['curses_ex', 'pyjf3', 'setproctitle', 'kaadbg >= 0.2.0'],
     packages = find_packages(),
     ext_modules = [ext],
     entry_points = {

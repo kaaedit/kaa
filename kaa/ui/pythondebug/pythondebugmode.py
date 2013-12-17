@@ -117,22 +117,97 @@ callstack_keys = {
 }
 
 
-class PythonCallStackMode(dialogmode.DialogMode):
+class PythonStackList(dialogmode.DialogMode):
     SHOW_CURSOR = False
     autoshrink = True
     cursel = 0
-
-    def setup(self):
-        super().setup()
-        self.updated_wnds = set()
 
     def init_themes(self):
         super().init_themes()
         self.themes.append(DebugThemes)
 
-    def init_keybind(self):
-        super().init_keybind()
-        self.keybind.add_keybind(callstack_keys)
+    def calc_position(self, wnd):
+        height = wnd.screen.get_total_height()
+        height = min(height,
+                     (wnd.mainframe.height - wnd.mainframe.MESSAGEBAR_HEIGHT) // 2)
+        top = wnd.mainframe.height - height - wnd.mainframe.MESSAGEBAR_HEIGHT
+        return 0, top, wnd.mainframe.width, top + height
+
+    def build(self, stack):
+        self.document.marks.clear()
+        self.document.delete(0, self.document.endpos())
+
+        self.stack = tuple(stack or ())
+        with dialogmode.FormBuilder(self.document) as f:
+            for n, (fname, lno, funcname, lines) in enumerate(self.stack):
+                s = self.document.endpos()
+
+                f.append_text('funcname', funcname.replace('&', '&&'))
+                f.append_text('default', ':')
+
+                dirname, filename = os.path.split(fname)
+                f.append_text('filename', filename.replace('&', '&&'))
+                f.append_text('default', ':')
+
+                f.append_text('lineno', str(lno))
+                f.append_text('default', ':')
+
+                f.append_text('dirname', dirname.replace('&', '&&') + '\n')
+
+                line = (lines[0] if lines else '').strip()
+                if not line:
+                    line = '(empty line)'
+                f.append_text('line', line.replace('&', '&&') + '\n')
+
+                t = self.document.endpos()
+                self.document.marks[('stack', n)] = (s, t)
+
+
+    def update_sel(self, wnd, n):
+        if self.cursel != n:
+            f, t = self.document.marks.get(
+                ('stack', self.cursel), (None, None))
+            if f is not None:
+                wnd.set_line_overlay(f, None)
+
+        f, t = self.document.marks.get(('stack', n), (None, None))
+        if f is not None:
+            wnd.set_line_overlay(f, 'current_stack')
+
+        self.cursel = n
+        if n < len(self.stack):
+            (fname, lno, funcname, lines) = self.stack[n]
+
+            if f is not None:
+                wnd.screen.locate(f, middle=True)
+
+            wnd.activate()
+            debugpanel = wnd.get_label('editor')
+            debugpanel.document.mode.show_line(fname, lno)
+            debugpanel.activate()
+
+    @command('callstack_keys.prev')
+    @norec
+    @norerun
+    def stack_prev(self, wnd):
+        if self.cursel:
+            self.update_sel(wnd, self.cursel - 1)
+
+    @command('callstack_keys.next')
+    @norec
+    @norerun
+    def stack_next(self, wnd):
+        if self.cursel < len(self.stack) - 1:
+            self.update_sel(wnd, self.cursel + 1)
+
+
+class PythonDebuggerPanel(dialogmode.DialogMode):
+    SHOW_CURSOR = False
+    autoshrink = True
+
+    def init_themes(self):
+        super().init_themes()
+        self.themes.append(DebugThemes)
 
     def init_commands(self):
         super().init_commands()
@@ -143,6 +218,14 @@ class PythonCallStackMode(dialogmode.DialogMode):
         self.file_commands = filecommand.FileCommands()
         self.register_command(self.file_commands)
 
+    def init_keybind(self):
+        super().init_keybind()
+        self.keybind.add_keybind(callstack_keys)
+
+    def setup(self):
+        super().setup()
+        self.updated_wnds = set()
+
     def close(self):
         self._restore_highlight()
         super().close()
@@ -150,13 +233,6 @@ class PythonCallStackMode(dialogmode.DialogMode):
 
     def on_str(self, wnd, s):
         pass
-
-    def calc_position(self, wnd):
-        height = wnd.screen.get_total_height()
-        height = min(height,
-                     (wnd.mainframe.height - wnd.mainframe.MESSAGEBAR_HEIGHT) // 2)
-        top = wnd.mainframe.height - height - wnd.mainframe.MESSAGEBAR_HEIGHT
-        return 0, top, wnd.mainframe.width, top + height
 
     def build(self, stack):
         self.document.marks.clear()
@@ -194,56 +270,22 @@ class PythonCallStackMode(dialogmode.DialogMode):
 
             f.append_text('status', '-Waiting-', mark_pair='status')
 
-            f.append_text('default', '\n')
-
-            for n, (fname, lno, funcname, lines) in enumerate(self.stack):
-                s = self.document.endpos()
-
-                f.append_text('funcname', funcname.replace('&', '&&'))
-                f.append_text('default', ':')
-
-                dirname, filename = os.path.split(fname)
-                f.append_text('filename', filename.replace('&', '&&'))
-                f.append_text('default', ':')
-
-                f.append_text('lineno', str(lno))
-                f.append_text('default', ':')
-
-                f.append_text('dirname', dirname.replace('&', '&&') + '\n')
-
-                line = (lines[0] if lines else '').strip()
-                if not line:
-                    line = '(empty line)'
-                f.append_text('line', line.replace('&', '&&') + '\n')
-
-                t = self.document.endpos()
-                self.document.marks[('stack', n)] = (s, t)
-
 
     def update(self, wnd, stack):
         self.build(stack)
-        self.update_sel(wnd, 0)
-        wnd.mainframe.on_console_resized()
+        self.show_curline(wnd)
 
-    def update_sel(self, wnd, n):
-        if self.cursel != n:
-            f, t = self.document.marks.get(
-                ('stack', self.cursel), (None, None))
-            if f is not None:
-                wnd.set_line_overlay(f, None)
+        w = self._get_stacklist(wnd)
+        w.document.mode.build(stack)
+        w.document.mode.update_sel(w, 0)
 
-        f, t = self.document.marks.get(('stack', n), (None, None))
-        if f is not None:
-            wnd.set_line_overlay(f, 'current_stack')
-
-        self.cursel = n
-        if n < len(self.stack):
-            (fname, lno, funcname, lines) = self.stack[n]
+    def show_curline(self, wnd):
+        if self.stack:
+            (fname, lno, funcname, lines) = self.stack[0]
             self.show_line(fname, lno)
             wnd.activate()
 
-            if f is not None:
-                wnd.screen.locate(f, middle=True)
+            wnd.mainframe.on_console_resized()
 
     def on_esc_pressed(self, wnd, event):
         super().on_esc_pressed(wnd, event)
@@ -251,12 +293,21 @@ class PythonCallStackMode(dialogmode.DialogMode):
         popup.destroy()
         kaa.app.messagebar.set_message('')
 
+    def set_status(self, wnd, status):
+        f, t = self.document.marks['status']
+        styleid = self.get_styleid('status')
+        self.document.replace(f, t, status, styleid)
+        wnd.clear_line_overlay()
+#        self.update_sel(wnd, 0)
+
     def _restore_highlight(self):
         for w in self.updated_wnds:
             w.clear_line_overlay()
         self.updated_wnds = set()
 
     def _locate_doc(self, wnd, doc, lineno):
+        self._restore_highlight()
+
         pos = doc.get_lineno_pos(lineno)
         tol = doc.gettol(pos)
 
@@ -280,33 +331,11 @@ class PythonCallStackMode(dialogmode.DialogMode):
 
         self._locate_doc(wnd, doc, lineno)
 
-    def set_status(self, wnd, status):
-        f, t = self.document.marks['status']
-        styleid = self.get_styleid('status')
-        self.document.replace(f, t, status, styleid)
-        wnd.clear_line_overlay()
-        self.update_sel(wnd, 0)
-
-    @command('callstack_keys.prev')
-    @norec
-    @norerun
-    def stack_prev(self, wnd):
-        if self.cursel:
-            self.update_sel(wnd, self.cursel - 1)
-
-    @command('callstack_keys.next')
-    @norec
-    @norerun
-    def stack_next(self, wnd):
-        if self.cursel < len(self.stack) - 1:
-            self.update_sel(wnd, self.cursel + 1)
-
-    msg_notbreaking = 'Debug target is not breaking.'
+    msg_notbreaking = 'Debug target is not idle.'
     def _cmd_not_breaked(self):
         kaa.app.messagebar.set_message(self.msg_notbreaking)
 
     def on_step(self, wnd):
-        _trace(self.port.is_breaking())
         if self.port.is_breaking():
             self.port.set_step()
         else:
@@ -343,6 +372,23 @@ class PythonCallStackMode(dialogmode.DialogMode):
     def on_quit(self, wnd):
         self.port.close()
 
+    def _get_stacklist(self, wnd):
+        return wnd.get_label('dlg_stacklist')
+
+    @command('callstack_keys.prev')
+    @norec
+    @norerun
+    def stack_prev(self, wnd):
+        w = self._get_stacklist(wnd)
+        w.document.mode.stack_prev(w)
+
+    @command('callstack_keys.next')
+    @norec
+    @norerun
+    def stack_next(self, wnd):
+        w = self._get_stacklist(wnd)
+        w.document.mode.stack_next(w)
+
 
 def show_callstack(port, stack):
     # update current breakpoints
@@ -351,7 +397,7 @@ def show_callstack(port, stack):
     buf = document.Buffer()
     doc = document.Document(buf)
     doc.set_title('Python call stack')
-    mode = PythonCallStackMode()
+    mode = PythonDebuggerPanel()
     mode.port = port
 
     doc.setmode(mode)
@@ -359,5 +405,18 @@ def show_callstack(port, stack):
 
     dlg = kaa.app.show_inputline(doc)
     ret = dlg.get_label('editor')
-    mode.update_sel(ret, 0)
+
+
+    buf = document.Buffer()
+    stacklist = document.Document(buf)
+    stacklistmode = PythonStackList()
+    stacklist.setmode(stacklistmode)
+    stacklistmode.build(stack)
+
+    wnd = dlg.add_doc('dlg_stacklist', 0, stacklist)
+    stacklistmode.update_sel(wnd, 0)
+    
+    mode.show_curline(ret)
+
+
     return ret
