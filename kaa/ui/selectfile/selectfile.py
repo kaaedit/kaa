@@ -295,13 +295,6 @@ class OpenFilenameDlgMode(dialogmode.DialogMode):
             filelist.document.mode.show_files(wnd)
             filelist.get_label('popup').on_console_resized()
 
-    def calc_position(self, wnd):
-        w, h = wnd.getsize()
-        height = self.calc_height(wnd)
-        height = min(height, self.MAX_INPUT_HEIGHT)
-        top = wnd.mainframe.height - height - wnd.mainframe.MESSAGEBAR_HEIGHT
-        return 0, top, wnd.mainframe.width, top + height
-
     def on_esc_pressed(self, wnd, event):
         super().on_esc_pressed(wnd, event)
         popup = wnd.get_label('popup')

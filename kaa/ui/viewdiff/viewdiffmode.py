@@ -46,12 +46,6 @@ class ViewDiffMode(dialogmode.DialogMode):
     def is_cursor_visible(self):
         return 1   # hide cursor
 
-    def calc_position(self, wnd):
-        height = wnd.screen.get_total_height()
-        height = min(height, wnd.mainframe.height * 3 // 4)
-        top = wnd.mainframe.height - height - wnd.mainframe.MESSAGEBAR_HEIGHT
-        return 0, top, wnd.mainframe.width, top + height
-
     def on_str(self, wnd, s):
         # does nothing
         pass

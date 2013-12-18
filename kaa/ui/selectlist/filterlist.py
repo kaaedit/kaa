@@ -21,7 +21,7 @@ class FilterListMode(selectlist.SelectItemList):
     SEP = '\n'
     MAX_CAPTION_LEN = None
     USE_PHRASE_STYLE = False
-
+    
     def init_themes(self):
         super().init_themes()
         self.themes.append(FilterListThemes)
@@ -99,7 +99,7 @@ class FilterListInputDlgMode(dialogmode.DialogMode):
     callback = None
     INITIAL_MESSAGE = "Hit up/down to select item."
     NO_WRAPINDENT = False
-
+    
     @classmethod
     def build(cls, caption, callback):
         buf = document.Buffer()
@@ -150,13 +150,6 @@ class FilterListInputDlgMode(dialogmode.DialogMode):
         wnd.cursor.setpos(self.document.marks['query'][1])
         wnd.set_label('query_field', self)
         kaa.app.messagebar.set_message(self.INITIAL_MESSAGE)
-
-    def calc_position(self, wnd):
-        w, h = wnd.getsize()
-        height = self.calc_height(wnd)
-        height = min(height, self.MAX_INPUT_HEIGHT)
-        top = wnd.mainframe.height - height - wnd.mainframe.MESSAGEBAR_HEIGHT
-        return 0, top, wnd.mainframe.width, top + height
 
     def on_esc_pressed(self, wnd, event):
         super().on_esc_pressed(wnd, event)

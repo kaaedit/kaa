@@ -24,7 +24,6 @@ class SelectItemList(dialogmode.DialogMode):
     USE_UNDO = False
     NO_WRAPINDENT = False
     CAPTION_STYLE = 'caption'
-
     items = ()
     cursel = None
     filterfunc = None
@@ -50,11 +49,10 @@ class SelectItemList(dialogmode.DialogMode):
     def on_str(self, wnd, s):
         pass
 
-    def calc_position(self, wnd):
+    def calc_height(self, wnd):
         height = wnd.screen.get_total_height()
         height = min(height, wnd.mainframe.height // 2)
-        top = wnd.mainframe.height - height - wnd.mainframe.MESSAGEBAR_HEIGHT
-        return 0, top, wnd.mainframe.width, top + height
+        return height
 
     def update_doc(self, items):
         self.items = list(collections.OrderedDict((i, 1)

@@ -145,6 +145,8 @@ class Debugger:
     current_frames = None
     debugpage = None
     running = False
+    kaadbg_ver = None
+    kaadbg_pid = None
 
     def _close_page(self):
         if self.debugpage and not self.debugpage.closed:
@@ -279,7 +281,11 @@ class Debugger:
         self.set_running(False)
 
         type, value = json.loads(str(b''.join(data), 'utf-8'))
-        if type == 'frame':
+        if type == 'version':
+            self.kaadbg_ver = value
+        elif type == 'pid':
+            self.kaadbg_pid = value
+        elif type == 'frame':
             self.current_frames = value
             self.show_callstack()
         elif type == 'expr':

@@ -126,12 +126,10 @@ class PythonStackList(dialogmode.DialogMode):
         super().init_themes()
         self.themes.append(DebugThemes)
 
-    def calc_position(self, wnd):
+    def calc_height(self, wnd):
         height = wnd.screen.get_total_height()
-        height = min(height,
-                     (wnd.mainframe.height - wnd.mainframe.MESSAGEBAR_HEIGHT) // 2)
-        top = wnd.mainframe.height - height - wnd.mainframe.MESSAGEBAR_HEIGHT
-        return 0, top, wnd.mainframe.width, top + height
+        height = min(height, wnd.mainframe.height // 2)
+        return height
 
     def build(self, stack):
         self.document.marks.clear()
@@ -179,7 +177,7 @@ class PythonStackList(dialogmode.DialogMode):
             (fname, lno, funcname, lines) = self.stack[n]
 
             if f is not None:
-                wnd.screen.locate(f, middle=True)
+                wnd.cursor.setpos(f, bottom=True)
 
             wnd.activate()
             debugpanel = wnd.get_label('editor')
