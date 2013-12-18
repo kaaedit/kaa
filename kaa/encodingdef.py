@@ -112,11 +112,11 @@ def _get_normal_name(orig_enc):
         return "iso-8859-1"
     return orig_enc
 
-def normalize_encname(name):
+def normalize_encname(name, default='utf-8'):
     name = _get_normal_name(name)
     try:
         name = codecs.lookup(name).name
     except LookupError:
         kaa.log.error('Unknown encoding', exc_info=True)
-        name = 'utf-8'   # error fallback
+        name = default   # error fallback
     return canonical_names[name]

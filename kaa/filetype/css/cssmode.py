@@ -1,9 +1,11 @@
+import re
 from collections import namedtuple
 from kaa.filetype.default import defaultmode
 from gappedbuf import re as gre
 from kaa.highlight import Tokenizer, Span, SingleToken, Token, SubSection, EndSection
 from kaa.theme import Theme, Style
 from kaa.filetype.javascript import javascriptmode
+from kaa import encodingdef
 
 CSSThemes = {
     'basic': [
@@ -229,6 +231,25 @@ def build_proptokenizer(close=None, closestyle=None):
 
 class CSSMode(defaultmode.DefaultMode):
     MODENAME = 'CSS'
+
+    @classmethod
+    def update_fileinfo(cls, fileinfo, document=None):
+        if not document:
+            try:
+                with open(fileinfo.fullpathname, 'rb') as buffer:
+                    s = buffer.read(1024)
+            except IOError:
+                return
+        else:
+            s = document.gettext(0, 1024).encode('utf-8', errors='ignore')
+
+        m = re.search(
+            rb'@charset\s+(' + rb'"([^"]+)"|'+ rb"('[^']+'))", s)
+        if m:
+            enc = str(m.group(2) or m.group(3), 'utf-8', 'replace').strip()
+            enc = encodingdef.normalize_encname(enc, fileinfo.encoding)
+            fileinfo.encoding = enc
+
 
     def init_themes(self):
         super().init_themes()

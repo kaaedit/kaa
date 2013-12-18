@@ -259,7 +259,8 @@ class HTMLMode(defaultmode.DefaultMode):
             buffer = open(fileinfo.fullpathname, 'rb').read(1024)
             enc = get_encoding(buffer)
             if enc:
-                enc = encodingdef.normalize_encname(enc)
+                enc = encodingdef.normalize_encname(enc, 
+                        fileinfo.encoding)
                 fileinfo.encoding = enc
         except IOError:
             pass
