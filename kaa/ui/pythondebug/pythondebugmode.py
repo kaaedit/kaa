@@ -1,4 +1,5 @@
 import os
+import signal
 import kaa
 from kaa import document
 from kaa.filetype.default import defaultmode
@@ -36,7 +37,7 @@ breakpoints_keys = {
 class BreakPoints(selectlist.SelectItemList):
     SEP = '\n'
     caption = 'Break points'
-
+    border = True
     @classmethod
     def build(cls, port):
         doc = super().build()
@@ -258,6 +259,10 @@ class PythonDebuggerPanel(dialogmode.DialogMode):
                           shortcut_style='button.shortcut',
                           on_shortcut=self.on_expr)
 
+            f.append_text('button', '[&Kill]',
+                          shortcut_style='button.shortcut',
+                          on_shortcut=self.on_kill)
+
             f.append_text('button', '[&Breakpoint]',
                           shortcut_style='button.shortcut',
                           on_shortcut=self.on_breakpoint)
@@ -359,9 +364,16 @@ class PythonDebuggerPanel(dialogmode.DialogMode):
 
     def on_expr(self, wnd):
         if self.port.is_breaking():
-            show_expr(self.port, self.cursel)
+            show_expr(self.port, self._get_stacklist(wnd).document.mode.cursel)
         else:
             self._cmd_not_breaked()
+
+    def on_kill(self, wnd):
+        if not self.port.is_breaking():
+            os.kill(self.port.kaadbg_pid, signal.SIGINT)
+        else:
+            msg = 'Debug target is idle.'
+            kaa.app.messagebar.set_message(msg)
 
     def on_breakpoint(self, wnd):
         doc = BreakPoints.build(self.port)
