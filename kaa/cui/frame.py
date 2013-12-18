@@ -109,6 +109,7 @@ class MainFrame(Window, kaa.context.ContextRoot):
     activeframe = None
 
     MESSAGEBAR_HEIGHT = 1
+    BORDER_WIDTH = 1
 
     def __init__(self, wnd):
         Window.mainframe = self
