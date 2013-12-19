@@ -120,6 +120,7 @@ class BreakPoint:
         self.lineno = lineno
 
 
+# todo: Define BreakPoints class
 breakpoints = []
 
 
@@ -137,7 +138,6 @@ def update_breakpoints():
     for doc in document.Document.all:
         if hasattr(doc.mode, 'update_python_breakpoints'):
             doc.mode.update_python_breakpoints()
-
 
 class Debugger:
     port = None
@@ -362,6 +362,15 @@ ret.append(True)
 
     def get_breakpoints(self):
         return breakpoints
+
+    def del_breakpoint(self, d):
+        global breakpoints
+        breakpoints = [bp for bp in breakpoints if bp is not d]
+
+    def display_breakpoints(self):
+        for doc in document.Document.all:
+            if hasattr(doc.mode, 'display_breakpoint'):
+                doc.mode.display_breakpoint()
 
     def show_expr(self, depth, expr):
         command = '''

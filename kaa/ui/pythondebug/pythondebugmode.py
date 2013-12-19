@@ -75,11 +75,6 @@ class BreakPoints(selectlist.SelectItemList):
         if not self.cursel:
             return
         bp = self.cursel.value
-        for doc in document.Document.all:
-            if doc.get_filename() == bp.filename:
-                if bp in doc.marks:
-                    del doc.marks[bp]
-                break
 
         index = self.items.index(self.cursel)
         items = [item for item in self.items if item is not self.cursel]
@@ -92,6 +87,8 @@ class BreakPoints(selectlist.SelectItemList):
             sel = self.items[-1]
 
         self.update_sel(wnd, sel)
+        self.port.del_breakpoint(bp)
+        self.port.display_breakpoints()
 
 DebugThemes = {
     'basic': [

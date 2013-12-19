@@ -93,13 +93,7 @@ class PythonMode(defaultmode.DefaultMode):
 
     def on_set_document(self, document):
         super().on_set_document(document)
-
-        fname = document.get_filename()
-        if fname:
-            bps = port.get_breakpoints(fname)
-            for bp in bps:
-                pos = self.document.get_lineno_pos(bp.lineno)
-                self.document.marks[bp] = pos
+        self.display_breakpoint()
 
     def on_del_window(self, wnd):
         super().on_del_window(wnd)
@@ -301,9 +295,21 @@ class PythonMode(defaultmode.DefaultMode):
         port.set_breakpoints(filename, bps)
 
     def _clear_breakpoints(self):
-        bps = [k for k in self.get_breakpoints()]
+        bps = [k for k, v in self.get_breakpoints()]
         for bp in bps:
             del self.document.marks[bp]
+
+    def display_breakpoint(self):
+        self._clear_breakpoints()
+        fname = self.document.get_filename()
+        if fname:
+            bps = port.get_breakpoints(fname)
+            for bp in bps:
+                pos = self.document.get_lineno_pos(bp.lineno)
+                self.document.marks[bp] = pos
+
+        self.document.style_updated()
+
 
     @command('debugger.toggle.breakpoint')
     @norec
