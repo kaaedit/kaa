@@ -401,9 +401,6 @@ class PythonDebuggerPanel(dialogmode.DialogMode):
 
 
 def show_callstack(port, stack):
-    # update current breakpoints
-    kaa.ui.pythondebug.port.update_breakpoints()
-
     buf = document.Buffer()
     doc = document.Document(buf)
     doc.set_title('Python call stack')

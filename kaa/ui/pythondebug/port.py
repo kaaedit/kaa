@@ -240,6 +240,9 @@ class Debugger:
         return b''.join(L)
 
     def show_callstack(self):
+        # update current breakpoints
+        update_breakpoints()
+
         if not self.debugpage or self.debugpage.closed:
             from kaa.ui.pythondebug import pythondebugmode
             wnd = pythondebugmode.show_callstack(self, self.current_frames)
