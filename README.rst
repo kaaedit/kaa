@@ -761,16 +761,24 @@ Links
 Version history
 =================
 
-0.21.0 - 2013.12.15
+0.22.0 - 2013.12.19
 --------------------
+
+- Respect encoding declaration on loading/saving file in CSS mode.
+
+- Button to send SIGINT to the debug target process.
+
+
+Past versions
+--------------
+
+0.21.0 - 2013.12.15
++++++++++++++++++++++
 
 - Respect encoding declaration on loading/saving file in HTML/Python mode.
 
 - Paste from OS clipboard didn't work on Mac.
 
-
-Past versions
---------------
 
 0.20.0 - 2013.12.13
 +++++++++++++++++++++
