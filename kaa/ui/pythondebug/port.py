@@ -1,3 +1,4 @@
+import os
 import subprocess
 import collections
 import socket
@@ -289,7 +290,9 @@ class Debugger:
         elif type == 'pid':
             self.kaadbg_pid = value
         elif type == 'frame':
-            self.current_frames = value
+            event = value['event']
+            frame = value['frame']
+            self.current_frames = frame
             self.show_callstack()
         elif type == 'expr':
             self.show_expr_result(value)
@@ -426,14 +429,22 @@ class ChildDebugger(Debugger):
         self.close()
 
     def run(self, s):
-        env = {
-            'KAADBG_DOMAINPORT': str(self.child.fileno())
-        }
+        env = os.environ.copy()
+        env['KAADBG_DOMAINPORT'] = str(self.child.fileno())
+
         self.set_running(True)
         self.process = subprocess.Popen(s, shell=True,
-                    pass_fds=(self.child.fileno(),),
-                    env=env)
+                            stdin=subprocess.PIPE,
+                            stdout=subprocess.PIPE, stderr=subprocess.PIPE,
+                            bufsize=1,universal_newlines=True,
+                            pass_fds=(self.child.fileno(),),
+                            env=env)
         self.child.close()
+
+        self.process.stdin.close()
+        self.process.stdout.close()
+        self.process.stderr.close()
+
         kaa.app.messagebar.set_message("Process started.")
 
     def close(self):
