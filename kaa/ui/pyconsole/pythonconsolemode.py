@@ -31,6 +31,7 @@ class KaaInterpreter(code.InteractiveInterpreter):
         super().runcode(code)
 
 class PythonConsoleMode(pythonmode.PythonMode):
+    DEFAULT_STATUS_MSG = 'Hit alt+Enter to execute script.'
     MODENAME = 'Python console'
     DOCUMENT_MODE = False
 
@@ -62,9 +63,6 @@ class PythonConsoleMode(pythonmode.PythonMode):
     def on_add_window(self, wnd):
         super().on_add_window(wnd)
 
-        cursor = dialogmode.DialogCursor(wnd,
-                     [dialogmode.MarkRange('current_script')])
-        wnd.set_cursor(cursor)
         f, t = self.document.marks['current_script']
         wnd.cursor.setpos(f)
 
@@ -73,6 +71,32 @@ class PythonConsoleMode(pythonmode.PythonMode):
         self.document.delete(f, t)
         wnd.cursor.setpos(f)
         self.document.undo.clear()
+
+    def put_string(self, wnd, s):
+        pos = wnd.cursor.pos
+        f, t = self.document.marks['current_script']
+        if not (f <= pos <= t):
+            wnd.cursor.setpos(t)
+
+        super().put_string(wnd, s)
+
+    def replace_string(self, wnd, pos, posto, s, update_cursor=True):
+        f, t = self.document.marks['current_script']
+        if not (f <= pos <= t):
+            return
+        if not (f <= posto <= t):
+            return
+
+        super().replace_string(wnd, pos, posto, s, update_cursor)
+
+    def delete_string(self, wnd, pos, posto, update_cursor=True):
+        f, t = self.document.marks['current_script']
+        if not (f <= pos <= t):
+            return
+        if not (f <= posto <= t):
+            return
+
+        super().delete_string(wnd, pos, posto, update_cursor)
 
     @contextmanager
     def _redirect_output(self, wnd):
@@ -105,7 +129,7 @@ class PythonConsoleMode(pythonmode.PythonMode):
     def exec_script(self, wnd):
         self.document.undo.clear()
         f, t = self.document.marks['current_script']
-        s = wnd.document.gettext(f, t)
+        s = wnd.document.gettext(f, t).lstrip()
         with self._redirect_output(wnd):
             ret = self.interp.runsource(s)
             if not ret:
