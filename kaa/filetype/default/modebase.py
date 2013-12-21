@@ -243,6 +243,7 @@ class ModeBase:
         self.theme = theme.Theme([])
         for t in self.themes:
             self.theme.update(self.select_theme(theme_name, t))
+        self.theme.finish_update()
 
     def get_style(self, tokenid):
         ret = self.stylemap.get(tokenid, None)

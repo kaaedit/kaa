@@ -11,7 +11,7 @@ from kaa.ui.pythondebug import port
 
 PythonThemes = {
     'basic': [
-        Style('python-bytes', 'blue', 'default'),
+        Style('python-bytes', 'blue', None),
     ],
 }
 

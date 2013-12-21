@@ -21,11 +21,14 @@ class Theme:
 
     def update(self, rhs):
         default = self.styles.get('default', None)
-        self.add_styles(s.fill(default) for s in rhs)
+        self.add_styles(s.copy() for s in rhs)
 
+    def finish_update(self):
+        default = self.styles.get('default', None)
+        for style in self.styles.values():
+            style.set_default_attr(default)
 
 class Style:
-
     def __init__(self, name, fgcolor, bgcolor, underline=False,
                  bold=False, nowrap=False, rjust=False):
         self.name = name
@@ -36,16 +39,30 @@ class Style:
         self.nowrap = nowrap
         self.rjust = rjust
 
-    def fill(self, default):
+    def copy(self):
         return self.__class__(
             self.name,
-            self.fgcolor if self.fgcolor is not None else default.fgcolor,
-            self.bgcolor if self.bgcolor is not None else default.bgcolor,
-            self.underline if self.underline is not None else default.underline,
-            self.bold if self.bold is not None else default.bold,
-            self.nowrap if self.nowrap is not None else default.nowrap,
-            self.rjust if self.rjust is not None else default.rjust,
+            self.fgcolor,
+            self.bgcolor,
+            self.underline,
+            self.bold,
+            self.nowrap,
+            self.rjust,
         )
+
+    def set_default_attr(self, default):
+        if self.fgcolor is None:
+            self.fgcolor = default.fgcolor
+        if self.bgcolor is None:
+            self.bgcolor = default.bgcolor
+        if self.underline is None:
+            self.underline = default.underline
+        if self.bold is None:
+            self.bold = default.bold
+        if self.nowrap is None:
+            self.nowrap = default.nowrap
+        if self.rjust is None:
+            self.rjust = default.rjust
 
 
 class Overlay(Style):
@@ -54,7 +71,7 @@ class Overlay(Style):
                  underline=None, bold=None):
         super().__init__(name, fgcolor, bgcolor, underline, bold)
 
-    def fill(self, default):
+    def copy(self):
         return self.__class__(
             self.name,
             self.fgcolor,
@@ -62,3 +79,6 @@ class Overlay(Style):
             self.underline,
             self.bold
         )
+
+    def set_default_attr(self, default):
+        pass
