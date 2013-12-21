@@ -760,8 +760,19 @@ class EditCommands(Commands):
     @norec
     @norerun
     def clipboard_history(self, wnd):
-        from kaa.ui.clipboardhist import clipboardhistmode
-        clipboardhistmode.show_history(wnd)
+        words = list(kaa.app.clipboard.get_all())
+        if not words:
+            return
+
+        def callback(text):
+            if text:
+                wnd.document.mode.put_string(wnd, text)
+                wnd.screen.selection.clear()
+                kaa.app.clipboard.set(text)
+
+        from kaa.ui.texthist import texthistmode
+        texthistmode.show_history(callback, words)
+
 
 
 class CodeCommands(Commands):

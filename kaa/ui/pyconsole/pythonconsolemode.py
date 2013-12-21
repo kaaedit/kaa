@@ -13,7 +13,8 @@ from kaa.ui.dialog import dialogmode
 from kaa.ui.inputline import inputlinemode
 
 pythonconsole_keys = {
-    ('\r'): ('python.exec'),
+    ('\r'): 'python.exec',
+    (alt, '\r'): 'python.script-history',
 }
 
 PythonConsoleThemes = {
@@ -31,7 +32,7 @@ class KaaInterpreter(code.InteractiveInterpreter):
         super().runcode(code)
 
 class PythonConsoleMode(pythonmode.PythonMode):
-    DEFAULT_STATUS_MSG = 'Hit alt+Enter to execute script.'
+    DEFAULT_STATUS_MSG = 'Hit alt+Enter for history.'
     MODENAME = 'Python console'
     DOCUMENT_MODE = False
 
@@ -100,6 +101,7 @@ class PythonConsoleMode(pythonmode.PythonMode):
 
     @contextmanager
     def _redirect_output(self, wnd):
+        stdin = sys.stdin
         stdout = sys.stdout
         stderr = sys.stderr
 
@@ -115,11 +117,13 @@ class PythonConsoleMode(pythonmode.PythonMode):
                 if not self.document.closed:
                     self.document.append(s, self.style)
 
+        sys.stdin = None
         sys.stdout = out(self.document, style_stdout)
         sys.stderr = out(self.document, style_stderr)
 
         yield
 
+        sys.stdin = stdin
         sys.stdout = stdout
         sys.stderr = stderr
 
@@ -133,6 +137,10 @@ class PythonConsoleMode(pythonmode.PythonMode):
         with self._redirect_output(wnd):
             ret = self.interp.runsource(s)
             if not ret:
+                if s.strip():
+                    hist = kaa.app.config.hist('pyconsole_script', self.MAX_HISTORY)
+                    hist.add(s)
+
                 self.document.append('>>>', self.get_styleid('ps'))
                 self.document.append('\n', self.get_styleid('default'))
                 p = self.document.endpos()
@@ -141,6 +149,7 @@ class PythonConsoleMode(pythonmode.PythonMode):
             else:
                 doc = PythonInputlineMode.build(wnd, s)
                 kaa.app.show_dialog(doc)
+                kaa.app.messagebar.set_message('')
 
 
     def exec_str(self, wnd, s):
@@ -149,6 +158,26 @@ class PythonConsoleMode(pythonmode.PythonMode):
         self.document.replace(f, t, s, 
                 style=self.get_styleid('default'))
         self.exec_script(wnd)
+
+    MAX_HISTORY = 100
+
+    @command('python.script-history')
+    @norec
+    @norerun
+    def history(self, wnd):
+        hist = kaa.app.config.hist('pyconsole_script', self.MAX_HISTORY)
+        scripts = [p for p, i in hist.get()]
+        if not scripts:
+            return
+
+        def callback(text):
+            if text:
+                wnd.document.mode.put_string(wnd, text)
+                wnd.screen.selection.clear()
+                hist.add(text)
+
+        from kaa.ui.texthist import texthistmode
+        texthistmode.show_history(callback, scripts)
 
 inputline_keys = {
     (alt, '\r'): ('inputline'),
@@ -162,7 +191,8 @@ class PythonInputlineMode(dialogmode.DialogMode, pythonmode.PythonMode):
     autoshrink = True
     USE_UNDO = True
     auto_indent = True
-
+    border = True
+    
     PYTHONINPUTLINE_KEY_BINDS = [
         inputline_keys
     ]
@@ -177,7 +207,7 @@ class PythonInputlineMode(dialogmode.DialogMode, pythonmode.PythonMode):
     def on_add_window(self, wnd):
         super().on_add_window(wnd)
         wnd.cursor.setpos(self.document.endpos())
-        kaa.app.messagebar.set_message('Hit alt+Enter to execute script.')
+        kaa.app.messagebar.set_message('')
 
     def on_esc_pressed(self, wnd, event):
         # todo: run callback
@@ -198,6 +228,7 @@ class PythonInputlineMode(dialogmode.DialogMode, pythonmode.PythonMode):
         popup.destroy()
 
         target.document.mode.exec_str(target, s)
+        kaa.app.messagebar.set_message("")
 
     @classmethod
     def build(cls, target, s):
@@ -218,4 +249,4 @@ def show_console():
     cons.set_title('<Python console>')
 
     kaa.app.show_doc(cons)
-    kaa.app.messagebar.set_message('Hit alt+Enter to execute script.')
+    kaa.app.messagebar.set_message('')
