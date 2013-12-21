@@ -132,6 +132,8 @@ inputline_keys = {
 }
 
 class PythonInputlineMode(dialogmode.DialogMode, pythonmode.PythonMode):
+    DEFAULT_STATUS_MSG = 'Hit alt+Enter to execute script.'
+
     DOCUMENT_MODE = False
     autoshrink = True
     USE_UNDO = True
@@ -151,6 +153,7 @@ class PythonInputlineMode(dialogmode.DialogMode, pythonmode.PythonMode):
     def on_add_window(self, wnd):
         super().on_add_window(wnd)
         wnd.cursor.setpos(self.document.endpos())
+        kaa.app.messagebar.set_message('Hit alt+Enter to execute script.')
 
     def on_esc_pressed(self, wnd, event):
         # todo: run callback
@@ -191,4 +194,4 @@ def show_console():
     cons.set_title('<Python console>')
 
     kaa.app.show_doc(cons)
-#    kaa.app.messagebar.set_message('Hit alt+Enter to execute script.')
+    kaa.app.messagebar.set_message('Hit alt+Enter to execute script.')

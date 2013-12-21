@@ -69,6 +69,8 @@ def MarkRange(mark):
 
 class DialogMode(modebase.ModeBase):
     NO_WRAPINDENT = False
+    DEFAULT_STATUS_MSG = ''
+
     autoshrink = False
     suspend_autoshrink = False
     stack_upper = True

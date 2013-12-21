@@ -23,6 +23,12 @@ class MessageBarMode(modebase.ModeBase):
         doc.undo = None
 
     def set_message(self, msg):
+        if not msg:
+            msg = getattr(kaa.app.focus.document.mode, 
+                    'DEFAULT_STATUS_MSG', None)
+            if msg is None:
+                msg = kaa.app.SHOW_MENU_MESSAGE
+
         if msg != self.message:
             self.message = msg
             self.update()
