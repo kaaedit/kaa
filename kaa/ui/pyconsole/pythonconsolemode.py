@@ -31,6 +31,11 @@ class KaaInterpreter(code.InteractiveInterpreter):
         sys.stdout.write('\n')
         super().runcode(code)
 
+    def showsyntaxerror(self, filename=None):
+        # send newline before show error
+        sys.stdout.write('\n')
+        super().showsyntaxerror(filename)
+
 class PythonConsoleMode(pythonmode.PythonMode):
     DEFAULT_STATUS_MSG = 'Hit alt+Enter for history.'
     MODENAME = 'Python console'

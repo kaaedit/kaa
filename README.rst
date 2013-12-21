@@ -23,6 +23,8 @@ Kaa is an easy yet powerful text editor for console user interface, providing nu
 
 - Grep.
 
+- Python console.
+
 - Python debugger.
 
 - Open source software(MIT).
@@ -535,9 +537,9 @@ In the grep result window, use F9 and F10 key to traverse matches forward/backwa
 Python console
 --------------
 
-Unlike Python's interactive console, Python console in kaa does not execute Python script until you hit alt+Enter key. Until then you can edit Python script as if you are with editors without worrying about newlines and indentations.
+When you hit enter key to execute multi-line statements in console, new input dialog appears to edit rest of script. In the dialog, you can edit script as normal editor screen. After you finish to edit your script, hit alt+Enter key to execute the script.
 
-When alt+Enter key was hit, all text in the window is executed as Python script and the value of the expression is printed out to console window. If the script contains print expression, the text will also be printed out to console window. If a part of text in the console window is selected, only text in the selected region will be execused.
+To show script history window, hit alt+Enter key on the console.
 
 
 Make
@@ -761,16 +763,25 @@ Links
 Version history
 =================
 
-0.22.0 - 2013.12.19
+
+0.23.0 - 2013.12.21
 --------------------
+
+- Improve Python console a lot.
+
+- Breakpoints in Python debugger now works better.
+
+
+Past versions
+--------------
+
+0.22.0 - 2013.12.19
++++++++++++++++++++++
 
 - Respect encoding declaration on loading/saving file in CSS mode.
 
 - Button to send SIGINT to the debug target process.
 
-
-Past versions
---------------
 
 0.21.0 - 2013.12.15
 +++++++++++++++++++++
