@@ -152,7 +152,7 @@ class PythonConsoleMode(pythonmode.PythonMode):
                 self.document.marks['current_script'] = (p, p)
                 wnd.cursor.setpos(p)
             else:
-                doc = PythonInputlineMode.build(wnd, s)
+                doc = PythonInputlineMode.build(wnd, s+'\n')
                 kaa.app.show_dialog(doc)
                 kaa.app.messagebar.set_message('')
 
