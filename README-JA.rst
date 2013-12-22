@@ -89,29 +89,6 @@ easy_install3 や pip-3で、PyPI からインストールします ::
    $ sudo easy_install3 -U kaaedit
 
 
-コマンドラインオプション
-===========================
-
-kaa は以下のコマンドラインオプションをサポートしています。 ::
-
-    usage: kaa [-h] [--version] [--no-init] [--init-script INIT_SCRIPT]
-               [--palette PALETTE] [--term TERM]
-               [file [file ...]]
-    
-    positional arguments:
-      file
-    
-    optional arguments:
-      -h, --help            show this help message and exit
-      --version             show version info and exit
-      --no-init             skip loading initialization script
-      --init-script INIT_SCRIPT
-                            execute file as initialization script instead of
-                            default initialization file
-      --palette PALETTE     color palette. available values: dark, light.
-      --term TERM, -t TERM  specify terminal type
-      
-
 ターミナル設定
 ================
 
@@ -162,6 +139,30 @@ iTermでは、次のように設定します。
     export TERM=xterm-256color
 
 ターミナルの設定については、http://www.pixelbeat.org/docs/terminal_colours/#256 などを参考に256色モードを有効にしてください。
+
+
+コマンドラインオプション
+===========================
+
+kaa は以下のコマンドラインオプションをサポートしています。 ::
+
+    usage: kaa [-h] [--version] [--no-init] [--init-script INIT_SCRIPT]
+               [--palette PALETTE] [--term TERM]
+               [file [file ...]]
+    
+    positional arguments:
+      file
+    
+    optional arguments:
+      -h, --help            show this help message and exit
+      --version             show version info and exit
+      --no-init             skip loading initialization script
+      --init-script INIT_SCRIPT
+                            execute file as initialization script instead of
+                            default initialization file
+      --palette PALETTE     color palette. available values: dark, light.
+      --term TERM, -t TERM  specify terminal type
+      
 
 使い方
 =======

@@ -96,29 +96,6 @@ Use easy_install3 or pip3 to install kaa from PyPI ::
    $ sudo easy_install3 -U kaaedit
 
 
-Command line options
-====================
-
-To start kaa, type ::
-
-    usage: kaa [-h] [--version] [--no-init] [--init-script INIT_SCRIPT]
-               [--palette PALETTE] [--term TERM]
-               [file [file ...]]
-    
-    positional arguments:
-      file
-    
-    optional arguments:
-      -h, --help            show this help message and exit
-      --version             show version info and exit
-      --no-init             skip loading initialization script
-      --init-script INIT_SCRIPT
-                            execute file as initialization script instead of
-                            default initialization file
-      --palette PALETTE     color palette. available values: dark, light.
-      --term TERM, -t TERM  specify terminal type
-
-
 Terminal setting
 ================
 
@@ -167,6 +144,29 @@ Otherwise, you should manually update terminal setting. e.g., If you use bash, a
    $ export TERM=xterm-256color
 
 For detail, see http://www.pixelbeat.org/docs/terminal_colours/#256 to enable 256 color on your terminal.
+
+
+Command line options
+====================
+
+To start kaa, type ::
+
+    usage: kaa [-h] [--version] [--no-init] [--init-script INIT_SCRIPT]
+               [--palette PALETTE] [--term TERM]
+               [file [file ...]]
+    
+    positional arguments:
+      file
+    
+    optional arguments:
+      -h, --help            show this help message and exit
+      --version             show version info and exit
+      --no-init             skip loading initialization script
+      --init-script INIT_SCRIPT
+                            execute file as initialization script instead of
+                            default initialization file
+      --palette PALETTE     color palette. available values: dark, light.
+      --term TERM, -t TERM  specify terminal type
 
 
 Usage
