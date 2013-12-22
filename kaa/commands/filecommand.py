@@ -1,6 +1,7 @@
 import os
 import kaa
 import kaa.log
+import kaa.utils
 from kaa.command import Commands, command, is_enable, norec, norerun
 from kaa.ui.msgbox import msgboxmode
 
@@ -291,7 +292,7 @@ class FileCommands(Commands):
     def _select_recentry_used_files(self, callback):
         files = []
         for p, info in kaa.app.config.hist('filename').get():
-            path = os.path.relpath(p)
+            path = kaa.utils.shorten_filename(p)
             files.append(path if len(path) < len(p) else p)
 
         from kaa.ui.selectlist import filterlist
@@ -315,7 +316,7 @@ class FileCommands(Commands):
     def _select_recentry_used_dirs(self, callback):
         files = []
         for p, info in kaa.app.config.hist('dirname').get():
-            path = os.path.relpath(p)
+            path = kaa.utils.shorten_filename(p)
             files.append(path if len(path) < len(p) else p)
 
         from kaa.ui.selectlist import filterlist

@@ -1,6 +1,7 @@
 import re
 import os
 import kaa
+import kaa.utils
 from kaa import encodingdef, consts
 from kaa.keyboard import *
 from kaa.ui.dialog import dialogmode
@@ -13,7 +14,6 @@ from kaa.ui.selectlist import filterlist
 from kaa.ui.selectfile import selectfile
 from kaa.ui.itemlist import itemlistmode
 from kaa.ui.grep import grepmode
-
 
 class GrepOption(modebase.SearchOption):
     RE = re
@@ -99,7 +99,7 @@ class GrepCommands(editorcommand.EditCommands):
 
             hist = []
             for p, info in kaa.app.config.hist('grep_dirname').get():
-                path = os.path.relpath(p)
+                path = kaa.utils.shorten_filename(p)
                 hist.append(path if len(path) < len(p) else p)
 
             filterlist.show_listdlg('Recent directories',
@@ -221,7 +221,7 @@ class GrepDlgMode(dialogmode.DialogMode):
 
             path = self.option.directory
             if path:
-                p = os.path.relpath(path)
+                p = kaa.utils.shorten_filename(path)
                 path = p if len(p) < len(path) else path
             f.append_text('default', path, mark_pair='directory')
             f.append_text('default', '\n')
@@ -331,7 +331,7 @@ class GrepDlgMode(dialogmode.DialogMode):
         def cb(dir):
             wnd.set_visible(True)
             if dir:
-                path = os.path.relpath(dir)
+                path = kaa.utils.shorten_filename(dir)
                 self.set_dir(wnd, path)
 
         wnd.set_visible(False)

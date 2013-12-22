@@ -173,7 +173,7 @@ def _search(dir, option, doc):
         cur_lineno = None
         matches = []
 
-        path = os.path.relpath(fname)
+        path = kaa.utils.shorten_filename(fname)
         if len(path) > len(fname):
             path = fname
 

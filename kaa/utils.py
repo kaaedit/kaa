@@ -31,3 +31,11 @@ def split_existing_dirs(path):
         path, right = os.path.split(path)
         if right:
             rights.insert(0, right)
+
+
+def shorten_filename(f):
+    rel = os.path.relpath(f)
+    home = os.path.join('~', os.path.relpath(f, os.path.expanduser('~')))
+
+    tp = sorted(((n.count(os.sep), len(n), n) for n in (f, rel, home)))
+    return tp[0][2]
