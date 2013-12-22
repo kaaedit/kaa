@@ -45,6 +45,7 @@ class DirFileListMode(selectlist.SelectItemList):
         self.caption = self.dirname = dirname
         self.read_dir()
 
+    MAX_DIR_ITEMS = 2000
     def read_dir(self):
         try:
             self.dirs, self.files = kaa.app.storage.listdir(self.dirname)
@@ -52,6 +53,9 @@ class DirFileListMode(selectlist.SelectItemList):
             kaa.app.messagebar.set_message(str(e))
             self.dirs = []
             self.files = []
+
+        self.dirs = self.dirs[:self.MAX_DIR_ITEMS]
+        self.files = self.files[:self.MAX_DIR_ITEMS]
 
         # add '..' if dir is not root
         if self.dirname != '/':
