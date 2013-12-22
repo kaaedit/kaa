@@ -36,8 +36,13 @@ class DirFileListMode(selectlist.SelectItemList):
         wnd.set_label('filelist', wnd)
 
     def set_dir(self, dirname):
-        self.caption = self.dirname = os.path.abspath(
-            os.path.expanduser(dirname))
+        try:
+            dirname = os.path.expanduser(dirname)
+            dirname = os.path.abspath(dirname)
+        except IOError:
+            pass
+
+        self.caption = self.dirname = dirname
         self.read_dir()
 
     def read_dir(self):
@@ -457,8 +462,13 @@ def show_filesaveas(filename, encoding, newline, callback):
     if not filename:
         filename = kaa.app.last_dir
 
-    filename = os.path.abspath(
-        os.path.expanduser(filename))
+    try:
+        filename = os.path.abspath(
+            os.path.expanduser(filename))
+    except IOError:
+        # current directry may deleted
+        pass
+
     if os.path.isdir(filename) and not filename.endswith(os.path.sep):
         filename += os.path.sep
 
