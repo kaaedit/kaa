@@ -1,3 +1,4 @@
+import curses
 import os
 import fnmatch
 import re
@@ -168,6 +169,8 @@ def _search(dir, option, doc):
 
     # todo: use raw mode to accept ^C
     for fname in files:
+        print(fname)
+
         nfiles += 1
 
         cur_lineno = None
@@ -177,8 +180,8 @@ def _search(dir, option, doc):
         if len(path) > len(fname):
             path = fname
 
-        for lineno, linefrom, lineto, line, f, t, match in _grep(fname, regex,
-                                                                 option.encoding, option.newline):
+        for rec in _grep(fname, regex, option.encoding, option.newline):
+            lineno, linefrom, lineto, line, f, t, match = rec
             nhits += 1
 
             line = line.rstrip('\n')
@@ -223,7 +226,22 @@ def grep(option, target):
         s = 'Cannot find directory `{}`.'.format(dir)
         doc.append(s)
     else:
-        nfiles, nhits = _search(dir, option, doc)
+        try:
+            # Restore to cooked mode to accept ^C.
+            curses.def_prog_mode()
+            curses.endwin()
+
+            try:
+                print('Hit ^C to cancel grep.')
+                nfiles, nhits = _search(dir, option, doc)
+            finally:
+                curses.reset_prog_mode()
+                kaa.app.mainframe.refresh()
+
+        except KeyboardInterrupt:
+            kaa.app.messagebar.set_message('Grep canceled')
+            return
+
         if not nfiles:
             s = 'Cannot find file `{}`.'.format(option.filenames)
             doc.append(s)
