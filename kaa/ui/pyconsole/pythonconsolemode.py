@@ -25,7 +25,9 @@ PythonConsoleThemes = {
     ],
 }
 
+
 class KaaInterpreter(code.InteractiveInterpreter):
+
     def runcode(self, code):
         # send newline before running script
         sys.stdout.write('\n')
@@ -35,6 +37,7 @@ class KaaInterpreter(code.InteractiveInterpreter):
         # send newline before show error
         sys.stdout.write('\n')
         super().showsyntaxerror(filename)
+
 
 class PythonConsoleMode(pythonmode.PythonMode):
     DEFAULT_STATUS_MSG = 'Hit alt+Enter for history.'
@@ -60,7 +63,7 @@ class PythonConsoleMode(pythonmode.PythonMode):
         super().on_set_document(document)
         self.document.marks['current_script'] = (0, 0)
         self.interp = KaaInterpreter()
-        
+
         self.document.append('>>>', self.get_styleid('ps'))
         self.document.append('\n', self.get_styleid('default'))
         p = self.document.endpos()
@@ -114,6 +117,7 @@ class PythonConsoleMode(pythonmode.PythonMode):
         style_stderr = self.get_styleid('stderr')
 
         class out:
+
             def __init__(self, document, style):
                 self.document = document
                 self.style = style
@@ -143,7 +147,9 @@ class PythonConsoleMode(pythonmode.PythonMode):
             ret = self.interp.runsource(s)
             if not ret:
                 if s.strip():
-                    hist = kaa.app.config.hist('pyconsole_script', self.MAX_HISTORY)
+                    hist = kaa.app.config.hist(
+                        'pyconsole_script',
+                        self.MAX_HISTORY)
                     hist.add(s)
 
                 self.document.append('>>>', self.get_styleid('ps'))
@@ -152,16 +158,15 @@ class PythonConsoleMode(pythonmode.PythonMode):
                 self.document.marks['current_script'] = (p, p)
                 wnd.cursor.setpos(p)
             else:
-                doc = PythonInputlineMode.build(wnd, s+'\n')
+                doc = PythonInputlineMode.build(wnd, s + '\n')
                 kaa.app.show_dialog(doc)
                 kaa.app.messagebar.set_message('')
 
-
     def exec_str(self, wnd, s):
-        s = s.rstrip()+'\n'
+        s = s.rstrip() + '\n'
         f, t = self.document.marks['current_script']
-        self.document.replace(f, t, s, 
-                style=self.get_styleid('default'))
+        self.document.replace(f, t, s,
+                              style=self.get_styleid('default'))
         self.exec_script(wnd)
 
     MAX_HISTORY = 100
@@ -189,6 +194,7 @@ inputline_keys = {
     (alt, '\n'): ('inputline'),
 }
 
+
 class PythonInputlineMode(dialogmode.DialogMode, pythonmode.PythonMode):
     DEFAULT_STATUS_MSG = 'Hit alt+Enter to execute script.'
 
@@ -197,7 +203,7 @@ class PythonInputlineMode(dialogmode.DialogMode, pythonmode.PythonMode):
     USE_UNDO = True
     auto_indent = True
     border = True
-    
+
     PYTHONINPUTLINE_KEY_BINDS = [
         inputline_keys
     ]

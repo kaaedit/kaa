@@ -92,7 +92,7 @@ class DialogMode(modebase.ModeBase):
     def calc_width(self, wnd):
         ret = wnd.mainframe.getsize()[0]
         if self.border:
-            ret -= wnd.mainframe.BORDER_WIDTH *2
+            ret -= wnd.mainframe.BORDER_WIDTH * 2
         return ret
 
     def calc_height(self, wnd):
@@ -100,7 +100,7 @@ class DialogMode(modebase.ModeBase):
         if height < self.min_height:
             return self.min_height
         maxw, maxh = wnd.mainframe.getsize()
-        ret =  min(maxh, height)
+        ret = min(maxh, height)
         return ret
 
     def calc_position(self, wnd):
@@ -116,10 +116,15 @@ class DialogMode(modebase.ModeBase):
             top = wnd.mainframe.messagebar.rect[1] - height
             return 0, top, wnd.mainframe.width, top + height
         else:
-            border_width  = wnd.mainframe.BORDER_WIDTH
-            height = min(height, wnd.mainframe.messagebar.rect[1]-border_width*2)
+            border_width = wnd.mainframe.BORDER_WIDTH
+            height = min(
+                height,
+                wnd.mainframe.messagebar.rect[1] - border_width * 2)
             top = wnd.mainframe.messagebar.rect[1] - height - border_width
-            return border_width, top, wnd.mainframe.width-border_width, top+height
+            return (
+                border_width, top, wnd.mainframe.width -
+                border_width, top + height
+            )
 
     def resize_inputs(self, wnd, inputs):
         rects = [w.document.mode.calc_position(w) for w in inputs]
@@ -186,8 +191,8 @@ class FormBuilder:
             self.document.mode.run_autoshrink()
 
     def append_text(
-            self, stylename, text, mark_start=None, mark_end=None, 
-            mark_pair=None, on_shortcut=None, shortcut_style=None, 
+            self, stylename, text, mark_start=None, mark_end=None,
+            mark_pair=None, on_shortcut=None, shortcut_style=None,
             shortcut_mark=None, shortcut_need_alt=True):
 
         # marks should not be moved until the document completed.
@@ -232,7 +237,11 @@ class FormBuilder:
 
                 self.document.append(c)
                 if shortcut_style:
-                    self.document.setstyles(f, f + 1, shortcut_style_id, update=False)
+                    self.document.setstyles(
+                        f,
+                        f + 1,
+                        shortcut_style_id,
+                        update=False)
 
                 lastpos = m.end()
 
@@ -242,7 +251,7 @@ class FormBuilder:
                     self.document.append(text[lastpos:])
                     if stylename:
                         self.document.setstyles(f, self.document.endpos(),
-                                                     style_id, update=False)
+                                                style_id, update=False)
 
             if mark_start is not None:
                 self.document.marks[mark_start] = start

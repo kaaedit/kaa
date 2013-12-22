@@ -9,6 +9,7 @@ from kaa.filetype.default import defaultmode
 from kaa import consts
 from kaa import encodingdef
 
+
 class FileStorage:
 
     def adjust_encoding(self, encoding):
@@ -129,7 +130,7 @@ class FileStorage:
         fileinfo = self.get_fileinfo(filename, encoding, newline)
         modecls = select_mode(fileinfo.fullpathname)
         modecls.update_fileinfo(fileinfo)
-        
+
         textio = self.get_textio(fileinfo, filemustexists)
 
         buf = document.Buffer()
@@ -152,7 +153,6 @@ class FileStorage:
 
         kaa.app.config.hist_storage.flush()
         return doc
-
 
     def save_document(self, doc, filename, encoding=None, newline=None,
                       nohist=False):
@@ -197,7 +197,7 @@ class FileStorage:
         doc.mode.on_file_saved(fileinfo)
 
         doc.fileinfo = fileinfo
-        doc.fileinfo.check_update() # ensure timestamps updated
+        doc.fileinfo.check_update()  # ensure timestamps updated
 
         doc.set_title(None)
         doc.temporary = False
@@ -211,6 +211,7 @@ class FileStorage:
         kaa.app.messagebar.set_message('Written to {}({})'.format(file, dir))
 
         kaa.app.config.hist_storage.flush()
+
 
 class FileInfo:
     storage = None
@@ -265,8 +266,8 @@ def select_mode(filename):
     return defaultmode.DefaultMode
 
 
-#def openfile(filename, encoding=None, newline=None, filemustexists=False):
-#    # Open file
+# def openfile(filename, encoding=None, newline=None, filemustexists=False):
+# Open file
 #    fileinfo = kaa.app.storage.get_fileinfo(filename, encoding, newline)
 #    textio = kaa.app.storage.get_textio(fileinfo, filemustexists)
 #
@@ -291,7 +292,7 @@ def select_mode(filename):
 #
 
 #
-#def newfile(mode=None, s='', provisional=False):
+# def newfile(mode=None, s='', provisional=False):
 #    buf = document.Buffer()
 #    if s:
 #        buf.insert(0, s)

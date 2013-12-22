@@ -398,6 +398,7 @@ class ScreenCommands(Commands):
 
 
 class EditCommands(Commands):
+
     def delete_sel(self, wnd):
         if wnd.screen.selection.is_selected():
             if not wnd.screen.selection.is_rectangular():
@@ -772,7 +773,6 @@ class EditCommands(Commands):
 
         from kaa.ui.texthist import texthistmode
         texthistmode.show_history(callback, words)
-
 
 
 class CodeCommands(Commands):

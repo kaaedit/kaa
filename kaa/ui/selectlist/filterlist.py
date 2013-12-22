@@ -21,7 +21,7 @@ class FilterListMode(selectlist.SelectItemList):
     SEP = '\n'
     MAX_CAPTION_LEN = None
     USE_PHRASE_STYLE = False
-    
+
     def init_themes(self):
         super().init_themes()
         self.themes.append(FilterListThemes)
@@ -99,7 +99,7 @@ class FilterListInputDlgMode(dialogmode.DialogMode):
     callback = None
     INITIAL_MESSAGE = "Hit up/down to select item."
     NO_WRAPINDENT = False
-    
+
     @classmethod
     def build(cls, caption, callback):
         buf = document.Buffer()

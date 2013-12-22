@@ -244,12 +244,11 @@ class CSSMode(defaultmode.DefaultMode):
             s = document.gettext(0, 1024).encode('utf-8', errors='ignore')
 
         m = re.search(
-            rb'@charset\s+(' + rb'"([^"]+)"|'+ rb"('[^']+'))", s)
+            rb'@charset\s+(' + rb'"([^"]+)"|' + rb"('[^']+'))", s)
         if m:
             enc = str(m.group(2) or m.group(3), 'utf-8', 'replace').strip()
             enc = encodingdef.normalize_encname(enc, fileinfo.encoding)
             fileinfo.encoding = enc
-
 
     def init_themes(self):
         super().init_themes()

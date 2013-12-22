@@ -75,7 +75,7 @@ class ModeBase:
     highlight = None
     _check_fileupdate = 0
     _last_autoindent = None
-    
+
     @classmethod
     def update_fileinfo(cls, fileinfo, document=None):
         pass
@@ -221,12 +221,12 @@ class ModeBase:
         styleid = self.stylenamemap.get(stylename, None)
         if styleid is not None:
             return styleid
-            
+
         if not self.stylemap:
             ret = 1
         else:
             ret = max(self.stylemap.keys()) + 1
-            
+
         style = self.theme.get_style(stylename)
         self.stylemap[ret] = style
         self.stylenamemap[stylename] = ret
@@ -368,7 +368,6 @@ class ModeBase:
                                       cur_pos, wnd.cursor.pos)
             self.on_edited(wnd)
 
-
     def replace_rect(self, wnd, repto):
         if wnd.document.undo:
             wnd.document.undo.beginblock()
@@ -409,7 +408,6 @@ class ModeBase:
                 self.replace_string(wnd, f, t, s)
         else:
             self.insert_string(wnd, wnd.cursor.pos, s)
-
 
     def update_charattr(self, wnd):
         if wnd.charattrs:
@@ -559,7 +557,7 @@ class ModeBase:
     def cancel_auto_indent(self, wnd):
         if self._last_autoindent:
             f, t = (min(max(0, p), self.document.endpos())
-                      for p in self._last_autoindent)
+                    for p in self._last_autoindent)
             self._last_autoindent = None
             if f != t and wnd.cursor.pos == t:
                 e = self.document.get_line_break(wnd.cursor.pos)
@@ -570,7 +568,7 @@ class ModeBase:
                         self.delete_string(
                             wnd, f, t, update_cursor=False)
                         wnd.cursor.setpos(f)
-                    
+
     def on_auto_indent(self, wnd):
         pos = wnd.cursor.pos
         f, t = self.get_indent_range(pos)
@@ -584,15 +582,15 @@ class ModeBase:
             # if new line don't hava non-ws char,
             # thie line should be subject to cancel-indent.
             if t == b:
-                self._last_autoindent = (f+1, wnd.cursor.pos)
+                self._last_autoindent = (f + 1, wnd.cursor.pos)
 
         else:
             indent = '\n' + indent
             self.insert_string(wnd, pos, indent, update_cursor=False)
             wnd.cursor.setpos(pos + len(indent))
             wnd.cursor.savecol()
-            self._last_autoindent = (pos+1, wnd.cursor.pos)
-            
+            self._last_autoindent = (pos + 1, wnd.cursor.pos)
+
         wnd.cursor.savecol()
 
     def calc_cols(self, f, t):

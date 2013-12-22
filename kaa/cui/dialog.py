@@ -120,7 +120,6 @@ class DialogWnd(_dialogwnd):
         self.inputs.insert(pos, input)
         return input
 
-
     def draw_screen(self):
         if self.input.document.mode.border:
             border_attr = self.input.document.mode.theme.get_style(

@@ -286,7 +286,7 @@ class Document:
         if eol == -1:
             return len(self.buf)
         return eol
-        
+
     def iterlines(self, pos):
         end = self.endpos()
         while pos < end:
@@ -337,7 +337,6 @@ class Document:
         self.styles.setints(start, end, style)
         if update:
             self.style_updated(start, end)
-            
 
 
 class Marks(dict):

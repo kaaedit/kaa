@@ -28,7 +28,9 @@ class Theme:
         for style in self.styles.values():
             style.set_default_attr(default)
 
+
 class Style:
+
     def __init__(self, name, fgcolor, bgcolor, underline=False,
                  bold=False, nowrap=False, rjust=False):
         self.name = name

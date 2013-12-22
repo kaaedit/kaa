@@ -80,7 +80,7 @@ class MsgBoxMode(dialogmode.DialogMode):
         mode = cls()
         mode.callback = callback
         mode.keys = keys
-        mode.border =  border
+        mode.border = border
         doc.setmode(mode)
 
         with dialogmode.FormBuilder(doc) as f:

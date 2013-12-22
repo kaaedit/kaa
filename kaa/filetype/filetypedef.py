@@ -1,5 +1,6 @@
 import os
 
+
 class FileTypeInfo:
     FILE_EXT = {}
 
@@ -12,4 +13,3 @@ class FileTypeInfo:
     @classmethod
     def get_modetype(cls):
         assert 0
-

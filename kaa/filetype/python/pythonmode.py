@@ -129,7 +129,7 @@ class PythonMode(defaultmode.DefaultMode):
             self.insert_string(wnd, pos, indent, update_cursor=False)
             wnd.cursor.setpos(pos + len(indent))
             wnd.cursor.savecol()
-            self._last_autoindent = (pos+1, wnd.cursor.pos)
+            self._last_autoindent = (pos + 1, wnd.cursor.pos)
 
     RE_SEARCH_NAME = gre.compile(r'(\\.)|(\w+)|(\S)')
 
@@ -309,7 +309,6 @@ class PythonMode(defaultmode.DefaultMode):
                 self.document.marks[bp] = pos
 
         self.document.style_updated()
-
 
     @command('debugger.toggle.breakpoint')
     @norec

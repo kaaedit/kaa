@@ -409,7 +409,7 @@ class Screen:
         self.updated_pos = None
         self._style_updated = False
         self._need_redraw = False
-        
+
         self.selection = Selection(self)
 
     def set_document(self, doc):
@@ -528,7 +528,7 @@ class Screen:
 #        if self.updated_pos is None:
 #            if len(self.rows) > self.portfrom:
 #                self.updated_pos = self.rows[self.portfrom].posfrom
-            
+
     def apply_updates(self):
         if not self.rows:
             self.locate(0, top=True)

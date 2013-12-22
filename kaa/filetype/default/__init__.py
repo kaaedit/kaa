@@ -1,5 +1,6 @@
 from kaa.filetype import filetypedef
 
+
 class FileTypeInfo(filetypedef.FileTypeInfo):
     FILE_EXT = {}
 

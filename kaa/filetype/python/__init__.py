@@ -1,5 +1,6 @@
 from kaa.filetype import filetypedef
 
+
 class FileTypeInfo(filetypedef.FileTypeInfo):
     FILE_EXT = {'.py', '.pyw'}
 
@@ -7,4 +8,3 @@ class FileTypeInfo(filetypedef.FileTypeInfo):
     def get_modetype(cls):
         from kaa.filetype.python.pythonmode import PythonMode
         return PythonMode
-

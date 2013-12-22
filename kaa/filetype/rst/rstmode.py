@@ -27,7 +27,7 @@ RstThemes = {
 def _build_seps():
     starts = []
     ends = []
-    
+
     for i in range(0x12000):
         c = chr(i)
         category = unicodedata.category(c)
@@ -38,6 +38,7 @@ def _build_seps():
     return ''.join(starts), ''.join(ends)
 
 SEP_STARTS, SEP_ENDS = _build_seps()
+
 
 class RstInline(Span):
     WS = ' \t\r\n'

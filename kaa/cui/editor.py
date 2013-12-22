@@ -144,9 +144,9 @@ class TextEditorWindow(Window):
         ret = []
         if not row.positions:
             return ret
-            
+
         posfrom = row.positions[0]
-        styles = self.document.styles.getints(posfrom, row.positions[-1]+1)
+        styles = self.document.styles.getints(posfrom, row.positions[-1] + 1)
 
         ncols = row.colfrom
         for pos, cols in zip(row.positions, row.cols):
@@ -166,8 +166,8 @@ class TextEditorWindow(Window):
 
             tokenid = self.charattrs.get(pos, None)
             if tokenid is None:
-                tokenid = styles[pos-posfrom]
-                
+                tokenid = styles[pos - posfrom]
+
             style = self.document.mode.get_style(tokenid)
             color = None
             if line_overlay:
@@ -184,7 +184,7 @@ class TextEditorWindow(Window):
 
             ncols += cols
         return ret
-        
+
     def draw_screen(self, force=False):
         try:
             self._draw_screen(force=force)
@@ -314,7 +314,6 @@ class TextEditorWindow(Window):
                 if selfrom <= row.posfrom < selto:
                     if not rectangular or (colfrom == 0):
                         self.add_str(' ', curses.A_REVERSE)
-
 
         if len(rows) < h:
             self._cwnd.move(len(rows), 0)

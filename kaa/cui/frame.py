@@ -233,7 +233,7 @@ class MainFrame(Window, kaa.context.ContextRoot):
                 if not child.closed:
                     if child.on_idle():
                         return True
-            
+
             for child in self.walk_children():
                 if not child.closed:
                     child.update_window()

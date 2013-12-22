@@ -3,6 +3,7 @@ import subprocess
 import shutil
 import kaa
 
+
 def select_clipboard():
     if sys.platform == 'darwin':
         return MacClipboard()
@@ -10,6 +11,7 @@ def select_clipboard():
         return X11Clipboard()
     else:
         return Clipboard()
+
 
 class Clipboard:
     MAX_CLIPBOARD = 10
@@ -32,8 +34,10 @@ class Clipboard:
 
     def set(self, s):
         self._set(s)
-        
+
+
 class NativeClipboard(Clipboard):
+
     def get(self):
         try:
             s = self._get_native_clipboard()
@@ -51,18 +55,21 @@ class NativeClipboard(Clipboard):
         except Exception as e:
             pass
 
+
 class MacClipboard(NativeClipboard):
     COPYCOMMAND = 'pbcopy'
     PASTECOMMAND = 'pbpaste'
+
     def _get_native_clipboard(self):
-        return subprocess.check_output(self.PASTECOMMAND, shell=True, 
-                universal_newlines=True)
+        return subprocess.check_output(self.PASTECOMMAND, shell=True,
+                                       universal_newlines=True)
 
     def _set_native_clipboard(self, s):
-        p = subprocess.Popen(self.COPYCOMMAND, stdin=subprocess.PIPE, 
-                universal_newlines=True, shell=True)
+        p = subprocess.Popen(self.COPYCOMMAND, stdin=subprocess.PIPE,
+                             universal_newlines=True, shell=True)
         p.communicate(s)
         p.wait()
+
 
 class X11Clipboard(NativeClipboard):
     CLIPCOMMAND = 'xsel'
@@ -74,21 +81,21 @@ class X11Clipboard(NativeClipboard):
         if not shutil.which(X11Clipboard.CLIPCOMMAND):
             return False
 
-        ret = subprocess.call(cls.CLIPCOMMAND, stdin=subprocess.PIPE, 
-                universal_newlines=True, stdout=subprocess.PIPE,
-                stderr=subprocess.PIPE, shell=True)
+        ret = subprocess.call(cls.CLIPCOMMAND, stdin=subprocess.PIPE,
+                              universal_newlines=True, stdout=subprocess.PIPE,
+                              stderr=subprocess.PIPE, shell=True)
         if ret:
             return False
 
         return True
 
     def _get_native_clipboard(self):
-        return subprocess.check_output(self.PASTECOMMAND, shell=True, 
-                universal_newlines=True)
+        return subprocess.check_output(self.PASTECOMMAND, shell=True,
+                                       universal_newlines=True)
 
     def _set_native_clipboard(self, s):
-        p = subprocess.Popen(self.COPYCOMMAND, stdin=subprocess.PIPE, 
-                universal_newlines=True, stdout=subprocess.PIPE,
-                stderr=subprocess.PIPE, shell=True)
+        p = subprocess.Popen(self.COPYCOMMAND, stdin=subprocess.PIPE,
+                             universal_newlines=True, stdout=subprocess.PIPE,
+                             stderr=subprocess.PIPE, shell=True)
         p.communicate(s)
         p.wait()

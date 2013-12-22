@@ -38,6 +38,7 @@ class BreakPoints(selectlist.SelectItemList):
     SEP = '\n'
     caption = 'Break points'
     border = True
+
     @classmethod
     def build(cls, port):
         doc = super().build()
@@ -158,7 +159,6 @@ class PythonStackList(dialogmode.DialogMode):
                 t = self.document.endpos()
                 self.document.marks[('stack', n)] = (s, t)
 
-
     def update_sel(self, wnd, n):
         if self.cursel != n:
             f, t = self.document.marks.get(
@@ -270,7 +270,6 @@ class PythonDebuggerPanel(dialogmode.DialogMode):
 
             f.append_text('status', '-Waiting-', mark_pair='status')
 
-
     def update(self, wnd, stack):
         self.build(stack)
         self.show_curline(wnd)
@@ -332,6 +331,7 @@ class PythonDebuggerPanel(dialogmode.DialogMode):
         self._locate_doc(wnd, doc, lineno)
 
     msg_notbreaking = 'Debug target is not idle.'
+
     def _cmd_not_breaked(self):
         kaa.app.messagebar.set_message(self.msg_notbreaking)
 
@@ -410,7 +410,6 @@ def show_callstack(port, stack):
     dlg = kaa.app.show_inputline(doc)
     ret = dlg.get_label('editor')
 
-
     buf = document.Buffer()
     stacklist = document.Document(buf)
     stacklistmode = PythonStackList()
@@ -419,8 +418,7 @@ def show_callstack(port, stack):
 
     wnd = dlg.add_doc('dlg_stacklist', 0, stacklist)
     stacklistmode.update_sel(wnd, 0)
-    
-    mode.show_curline(ret)
 
+    mode.show_curline(ret)
 
     return ret

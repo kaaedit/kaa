@@ -279,7 +279,7 @@ class CuiApp:
                             self.focus.editmode.on_keyevent(self.focus, c)
                             if self.focus:
                                 self.focus.update_window()
-                
+
                 if not inputs:
                     if self.mainframe.on_idle():
                         self.set_idlejob()  # Reschedule idle procs

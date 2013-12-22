@@ -11,6 +11,7 @@ from kaa import encodingdef
 from kaa.filetype import filetypedef
 import re
 
+
 def iter_attr(b):
     pos = 0
     prop = re.compile(br'(\w+)\s*=\s*', re.DOTALL)
@@ -27,6 +28,7 @@ def iter_attr(b):
         yield name, m.group()[1:-1]
         pos = m.end()
 
+
 def get_encoding(b):
     # http://www.w3.org/International/questions/qa-html-encoding-declarations
 
@@ -37,7 +39,7 @@ def get_encoding(b):
             if name == b'charset':
                 return str(value.strip(), 'utf-8')
 
-    # HTML4, XHTML: 
+    # HTML4, XHTML:
     #    <meta http-equiv="Content-type" content="text/html;charset=UTF-8">
     m = re.search(br'<meta ', b, re.DOTALL)
     if m:
@@ -259,12 +261,11 @@ class HTMLMode(defaultmode.DefaultMode):
             buffer = open(fileinfo.fullpathname, 'rb').read(1024)
             enc = get_encoding(buffer)
             if enc:
-                enc = encodingdef.normalize_encname(enc, 
-                        fileinfo.encoding)
+                enc = encodingdef.normalize_encname(enc,
+                                                    fileinfo.encoding)
                 fileinfo.encoding = enc
         except IOError:
             pass
-
 
     def init_themes(self):
         super().init_themes()

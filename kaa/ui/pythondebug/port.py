@@ -140,6 +140,7 @@ def update_breakpoints():
         if hasattr(doc.mode, 'update_python_breakpoints'):
             doc.mode.update_python_breakpoints()
 
+
 class Debugger:
     port = None
     session = None
@@ -166,7 +167,7 @@ class Debugger:
                 status = '-RUNNING-'
 
             self.debugpage.document.mode.set_status(self.debugpage, status)
-    
+
     def is_breaking(self):
         return self.session and not self.running
 
@@ -434,11 +435,11 @@ class ChildDebugger(Debugger):
 
         self.set_running(True)
         self.process = subprocess.Popen(s, shell=True,
-                            stdin=subprocess.PIPE,
-                            stdout=subprocess.PIPE, stderr=subprocess.PIPE,
-                            bufsize=1,universal_newlines=True,
-                            pass_fds=(self.child.fileno(),),
-                            env=env)
+                                        stdin=subprocess.PIPE,
+                                        stdout=subprocess.PIPE, stderr=subprocess.PIPE,
+                                        bufsize=1, universal_newlines=True,
+                                        pass_fds=(self.child.fileno(),),
+                                        env=env)
         self.child.close()
 
         self.process.stdin.close()
@@ -458,4 +459,3 @@ class ChildDebugger(Debugger):
         if self.process:
             self.process.wait()
         kaa.app.mainframe.refresh()
-
