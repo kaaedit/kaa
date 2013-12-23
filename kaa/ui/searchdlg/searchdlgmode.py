@@ -600,3 +600,4 @@ class ReplaceDlgMode(SearchDlgMode):
 
     def on_esc_pressed(self, wnd, event):
         self._save_replstr()
+        super().on_esc_pressed(wnd, event)

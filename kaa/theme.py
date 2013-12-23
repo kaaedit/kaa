@@ -2,7 +2,6 @@ import kaa
 
 
 class Theme:
-
     def __init__(self, styles):
         self.styles = {}
         self.overlays = {}
@@ -21,7 +20,13 @@ class Theme:
 
     def update(self, rhs):
         default = self.styles.get('default', None)
-        self.add_styles(s.copy() for s in rhs)
+        styles = []
+        for s in rhs:
+            s = s.copy()
+            if s.name == 'default':
+                s.set_default_attr(default)
+            styles.append(s)
+        self.add_styles(styles)
 
     def finish_update(self):
         default = self.styles.get('default', None)
@@ -30,7 +35,6 @@ class Theme:
 
 
 class Style:
-
     def __init__(self, name, fgcolor, bgcolor, underline=False,
                  bold=False, nowrap=False, rjust=False):
         self.name = name
