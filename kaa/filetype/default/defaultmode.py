@@ -11,7 +11,8 @@ class DefaultMode(modebase.ModeBase):
     DOCUMENT_MODE = True
     MODENAME = 'default'
     SHOW_LINENO = False
-    VIM_COMMANDMODE = False
+    VI_COMMAND_MODE = False
+
     KEY_BINDS = [
         keybind.app_keys,
         keybind.cursor_keys,
@@ -118,7 +119,7 @@ class DefaultMode(modebase.ModeBase):
 
     def on_esc_pressed(self, wnd, event):
         # Pressing esc key starts command mode.
-        if self.VIM_COMMANDMODE:
+        if self.VI_COMMAND_MODE:
             is_available, command = self.get_command('editmode.command')
             if command:
                 command(wnd)
