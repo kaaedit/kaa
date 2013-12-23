@@ -376,7 +376,8 @@ class ScreenCommands(Commands):
     @command('screen.lineselection.begin')
     @norerun
     def lineselection_begin(self, wnd):
-        tol = wnd.cursor.adjust_nextpos(wnd.document.gettol(wnd.cursor.pos))
+        tol = wnd.cursor.adjust_nextpos(
+                wnd.cursor.pos, wnd.document.gettol(wnd.cursor.pos))
         wnd.screen.selection.begin_cursor(tol)
 
     @command('screen.lineselection.set-end')

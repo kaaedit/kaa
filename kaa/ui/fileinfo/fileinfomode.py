@@ -124,7 +124,6 @@ class FileInfoMode(dialogmode.DialogMode):
         pass
 
     def on_esc_pressed(self, wnd, event):
-        super().on_esc_pressed(wnd, event)
         popup = wnd.get_label('popup')
         popup.destroy()
 

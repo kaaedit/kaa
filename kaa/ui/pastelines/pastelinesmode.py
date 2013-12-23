@@ -65,7 +65,6 @@ class PasteLinesMode(dialogmode.DialogMode):
         kaa.app.messagebar.set_message("Paste text and hit alt+Enter")
 
     def on_esc_pressed(self, wnd, event):
-        super().on_esc_pressed(wnd, event)
         popup = wnd.get_label('popup')
         popup.destroy()
         kaa.app.messagebar.set_message("Canceled")

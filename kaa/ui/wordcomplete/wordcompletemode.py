@@ -96,7 +96,6 @@ class WordCompleteInputMode(filterlist.FilterListInputDlgMode):
 
     def on_esc_pressed(self, wnd, event):
         self.target.screen.selection.clear()
-        super().on_esc_pressed(wnd, event)
 
     def start(self, list):
         self.orgpos = self.target.cursor.pos

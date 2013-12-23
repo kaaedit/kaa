@@ -137,15 +137,15 @@ command_mode_keys = {
     'k': 'cursor.up',
     'j': 'cursor.down',
     'gg': 'cursor.top-of-file',
-    'G': 'cursor.top-of-file',
+    'G': 'cursor.end-of-file',
 
     # edit
     'x': 'edit.delete',
 
     # editmode change
     'i': 'editmode.insert',
-    'v': 'editmode.visual',
-    'V': 'editmode.visual-linewise',
+    'v': ('editmode.visual', 'selection.set-mark'),
+#    'V': ('editmode.visual-linewise', 'cursor.home', 'selection.set-mark'),
 
     # undo/redo
     'u': 'edit.undo',
@@ -169,29 +169,15 @@ visual_mode_keys = {
     'gg': 'cursor.top-of-file',
     'G': 'cursor.end-of-file',
 
+    'y': ('edit.copy', 'selection.end-cursor', 'editmode.command'),
 }
 
 visual_linewise_mode_keys = {
-    left: ('screen.lineselection.begin', 'cursor.left', 'screen.lineselection.set-end'),
-    right: ('screen.lineselection.begin', 'cursor.right', 'screen.lineselection.set-end'),
-    up: ('screen.lineselection.begin', 'cursor.up', 'screen.lineselection.set-end'),
-    down: ('screen.lineselection.begin', 'cursor.down', 'screen.lineselection.set-end'),
+    up: ('cursor.up', 'cursor.end'),
+    down: ('cursor.down', 'cursor.end'),
 
-    pagedown: ('screen.lineselection.begin', 'cursor.pagedown', 'screen.lineselection.set-end'),
-    pageup: ('screen.lineselection.begin', 'cursor.pageup', 'screen.lineselection.set-end'),
+    'k': ('cursor.up', 'cursor.end'),
+    'j': ('cursor.down', 'cursor.end'),
 
-    'h': ('screen.lineselection.begin', 'cursor.left',
-          'screen.lineselection.set-end'),
-    'l': ('screen.lineselection.begin', 'cursor.right',
-          'screen.lineselection.set-end'),
-    'k': ('screen.lineselection.begin', 'cursor.up',
-          'screen.lineselection.set-end'),
-    'j': ('screen.lineselection.begin', 'cursor.down',
-          'screen.lineselection.set-end'),
-
-    'gg': ('screen.lineselection.begin', 'cursor.top-of-file',
-           'screen.lineselection.set-end'),
-    'G': ('screen.lineselection.begin', 'cursor.end-of-file',
-          'screen.lineselection.set-end'),
-
+    'y': ('edit.copy', 'selection.end-cursor', 'editmode.command'),
 }

@@ -76,7 +76,6 @@ class InputlineMode(dialogmode.DialogMode):
 
     def on_esc_pressed(self, wnd, event):
         # todo: run callback
-        super().on_esc_pressed(wnd, event)
         popup = wnd.get_label('popup')
         popup.destroy()
         kaa.app.messagebar.set_message("Canceled")

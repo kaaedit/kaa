@@ -11,6 +11,7 @@ class DefaultMode(modebase.ModeBase):
     DOCUMENT_MODE = True
     MODENAME = 'default'
     SHOW_LINENO = False
+    VIM_COMMANDMODE = False
     KEY_BINDS = [
         keybind.app_keys,
         keybind.cursor_keys,
@@ -23,14 +24,14 @@ class DefaultMode(modebase.ModeBase):
     ]
 
     VI_KEY_BIND = [
-        #        keybind.command_mode_keys
+                keybind.command_mode_keys
     ]
 
     VI_VISUAL_MODE_KEY_BIND = [
-        #        keybind.visual_mode_keys
+                keybind.visual_mode_keys
     ]
     VI_VISUAL_LINEWISE_MODE_KEY_BIND = [
-        #        keybind.visual_linewise_mode_keys
+                keybind.visual_linewise_mode_keys
     ]
 
     def init_keybind(self):
@@ -116,15 +117,13 @@ class DefaultMode(modebase.ModeBase):
                 self.file_commands.notify_fileupdated(self.document)
 
     def on_esc_pressed(self, wnd, event):
-        super().on_esc_pressed(wnd, event)
-        return
-
         # Pressing esc key starts command mode.
-        is_available, command = self.get_command('editmode.command')
-        if command:
-            command(wnd)
-            if kaa.app.macro.is_recording():
-                kaa.app.macro.record(command)
+        if self.VIM_COMMANDMODE:
+            is_available, command = self.get_command('editmode.command')
+            if command:
+                command(wnd)
+                if kaa.app.macro.is_recording():
+                    kaa.app.macro.record(command)
 
     def on_keypressed(self, wnd, event, s, commands, candidate):
         if not commands and not candidate:
