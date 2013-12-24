@@ -15,6 +15,7 @@ from kaa.ui.selectfile import selectfile
 from kaa.ui.itemlist import itemlistmode
 from kaa.ui.grep import grepmode
 
+
 class GrepOption(modebase.SearchOption):
     RE = re
 

@@ -25,14 +25,14 @@ class DefaultMode(modebase.ModeBase):
     ]
 
     VI_KEY_BIND = [
-                keybind.command_mode_keys
+        keybind.command_mode_keys
     ]
 
     VI_VISUAL_MODE_KEY_BIND = [
-                keybind.visual_mode_keys
+        keybind.visual_mode_keys
     ]
     VI_VISUAL_LINEWISE_MODE_KEY_BIND = [
-                keybind.visual_linewise_mode_keys
+        keybind.visual_linewise_mode_keys
     ]
 
     def init_keybind(self):

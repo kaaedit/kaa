@@ -145,7 +145,7 @@ command_mode_keys = {
     # editmode change
     'i': 'editmode.insert',
     'v': ('editmode.visual', 'selection.set-mark'),
-#    'V': ('editmode.visual-linewise', 'cursor.home', 'selection.set-mark'),
+    #    'V': ('editmode.visual-linewise', 'cursor.home', 'selection.set-mark'),
 
     # undo/redo
     'u': 'edit.undo',

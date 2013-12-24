@@ -2,6 +2,7 @@ import kaa
 
 
 class Theme:
+
     def __init__(self, styles):
         self.styles = {}
         self.overlays = {}
@@ -35,6 +36,7 @@ class Theme:
 
 
 class Style:
+
     def __init__(self, name, fgcolor, bgcolor, underline=False,
                  bold=False, nowrap=False, rjust=False):
         self.name = name

@@ -46,6 +46,7 @@ class DirFileListMode(selectlist.SelectItemList):
         self.read_dir()
 
     MAX_DIR_ITEMS = 2000
+
     def read_dir(self):
         try:
             self.dirs, self.files = kaa.app.storage.listdir(self.dirname)

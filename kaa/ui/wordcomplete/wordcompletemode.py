@@ -87,7 +87,7 @@ class WordCompleteInputMode(filterlist.FilterListInputDlgMode):
         wnd.get_label('popup').destroy()
 
         if self.callback:
-            self.callback(self.wordpos[0]+len(s))
+            self.callback(self.wordpos[0] + len(s))
 
     def on_edited(self, wnd):
         super().on_edited(wnd)
