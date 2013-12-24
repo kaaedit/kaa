@@ -39,7 +39,7 @@ See http://kaaedit.github.io for more screen shots.
 Kaa is easy!
 ------------
 
-Kaa is very easy to learn in spite of its rich functionality. Only thing you need to remember is **"To display menu, hit F1 key or alt+'/' key"**. Most of basic feartures could be accessed from fancy menus by hitting underlined character in the menu items. You can use kaa as easy as you are with Notepad on MS-Windows.
+Kaa is very easy to learn in spite of its rich functionality. Only thing you need to remember is **"To display menu, hit F1 key or alt+'/' key"**. Most of basic features could be accessed from fancy menus by hitting underlined character in the menu items. You can use kaa as easy as you are with Notepad on MS-Windows.
 
 
 Customizable
@@ -71,13 +71,13 @@ To run kaa, you need following component:
 
     $ sudo apt-get install python3-dev
 
-* If your Python installation is not system-supplyed package but built by yourself, please ensure you have installed ncurses library with wide character support before you built Python. Consult documentation of your platform for details. For recent Debian/Ubuntu, you can install required libraries by ::
+* If your Python installation is not system-supplied package but built by yourself, please ensure you have installed ncurses library with wide character support before you built Python. Consult documentation of your platform for details. For recent Debian/Ubuntu, you can install required libraries by ::
 
     $ sudo apt-get install libncursesw5 libncurses5-dev libncursesw5-dev 
  
   After theses packages are installed, rebuild Python installation to take effect.
 
-* Kaa can use system clipboard. To use clipboard on Unix platform, `xsel` command should be installed. For Ubuntu linux, following command installs `xsel` command.
+* Kaa can use system clipboard. To use clipboard on Unix platform, `xsel` command should be installed. For Ubuntu Linux, following command installs `xsel` command.
 
     .. code:: sh
 
@@ -178,7 +178,7 @@ Using kaa is intuitive. Typing alphabet keys will update file as you expected. F
 Using menu
 -----------
 
-To display menu, type F1 key or alt+/ (type slash key with alt key). Each items in the menu has one underlined character. The menu item is execused by typing the underlined key with or without pressing alt key.
+To display menu, type F1 key or alt+/ (type slash key with alt key). Each items in the menu has one underlined character. The menu item is executed by typing the underlined key with or without pressing alt key.
 
 Typing escape key hides menu.
 
@@ -213,7 +213,7 @@ File menu
 +------------+----------------------------------------------------+
 
 
-Recently used files memu
+Recently used files menu
 ~~~~~~~~~~~~~~~~~~~~~~~~
 
 +---------------------+-----------------------------------------+
@@ -265,17 +265,17 @@ Text convert menu
 +---------------+----------------------------------------------------+
 
 
-Code memu
+Code menu
 +++++++++
 
 Code menu differs among file types. Following items are typical in programming languages.
 
 +---------------+----------------------------------------------------+
 | Comment       | Insert line comment character at top of lines in   |
-|               | selected regin.                                    |
+|               | selected region.                                   |
 +---------------+----------------------------------------------------+
 | Uncomment     | Delete line comment character at top of lines in   |
-|               | selected regin.                                    |
+|               | selected region.                                   |
 +---------------+----------------------------------------------------+
 | Table of      | Show table of contents to move cursor.             |
 | contents      |                                                    |
@@ -297,19 +297,26 @@ Macro menu
 Tools menu
 ++++++++++
 
-+----------------+----------------------------------------------------+
-| Python console | Execute Python script.                             |
-+----------------+----------------------------------------------------+
-| Grep           | Search text from disk.                             |
-+----------------+----------------------------------------------------+
-| Paste lines    | Insert lines of text without auto indentation.     |
-+----------------+----------------------------------------------------+
-| Shell command  | Execute external shell command and insert the      |
-|                | output.                                            |
-+----------------+----------------------------------------------------+
-| Make           | Run ``make`` to compile source files and capture   |
-|                | error  messages. Use f9/10 key to traverse errors. |
-+----------------+----------------------------------------------------+
++-----------------+----------------------------------------------------+
+| Grep            | Search text from disk.                             |
++-----------------+----------------------------------------------------+
+| Paste lines     | Insert lines of text without auto indentation.     |
++-----------------+----------------------------------------------------+
+| Shell command   | Execute external shell command and insert the      |
+|                 | output.                                            |
++-----------------+----------------------------------------------------+
+| Make            | Run ``make`` to compile source files and capture   |
+|                 | error  messages. Use f9/10 key to traverse errors. |
++-----------------+----------------------------------------------------+
+| Spell checker   | Run English spell checker.                         |
++-----------------+----------------------------------------------------+
+| Python console  | Start python console.                              |
++-----------------+----------------------------------------------------+
+| Python debugger | Start Python debugger.                             |
++-----------------+----------------------------------------------------+
+| Python debugger | Wait for external debugger connection.             |
+| server          |                                                    |
++-----------------+----------------------------------------------------+
 
 
 Window menu
@@ -330,7 +337,7 @@ Window menu
 +----------------+-------------------------------------------------+
 | Prev window    | Activate previous window.                       |
 +----------------+-------------------------------------------------+
-| Join window    | Join splitted window.                           |
+| Join window    | Join split window.                              |
 +----------------+-------------------------------------------------+
 | [Switch file]  | Show switch window menu.                        |
 +----------------+-------------------------------------------------+
@@ -507,7 +514,7 @@ Other
 +--------------------+------------------------------------------------+
 | F5                 | Run macro.                                     |
 +--------------------+------------------------------------------------+
-| Alt+.              | Run last execused edit command again.          |
+| Alt+.              | Run last executed edit command again.          |
 +--------------------+------------------------------------------------+
 | Tab                | Indent selected lines.                         |
 +--------------------+------------------------------------------------+
@@ -523,13 +530,13 @@ Other
 Replace dialog
 --------------
 
-When `regex` button is checked, `Replace` string is also regular expression string. In this case, special characters like `\\t` or `\\n` are converted to tab character and newline character. Also, backreference character will be replaced to substring matched group in the search string. For example, when search string is `'(a+)(b+)'` and replace string is `'\\2\\1'`,  matched string `'aabb'` will be replaced to `'bbaa'`.
+When `regex` button is checked, `Replace` string is also regular expression string. In this case, special characters like `\\t` or `\\n` are converted to tab character and newline character. Also, back-reference character will be replaced to sub-string matched group in the search string. For example, when search string is `'(a+)(b+)'` and replace string is `'\\2\\1'`,  matched string `'aabb'` will be replaced to `'bbaa'`.
 
 
 Grep dialog
 ------------
 
-Grep dialog has three input field. `Search` is a plain text or regular expression string to search. `Directory` is a directory to start searching. If `Tree` button was checked, files are searched recursively. `Filenames` is space separeted list of file spec in shell-style wildcards (e.g., `*.txt *.py *.doc`). Up arrow key displays history of each input field.
+Grep dialog has three input field. `Search` is a plain text or regular expression string to search. `Directory` is a directory to start searching. If `Tree` button was checked, files are searched recursively. `Filenames` is space separated list of file spec in shell-style wild-cards (e.g., `*.txt *.py *.doc`). Up arrow key displays history of each input field.
 
 In the grep result window, use F9 and F10 key to traverse matches forward/backward. 
 
@@ -537,9 +544,21 @@ In the grep result window, use F9 and F10 key to traverse matches forward/backwa
 Python console
 --------------
 
-When you hit enter key to execute multi-line statements in console, new input dialog appears to edit rest of script. In the dialog, you can edit script as normal editor screen. After you finish to edit your script, hit alt+Enter key to execute the script.
+When you hit enter key to execute multiline statements in console, new input dialog appears to edit rest of script. In the dialog, you can edit script as normal editor screen. After you finish to edit your script, hit alt+Enter key to execute the script.
 
 To show script history window, hit alt+Enter key on the console.
+
+Spellchecker
+-------------
+
+To use spellchecker, `PyEnchant <https://pypi.python.org/pypi/pyenchant>`_ module should be installed. 
+
+On MAC OS-X install `enchant <http://www.abisource.com/projects/enchant/>` with homebrew.
+
+.. code:: sh
+
+    $ brew install enchant
+    $ pip-3.3 install PyEnchant
 
 
 Make
@@ -553,7 +572,7 @@ Python debugger
 ---------------
 
 .. warning::
-   Python debugger is highly exprimental at this point.
+   Python debugger is highly experimental at this point.
     
 
 Kaa can be used as front-end of Python debugger module(``bdb``) running in another process. Although kaa itself requires Python 3.3 or later, you can use Python 2.6 or later in the target process. 
@@ -566,14 +585,14 @@ There are three ways to start debugger.
 kaadbg.run module
 ~~~~~~~~~~~~~~~~~~~~~~~~
 
-Execute ``kaadbg`` package in Python interpreter to connect target program with kaa debugger. ``kaadbg`` is Python package installed as a part of kaa. To use another Python interpreter than kaa installed, you can install ``kaadbg`` separetely.
+Execute ``kaadbg`` package in Python interpreter to connect target program with kaa debugger. ``kaadbg`` is Python package installed as a part of kaa. To use another Python interpreter than kaa installed, you can install ``kaadbg`` separately.
 
 ::
 
    $ sudo pip install -U kaadbg
 
 
-Currentry, ``kaadbg`` supports from Python 2.6 to Python 3.x.
+Currently, ``kaadbg`` supports from Python 2.6 to Python 3.x.
 
 To activate kaa remote debugger, select ``[Tools]|Python debugger server`` and enter port number to connect debugger(default 28110).
 
@@ -635,7 +654,7 @@ Breakpoints
 
 To set/unset breakpoints, select ``[Code]|Toggle Breakpoint`` in menu in editor. By default, ``f8`` key is bounded to this menu item.
 
-While debugger window is opend, you can suspend the debugger window by escape key. After you finish to update breakpoints in editor window, select ``[Tools]|Python debugger`` menu again to resume debugger. To view list of current breakpoints, select *breakpoints* button with ``alt+E`` key.
+While debugger window is opened, you can suspend the debugger window by escape key. After you finish to update breakpoints in editor window, select ``[Tools]|Python debugger`` menu again to resume debugger. To view list of current breakpoints, select *breakpoints* button with ``alt+E`` key.
 
 Inspect variables
 ++++++++++++++++++
@@ -646,7 +665,7 @@ To see value of variables, select ``Expr`` on the debugger window by pressing ``
 Customization
 ==================
 
-Kaa executes a Python script file at `~/.kaa/__kaa__.py` on startup. You can write Python script to customize kaa as you like.
+Kaa executes a Python script file at `~/.kaa/__kaa__.py` on start up. You can write Python script to customize kaa as you like.
 
 
 Sample - Show line numbers
@@ -657,7 +676,7 @@ Sample - Show line numbers
    from kaa.filetype.default import defaultmode
    defaultmode.DefaultMode.SHOW_LINENO = True
 
-`defaultmode.DefaultMode` is base class of all text file types. Line number is diplayed if `Defaultmode.SHOW_LINENO` is True. If you want to show line number of paticular file types, you can update SHOW_LINENO attribute of each file type classes.
+`defaultmode.DefaultMode` is base class of all text file types. Line number is displayed if `Defaultmode.SHOW_LINENO` is True. If you want to show line number of particular file types, you can update SHOW_LINENO attribute of each file type classes.
 
 .. code:: python
 
@@ -709,7 +728,7 @@ To run test, you need to install `py.test <http://pytest.org/latest/>`_
    $ cd kaa
    $ py.test
 
-There is an expreimental script to run freeze to build standalone kaa binary file.
+There is an experimental script to run freeze to build standalone kaa binary file.
 To freeze kaa,  You must proceed with the following steps: 
 
 1. Apply following two patches to your Python 3.3 installation.
@@ -740,7 +759,7 @@ To freeze kaa,  You must proceed with the following steps:
 6. Check if freezing/dist/kaa exists.
 
 
-Acknowledgement
+Acknowledgments
 =================
 
 I really appreciate for your help.
@@ -764,16 +783,22 @@ Version history
 =================
 
 
-0.23.0 - 2013.12.21
+0.24.0 - 2013.12.24
 --------------------
+
+- Spell checker
+
+
+Past versions
+--------------
+
+0.23.0 - 2013.12.21
++++++++++++++++++++++
 
 - Improve Python console a lot.
 
 - Breakpoints in Python debugger now works better.
 
-
-Past versions
---------------
 
 0.22.0 - 2013.12.19
 +++++++++++++++++++++
@@ -810,17 +835,17 @@ Past versions
 
 - Optimizations. Kaa responds quicker than previous version.
 
-- Error highlighting javascipt attribute in html mode was fixed.
+- Error highlighting JavaScript attribute in html mode was fixed.
 
 - White space characters inserted by auto-indent are automatically removed if cursor moved to another position without entering a character.
 
-- reStructuredText Mode: Non-ASCII punctuations were not recognized as separater of inline mark ups.
+- reStructuredText Mode: Non-ASCII punctuation marks were not recognized as separator of inline mark ups.
 
 
 0.17.0 - 2013.12.06
 +++++++++++++++++++++
 
-- reStructuredText Mode: Recognize non-ASCII punctuation as separater of inline mark ups.
+- reStructuredText Mode: Recognize non-ASCII punctuation as separator of inline mark ups.
 
 - Indent command: Don't indent blank line. (Contributed by `allanderek <https://github.com/kaaedit/kaa/pull/94>`_)
 
@@ -1038,7 +1063,7 @@ Past versions
 
 - Highlight parenthesis at cursor.
 
-- Support text encodnig other than utf-8.
+- Support text encoding other than utf-8.
 
 - Other a lot of changes.
 
