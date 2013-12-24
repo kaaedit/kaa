@@ -56,9 +56,10 @@ class PythonConsoleMode(pythonmode.PythonMode):
         super().init_themes()
         self.themes.append(PythonConsoleThemes)
 
-    def init_tokenizers(self):
-        pass
-
+    def setup(self):
+        super().setup()
+        self.highlight.set_mark('current_script')
+        
     def on_set_document(self, document):
         super().on_set_document(document)
         self.document.marks['current_script'] = (0, 0)

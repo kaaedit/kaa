@@ -1,6 +1,6 @@
 from gappedbuf import re as gre
 import collections
-
+from kaa import document
 
 class Token:
 
@@ -326,6 +326,7 @@ class Highlighter:
         self.tokenizers = tokenizers
         self.max_tokenid = 1
         self.tokenids = {}
+        self.markname = None
 
         for tokenizer in self.tokenizers:
             tokenizer.prepare(self)
@@ -336,6 +337,9 @@ class Highlighter:
 
     def close(self):
         self._highlighter = self.section = self.tokenizer = None
+
+    def set_mark(self, markname):
+        self.markname = markname
 
     def register_tokenid(self, tokenizer, token):
         tokenid = self.max_tokenid
@@ -350,20 +354,39 @@ class Highlighter:
 
     def update_style(self, doc, batch=None):
         # todo: store 'doc' as attribute
+        marktop = 0
+        markend = doc.endpos()
+        if self.markname:
+            r = doc.marks.get(self.markname, None)
+            if r:
+                marktop, markend = r
+
+        # ignore edits before marktop. 
+        if self.updatepos < marktop:
+            self.updatepos = marktop
+
+        if self.updatepos >= markend:
+            return False
+
         if not self._highlighter:
-            self._highlighter = self.highlight(doc, self.updatepos)
+            self._highlighter = self.highlight(doc, max(marktop, self.updatepos))
 
         updatefrom = doc.endpos()
-        updateto = 0
+        updateto = marktop
         updated = False
         try:
             for n, (start, end, style) in enumerate(self._highlighter):
+                start = max(marktop, start)
+                end = min(markend, end)
                 updated = True
                 updatefrom = min(start, updatefrom)
                 updateto = max(end, updateto)
                 doc.styles.setints(start, end, style)
                 if batch and (n > batch):
                     return True
+
+                if end >= markend:
+                    return False
             else:
                 return False
 
