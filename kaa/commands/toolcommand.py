@@ -142,3 +142,17 @@ class ToolCommands(Commands):
         kaa.app.messagebar.set_message('Execute command')
 
         kaa.app.show_dialog(doc)
+
+
+    @command('tools.spellchecker')
+    @norec
+    @norerun
+    def spellchecker(self, wnd):
+        try:
+            import enchant
+        except ImportError:
+            kaa.app.messagebar.set_message('PyEnchant module is not installed.')
+            return
+            
+        from kaa.ui.spellchecker import spellcheckermode
+        spellcheckermode.run_spellchecker(wnd)

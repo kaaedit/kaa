@@ -86,6 +86,9 @@ class WordCompleteInputMode(filterlist.FilterListInputDlgMode):
             s, update_cursor=True)
         wnd.get_label('popup').destroy()
 
+        if self.callback:
+            self.callback(self.wordpos[0]+len(s))
+
     def on_edited(self, wnd):
         super().on_edited(wnd)
         s = self.get_query()
@@ -96,6 +99,7 @@ class WordCompleteInputMode(filterlist.FilterListInputDlgMode):
 
     def on_esc_pressed(self, wnd, event):
         self.target.screen.selection.clear()
+        super().on_esc_pressed(wnd, event)
 
     def start(self, list):
         self.orgpos = self.target.cursor.pos

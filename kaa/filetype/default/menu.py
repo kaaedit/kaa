@@ -53,6 +53,7 @@ MENUS = {
      ['Paste &Lines', None, 'edit.paste-lines'],
      ['&Shell command', None, 'tools.execute-shell-command'],
      ['&Make', None, 'tools.make'],
+     ['Spell&Checker', None, 'tools.spellchecker'],
      ['&Python console', None, 'python.console'],
      ['Python &Debugger', None, 'python.debugger.run'],
      ['Python debugger s&erver', None, 'python.debugger.server'],

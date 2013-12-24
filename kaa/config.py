@@ -173,6 +173,7 @@ class Config:
         self.HISTDIR = histdir
 
         self.palette = option.palette
+        self.spellchecker_pwl = os.path.join(kaadir, consts.SPELLCHECKER_PWL)
 
     def init_history(self):
         self.hist_storage = KaaHistoryStorage(

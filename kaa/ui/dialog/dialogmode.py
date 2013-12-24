@@ -16,6 +16,7 @@ DialogThemes = {
         Style('button.shortcut', 'Base3', 'Base01', underline=True,
               nowrap=True),
 
+        # todo: checkbox with rjust should be defined in another name.
         Style('checkbox', 'Base3', 'Base01', rjust=True, nowrap=True),
         Style('checkbox.checked', 'Base3', 'Orange', rjust=True,
               nowrap=True),
