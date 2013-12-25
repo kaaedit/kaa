@@ -17,41 +17,9 @@ moveseparator_keys = {
     down: 'moveseparator.next',
     (ctrl, 'f'): 'moveseparator.next',
     (ctrl, 'n'): 'moveseparator.next',
-    '\r': 'moveseparator.close',
-    '\n': 'moveseparator.close',
+    '\r': 'moveseparator.done',
+    '\n': 'moveseparator.done',
 }
-
-
-class MoveSeparatorCommands(Commands):
-
-    @command('moveseparator.prev')
-    @norec
-    @norerun
-    def prev(self, wnd):
-        if wnd.document.mode.target:
-            wnd.document.mode.target.separator_prev()
-
-    @command('moveseparator.next')
-    @norec
-    @norerun
-    def next(self, wnd):
-        if wnd.document.mode.target:
-            wnd.document.mode.target.separator_next()
-
-    @command('moveseparator.close')
-    @norec
-    @norerun
-    def close(self, wnd):
-        # restore cursor
-        org_wnd = wnd.document.mode.org_wnd
-        org_wnd.activate()
-
-        # Destroy popup window
-        popup = wnd.get_label('popup')
-        if popup:
-            popup.destroy()
-
-        org_wnd.activate()
 
 
 class MoveSeparatorMode(dialogmode.DialogMode):
@@ -75,12 +43,6 @@ class MoveSeparatorMode(dialogmode.DialogMode):
     def init_keybind(self):
         self.keybind.add_keybind(moveseparator_keys)
 
-    def init_commands(self):
-        super().init_commands()
-
-        self.moveseparator_commands = MoveSeparatorCommands()
-        self.register_command(self.moveseparator_commands)
-
     def init_themes(self):
         super().init_themes()
         self.themes.append(MoveSeparatorThemes)
@@ -89,10 +51,41 @@ class MoveSeparatorMode(dialogmode.DialogMode):
         return 0   # hide cursor
 
     def on_esc_pressed(self, wnd, event):
-        self.moveseparator_commands.close(wnd)
+        self.done(wnd)
 
     def on_str(self, wnd, s):
         pass
+
+    @command('moveseparator.prev')
+    @norec
+    @norerun
+    def prev(self, wnd):
+        if wnd.document.mode.target:
+            wnd.document.mode.target.separator_prev()
+
+    @command('moveseparator.next')
+    @norec
+    @norerun
+    def next(self, wnd):
+        if wnd.document.mode.target:
+            wnd.document.mode.target.separator_next()
+
+    @command('moveseparator.done')
+    @norec
+    @norerun
+    def done(self, wnd):
+        # restore cursor
+        org_wnd = wnd.document.mode.org_wnd
+        org_wnd.activate()
+
+        # Destroy popup window
+        popup = wnd.get_label('popup')
+        if popup:
+            popup.destroy()
+
+        org_wnd.activate()
+
+
 
 
 def move_separator(wnd):

@@ -103,7 +103,166 @@ fileopendlg_keys = {
 }
 
 
-class FileOpenDlgCommands(Commands):
+
+class OpenFilenameDlgMode(dialogmode.DialogMode):
+    MAX_INPUT_HEIGHT = 4
+    autoshrink = True
+
+    @classmethod
+    def build(cls, filename, newline, encoding, callback):
+        buf = document.Buffer()
+        doc = document.Document(buf)
+        mode = cls()
+        doc.setmode(mode)
+
+        mode.newline = newline if newline else kaa.app.config.DEFAULT_NEWLINE
+        mode.encoding = encoding if encoding else kaa.app.config.DEFAULT_ENCODING
+        mode.callback = callback
+
+        with dialogmode.FormBuilder(doc) as f:
+            f.append_text('caption', 'Filename:')
+            f.append_text('default', ' ')
+            f.append_text('default', filename, mark_pair='filename')
+            f.append_text('default', ' ')
+
+            f.append_text('checkbox', '[&Encoding:{}]'.format(mode.encoding),
+                          mark_pair='enc',
+                          shortcut_style='checkbox.shortcut',
+                          on_shortcut=lambda wnd:
+                          wnd.document.mode.select_encoding(wnd))
+
+            f.append_text('checkbox', '[&Newline:{}]'.format(mode.newline),
+                          mark_pair='newline',
+                          shortcut_style='checkbox.shortcut',
+                          on_shortcut=lambda wnd:
+                          wnd.document.mode.select_newline(wnd))
+
+            f.append_text('checkbox', '[&Create dir]',
+                          shortcut_style='checkbox.shortcut',
+                          on_shortcut=lambda wnd:
+                          wnd.document.mode.create_dir(wnd))
+
+        return doc
+
+    def close(self):
+        super().close()
+
+    def init_themes(self):
+        super().init_themes()
+        self.themes.append(FileNameDlgThemes)
+
+    def init_keybind(self):
+        self.keybind.add_keybind(
+            kaa.filetype.default.keybind.edit_command_keys)
+        self.keybind.add_keybind(kaa.filetype.default.keybind.cursor_keys)
+        self.keybind.add_keybind(kaa.filetype.default.keybind.emacs_keys)
+        self.keybind.add_keybind(fileopendlg_keys)
+
+    def create_cursor(self, wnd):
+        return dialogmode.DialogCursor(wnd,
+                                       [dialogmode.MarkRange('filename')])
+
+    def on_add_window(self, wnd):
+        super().on_add_window(wnd)
+
+        wnd.CURSOR_TO_MIDDLE_ON_SCROLL = False
+        wnd.set_cursor(self.create_cursor(wnd))
+        wnd.cursor.setpos(self.document.marks['filename'][1])
+
+        wnd.set_label('filename_field', self)
+        kaa.app.messagebar.set_message("Hit tab/shift+tab to complete.")
+
+    def on_edited(self, wnd):
+        super().on_edited(wnd)
+
+        filename = wnd.document.mode.get_filename()
+        if os.sep not in filename:
+            filelist = wnd.get_label('filelist')
+            filelist.document.mode.set_filename(filename)
+            filelist.document.mode.show_files(wnd)
+            filelist.get_label('popup').on_console_resized()
+
+    def on_esc_pressed(self, wnd, event):
+        popup = wnd.get_label('popup')
+        popup.destroy()
+        kaa.app.messagebar.set_message("")
+        self.callback(None, None, None)
+
+    def get_filename(self):
+        f, t = self.document.marks['filename']
+        return self.document.gettext(f, t)
+
+    def set_filename(self, wnd, s):
+        f, t = self.document.marks['filename']
+        self.document.replace(f, t, s)
+        wnd.screen.selection.set_range(f, f + len(s))
+        wnd.cursor.setpos(f + len(s))
+
+    def _get_encnames(self):
+        return sorted(encodingdef.encodings + ['japanese'],
+                      key=lambda k: k.upper())
+
+    def select_encoding(self, wnd):
+        encnames = self._get_encnames()
+
+        def callback(n):
+            if n is None:
+                return
+
+            enc = encnames[n]
+            if enc != self.encoding:
+                self.encoding = enc
+                f, t = self.document.marks['enc']
+                # [Encoding:{mode}]
+                # 01234567890    10
+                self.document.replace(f + 10, t - 1, self.encoding)
+
+        doc = itemlistmode.ItemListMode.build(
+            'Select character encoding:',
+            encnames,
+            encnames.index(self.encoding),
+            callback)
+
+        kaa.app.show_dialog(doc)
+
+    def select_newline(self, wnd):
+        def callback(n):
+            if n is None:
+                return
+
+            nl = consts.NEWLINES[n]
+            if nl != self.newline:
+                self.newline = nl
+                f, t = self.document.marks['newline']
+                # [Newline:{mode}]
+                # 0123456789    10
+                self.document.replace(f + 9, t - 1, self.newline)
+
+        doc = itemlistmode.ItemListMode.build(
+            'Select newline mode:',
+            consts.NEWLINES,
+            consts.NEWLINES.index(self.newline),
+            callback)
+
+        kaa.app.show_dialog(doc)
+
+    def create_dir(self, wnd):
+        filelist = wnd.get_label('filelist')
+        dirname = filelist.document.mode.dirname
+
+        def callback(w, path):
+            path = os.path.join(dirname, path)
+            try:
+                os.makedirs(path)
+            except Exception as e:
+                kaa.app.messagebar.set_message(str(e))
+            else:
+                filelist = wnd.get_label('filelist')
+                filelist.document.mode.read_dir()
+                filelist.document.mode.show_files(wnd)
+
+        doc = inputlinemode.InputlineMode.build('directory name:', callback)
+        kaa.app.show_dialog(doc)
 
     def _update_filefield(self, wnd, filename):
         if filename and wnd.document.mode.get_filename() != filename:
@@ -212,173 +371,6 @@ class FileOpenDlgCommands(Commands):
         self.show_filename(wnd, filename)
 
 
-class OpenFilenameDlgMode(dialogmode.DialogMode):
-    MAX_INPUT_HEIGHT = 4
-    autoshrink = True
-
-    @classmethod
-    def build(cls, filename, newline, encoding, callback):
-        buf = document.Buffer()
-        doc = document.Document(buf)
-        mode = cls()
-        doc.setmode(mode)
-
-        mode.newline = newline if newline else kaa.app.config.DEFAULT_NEWLINE
-        mode.encoding = encoding if encoding else kaa.app.config.DEFAULT_ENCODING
-        mode.callback = callback
-
-        with dialogmode.FormBuilder(doc) as f:
-            f.append_text('caption', 'Filename:')
-            f.append_text('default', ' ')
-            f.append_text('default', filename, mark_pair='filename')
-            f.append_text('default', ' ')
-
-            f.append_text('checkbox', '[&Encoding:{}]'.format(mode.encoding),
-                          mark_pair='enc',
-                          shortcut_style='checkbox.shortcut',
-                          on_shortcut=lambda wnd:
-                          wnd.document.mode.select_encoding(wnd))
-
-            f.append_text('checkbox', '[&Newline:{}]'.format(mode.newline),
-                          mark_pair='newline',
-                          shortcut_style='checkbox.shortcut',
-                          on_shortcut=lambda wnd:
-                          wnd.document.mode.select_newline(wnd))
-
-            f.append_text('checkbox', '[&Create dir]',
-                          shortcut_style='checkbox.shortcut',
-                          on_shortcut=lambda wnd:
-                          wnd.document.mode.create_dir(wnd))
-
-        return doc
-
-    def close(self):
-        super().close()
-
-    def init_themes(self):
-        super().init_themes()
-        self.themes.append(FileNameDlgThemes)
-
-    def init_keybind(self):
-        self.keybind.add_keybind(
-            kaa.filetype.default.keybind.edit_command_keys)
-        self.keybind.add_keybind(kaa.filetype.default.keybind.cursor_keys)
-        self.keybind.add_keybind(kaa.filetype.default.keybind.emacs_keys)
-        self.keybind.add_keybind(fileopendlg_keys)
-
-    def init_commands(self):
-        super().init_commands()
-
-        self.fileopendlg_commands = FileOpenDlgCommands()
-        self.register_command(self.fileopendlg_commands)
-
-    def create_cursor(self, wnd):
-        return dialogmode.DialogCursor(wnd,
-                                       [dialogmode.MarkRange('filename')])
-
-    def on_add_window(self, wnd):
-        super().on_add_window(wnd)
-
-        wnd.CURSOR_TO_MIDDLE_ON_SCROLL = False
-        wnd.set_cursor(self.create_cursor(wnd))
-        wnd.cursor.setpos(self.document.marks['filename'][1])
-
-        wnd.set_label('filename_field', self)
-        kaa.app.messagebar.set_message("Hit tab/shift+tab to complete.")
-
-    def on_edited(self, wnd):
-        super().on_edited(wnd)
-
-        filename = wnd.document.mode.get_filename()
-        if os.sep not in filename:
-            filelist = wnd.get_label('filelist')
-            filelist.document.mode.set_filename(filename)
-            filelist.document.mode.show_files(wnd)
-            filelist.get_label('popup').on_console_resized()
-
-    def on_esc_pressed(self, wnd, event):
-        popup = wnd.get_label('popup')
-        popup.destroy()
-        kaa.app.messagebar.set_message("")
-        self.callback(None, None, None)
-
-    def get_filename(self):
-        f, t = self.document.marks['filename']
-        return self.document.gettext(f, t)
-
-    def set_filename(self, wnd, s):
-        f, t = self.document.marks['filename']
-        self.document.replace(f, t, s)
-        wnd.screen.selection.set_range(f, f + len(s))
-        wnd.cursor.setpos(f + len(s))
-
-    def _get_encnames(self):
-        return sorted(encodingdef.encodings + ['japanese'],
-                      key=lambda k: k.upper())
-
-    def select_encoding(self, wnd):
-        encnames = self._get_encnames()
-
-        def callback(n):
-            if n is None:
-                return
-
-            enc = encnames[n]
-            if enc != self.encoding:
-                self.encoding = enc
-                f, t = self.document.marks['enc']
-                # [Encoding:{mode}]
-                # 01234567890    10
-                self.document.replace(f + 10, t - 1, self.encoding)
-
-        doc = itemlistmode.ItemListMode.build(
-            'Select character encoding:',
-            encnames,
-            encnames.index(self.encoding),
-            callback)
-
-        kaa.app.show_dialog(doc)
-
-    def select_newline(self, wnd):
-        def callback(n):
-            if n is None:
-                return
-
-            nl = consts.NEWLINES[n]
-            if nl != self.newline:
-                self.newline = nl
-                f, t = self.document.marks['newline']
-                # [Newline:{mode}]
-                # 0123456789    10
-                self.document.replace(f + 9, t - 1, self.newline)
-
-        doc = itemlistmode.ItemListMode.build(
-            'Select newline mode:',
-            consts.NEWLINES,
-            consts.NEWLINES.index(self.newline),
-            callback)
-
-        kaa.app.show_dialog(doc)
-
-    def create_dir(self, wnd):
-        filelist = wnd.get_label('filelist')
-        dirname = filelist.document.mode.dirname
-
-        def callback(w, path):
-            path = os.path.join(dirname, path)
-            try:
-                os.makedirs(path)
-            except Exception as e:
-                kaa.app.messagebar.set_message(str(e))
-            else:
-                filelist = wnd.get_label('filelist')
-                filelist.document.mode.read_dir()
-                filelist.document.mode.show_files(wnd)
-
-        doc = inputlinemode.InputlineMode.build('directory name:', callback)
-        kaa.app.show_dialog(doc)
-
-
 def show_fileopen(filename, callback):
     if not filename:
         filename = kaa.app.last_dir
@@ -395,14 +387,18 @@ def show_fileopen(filename, callback):
     filelist = DirFileListMode.build()
     dlg.add_doc('dlg_filelist', 0, filelist)
 
-    doc.mode.fileopendlg_commands.show_filename(
+    doc.mode.show_filename(
         dlg.get_label('editor'), filename)
     dlg.on_console_resized()
 
     return doc
 
 
-class FileSaveAsDlgCommands(FileOpenDlgCommands):
+class SaveAsFilenameDlgMode(OpenFilenameDlgMode):
+
+    def _get_encnames(self):
+        return sorted(encodingdef.encodings,
+                      key=lambda k: k.upper())
 
     @command('fileopendlg.openfile')
     @norec
@@ -438,19 +434,6 @@ class FileSaveAsDlgCommands(FileOpenDlgCommands):
                 return
 
         return super().openfile(wnd)
-
-
-class SaveAsFilenameDlgMode(OpenFilenameDlgMode):
-
-    def init_commands(self):
-        super().init_commands()
-
-        self.fileopendlg_commands = FileSaveAsDlgCommands()
-        self.register_command(self.fileopendlg_commands)
-
-    def _get_encnames(self):
-        return sorted(encodingdef.encodings,
-                      key=lambda k: k.upper())
 
 
 def show_filesaveas(filename, encoding, newline, callback):
@@ -535,7 +518,7 @@ def show_selectdir(curdir, callback):
     filelist = DirListMode.build()
     dlg.add_doc('dlg_filelist', 0, filelist)
 
-    doc.mode.fileopendlg_commands.show_filename(
+    doc.mode.show_filename(
         dlg.get_label('editor'), curdir)
 
     return doc

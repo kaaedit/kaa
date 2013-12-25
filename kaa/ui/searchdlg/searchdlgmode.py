@@ -14,63 +14,6 @@ SearchThemes = {
 }
 
 
-class SearchCommands(editorcommand.EditCommands):
-    # todo: move commands to mode class
-
-    @command('searchdlg.search.next')
-    @norec
-    @norerun
-    def search_next(self, wnd):
-        mode = wnd.document.mode
-        mode.search_next(wnd)
-
-    @command('searchdlg.search.prev')
-    @norec
-    @norerun
-    def search_prev(self, wnd):
-        mode = wnd.document.mode
-        mode.search_prev(wnd)
-
-    def _show_histdlg(self, wnd, title, candidates, callback):
-        filterlist.show_listdlg(title, candidates, callback)
-
-    @command('searchdlg.history')
-    @norec
-    @norerun
-    def search_history(self, wnd):
-        def callback(result):
-            if result:
-                f, t = wnd.document.marks['searchtext']
-                wnd.document.replace(f, t, result)
-                wnd.cursor.setpos(f)
-
-        self._show_histdlg(wnd, 'Recent searches',
-                           [s for s,
-                               info in kaa.app.config.hist(
-                                   'search_text').get()],
-                           callback)
-
-    @command('searchdlg.toggle.ignorecase')
-    @norec
-    @norerun
-    def toggle_ignorecase(self, wnd):
-        mode = wnd.document.mode
-        mode.toggle_option_ignorecase()
-
-    @command('searchdlg.toggle.wordsearch')
-    @norec
-    @norerun
-    def toggle_wordsearch(self, wnd):
-        mode = wnd.document.mode
-        mode.toggle_option_wordsearch()
-
-    @command('searchdlg.toggle.regex')
-    @norec
-    @norerun
-    def toggle_regex(self, wnd):
-        mode = wnd.document.mode
-        mode.toggle_option_regex()
-
 searchdlg_keys = {
     '\r': ('searchdlg.search.next'),
     '\n': ('searchdlg.search.next'),
@@ -118,10 +61,6 @@ class SearchDlgMode(dialogmode.DialogMode):
 
         self.register_keys(self.keybind, self.KEY_BINDS)
         self.keybind.add_keybind(searchdlg_keys)
-
-    def init_commands(self):
-        super().init_commands()
-        self.register_command(SearchCommands())
 
     def init_themes(self):
         super().init_themes()
@@ -218,16 +157,43 @@ class SearchDlgMode(dialogmode.DialogMode):
 
     def _option_updated(self):
         self.update_option_style()
-#        self.document.style_updated()
 
+    def _show_histdlg(self, wnd, title, candidates, callback):
+        filterlist.show_listdlg(title, candidates, callback)
+
+    @command('searchdlg.history')
+    @norec
+    @norerun
+    def search_history(self, wnd):
+        def callback(result):
+            if result:
+                f, t = wnd.document.marks['searchtext']
+                wnd.document.replace(f, t, result)
+                wnd.cursor.setpos(f)
+
+        self._show_histdlg(wnd, 'Recent searches',
+                           [s for s,
+                               info in kaa.app.config.hist(
+                                   'search_text').get()],
+                           callback)
+
+    @command('searchdlg.toggle.ignorecase')
+    @norec
+    @norerun
     def toggle_option_ignorecase(self, wnd):
         self.option.ignorecase = not self.option.ignorecase
         self._option_updated()
 
+    @command('searchdlg.toggle.wordsearch')
+    @norec
+    @norerun
     def toggle_option_word(self, wnd):
         self.option.word = not self.option.word
         self._option_updated()
 
+    @command('searchdlg.toggle.regex')
+    @norec
+    @norerun
     def toggle_option_regex(self, wnd):
         self.option.regex = not self.option.regex
         self._option_updated()
@@ -295,6 +261,9 @@ class SearchDlgMode(dialogmode.DialogMode):
         if s:
             kaa.app.config.hist('search_text').add(s)
 
+    @command('searchdlg.search.next')
+    @norec
+    @norerun
     def search_next(self, wnd):
         self._save_searchstr()
         return self._search_next(wnd)
@@ -326,6 +295,9 @@ class SearchDlgMode(dialogmode.DialogMode):
 
             return ret
 
+    @command('searchdlg.search.prev')
+    @norec
+    @norerun
     def search_prev(self, wnd):
         self._save_searchstr()
         return self._search_prev(wnd)
@@ -336,46 +308,6 @@ class SearchDlgMode(dialogmode.DialogMode):
         self.target = None
         wnd.get_label('popup').destroy()
 
-
-class ReplaceCommands(SearchCommands):
-    # todo: move commands to mode class
-
-    @command('replacedlg.field.next')
-    @norec
-    @norerun
-    def field_next(self, wnd):
-        searchfrom, searchto = wnd.document.marks['searchtext']
-        replacefrom, replaceto = wnd.document.marks['replacetext']
-
-        if searchfrom <= wnd.cursor.pos <= searchto:
-            wnd.cursor.setpos(replacefrom)
-            wnd.screen.selection.set_range(replacefrom, replaceto)
-        else:
-            wnd.cursor.setpos(searchfrom)
-            wnd.screen.selection.set_range(searchfrom, searchto)
-
-    def replace_repl_history(self, wnd):
-        def callback(result):
-            if result:
-                f, t = wnd.document.marks['replacetext']
-                wnd.document.replace(f, t, result)
-                wnd.cursor.setpos(f)
-
-        self._show_histdlg(wnd, 'Recent replace strings',
-                           [s for s,
-                               info in kaa.app.config.hist('repl_text').get()],
-                           callback)
-
-    @command('replacedlg.history')
-    @norec
-    @norerun
-    def replace_history(self, wnd):
-        searchfrom, searchto = wnd.document.marks['searchtext']
-
-        if searchfrom <= wnd.cursor.pos <= searchto:
-            self.search_history(wnd)
-        else:
-            self.replace_repl_history(wnd)
 
 
 replacedlg_keys = {
@@ -396,11 +328,6 @@ class ReplaceDlgMode(SearchDlgMode):
     def init_keybind(self):
         super().init_keybind()
         self.keybind.add_keybind(replacedlg_keys)
-
-    def init_commands(self):
-        super().init_commands()
-        self._replacecommands = ReplaceCommands()
-        self.register_command(self._replacecommands)
 
     def create_cursor(self, wnd):
         return dialogmode.DialogCursor(wnd,
@@ -478,6 +405,46 @@ class ReplaceDlgMode(SearchDlgMode):
     def _save_replstr(self):
         kaa.app.config.hist('repl_text').add(self.get_replace_str())
 
+    @command('replacedlg.field.next')
+    @norec
+    @norerun
+    def field_next(self, wnd):
+        searchfrom, searchto = wnd.document.marks['searchtext']
+        replacefrom, replaceto = wnd.document.marks['replacetext']
+
+        if searchfrom <= wnd.cursor.pos <= searchto:
+            wnd.cursor.setpos(replacefrom)
+            wnd.screen.selection.set_range(replacefrom, replaceto)
+        else:
+            wnd.cursor.setpos(searchfrom)
+            wnd.screen.selection.set_range(searchfrom, searchto)
+
+    def replace_repl_history(self, wnd):
+        def callback(result):
+            if result:
+                f, t = wnd.document.marks['replacetext']
+                wnd.document.replace(f, t, result)
+                wnd.cursor.setpos(f)
+
+        self._show_histdlg(wnd, 'Recent replace strings',
+                           [s for s,
+                               info in kaa.app.config.hist('repl_text').get()],
+                           callback)
+
+    @command('replacedlg.history')
+    @norec
+    @norerun
+    def replace_history(self, wnd):
+        searchfrom, searchto = wnd.document.marks['searchtext']
+
+        if searchfrom <= wnd.cursor.pos <= searchto:
+            self.search_history(wnd)
+        else:
+            self.replace_repl_history(wnd)
+
+    @command('searchdlg.search.next')
+    @norec
+    @norerun
     def search_next(self, wnd):
         if not self.get_search_str():
             return
@@ -526,6 +493,9 @@ class ReplaceDlgMode(SearchDlgMode):
         self._search_next(wnd)
         self.search_next(wnd)
 
+    @command('searchdlg.search.prev')
+    @norec
+    @norerun
     def search_prev(self, wnd):
         if not self.get_search_str():
             return

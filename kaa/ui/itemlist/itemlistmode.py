@@ -15,62 +15,10 @@ itemlist_keys = {
     right: 'itemlist.next',
     (ctrl, 'n'): 'itemlist.next',
     (ctrl, 'f'): 'itemlist.next',
-    '\r': 'itemlist.close',
-    '\n': 'itemlist.close',
+    '\r': 'itemlist.selected',
+    '\n': 'itemlist.selected',
 }
 
-
-class ItemListCommands(Commands):
-
-    @command('itemlist.prev')
-    @norec
-    @norerun
-    def prev(self, wnd):
-        mode = wnd.document.mode
-        if mode.items:
-            cur = mode.cursel
-            if mode.cursel is None:
-                mode.cursel = 0
-            elif mode.cursel > 0:
-                mode.cursel -= 1
-
-            if cur is None or cur != mode.cursel:
-                if mode.onchange:
-                    mode.onchange(mode.cursel)
-
-        wnd.document.mode._update_style(wnd)
-
-    @command('itemlist.next')
-    @norec
-    @norerun
-    def next(self, wnd):
-        mode = wnd.document.mode
-        if mode.items:
-            cur = mode.cursel
-            if mode.cursel is None:
-                mode.cursel = 0
-            elif mode.cursel < len(mode.items) - 1:
-                mode.cursel += 1
-
-            if cur is None or cur != mode.cursel:
-                if mode.onchange:
-                    mode.onchange(mode.cursel)
-
-        wnd.document.mode._update_style(wnd)
-
-    @command('itemlist.close')
-    @norec
-    @norerun
-    def close(self, wnd):
-        callback = wnd.document.mode.callback
-        cursel = wnd.document.mode.cursel
-
-        # Destroy popup window
-        popup = wnd.get_label('popup')
-        if popup:
-            popup.destroy()
-
-        callback(cursel)
 
 
 class ItemListMode(dialogmode.DialogMode):
@@ -124,12 +72,6 @@ class ItemListMode(dialogmode.DialogMode):
     def init_keybind(self):
         self.keybind.add_keybind(itemlist_keys)
 
-    def init_commands(self):
-        super().init_commands()
-
-        self.itemlist_commands = ItemListCommands()
-        self.register_command(self.itemlist_commands)
-
     def init_themes(self):
         super().init_themes()
         self.themes.append(ItemListThemes)
@@ -139,7 +81,7 @@ class ItemListMode(dialogmode.DialogMode):
 
     def on_esc_pressed(self, wnd, event):
         self.cursel = None
-        self.itemlist_commands.close(wnd)
+        self.selected(wnd)
 
     def on_str(self, wnd, s):
         cursel = self.cursel
@@ -156,3 +98,54 @@ class ItemListMode(dialogmode.DialogMode):
                     self._update_style(wnd)
                     return
             cursel = -1
+
+    @command('itemlist.prev')
+    @norec
+    @norerun
+    def prev(self, wnd):
+        mode = wnd.document.mode
+        if mode.items:
+            cur = mode.cursel
+            if mode.cursel is None:
+                mode.cursel = 0
+            elif mode.cursel > 0:
+                mode.cursel -= 1
+
+            if cur is None or cur != mode.cursel:
+                if mode.onchange:
+                    mode.onchange(mode.cursel)
+
+        wnd.document.mode._update_style(wnd)
+
+    @command('itemlist.next')
+    @norec
+    @norerun
+    def next(self, wnd):
+        mode = wnd.document.mode
+        if mode.items:
+            cur = mode.cursel
+            if mode.cursel is None:
+                mode.cursel = 0
+            elif mode.cursel < len(mode.items) - 1:
+                mode.cursel += 1
+
+            if cur is None or cur != mode.cursel:
+                if mode.onchange:
+                    mode.onchange(mode.cursel)
+
+        wnd.document.mode._update_style(wnd)
+
+    @command('itemlist.selected')
+    @norec
+    @norerun
+    def selected(self, wnd):
+        callback = wnd.document.mode.callback
+        cursel = wnd.document.mode.cursel
+
+        # Destroy popup window
+        popup = wnd.get_label('popup')
+        if popup:
+            popup.destroy()
+
+        callback(cursel)
+

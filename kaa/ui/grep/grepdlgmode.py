@@ -44,84 +44,6 @@ GrepDlgThemes = {
 }
 
 
-class GrepCommands(editorcommand.EditCommands):
-
-    @command('grepdlg.field.next')
-    @norec
-    @norerun
-    def field_next(self, wnd):
-        searchfrom, searchto = wnd.document.marks['searchtext']
-        dirfrom, dirto = wnd.document.marks['directory']
-        filefrom, fileto = wnd.document.marks['filenames']
-
-        if searchfrom <= wnd.cursor.pos <= searchto:
-            wnd.cursor.setpos(dirfrom)
-            wnd.screen.selection.set_range(dirfrom, dirto)
-
-        elif dirfrom <= wnd.cursor.pos <= dirto:
-            wnd.cursor.setpos(filefrom)
-            wnd.screen.selection.set_range(filefrom, fileto)
-
-        else:
-            wnd.cursor.setpos(searchfrom)
-            wnd.screen.selection.set_range(searchfrom, searchto)
-
-    @command('grepdlg.history')
-    @norec
-    @norerun
-    def grep_history(self, wnd):
-        searchfrom, searchto = wnd.document.marks['searchtext']
-        dirfrom, dirto = wnd.document.marks['directory']
-        filefrom, fileto = wnd.document.marks['filenames']
-
-        if searchfrom <= wnd.cursor.pos <= searchto:
-            def callback(result):
-                if result:
-                    f, t = wnd.document.marks['searchtext']
-                    wnd.document.replace(f, t, result)
-                    wnd.cursor.setpos(f)
-                    f, t = wnd.document.marks['searchtext']
-                    wnd.screen.selection.set_range(f, t)
-
-            filterlist.show_listdlg('Recent searches',
-                                    [s for s,
-                                        info in kaa.app.config.hist('grep_text').get(
-                                        )],
-                                    callback)
-
-        elif dirfrom <= wnd.cursor.pos <= dirto:
-            def callback(result):
-                if result:
-                    f, t = wnd.document.marks['directory']
-                    wnd.document.replace(f, t, result)
-                    wnd.cursor.setpos(f)
-                    f, t = wnd.document.marks['directory']
-                    wnd.screen.selection.set_range(f, t)
-
-            hist = []
-            for p, info in kaa.app.config.hist('grep_dirname').get():
-                path = kaa.utils.shorten_filename(p)
-                hist.append(path if len(path) < len(p) else p)
-
-            filterlist.show_listdlg('Recent directories',
-                                    hist, callback)
-
-        else:
-            def callback(result):
-                if result:
-                    f, t = wnd.document.marks['filenames']
-                    wnd.document.replace(f, t, result)
-                    wnd.cursor.setpos(f)
-                    f, t = wnd.document.marks['filenames']
-                    wnd.screen.selection.set_range(f, t)
-
-            filterlist.show_listdlg('Recent filenames',
-                                    [s for s,
-                                        info in kaa.app.config.hist('grep_filename').get(
-                                        )],
-                                    callback)
-
-
 grepdlg_keys = {
     '\r': ('grepdlg.field.next'),
     '\n': ('grepdlg.field.next'),
@@ -176,10 +98,6 @@ class GrepDlgMode(dialogmode.DialogMode):
         super().init_keybind()
 
         self.register_keys(self.keybind, self.KEY_BINDS)
-
-    def init_commands(self):
-        super().init_commands()
-        self.register_command(GrepCommands())
 
     def init_themes(self):
         super().init_themes()
@@ -327,6 +245,81 @@ class GrepDlgMode(dialogmode.DialogMode):
         wnd.set_visible(False)
         dir = os.path.abspath(self.get_dir())
         selectfile.show_selectdir(dir, cb)
+
+    @command('grepdlg.field.next')
+    @norec
+    @norerun
+    def field_next(self, wnd):
+        searchfrom, searchto = wnd.document.marks['searchtext']
+        dirfrom, dirto = wnd.document.marks['directory']
+        filefrom, fileto = wnd.document.marks['filenames']
+
+        if searchfrom <= wnd.cursor.pos <= searchto:
+            wnd.cursor.setpos(dirfrom)
+            wnd.screen.selection.set_range(dirfrom, dirto)
+
+        elif dirfrom <= wnd.cursor.pos <= dirto:
+            wnd.cursor.setpos(filefrom)
+            wnd.screen.selection.set_range(filefrom, fileto)
+
+        else:
+            wnd.cursor.setpos(searchfrom)
+            wnd.screen.selection.set_range(searchfrom, searchto)
+
+    @command('grepdlg.history')
+    @norec
+    @norerun
+    def grep_history(self, wnd):
+        searchfrom, searchto = wnd.document.marks['searchtext']
+        dirfrom, dirto = wnd.document.marks['directory']
+        filefrom, fileto = wnd.document.marks['filenames']
+
+        if searchfrom <= wnd.cursor.pos <= searchto:
+            def callback(result):
+                if result:
+                    f, t = wnd.document.marks['searchtext']
+                    wnd.document.replace(f, t, result)
+                    wnd.cursor.setpos(f)
+                    f, t = wnd.document.marks['searchtext']
+                    wnd.screen.selection.set_range(f, t)
+
+            filterlist.show_listdlg('Recent searches',
+                                    [s for s,
+                                        info in kaa.app.config.hist('grep_text').get(
+                                        )],
+                                    callback)
+
+        elif dirfrom <= wnd.cursor.pos <= dirto:
+            def callback(result):
+                if result:
+                    f, t = wnd.document.marks['directory']
+                    wnd.document.replace(f, t, result)
+                    wnd.cursor.setpos(f)
+                    f, t = wnd.document.marks['directory']
+                    wnd.screen.selection.set_range(f, t)
+
+            hist = []
+            for p, info in kaa.app.config.hist('grep_dirname').get():
+                path = kaa.utils.shorten_filename(p)
+                hist.append(path if len(path) < len(p) else p)
+
+            filterlist.show_listdlg('Recent directories',
+                                    hist, callback)
+
+        else:
+            def callback(result):
+                if result:
+                    f, t = wnd.document.marks['filenames']
+                    wnd.document.replace(f, t, result)
+                    wnd.cursor.setpos(f)
+                    f, t = wnd.document.marks['filenames']
+                    wnd.screen.selection.set_range(f, t)
+
+            filterlist.show_listdlg('Recent filenames',
+                                    [s for s,
+                                        info in kaa.app.config.hist('grep_filename').get(
+                                        )],
+                                    callback)
 
     @command('grepdlg.select-dir')
     @norec
