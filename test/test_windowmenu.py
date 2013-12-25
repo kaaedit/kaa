@@ -24,7 +24,7 @@ class TestSwitchSource(kaa_testutils._TestScreenBase):
                 doc.mode.callback(False)
             ec(patch('kaa.app.show_dialog', new=show_dlg, create=True))
 
-            wnd.document.mode.app_commands.editor_switchfile(wnd)
+            kaa.app.app_commands.editor_switchfile(wnd)
 
             args, kwargs = wnd.show_doc.call_args
             assert args[0] is wnd.document
@@ -41,7 +41,7 @@ class TestJoinWindow(kaa_testutils._TestScreenBase):
             ec(patch.object(kaa.app, 'get_activeframe', create=True))
             ec(patch.object(wnd, 'show_doc', create=True))
 
-            wnd.document.mode.app_commands.editor_joinwindow(wnd)
+            kaa.app.mode.app_commands.editor_joinwindow(wnd)
 
             args, kwargs = wnd.splitter.parent.join.call_args
             assert args[0] is wnd

@@ -9,7 +9,6 @@ import kaa
 import kaa.log
 from . import keydef, color, dialog
 from kaa import config, keyboard, document, macro, clipboard
-from kaa.ui.messagebar import messagebarmode
 
 from kaa.exceptions import KaaError
 
@@ -33,7 +32,33 @@ class CuiApp:
         self._input_readers = []
         self._tasks = []
 
+        self.commands = {}
+        self.is_availables = {}
+
+    def register_command(self, cmds):
+        self.commands.update(cmds.get_commands())
+        self.is_availables.update(cmds.get_commands_is_enable())
+
+    def init_commands(self):
+        from kaa.commands import appcommand, toolcommand, filecommand
+
+        self.app_commands = appcommand.ApplicationCommands()
+        self.register_command(self.app_commands)
+
+        self.file_commands = filecommand.FileCommands()
+        self.register_command(self.file_commands)
+
+        self.register_command(toolcommand.ToolCommands())
+        self.register_command(appcommand.MacroCommands())
+
+        for name in dir(self):
+            attr = getattr(self, name)
+            if hasattr(attr, 'COMMAND_ID') and callable(attr):
+                self.commands[getattr(attr, 'COMMAND_ID')] = attr
+
     def init(self, mainframe):
+        self.init_commands()
+
         if self.config.palette:
             self.set_palette(self.config.palette)
         elif not self.colors:
@@ -41,6 +66,7 @@ class CuiApp:
 
         self.config.init_history()
 
+        from kaa.ui.messagebar import messagebarmode
         self.messagebar = messagebarmode.MessageBarMode()
 
         buf = document.Buffer()
@@ -94,6 +120,12 @@ class CuiApp:
                 del self._tasks[n]
                 f()
                 return
+
+    def get_command(self, commandid):
+        cmd = self.commands.get(commandid, None)
+        if cmd:
+            is_available = self.is_availables.get(commandid, None)
+            return (is_available, cmd)
 
     def set_idlejob(self):
         self._idleprocs = [

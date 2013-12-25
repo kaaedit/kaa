@@ -29,7 +29,7 @@ class TestSaveAll(kaa_testutils._TestScreenBase):
             ec(patch.object(wnd.document,
                'get_filename', return_value='filename'))
 
-            wnd.document.mode.file_commands.file_saveall(wnd)
+            kaa.app.file_commands.file_saveall(wnd)
 
             args, kwargs = kaa.app.storage.save_document.call_args
             assert args[0] is wnd.document

@@ -204,15 +204,6 @@ class PythonDebuggerPanel(dialogmode.DialogMode):
         super().init_themes()
         self.themes.append(DebugThemes)
 
-    def init_commands(self):
-        super().init_commands()
-
-        self.app_commands = appcommand.ApplicationCommands()
-        self.register_command(self.app_commands)
-
-        self.file_commands = filecommand.FileCommands()
-        self.register_command(self.file_commands)
-
     def init_keybind(self):
         super().init_keybind()
         self.keybind.add_keybind(callstack_keys)

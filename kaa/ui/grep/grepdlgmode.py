@@ -179,18 +179,7 @@ class GrepDlgMode(dialogmode.DialogMode):
 
     def init_commands(self):
         super().init_commands()
-
-        self.cursor_commands = editorcommand.CursorCommands()
-        self.register_command(self.cursor_commands)
-
-        self.edit_commands = editorcommand.EditCommands()
-        self.register_command(self.edit_commands)
-
-        self.screen_commands = editorcommand.ScreenCommands()
-        self.register_command(self.screen_commands)
-
-        self._grepcommands = GrepCommands()
-        self.register_command(self._grepcommands)
+        self.register_command(GrepCommands())
 
     def init_themes(self):
         super().init_themes()

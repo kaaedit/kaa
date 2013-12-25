@@ -179,6 +179,15 @@ class ModeBase:
         pass
 
     def init_commands(self):
+        from kaa.commands import (editorcommand, editmodecommand)
+
+        self.register_command(editorcommand.CursorCommands())
+        self.register_command(editorcommand.EditCommands())
+        self.register_command(editorcommand.CodeCommands())
+        self.register_command(editorcommand.SelectionCommands())
+        self.register_command(editorcommand.SearchCommands())
+        self.register_command(editmodecommand.EditModeCommands())
+
         for name in dir(self):
             attr = getattr(self, name)
             if hasattr(attr, 'COMMAND_ID') and callable(attr):
@@ -198,6 +207,9 @@ class ModeBase:
         self.is_availables.update(cmds.get_commands_is_enable())
 
     def get_command(self, commandid):
+        ret = kaa.app.get_command(commandid)
+        if ret:
+            return ret
         is_available = self.is_availables.get(commandid, None)
         cmd = self.commands.get(commandid, None)
         return (is_available, cmd)

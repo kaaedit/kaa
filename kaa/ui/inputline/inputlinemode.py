@@ -50,18 +50,6 @@ class InputlineMode(dialogmode.DialogMode):
         super().init_keybind()
         self.register_keys(self.keybind, self.KEY_BINDS)
 
-    def init_commands(self):
-        super().init_commands()
-
-        self.cursor_commands = editorcommand.CursorCommands()
-        self.register_command(self.cursor_commands)
-
-        self.edit_commands = editorcommand.EditCommands()
-        self.register_command(self.edit_commands)
-
-        self.screen_commands = editorcommand.ScreenCommands()
-        self.register_command(self.screen_commands)
-
     def on_add_window(self, wnd):
         super().on_add_window(wnd)
 

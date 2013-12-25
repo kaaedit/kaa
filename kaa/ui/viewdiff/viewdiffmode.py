@@ -12,18 +12,6 @@ class ViewDiffMode(dialogmode.DialogMode):
     DOCUMENT_MODE = False
     USE_UNDO = False
 
-    def init_commands(self):
-        super().init_commands()
-
-        self.cursor_commands = editorcommand.CursorCommands()
-        self.register_command(self.cursor_commands)
-
-        self.edit_commands = editorcommand.EditCommands()
-        self.register_command(self.edit_commands)
-
-        self.screen_commands = editorcommand.ScreenCommands()
-        self.register_command(self.screen_commands)
-
     KEY_BINDS = [
         keybind.cursor_keys,
         keybind.edit_command_keys,

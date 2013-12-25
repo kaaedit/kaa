@@ -3,36 +3,36 @@ from kaa.command import Commands, command, is_enable, norec, norerun
 from kaa import document
 
 # todo: following imports should be defered
-from kaa.ui.mainmenu import menumode
-from kaa.ui.itemlist import itemlistmode
-from kaa.ui.moveseparator import moveseparatormode
 
 
 class ApplicationCommands(Commands):
+    def show_menu(self, wnd, name):
+        from kaa.ui.mainmenu import menumode
+        menumode.MenuMode.show_menu(wnd, name)
 
     @command('app.mainmenu')
     @norec
     @norerun
     def show_mainmenu(self, wnd):
-        menumode.MenuMode.show_menu(wnd, 'MAIN')
+        self.show_menu(wnd, 'MAIN')
 
     @command('menu.window')
     @norec
     @norerun
     def show_windowmenu(self, wnd):
-        menumode.MenuMode.show_menu(wnd, 'CHANGE-WINDOW')
+        self.show_menu(wnd, 'CHANGE-WINDOW')
 
     @command('menu.edit.convert')
     @norec
     @norerun
     def show_editmenuconvert(self, wnd):
-        menumode.MenuMode.show_menu(wnd, 'EDIT-CONVERT')
+        self.show_menu(wnd, 'EDIT-CONVERT')
 
     @command('menu.code')
     @norec
     @norerun
     def show_codemenu(self, wnd):
-        menumode.MenuMode.show_menu(wnd, 'CODE')
+        self.show_menu(wnd, 'CODE')
 
     def _walk_all_wnds(self, wnd):
         yield wnd
@@ -69,9 +69,29 @@ class ApplicationCommands(Commands):
     @norec
     @norerun
     def show_framelist(self, wnd):
-        from kaa.ui.framelist import framelistmode
-        doc = framelistmode.FrameListMode.build()
-        kaa.app.show_dialog(doc)
+        docs = []
+        frames = list(kaa.app.get_frames())
+        titles = list(frame.get_title().replace('&', '&&') for frame in frames)
+
+        last_sel = None
+        def callback(n):
+            # bring the frame a top of frame list.
+            if last_sel:
+                wnd.mainframe.register_childframe(last_sel)
+
+        def selchanged(n):
+            frames[n].bring_top()
+            dlg.get_label('popup').bring_top()
+
+            nonlocal last_sel
+            if n is not None:
+                last_sel = frames[n]
+
+        from kaa.ui.itemlist import itemlistmode
+        doc = itemlistmode.ItemListMode.build(
+            '', titles, 0, callback, selchanged)
+        dlg = kaa.app.show_dialog(doc)
+
 
     @command('editor.splitvert')
     @norec
@@ -93,6 +113,7 @@ class ApplicationCommands(Commands):
     @norec
     @norerun
     def editor_moveseparator(self, wnd):
+        from kaa.ui.moveseparator import moveseparatormode
         moveseparatormode.move_separator(wnd)
 
     @command('editor.nextwindow')
@@ -135,7 +156,7 @@ class ApplicationCommands(Commands):
 
         saves = [doc for doc in docs if wnds.issuperset(doc.wnds)]
 
-        wnd.document.mode.file_commands.save_documents(wnd, saves, callback)
+        kaa.app.file_commands.save_documents(wnd, saves, callback)
 
     @command('editor.joinwindow')
     @norec
@@ -159,7 +180,7 @@ class ApplicationCommands(Commands):
         for frame in kaa.app.get_frames():
             docs.extend(frame.get_documents())
 
-        titles = [doc.get_title() for doc in docs]
+        titles = [doc.get_title().replace('&', '&&') for doc in docs]
 
         curdoc = wnd.document
         curdoc_close = curdoc.mode.CLOSE_ON_DEL_WINDOW
@@ -182,8 +203,51 @@ class ApplicationCommands(Commands):
 
             curdoc.mode.CLOSE_ON_DEL_WINDOW = False
             n = docs.index(wnd.document)
+
+            from kaa.ui.itemlist import itemlistmode
             doc = itemlistmode.ItemListMode.build(
                 '', titles, n, callback, selchanged)
             kaa.app.show_dialog(doc)
 
-        wnd.document.mode.file_commands.can_close_wnd(wnd, saved)
+        kaa.app.file_commands.can_close_wnd(wnd, saved)
+
+
+class MacroCommands(Commands):
+
+    @command('macro.start-record')
+    @norec
+    @norerun
+    def start_record(self, wnd):
+        kaa.app.macro.start_record()
+        kaa.app.messagebar.update()
+
+    @command('macro.end-record')
+    @norec
+    @norerun
+    def end_record(self, wnd):
+        kaa.app.macro.end_record()
+        kaa.app.messagebar.update()
+
+    @command('macro.toggle-record')
+    @norec
+    @norerun
+    def toggle_record(self, wnd):
+        kaa.app.macro.toggle_record()
+        kaa.app.messagebar.update()
+
+    @command('macro.run')
+    @norec
+    def run_macro(self, wnd):
+        if kaa.app.macro.is_recording():
+            return
+        if not kaa.app.macro.get_commands():
+            return
+
+        if wnd.document.undo:
+            wnd.document.undo.beginblock()
+        try:
+            kaa.app.macro.run(wnd)
+        finally:
+            if wnd.document.undo:
+                wnd.document.undo.endblock()
+

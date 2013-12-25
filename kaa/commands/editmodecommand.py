@@ -24,5 +24,7 @@ class EditModeCommands(Commands):
     @command('editmode.visual-linewise')
     def editmode_visualmode_linewise(self, wnd):
         wnd.screen.selection.clear()
-        wnd.document.mode.screen_commands.select_cur_line(wnd)
+        tol = wnd.cursor.adjust_nextpos(
+            wnd.cursor.pos, wnd.document.gettol(wnd.cursor.pos))
+        wnd.screen.selection.begin_cursor(tol)
         wnd.document.mode.editmode_visual_linewise(wnd)

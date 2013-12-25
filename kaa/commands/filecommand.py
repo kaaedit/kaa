@@ -3,10 +3,16 @@ import kaa
 import kaa.log
 import kaa.utils
 from kaa.command import Commands, command, is_enable, norec, norerun
-from kaa.ui.msgbox import msgboxmode
 
 
 class FileCommands(Commands):
+
+    def _show_msgbox(self, caption, options, callback, 
+            keys=None, border=False):
+
+        from kaa.ui.msgbox import msgboxmode
+        return msgboxmode.MsgBoxMode.show_msgbox(
+                caption, options, callback, keys, border)
 
     @command('file.new')
     @norec
@@ -103,7 +109,7 @@ class FileCommands(Commands):
 
         except Exception as e:
             kaa.log.exception('File write error:')
-            msgboxmode.MsgBoxMode.show_msgbox(
+            self._show_msgbox(
                 'File write error: ' + str(e), ['&Ok'],
                 lambda c: saved(canceled=True) if saved else None,
                 keys=['\r', '\n'])
@@ -162,7 +168,7 @@ class FileCommands(Commands):
             if document.fileinfo and document.fileinfo.fullpathname:
                 items.append('View &Diff')
 
-            msgboxmode.MsgBoxMode.show_msgbox(
+            self._show_msgbox(
                 '{} [{}]: '.format(
                     msg, document.get_title()),
                 items, choice)
@@ -382,12 +388,12 @@ class FileCommands(Commands):
 
         items = ['&Yes', '&No', 'View &Diff']
         msg = 'File [{}] has been updated by other process. Reload file?: '
-        msgboxmode.MsgBoxMode.show_msgbox(msg.format(document.get_title()),
+        self._show_msgbox(msg.format(document.get_title()),
                                           items, choice)
 
     def can_close_wnd(self, wnd, cb):
         if len(wnd.document.wnds) == 1:
-            wnd.document.mode.file_commands.ask_doc_close(
+            self.ask_doc_close(
                 wnd, wnd.document, cb, 'Save file before close?')
         else:
             cb(False)

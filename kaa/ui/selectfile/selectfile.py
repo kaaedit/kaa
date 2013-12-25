@@ -272,15 +272,6 @@ class OpenFilenameDlgMode(dialogmode.DialogMode):
         self.fileopendlg_commands = FileOpenDlgCommands()
         self.register_command(self.fileopendlg_commands)
 
-        self.screen_commands = editorcommand.ScreenCommands()
-        self.register_command(self.screen_commands)
-
-        self.cursor_commands = editorcommand.CursorCommands()
-        self.register_command(self.cursor_commands)
-
-        self.edit_commands = editorcommand.EditCommands()
-        self.register_command(self.edit_commands)
-
     def create_cursor(self, wnd):
         return dialogmode.DialogCursor(wnd,
                                        [dialogmode.MarkRange('filename')])

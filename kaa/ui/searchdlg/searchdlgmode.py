@@ -121,18 +121,7 @@ class SearchDlgMode(dialogmode.DialogMode):
 
     def init_commands(self):
         super().init_commands()
-
-        self.cursor_commands = editorcommand.CursorCommands()
-        self.register_command(self.cursor_commands)
-
-        self.edit_commands = editorcommand.EditCommands()
-        self.register_command(self.edit_commands)
-
-        self.screen_commands = editorcommand.ScreenCommands()
-        self.register_command(self.screen_commands)
-
-        self._searchcommands = SearchCommands()
-        self.register_command(self._searchcommands)
+        self.register_command(SearchCommands())
 
     def init_themes(self):
         super().init_themes()

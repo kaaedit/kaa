@@ -6,7 +6,7 @@ import signal
 import kaa.tools
 import kaa.log
 from kaa import options, version, consts, config
-from kaa.cui import app, keydef, frame
+from kaa.cui import app, keydef
 
 from kaa import document
 from kaa import fileio
@@ -70,6 +70,7 @@ def main(stdscr):
                 fname = os.path.join(kaa.app.config.KAADIR, '__kaa__.py')
             run_userinit(fname)
 
+        from kaa.cui import frame
         mainframe = frame.MainFrame(stdscr)
         kaa.app.init(mainframe)
 

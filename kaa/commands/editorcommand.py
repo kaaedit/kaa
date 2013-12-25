@@ -287,7 +287,7 @@ class CursorCommands(Commands):
         kaa.app.show_dialog(doc)
 
 
-class ScreenCommands(Commands):
+class SelectionCommands(Commands):
 
     @command('selection.begin-cursor')
     @norerun
@@ -373,14 +373,14 @@ class ScreenCommands(Commands):
             if kaa.app.macro.recording:
                 kaa.app.macro.record(self.select_cur_word)
 
-    @command('screen.lineselection.begin')
+    @command('selection.line.begin')
     @norerun
     def lineselection_begin(self, wnd):
         tol = wnd.cursor.adjust_nextpos(
             wnd.cursor.pos, wnd.document.gettol(wnd.cursor.pos))
         wnd.screen.selection.begin_cursor(tol)
 
-    @command('screen.lineselection.set-end')
+    @command('selection.line.set-end')
     @norerun
     def lineselection_set_end(self, wnd):
         f = wnd.screen.get_start()
@@ -846,47 +846,6 @@ class CodeCommands(Commands):
             f, t = wnd.screen.selection.get_selrange()
             wnd.cursor.setpos(f)
             wnd.cursor.savecol()
-
-
-class MacroCommands(Commands):
-
-    @command('macro.start-record')
-    @norec
-    @norerun
-    def start_record(self, wnd):
-        kaa.app.macro.start_record()
-        kaa.app.messagebar.update()
-
-    @command('macro.end-record')
-    @norec
-    @norerun
-    def end_record(self, wnd):
-        kaa.app.macro.end_record()
-        kaa.app.messagebar.update()
-
-    @command('macro.toggle-record')
-    @norec
-    @norerun
-    def toggle_record(self, wnd):
-        kaa.app.macro.toggle_record()
-        kaa.app.messagebar.update()
-
-    @command('macro.run')
-    @norec
-    def run_macro(self, wnd):
-        if kaa.app.macro.is_recording():
-            return
-        if not kaa.app.macro.get_commands():
-            return
-
-        if wnd.document.undo:
-            wnd.document.undo.beginblock()
-        try:
-            kaa.app.macro.run(wnd)
-        finally:
-            if wnd.document.undo:
-                wnd.document.undo.endblock()
-
 
 class SearchCommands(Commands):
 

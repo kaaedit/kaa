@@ -109,7 +109,7 @@ class FilenameIndexMode(defaultmode.DefaultMode):
                 if not canceled:
                     buddy.show_doc(doc)
                     self._locate_doc(buddy.wnd, doc, lineno)
-            self.app_commands.save_splitterdocs(wnd, buddy, callback)
+            kaa.app.app_commands.save_splitterdocs(wnd, buddy, callback)
 
     RE_FILENAME = gre.compile(
         r'(?P<FILENAME>^[^:\n]+)\:(?P<LINENO>\d+)\:.*$',

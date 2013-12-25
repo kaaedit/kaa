@@ -2,8 +2,6 @@ import copy
 import time
 from collections import defaultdict, namedtuple
 import kaa
-from kaa.commands import (appcommand, filecommand, editorcommand,
-                          editmodecommand, toolcommand)
 from . import keybind, theme, modebase, menu
 
 
@@ -44,39 +42,6 @@ class DefaultMode(modebase.ModeBase):
         self.register_keys(self.keybind_vi_visuallinewisemode,
                            self.VI_VISUAL_LINEWISE_MODE_KEY_BIND)
 
-    def init_commands(self):
-        super().init_commands()
-
-        self.app_commands = appcommand.ApplicationCommands()
-        self.register_command(self.app_commands)
-
-        self.file_commands = filecommand.FileCommands()
-        self.register_command(self.file_commands)
-
-        self.cursor_commands = editorcommand.CursorCommands()
-        self.register_command(self.cursor_commands)
-
-        self.edit_commands = editorcommand.EditCommands()
-        self.register_command(self.edit_commands)
-
-        self.code_commands = editorcommand.CodeCommands()
-        self.register_command(self.code_commands)
-
-        self.screen_commands = editorcommand.ScreenCommands()
-        self.register_command(self.screen_commands)
-
-        self.macro_commands = editorcommand.MacroCommands()
-        self.register_command(self.macro_commands)
-
-        self.search_commands = editorcommand.SearchCommands()
-        self.register_command(self.search_commands)
-
-        self.tools_commands = toolcommand.ToolCommands()
-        self.register_command(self.tools_commands)
-
-        self.mode_commands = editmodecommand.EditModeCommands()
-        self.register_command(self.mode_commands)
-
     def init_menu(self):
         self.menu = copy.deepcopy(menu.MENUS)
 
@@ -115,7 +80,7 @@ class DefaultMode(modebase.ModeBase):
         self._check_fileupdate = t
         if self.document.fileinfo:
             if self.document.fileinfo.check_update():
-                self.file_commands.notify_fileupdated(self.document)
+                kaa.app.file_commands.notify_fileupdated(self.document)
 
     def on_esc_pressed(self, wnd, event):
         # Pressing esc key starts command mode.
