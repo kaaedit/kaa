@@ -49,7 +49,7 @@ MENUS = {
      ['&Run Macro', None, 'macro.run']],
 
     'TOOLS':
-    [['&Grep', None, 'search.showgrep'],
+    [['&Grep', None, 'tools.showgrep'],
      ['Paste &Lines', None, 'edit.paste-lines'],
      ['&Shell command', None, 'tools.execute-shell-command'],
      ['&Make', None, 'tools.make'],

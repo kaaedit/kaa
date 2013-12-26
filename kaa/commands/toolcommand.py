@@ -3,8 +3,8 @@ import os
 import curses
 import subprocess
 import kaa
+from kaa import document
 from kaa.command import Commands, command, is_enable, norec, norerun
-
 
 class ToolCommands(Commands):
 
@@ -156,3 +156,17 @@ class ToolCommands(Commands):
 
         from kaa.ui.spellchecker import spellcheckermode
         spellcheckermode.run_spellchecker(wnd)
+
+    @command('tools.showgrep')
+    @norec
+    @norerun
+    def showgrep(self, wnd):
+        from kaa.ui.grep import grepdlgmode
+
+        buf = document.Buffer()
+        doc = document.Document(buf)
+        mode = grepdlgmode.GrepDlgMode(wnd)
+        doc.setmode(mode)
+        mode.build_document()
+
+        kaa.app.show_dialog(doc)

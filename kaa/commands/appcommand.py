@@ -2,9 +2,6 @@ import kaa
 from kaa.command import Commands, command, is_enable, norec, norerun
 from kaa import document
 
-# todo: following imports should be defered
-
-
 class ApplicationCommands(Commands):
     def show_menu(self, wnd, name):
         from kaa.ui.mainmenu import menumode
