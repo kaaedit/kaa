@@ -216,6 +216,14 @@ class CursorCommands(Commands):
         wnd.cursor.tol(wnd.cursor.pos)
         wnd.screen.selection.set_to(wnd.cursor.pos)
 
+    @command('cursor.first-letter-of-line')
+    @norerun
+    def first_letter(self, wnd):
+        wnd.document.mode.cancel_auto_indent(wnd)
+        wnd.screen.selection.end_cursor()
+        wnd.cursor.first_letter(wnd.cursor.pos)
+        wnd.screen.selection.set_to(wnd.cursor.pos)
+
     @command('cursor.end-of-line')
     @norerun
     def eol(self, wnd):

@@ -82,7 +82,6 @@ addtional_edit_command_keys = {
     tab: 'edit.indent',
     (shift, tab): 'edit.dedent',
 
-    ((alt, 'm'), (alt, 'v')): 'menu.edit.convert',
     ((ctrl, 'u'), (alt, '!')): 'tools.execute-shell-command',
 
     (ctrl, 'o'): 'edit.word-complete',
@@ -120,6 +119,7 @@ emacs_keys = {
 
     (ctrl, 'a'): 'cursor.top-of-line',
     (ctrl, 'e'): 'cursor.end-of-line',
+    (alt, 'm'): 'cursor.first-letter-of-line',
 
     (alt, 'n'): 'cursor.pagedown',
     (alt, 'p'): 'cursor.pageup',

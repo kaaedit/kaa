@@ -259,6 +259,13 @@ class Cursor:
         self.setpos(nextpos)
         self.savecol()
 
+    def first_letter(self, pos):
+        f, tol = self.wnd.document.mode.get_indent_range(pos)
+        nextpos = self.adjust_nextpos(self.pos, tol)
+        self.wnd.screen.locate(nextpos, middle=True)
+        self.setpos(nextpos)
+        self.savecol()
+
     def eol(self, pos):
         eol = self.wnd.document.find_newline(pos)
         nextpos = self.adjust_nextpos(self.pos, eol)
