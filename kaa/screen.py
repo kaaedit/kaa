@@ -817,7 +817,12 @@ class Screen:
     def pagedown(self):
         if self.height != 1:
             curpos = self.pos
-            self.vert_align(self.portto - 1, top=True)
+            if self.rows[self.portto-1].posto == self.document.endpos():
+                if (self.portto - self.portfrom) > (self.height // 2):
+                    self.vert_align(self.portto - 1, middle=True)
+            else:
+                self.vert_align(self.portto - 1, top=True)
+
             ret = self.pos != curpos
             if ret:
                 self._need_redraw = True

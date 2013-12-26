@@ -340,14 +340,16 @@ class TextEditorWindow(Window):
 
     CURSOR_TO_MIDDLE_ON_SCROLL = True
 
-    def locate_cursor(self, pos, top=None, middle=None, bottom=None):
+    def locate_cursor(self, pos, top=None, middle=None, bottom=None,
+                      align_always=False):
 
         if top is middle is bottom is None:
             middle = self.CURSOR_TO_MIDDLE_ON_SCROLL
             bottom = not self.CURSOR_TO_MIDDLE_ON_SCROLL
 
         self.screen.apply_updates()
-        self.screen.locate(pos, top=top, middle=middle, bottom=bottom)
+        self.screen.locate(pos, top=top, middle=middle, bottom=bottom, 
+                           align_always=align_always)
 
         idx, x = self.screen.getrowcol(pos)
         y = idx - self.screen.portfrom

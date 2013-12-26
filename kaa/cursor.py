@@ -6,16 +6,20 @@ class Cursor:
         self.preferred_col = 0
         self.preferred_linecol = 0
 
-    def refresh(self, top=None, middle=None, bottom=None):
+    def refresh(self, top=None, middle=None, bottom=None,
+                align_always=False):
         self.pos, y, x = self.wnd.locate_cursor(
-            self.pos, top=top, middle=middle, bottom=bottom)
+            self.pos, top=top, middle=middle, bottom=bottom,
+            align_always=align_always)
         assert self.pos is not None
 
-    def setpos(self, pos, top=None, middle=None, bottom=None):
+    def setpos(self, pos, top=None, middle=None, bottom=None,
+               align_always=False):
         assert pos is not None
 
         self.pos = pos
-        self.refresh(top=top, middle=middle, bottom=bottom)
+        self.refresh(top=top, middle=middle, bottom=bottom,
+                     align_always=align_always)
 
     def savecol(self):
         """Update current preferred column"""
@@ -180,6 +184,13 @@ class Cursor:
         idx, row = self.wnd.screen.getrow(self.pos)
         y = idx - self.wnd.screen.portfrom
 
+        lastrow = self.wnd.screen.rows[self.wnd.screen.portto - 1]
+        if lastrow.posto == self.wnd.document.endpos():
+            nextpos = self.adjust_nextpos(self.pos, lastrow.posto)
+            if self.pos != lastrow.posto:
+                self.setpos(nextpos)
+                return True
+
         if self.wnd.pagedown():
             idx = max(0, min(self.wnd.screen.portto - 1,
                              self.wnd.screen.portfrom + y))
@@ -189,6 +200,13 @@ class Cursor:
             self.setpos(nextpos)
 
             return True
+        else:
+            pos = self.wnd.document.endpos()
+            nextpos = self.adjust_nextpos(self.pos, pos)
+            if nextpos != pos:
+                self.setpos(nextpos)
+                return True
+
 
     def pageup(self):
         # Ensure current position is displayed
@@ -205,6 +223,11 @@ class Cursor:
             self.setpos(nextpos)
 
             return True
+        elif self.pos != 0:
+            nextpos = self.adjust_nextpos(self.pos, 0)
+            if nextpos != self.pos:
+                self.setpos(nextpos)
+                return True
 
     def home(self):
         # Ensure current position is displayed
