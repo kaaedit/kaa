@@ -289,6 +289,8 @@ class TextEditorWindow(Window):
                     self.add_str(' ' * (lineno_width - 1), lineno_color)
 
                 self.add_str(' ', defaultcolor)
+            # increment line no
+            lineno += 1
 
             # move cursor to top of row
             self._cwnd.move(n, row.wrapindent + lineno_width)
