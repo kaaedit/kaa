@@ -53,9 +53,10 @@ def view_diff(curdoc, callback=None):
         curdoc.fileinfo.newline,
         nohist=True)
 
-    cur_lines = list(curdoc.iterlines(0))
     org_lines = list(orig.iterlines(0))
+    orig.close()
 
+    cur_lines = list(curdoc.iterlines(0))
     diff = ''.join(difflib.unified_diff(org_lines, cur_lines,
                                         curdoc.fileinfo.fullpathname, '(buffer)'))
 
