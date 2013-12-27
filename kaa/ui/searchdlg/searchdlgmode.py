@@ -391,16 +391,19 @@ class ReplaceDlgMode(SearchDlgMode):
                 pass
 
         msgdoc = msgboxmode.MsgBoxMode.show_msgbox(
-            'Replace text?', ['&Yes', '&No', '&All', '&Cancel'], cb)
+            'Replace text?', ['&Yes', '&No', '&All', '&Cancel'], cb,
+            border=True)
 
-    def _show_search_again(self, wnd, on_y):
+    def _show_search_again(self, wnd, on_y, is_top):
         def cb(c):
             wnd.activate()
             if c == 'r':
                 on_y(wnd)
 
+        pos = 'top' if is_top else 'bottom'
         msgdoc = msgboxmode.MsgBoxMode.show_msgbox(
-            'Search failed. Resume again?', ['&Resume', '&Cancel'], cb)
+            'Search failed. Resume from {pos} again?'.format(pos=pos), 
+            ['&Resume', '&Cancel'], cb)
 
     def _save_replstr(self):
         kaa.app.config.hist('repl_text').add(self.get_replace_str())
@@ -460,7 +463,7 @@ class ReplaceDlgMode(SearchDlgMode):
             self._show_replace_msg(
                 wnd, self.replace_and_next, self.skip_and_next)
         else:
-            self._show_search_again(wnd, self.skip_and_next)
+            self._show_search_again(wnd, self.skip_and_next, is_top=True)
 
     _metachars = [
         (r"\\", "\\"),
@@ -510,7 +513,7 @@ class ReplaceDlgMode(SearchDlgMode):
             self._show_replace_msg(
                 wnd, self.replace_and_prev, self.skip_and_prev)
         else:
-            self._show_search_again(wnd, self.skip_and_prev)
+            self._show_search_again(wnd, self.skip_and_prev, is_top=False)
 
     def replace_and_prev(self, wnd):
         self._repl_str(update_cursor=True)

@@ -63,9 +63,9 @@ class WordCompleteInputMode(filterlist.FilterListInputDlgMode):
 
         cury, curx = self.orgloc
         if self.stack_upper:
-            top = max(0, cury - height)
+            top = max(0, cury - height - 1)
         else:
-            top = cury + 1
+            top = cury + 2
 
         return 0, top, wnd.mainframe.width, top + height
 
