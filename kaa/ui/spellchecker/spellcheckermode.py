@@ -29,16 +29,16 @@ class SpellCheckerWordInputMode(wordcompletemode.WordCompleteInputMode):
             f.append_text('default', '', mark_pair='query')
             f.append_text('default', ' ')
 
-            f.append_text('checkbox', '[&Register]',
-                          shortcut_style='checkbox.shortcut',
+            f.append_text('right-button', '[&Register]',
+                          shortcut_style='right-button.shortcut',
                           on_shortcut=mode.register)
 
-            f.append_text('checkbox', '[&Skip]',
-                          shortcut_style='checkbox.shortcut',
+            f.append_text('right-button', '[&Skip]',
+                          shortcut_style='right-button.shortcut',
                           on_shortcut=mode.skip)
 
-            f.append_text('checkbox', '[&Quit]',
-                          shortcut_style='checkbox.shortcut',
+            f.append_text('right-button', '[&Quit]',
+                          shortcut_style='right-button.shortcut',
                           on_shortcut=mode.quit)
 
         return doc

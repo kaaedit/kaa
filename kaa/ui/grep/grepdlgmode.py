@@ -148,51 +148,51 @@ class GrepDlgMode(dialogmode.DialogMode):
             f.append_text('default', '\n')
 
             # buttons
-            f.append_text('checkbox', '[&Search]',
-                          shortcut_style='checkbox.shortcut',
+            f.append_text('right-button', '[&Search]',
+                          shortcut_style='right-button.shortcut',
                           on_shortcut=self.run_grep)
 
-            f.append_text('checkbox', '[&Dir]',
+            f.append_text('right-button', '[&Dir]',
                           mark_pair='select-dir',
-                          shortcut_style='checkbox.shortcut',
+                          shortcut_style='right-button.shortcut',
                           on_shortcut=self._select_dir)
 
-            f.append_text('checkbox', '[&Tree]',
+            f.append_text('right-button', '[&Tree]',
                           mark_pair='search-tree',
                           on_shortcut=self.toggle_option_tree,
-                          shortcut_style='checkbox.shortcut',
+                          shortcut_style='right-button.shortcut',
                           shortcut_mark='shortcut-t')
 
-            f.append_text('checkbox', '[&Ignore case]',
+            f.append_text('right-button', '[&Ignore case]',
                           mark_pair='ignore-case',
                           on_shortcut=self.toggle_option_ignorecase,
 
-                          shortcut_style='checkbox.shortcut',
+                          shortcut_style='right-button.shortcut',
                           shortcut_mark='shortcut-i')
 
-            f.append_text('checkbox', '[&Word]',
+            f.append_text('right-button', '[&Word]',
                           mark_pair='word',
                           on_shortcut=self.toggle_option_word,
-                          shortcut_style='checkbox.shortcut',
+                          shortcut_style='right-button.shortcut',
                           shortcut_mark='shortcut-w')
 
-            f.append_text('checkbox', '[&Regex]',
+            f.append_text('right-button', '[&Regex]',
                           mark_pair='regex',
                           on_shortcut=self.toggle_option_regex,
-                          shortcut_style='checkbox.shortcut',
+                          shortcut_style='right-button.shortcut',
                           shortcut_mark='shortcut-r')
 
             f.append_text(
-                'checkbox', '[&Encoding:{}]'.format(self.option.encoding),
+                'right-button', '[&Encoding:{}]'.format(self.option.encoding),
                 mark_pair='enc',
-                shortcut_style='checkbox.shortcut',
+                shortcut_style='right-button.shortcut',
                 on_shortcut=lambda wnd:
                 wnd.document.mode.select_encoding(wnd))
 
             f.append_text(
-                'checkbox', '[&Newline:{}]'.format(self.option.newline),
+                'right-button', '[&Newline:{}]'.format(self.option.newline),
                 mark_pair='newline',
-                shortcut_style='checkbox.shortcut',
+                shortcut_style='right-button.shortcut',
                 on_shortcut=lambda wnd:
                 wnd.document.mode.select_newline(wnd))
 
@@ -216,20 +216,20 @@ class GrepDlgMode(dialogmode.DialogMode):
 
     def update_option_style(self):
         style = self._get_optionstylename(self.option.tree)
-        self._set_option_style('search-tree', 'checkbox' + style, 'shortcut-t',
-                               'checkbox.shortcut' + style)
+        self._set_option_style('search-tree', 'right-button' + style, 'shortcut-t',
+                               'right-button.shortcut' + style)
 
         style = self._get_optionstylename(self.option.ignorecase)
-        self._set_option_style('ignore-case', 'checkbox' + style, 'shortcut-i',
-                               'checkbox.shortcut' + style)
+        self._set_option_style('ignore-case', 'right-button' + style, 'shortcut-i',
+                               'right-button.shortcut' + style)
 
         style = self._get_optionstylename(self.option.word)
-        self._set_option_style('word', 'checkbox' + style, 'shortcut-w',
-                               'checkbox.shortcut' + style)
+        self._set_option_style('word', 'right-button' + style, 'shortcut-w',
+                               'right-button.shortcut' + style)
 
         style = self._get_optionstylename(self.option.regex)
-        self._set_option_style('regex', 'checkbox' + style, 'shortcut-r',
-                               'checkbox.shortcut' + style)
+        self._set_option_style('regex', 'right-button' + style, 'shortcut-r',
+                               'right-button.shortcut' + style)
 
     def _option_updated(self):
         self.update_option_style()

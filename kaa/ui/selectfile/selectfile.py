@@ -125,20 +125,20 @@ class OpenFilenameDlgMode(dialogmode.DialogMode):
             f.append_text('default', filename, mark_pair='filename')
             f.append_text('default', ' ')
 
-            f.append_text('checkbox', '[&Encoding:{}]'.format(mode.encoding),
+            f.append_text('right-button', '[&Encoding:{}]'.format(mode.encoding),
                           mark_pair='enc',
-                          shortcut_style='checkbox.shortcut',
+                          shortcut_style='right-button.shortcut',
                           on_shortcut=lambda wnd:
                           wnd.document.mode.select_encoding(wnd))
 
-            f.append_text('checkbox', '[&Newline:{}]'.format(mode.newline),
+            f.append_text('right-button', '[&Newline:{}]'.format(mode.newline),
                           mark_pair='newline',
-                          shortcut_style='checkbox.shortcut',
+                          shortcut_style='right-button.shortcut',
                           on_shortcut=lambda wnd:
                           wnd.document.mode.select_newline(wnd))
 
-            f.append_text('checkbox', '[&Create dir]',
-                          shortcut_style='checkbox.shortcut',
+            f.append_text('right-button', '[&Create dir]',
+                          shortcut_style='right-button.shortcut',
                           on_shortcut=lambda wnd:
                           wnd.document.mode.create_dir(wnd))
 
@@ -479,8 +479,8 @@ class SelectDirDlgMode(OpenFilenameDlgMode):
             f.append_text('default', filename, mark_pair='filename')
             f.append_text('default', ' ')
 
-            f.append_text('checkbox', '[&Select this dir]',
-                          shortcut_style='checkbox.shortcut',
+            f.append_text('right-button', '[&Select this dir]',
+                          shortcut_style='right-button.shortcut',
                           on_shortcut=lambda wnd:
                           wnd.document.mode.on_select_dir(wnd))
 

@@ -16,13 +16,13 @@ DialogThemes = {
         Style('button.shortcut', 'Base3', 'Base01', underline=True,
               nowrap=True),
 
-        # todo: checkbox with rjust should be defined in another name.
-        Style('checkbox', 'Base3', 'Base01', rjust=True, nowrap=True),
-        Style('checkbox.checked', 'Base3', 'Orange', rjust=True,
+        # todo: right-button with rjust should be defined in another name.
+        Style('right-button', 'Base3', 'Base01', rjust=True, nowrap=True),
+        Style('right-button.checked', 'Base3', 'Orange', rjust=True,
               nowrap=True),
-        Style('checkbox.shortcut', 'Base3', 'Base01', underline=True,
+        Style('right-button.shortcut', 'Base3', 'Base01', underline=True,
               rjust=True, nowrap=True),
-        Style('checkbox.shortcut.checked', 'Base3', 'Orange',
+        Style('right-button.shortcut.checked', 'Base3', 'Orange',
               underline=True, rjust=True, nowrap=True),
 
         Style('selectitem', 'Cyan', 'Base02', nowrap=True),

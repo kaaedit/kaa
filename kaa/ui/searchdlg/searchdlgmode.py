@@ -87,31 +87,31 @@ class SearchDlgMode(dialogmode.DialogMode):
 
     def _build_buttons(self, f):
         # buttons
-        f.append_text('checkbox', '[&Next]',
+        f.append_text('right-button', '[&Next]',
                       shortcut_style='button.shortcut',
                       on_shortcut=self.search_next)
 
-        f.append_text('checkbox', '[&Prev]',
+        f.append_text('right-button', '[&Prev]',
                       shortcut_style='button.shortcut',
                       on_shortcut=self.search_prev)
 
     def _build_options(self, f):
-        f.append_text('checkbox', '[&Ignore case]',
+        f.append_text('right-button', '[&Ignore case]',
                       mark_pair='ignore-case',
                       on_shortcut=self.toggle_option_ignorecase,
-                      shortcut_style='checkbox.shortcut',
+                      shortcut_style='right-button.shortcut',
                       shortcut_mark='shortcut-i')
 
-        f.append_text('checkbox', '[&Word]',
+        f.append_text('right-button', '[&Word]',
                       mark_pair='word',
                       on_shortcut=self.toggle_option_word,
-                      shortcut_style='checkbox.shortcut',
+                      shortcut_style='right-button.shortcut',
                       shortcut_mark='shortcut-w')
 
-        f.append_text('checkbox', '[&Regex]',
+        f.append_text('right-button', '[&Regex]',
                       mark_pair='regex',
                       on_shortcut=self.toggle_option_regex,
-                      shortcut_style='checkbox.shortcut',
+                      shortcut_style='right-button.shortcut',
                       shortcut_mark='shortcut-r')
 
     def build_document(self):
@@ -144,16 +144,16 @@ class SearchDlgMode(dialogmode.DialogMode):
 
     def update_option_style(self):
         style = self._get_optionstylename(self.option.ignorecase)
-        self._set_option_style('ignore-case', 'checkbox' + style, 'shortcut-i',
-                               'checkbox.shortcut' + style)
+        self._set_option_style('ignore-case', 'right-button' + style, 'shortcut-i',
+                               'right-button.shortcut' + style)
 
         style = self._get_optionstylename(self.option.word)
-        self._set_option_style('word', 'checkbox' + style, 'shortcut-w',
-                               'checkbox.shortcut' + style)
+        self._set_option_style('word', 'right-button' + style, 'shortcut-w',
+                               'right-button.shortcut' + style)
 
         style = self._get_optionstylename(self.option.regex)
-        self._set_option_style('regex', 'checkbox' + style, 'shortcut-r',
-                               'checkbox.shortcut' + style)
+        self._set_option_style('regex', 'right-button' + style, 'shortcut-r',
+                               'right-button.shortcut' + style)
 
     def _option_updated(self):
         self.update_option_style()
@@ -353,7 +353,7 @@ class ReplaceDlgMode(SearchDlgMode):
     def _build_buttons(self, f):
         # buttons
         super()._build_buttons(f)
-        f.append_text('checkbox', '[&All]', 'start-all', 'end-all',
+        f.append_text('right-button', '[&All]', 'start-all', 'end-all',
                       shortcut_style='button.shortcut', on_shortcut=self.replace_all)
 
     def build_document(self):
