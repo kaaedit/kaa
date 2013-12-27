@@ -783,14 +783,21 @@ Version history
 =================
 
 
-0.25.0 - 2013.12.25
+0.26.0 - 2013.12.27
 --------------------
 
-- Syntax highlight in Python console.
+- New command: Alt+m moves cursor to first non-blank character of the line.
 
 
 Past versions
 --------------
+
+
+0.25.0 - 2013.12.25
++++++++++++++++++++++
+
+- Syntax highlight in Python console.
+
 
 0.24.0 - 2013.12.24
 +++++++++++++++++++++
