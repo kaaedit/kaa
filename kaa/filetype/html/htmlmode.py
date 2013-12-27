@@ -143,7 +143,7 @@ class HTMLTag(Token):
             if not m:
                 return pos
             if m.group() == '>':
-                return pos
+                return m.start()
 
             # yield attribute name
             f, t = m.span('ATTRNAME')
