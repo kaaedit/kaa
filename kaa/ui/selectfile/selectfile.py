@@ -456,7 +456,7 @@ def show_filesaveas(filename, encoding, newline, callback):
     filelist = DirFileListMode.build()
     dlg.add_doc('dlg_filelist', 0, filelist)
 
-    doc.mode.fileopendlg_commands.show_filename(
+    doc.mode.show_filename(
         dlg.get_label('editor'), filename)
 
     return doc
@@ -493,7 +493,7 @@ class SelectDirDlgMode(OpenFilenameDlgMode):
         self.callback(None)
 
     def on_select_dir(self, wnd):
-        filename = self.fileopendlg_commands._build_filename(wnd)
+        filename = self._build_filename(wnd)
         popup = wnd.get_label('popup')
         popup.destroy()
         kaa.app.messagebar.set_message("")

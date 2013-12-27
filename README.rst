@@ -783,14 +783,19 @@ Version history
 =================
 
 
-0.26.0 - 2013.12.27
+0.26.1 - 2013.12.28
 --------------------
 
-- New command: Alt+m moves cursor to first non-blank character of the line.
+- Fixed an error on file-save-as.
 
 
 Past versions
 --------------
+
+0.26.0 - 2013.12.27
++++++++++++++++++++++
+
+- New command: Alt+m moves cursor to first non-blank character of the line.
 
 
 0.25.0 - 2013.12.25
