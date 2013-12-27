@@ -103,7 +103,6 @@ fileopendlg_keys = {
 }
 
 
-
 class OpenFilenameDlgMode(dialogmode.DialogMode):
     MAX_INPUT_HEIGHT = 4
     autoshrink = True
@@ -125,11 +124,12 @@ class OpenFilenameDlgMode(dialogmode.DialogMode):
             f.append_text('default', filename, mark_pair='filename')
             f.append_text('default', ' ')
 
-            f.append_text('right-button', '[&Encoding:{}]'.format(mode.encoding),
-                          mark_pair='enc',
-                          shortcut_style='right-button.shortcut',
-                          on_shortcut=lambda wnd:
-                          wnd.document.mode.select_encoding(wnd))
+            f.append_text(
+                'right-button', '[&Encoding:{}]'.format(mode.encoding),
+                mark_pair='enc',
+                shortcut_style='right-button.shortcut',
+                on_shortcut=lambda wnd:
+                wnd.document.mode.select_encoding(wnd))
 
             f.append_text('right-button', '[&Newline:{}]'.format(mode.newline),
                           mark_pair='newline',

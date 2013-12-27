@@ -106,6 +106,7 @@ def show_suggests(wnd, f, t, s, pwl, callback):
 
 RE_WORD = gappedbuf.re.compile(r"\b[a-zA-Z][a-z']{2,}\b", gappedbuf.re.A)
 
+
 def iter_words(wnd):
     d = enchant.DictWithPWL("en_US", kaa.app.config.spellchecker_pwl)
 

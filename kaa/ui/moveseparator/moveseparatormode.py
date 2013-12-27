@@ -86,8 +86,6 @@ class MoveSeparatorMode(dialogmode.DialogMode):
         org_wnd.activate()
 
 
-
-
 def move_separator(wnd):
     doc = MoveSeparatorMode.build(wnd)
     kaa.app.show_dialog(doc)

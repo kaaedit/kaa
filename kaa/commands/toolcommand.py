@@ -6,6 +6,7 @@ import kaa
 from kaa import document
 from kaa.command import Commands, command, is_enable, norec, norerun
 
+
 class ToolCommands(Commands):
 
     @command('python.console')

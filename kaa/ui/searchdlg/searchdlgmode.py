@@ -144,8 +144,9 @@ class SearchDlgMode(dialogmode.DialogMode):
 
     def update_option_style(self):
         style = self._get_optionstylename(self.option.ignorecase)
-        self._set_option_style('ignore-case', 'right-button' + style, 'shortcut-i',
-                               'right-button.shortcut' + style)
+        self._set_option_style(
+            'ignore-case', 'right-button' + style, 'shortcut-i',
+            'right-button.shortcut' + style)
 
         style = self._get_optionstylename(self.option.word)
         self._set_option_style('word', 'right-button' + style, 'shortcut-w',
@@ -309,7 +310,6 @@ class SearchDlgMode(dialogmode.DialogMode):
         wnd.get_label('popup').destroy()
 
 
-
 replacedlg_keys = {
     '\r': ('replacedlg.field.next'),
     '\n': ('replacedlg.field.next'),
@@ -402,7 +402,7 @@ class ReplaceDlgMode(SearchDlgMode):
 
         pos = 'top' if is_top else 'bottom'
         msgdoc = msgboxmode.MsgBoxMode.show_msgbox(
-            'Search failed. Resume from {pos} again?'.format(pos=pos), 
+            'Search failed. Resume from {pos} again?'.format(pos=pos),
             ['&Resume', '&Cancel'], cb)
 
     def _save_replstr(self):

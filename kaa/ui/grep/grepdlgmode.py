@@ -216,12 +216,14 @@ class GrepDlgMode(dialogmode.DialogMode):
 
     def update_option_style(self):
         style = self._get_optionstylename(self.option.tree)
-        self._set_option_style('search-tree', 'right-button' + style, 'shortcut-t',
-                               'right-button.shortcut' + style)
+        self._set_option_style(
+            'search-tree', 'right-button' + style, 'shortcut-t',
+            'right-button.shortcut' + style)
 
         style = self._get_optionstylename(self.option.ignorecase)
-        self._set_option_style('ignore-case', 'right-button' + style, 'shortcut-i',
-                               'right-button.shortcut' + style)
+        self._set_option_style(
+            'ignore-case', 'right-button' + style, 'shortcut-i',
+            'right-button.shortcut' + style)
 
         style = self._get_optionstylename(self.option.word)
         self._set_option_style('word', 'right-button' + style, 'shortcut-w',

@@ -2,6 +2,7 @@ from gappedbuf import re as gre
 import collections
 from kaa import document
 
+
 class Token:
 
     def __init__(self, name, stylename):
@@ -361,7 +362,7 @@ class Highlighter:
             if r:
                 marktop, markend = r
 
-        # ignore edits before marktop. 
+        # ignore edits before marktop.
         if self.updatepos < marktop:
             self.updatepos = marktop
 
@@ -369,7 +370,8 @@ class Highlighter:
             return False
 
         if not self._highlighter:
-            self._highlighter = self.highlight(doc, max(marktop, self.updatepos))
+            self._highlighter = self.highlight(
+                doc, max(marktop, self.updatepos))
 
         updatefrom = doc.endpos()
         updateto = marktop

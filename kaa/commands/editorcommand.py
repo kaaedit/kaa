@@ -855,6 +855,7 @@ class CodeCommands(Commands):
             wnd.cursor.setpos(f)
             wnd.cursor.savecol()
 
+
 class SearchCommands(Commands):
 
     @command('search.showsearch')
@@ -939,4 +940,3 @@ class SearchCommands(Commands):
                 ret = wnd.document.mode.search_prev(wnd.document.endpos(),
                                                     modebase.SearchOption.LAST_SEARCH)
                 self._show_searchresult(wnd, ret)
-

@@ -7,12 +7,12 @@ from kaa.command import Commands, command, is_enable, norec, norerun
 
 class FileCommands(Commands):
 
-    def _show_msgbox(self, caption, options, callback, 
-            keys=None, border=False):
+    def _show_msgbox(self, caption, options, callback,
+                     keys=None, border=False):
 
         from kaa.ui.msgbox import msgboxmode
         return msgboxmode.MsgBoxMode.show_msgbox(
-                caption, options, callback, keys, border)
+            caption, options, callback, keys, border)
 
     @command('file.new')
     @norec
@@ -389,7 +389,7 @@ class FileCommands(Commands):
         items = ['&Yes', '&No', 'View &Diff']
         msg = 'File [{}] has been updated by other process. Reload file?: '
         self._show_msgbox(msg.format(document.get_title()),
-                                          items, choice)
+                          items, choice)
 
     def can_close_wnd(self, wnd, cb):
         if len(wnd.document.wnds) == 1:

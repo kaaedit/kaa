@@ -264,5 +264,3 @@ def select_mode(filename):
                 return ret
 
     return defaultmode.DefaultMode
-
-

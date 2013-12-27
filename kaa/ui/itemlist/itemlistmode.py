@@ -20,7 +20,6 @@ itemlist_keys = {
 }
 
 
-
 class ItemListMode(dialogmode.DialogMode):
     border = True
     autoshrink = True
@@ -148,4 +147,3 @@ class ItemListMode(dialogmode.DialogMode):
             popup.destroy()
 
         callback(cursel)
-

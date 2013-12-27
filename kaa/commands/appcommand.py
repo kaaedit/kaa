@@ -2,7 +2,9 @@ import kaa
 from kaa.command import Commands, command, is_enable, norec, norerun
 from kaa import document
 
+
 class ApplicationCommands(Commands):
+
     def show_menu(self, wnd, name):
         from kaa.ui.mainmenu import menumode
         menumode.MenuMode.show_menu(wnd, name)
@@ -71,6 +73,7 @@ class ApplicationCommands(Commands):
         titles = list(frame.get_title().replace('&', '&&') for frame in frames)
 
         last_sel = None
+
         def callback(n):
             # bring the frame a top of frame list.
             if last_sel:
@@ -88,7 +91,6 @@ class ApplicationCommands(Commands):
         doc = itemlistmode.ItemListMode.build(
             '', titles, 0, callback, selchanged)
         dlg = kaa.app.show_dialog(doc)
-
 
     @command('editor.splitvert')
     @norec
@@ -247,4 +249,3 @@ class MacroCommands(Commands):
         finally:
             if wnd.document.undo:
                 wnd.document.undo.endblock()
-

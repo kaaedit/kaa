@@ -59,7 +59,7 @@ class PythonConsoleMode(pythonmode.PythonMode):
     def setup(self):
         super().setup()
         self.highlight.set_mark('current_script')
-        
+
     def on_set_document(self, document):
         super().on_set_document(document)
         self.document.marks['current_script'] = (0, 0)

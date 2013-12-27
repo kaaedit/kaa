@@ -127,7 +127,7 @@ class History:
         # Supress db write if record don't changed.
         if len(self.buffer) == 1:
             ret = self.storage.conn.execute('''
-                SELECT value, info FROM {0} as T 
+                SELECT value, info FROM {0} as T
                     WHERE T.id = (SELECT max(id) FROM {0})
                 '''.format(self.table_name))
             rec = ret.fetchone()

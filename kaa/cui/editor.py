@@ -348,7 +348,7 @@ class TextEditorWindow(Window):
             bottom = not self.CURSOR_TO_MIDDLE_ON_SCROLL
 
         self.screen.apply_updates()
-        self.screen.locate(pos, top=top, middle=middle, bottom=bottom, 
+        self.screen.locate(pos, top=top, middle=middle, bottom=bottom,
                            align_always=align_always)
 
         idx, x = self.screen.getrowcol(pos)

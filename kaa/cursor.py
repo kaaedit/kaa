@@ -207,7 +207,6 @@ class Cursor:
                 self.setpos(nextpos)
                 return True
 
-
     def pageup(self):
         # Ensure current position is displayed
         self.wnd.screen.locate(self.pos, middle=True, align_always=False)
