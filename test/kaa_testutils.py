@@ -6,7 +6,7 @@ import kaa.config
 import kaa.options
 from kaa import screen, document, cursor, context, editmode, fileio
 from kaa.filetype.default import defaultmode
-
+import kaa.cui.app
 
 class _DmyWnd(context.Context):
     closed = False
@@ -24,7 +24,7 @@ class _DmyWnd(context.Context):
     def get_context_parent(self):
         return None
 
-    def locate_cursor(self, pos, top=None, middle=None, bottom=None):
+    def locate_cursor(self, pos, top=None, middle=None, bottom=None, align_always=False):
         return pos, 0, 0
 
     def locate(self, pos, top=False, middle=False, bottom=False, align_always=False):
@@ -59,16 +59,16 @@ class DmyFrame:
         return self.docs
 
 
-class DmyApp(unittest.mock.Mock):
-    option = kaa.options.build_parser().parse_args([])
-    config = kaa.config.Config(option)
-    config.hist_storage = unittest.mock.Mock()
-
+class DmyApp(kaa.cui.app.CuiApp):
     last_dir = ''
     DEFAULT_THEME = 'basic'
     storage = fileio.FileStorage()
     NUM_NEWFILE = 1
 
+    mainframe = unittest.mock.Mock()
+    mainframe.rect = (0, 0, 80, 25)
+    mainframe.getsize.return_value = (80, 25)
+    messagebar = unittest.mock.Mock()
     def translate_key(self, mod, char):
         return (mod, char)
 
@@ -81,7 +81,12 @@ class DmyApp(unittest.mock.Mock):
     def set_focus(self, wnd):
         pass
 
-kaa.app = DmyApp()
+option = kaa.options.build_parser().parse_args([])
+config = kaa.config.Config(option)
+config.hist_storage = unittest.mock.Mock()
+
+kaa.app = DmyApp(config)
+kaa.app.init_commands()
 
 
 

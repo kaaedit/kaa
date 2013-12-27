@@ -1,4 +1,5 @@
 from unittest.mock import patch
+import kaa_testutils
 from kaa import keyboard
 from kaa.keyboard import *
 

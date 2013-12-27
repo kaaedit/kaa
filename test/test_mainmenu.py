@@ -1,10 +1,10 @@
-from unittest.mock import patch
+from unittest.mock import patch, Mock
 
 import kaa
 from kaa.ui.mainmenu import menumode
 import kaa_testutils
 
-
+kaa.app.show_dialog = Mock()
 class TestMenuMode(kaa_testutils._TestDocBase):
 
     def test_msbbox(self):

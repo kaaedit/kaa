@@ -42,10 +42,11 @@ class TestMacro(kaa_testutils._TestScreenBase):
         macro = kaa.macro.Macro()
         macro.toggle_record()
 
-        macro.record(wnd.document.mode.cursor_commands.right)
-        macro.record(wnd.document.mode.cursor_commands.right)
-        macro.record(wnd.document.mode.cursor_commands.right)
-        macro.record(wnd.document.mode.cursor_commands.left)
+        mode = wnd.document.mode
+        macro.record(mode.get_command('cursor.right')[1])
+        macro.record(mode.get_command('cursor.right')[1])
+        macro.record(mode.get_command('cursor.right')[1])
+        macro.record(mode.get_command('cursor.left')[1])
         macro.toggle_record()
 
         macro.run(wnd)

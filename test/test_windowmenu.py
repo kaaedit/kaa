@@ -41,7 +41,7 @@ class TestJoinWindow(kaa_testutils._TestScreenBase):
             ec(patch.object(kaa.app, 'get_activeframe', create=True))
             ec(patch.object(wnd, 'show_doc', create=True))
 
-            kaa.app.mode.app_commands.editor_joinwindow(wnd)
+            kaa.app.app_commands.editor_joinwindow(wnd)
 
             args, kwargs = wnd.splitter.parent.join.call_args
             assert args[0] is wnd
