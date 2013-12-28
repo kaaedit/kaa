@@ -39,7 +39,7 @@ See http://kaaedit.github.io for more screen shots.
 Kaa is easy!
 ------------
 
-Kaa is very easy to learn in spite of its rich functionality. Only thing you need to remember is **"To display menu, hit F1 key or alt+'/' key"**. Most of basic features could be accessed from fancy menus by hitting underlined character in the menu items. You can use kaa as easy as you are with Notepad on MS-Windows.
+Kaa is very easy to learn in spite of its rich functionality. Only thing you need to remember is **"To display menu, hit F1 key or alt+'m' key"**. Most of basic features could be accessed from fancy menus by hitting underlined character in the menu items. You can use kaa as easy as you are with Notepad on MS-Windows.
 
 
 Customizable
@@ -178,7 +178,7 @@ Using kaa is intuitive. Typing alphabet keys will update file as you expected. F
 Using menu
 -----------
 
-To display menu, type F1 key or alt+/ (type slash key with alt key). Each items in the menu has one underlined character. The menu item is executed by typing the underlined key with or without pressing alt key.
+To display menu, type F1 key or alt+m (type 'm' key with alt key). Each items in the menu has one underlined character. The menu item is executed by typing the underlined key with or without pressing alt key.
 
 Typing escape key hides menu.
 
@@ -366,7 +366,7 @@ Menu keys
 +++++++++++++++++++
 
 +---------------+----------------------------------------------------+
-| F1, alt+/     | Show menu.                                         |
+| F1, alt+m     | Show menu.                                         |
 +---------------+----------------------------------------------------+
 | Alt-w         | Show switch file menu.                             |
 +---------------+----------------------------------------------------+
@@ -400,7 +400,7 @@ Cursor keys
 +--------------------+------------------------------------------------+
 | Control+a, Home    | Move cursor to top of line.                    |
 +--------------------+------------------------------------------------+
-| Alt+m              | Move cursor to firsr letter of line.           |
+| Control+^          | Move cursor to firsr letter of line.           |
 +--------------------+------------------------------------------------+
 | Control+e, End     | Move cursor to end of line.                    |
 +--------------------+------------------------------------------------+
@@ -783,14 +783,21 @@ Version history
 =================
 
 
-0.26.1 - 2013.12.28
+0.27.0 - 2013.12.28
 --------------------
 
-- Fixed an error on file-save-as.
+- Alt+m key now assined as new prefferd menu key instead of alt+/ because key sequence of alt+/ could be `misinterpreted by other applications <https://twitter.com/kefir_/status/416613392879611904>`_.
 
+- Alt+^ moves cursor to first non-blank character of the line.
 
 Past versions
 --------------
+
+0.26.1 - 2013.12.28
++++++++++++++++++++++
+
+- Fixed an error on file-save-as.
+
 
 0.26.0 - 2013.12.27
 +++++++++++++++++++++

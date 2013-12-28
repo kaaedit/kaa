@@ -2,6 +2,7 @@ from kaa.keyboard import *
 
 # application commands
 app_keys = {
+    (alt, 'm'): 'app.mainmenu',
     (alt, '/'): 'app.mainmenu',
     f1: 'app.mainmenu',
     f9: 'app.global.prev',
@@ -119,7 +120,7 @@ emacs_keys = {
 
     (ctrl, 'a'): 'cursor.top-of-line',
     (ctrl, 'e'): 'cursor.end-of-line',
-    (alt, 'm'): 'cursor.first-letter-of-line',
+    (ctrl, '^'): 'cursor.first-letter-of-line',
 
     (alt, 'n'): 'cursor.pagedown',
     (alt, 'p'): 'cursor.pageup',
