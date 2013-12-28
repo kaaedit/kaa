@@ -63,9 +63,9 @@ class PythonConsoleMode(pythonmode.PythonMode):
 
     def on_set_document(self, document):
         super().on_set_document(document)
-        self.document.marks['current_script'] = (0, 0)
         self.interp = KaaInterpreter()
 
+        self.document.append('Python %s\n' % sys.version, self.get_styleid('ps'))
         self.document.append('>>>', self.get_styleid('ps'))
         self.document.append('\n', self.get_styleid('default'))
         p = self.document.endpos()
