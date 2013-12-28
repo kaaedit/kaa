@@ -15,6 +15,7 @@ from kaa.ui.inputline import inputlinemode
 pythonconsole_keys = {
     ('\r'): 'python.exec',
     (alt, '\r'): 'python.script-history',
+    (alt, '\n'): 'python.script-history',
 }
 
 PythonConsoleThemes = {
