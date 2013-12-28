@@ -27,7 +27,7 @@ class MessageBarMode(modebase.ModeBase):
             msg = getattr(kaa.app.focus.document.mode,
                           'DEFAULT_STATUS_MSG', None)
             if msg is None:
-                msg = kaa.app.SHOW_MENU_MESSAGE
+                msg = kaa.app.DEFAULT_MENU_MESSAGE
 
         if msg != self.message:
             self.message = msg

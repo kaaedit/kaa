@@ -14,7 +14,7 @@ from kaa.exceptions import KaaError
 
 
 class CuiApp:
-    SHOW_MENU_MESSAGE = 'Type F1 or alt+/ for menu.'
+    DEFAULT_MENU_MESSAGE = 'Type F1 or alt+m for menu.'
     DEFAULT_THEME = 'basic'
     DEFAULT_PALETTE = 'dark'
     NUM_NEWFILE = 1
@@ -79,7 +79,7 @@ class CuiApp:
         self.macro = macro.Macro()
 
         self.mainframe.on_console_resized()
-        self.messagebar.set_message(self.SHOW_MENU_MESSAGE)
+        self.messagebar.set_message(self.DEFAULT_MENU_MESSAGE)
 
     def on_shutdown(self):
         self.config.close()
