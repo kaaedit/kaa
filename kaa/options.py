@@ -19,6 +19,9 @@ def build_parser():
     parser.add_argument('--term', '-t', dest='term', default='',
                         help='specify terminal type')
 
+    parser.add_argument('--command', '-x', dest='command', default='',
+                        help='spefify kaa command id to execute on start up. e.g: kaa -x python.console / kaa -x tools.grep')
+
     parser.add_argument('file', nargs='*', default=[])
 
     return parser

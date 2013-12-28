@@ -150,18 +150,13 @@ kaa は以下のコマンドラインオプションをサポートしていま�
                [--palette PALETTE] [--term TERM]
                [file [file ...]]
     
-    positional arguments:
-      file
-    
-    optional arguments:
-      -h, --help            show this help message and exit
-      --version             show version info and exit
-      --no-init             skip loading initialization script
-      --init-script INIT_SCRIPT
-                            execute file as initialization script instead of
-                            default initialization file
-      --palette PALETTE     color palette. available values: dark, light.
-      --term TERM, -t TERM  specify terminal type
+-h, --help            show this help message and exit
+--version             show version info and exit
+--no-init             skip loading initialization script
+--init-script INIT_SCRIPT  execute file as initialization script instead of default initialization file
+--palette PALETTE     color palette. available values: dark, light.
+--term TERM, -t TERM  specify terminal type
+--command command, -x command   spefify kaa command id to execute at startup e.g: kaa -x python.console / kaa -x tools.grep
       
 
 使い方

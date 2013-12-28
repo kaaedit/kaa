@@ -103,6 +103,15 @@ def main(stdscr):
 
                 selectfile.show_fileopen(dirname, cb)
 
+        if opt.command:
+            cmd = kaa.app.focus.document.mode.get_command(
+                    opt.command)
+            is_available, command = cmd
+            if command:
+                command(kaa.app.focus)
+            else:
+                sys.exit('Unknown command: {}'.format(opt.command))
+
         kaa.app.run()
         mainframe.destroy()
         kaa.app.on_shutdown()

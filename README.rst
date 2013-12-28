@@ -149,25 +149,18 @@ For detail, see http://www.pixelbeat.org/docs/terminal_colours/#256 to enable 25
 Command line options
 ====================
 
-To start kaa, type ::
+::
 
-    usage: kaa [-h] [--version] [--no-init] [--init-script INIT_SCRIPT]
-               [--palette PALETTE] [--term TERM]
-               [file [file ...]]
-    
-    positional arguments:
-      file
-    
-    optional arguments:
-      -h, --help            show this help message and exit
-      --version             show version info and exit
-      --no-init             skip loading initialization script
-      --init-script INIT_SCRIPT
-                            execute file as initialization script instead of
-                            default initialization file
-      --palette PALETTE     color palette. available values: dark, light.
-      --term TERM, -t TERM  specify terminal type
+   kaa [-h] [--version] [--no-init] [--init-script INIT_SCRIPT] 
+       [--palette PALETTE] [--term TERM] [file [file ...]]
 
+-h, --help            show this help message and exit
+--version             show version info and exit
+--no-init             skip loading initialization script
+--init-script INIT_SCRIPT  execute file as initialization script instead of default initialization file
+--palette PALETTE     color palette. available values: dark, light.
+--term TERM, -t TERM  specify terminal type
+--command command, -x command   spefify kaa command id to execute at startup e.g: kaa -x python.console / kaa -x tools.grep
 
 Usage
 =====

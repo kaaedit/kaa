@@ -158,7 +158,7 @@ class ToolCommands(Commands):
         from kaa.ui.spellchecker import spellcheckermode
         spellcheckermode.run_spellchecker(wnd)
 
-    @command('tools.showgrep')
+    @command('tools.grep')
     @norec
     @norerun
     def showgrep(self, wnd):
