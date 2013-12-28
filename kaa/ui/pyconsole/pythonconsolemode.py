@@ -88,6 +88,7 @@ class PythonConsoleMode(pythonmode.PythonMode):
         f, t = self.document.marks['current_script']
         if not (f <= pos <= t):
             wnd.cursor.setpos(t)
+            wnd.screen.selection.clear()
 
         super().put_string(wnd, s)
 
@@ -160,9 +161,12 @@ class PythonConsoleMode(pythonmode.PythonMode):
                 self.document.marks['current_script'] = (p, p)
                 wnd.cursor.setpos(p)
             else:
-                doc = PythonInputlineMode.build(wnd, s + '\n')
-                kaa.app.show_dialog(doc)
-                kaa.app.messagebar.set_message('')
+                self._show_inputline(wnd, s+'\n')
+
+    def _show_inputline(self, wnd, s):
+        doc = PythonInputlineMode.build(wnd, s)
+        kaa.app.show_dialog(doc)
+        kaa.app.messagebar.set_message('')
 
     def exec_str(self, wnd, s):
         s = s.rstrip() + '\n'
@@ -170,6 +174,17 @@ class PythonConsoleMode(pythonmode.PythonMode):
         self.document.replace(f, t, s,
                               style=self.get_styleid('default'))
         self.exec_script(wnd)
+
+    def _put_script(self, wnd, text):
+        self.put_string(wnd, text)
+        wnd.screen.selection.clear()
+        hist = kaa.app.config.hist('pyconsole_script', self.MAX_HISTORY)
+        hist.add(text)
+
+        f, t = self.document.marks['current_script']
+        s = wnd.document.gettext(f, t)
+        if '\n' in s:
+            self._show_inputline(wnd, s)
 
     MAX_HISTORY = 100
 
@@ -184,12 +199,17 @@ class PythonConsoleMode(pythonmode.PythonMode):
 
         def callback(text):
             if text:
-                wnd.document.mode.put_string(wnd, text)
-                wnd.screen.selection.clear()
-                hist.add(text)
+                self._put_script(wnd, text)
 
         from kaa.ui.texthist import texthistmode
         texthistmode.show_history(callback, scripts)
+
+    @command('edit.paste')
+    def paste(self, wnd):
+        s = kaa.app.clipboard.get()
+        if s:
+            self._put_script(wnd, s)
+
 
 inputline_keys = {
     (alt, '\r'): ('inputline'),
