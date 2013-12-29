@@ -1,3 +1,4 @@
+import curses
 import code
 import sys
 import traceback
@@ -25,7 +26,6 @@ PythonConsoleThemes = {
         Style('ps', 'Blue', 'Default'),
     ],
 }
-
 
 class KaaInterpreter(code.InteractiveInterpreter):
 
@@ -147,7 +147,12 @@ class PythonConsoleMode(pythonmode.PythonMode):
         f, t = self.document.marks['current_script']
         s = wnd.document.gettext(f, t).lstrip()
         with self._redirect_output(wnd):
-            ret = self.interp.runsource(s)
+            curses.cbreak()
+            try:
+                ret = self.interp.runsource(s)
+            finally:
+                curses.raw()
+
             if not ret:
                 if s.strip():
                     hist = kaa.app.config.hist(
