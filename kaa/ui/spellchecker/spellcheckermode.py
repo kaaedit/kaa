@@ -29,7 +29,11 @@ class SpellCheckerWordInputMode(wordcompletemode.WordCompleteInputMode):
             f.append_text('default', '', mark_pair='query')
             f.append_text('default', ' ')
 
-            f.append_text('right-button', '[&Register]',
+            f.append_text('right-button', '[&Replace]',
+                          shortcut_style='right-button.shortcut',
+                          on_shortcut=mode.selected)
+
+            f.append_text('right-button', '[&Add word]',
                           shortcut_style='right-button.shortcut',
                           on_shortcut=mode.register)
 
@@ -62,21 +66,20 @@ class SpellCheckerWordInputMode(wordcompletemode.WordCompleteInputMode):
     def quit(self, wnd):
         wnd.get_label('popup').destroy()
 
-    def start(self, wnd, list, f, t, word, pwl):
+    def start(self, wnd, list, f, t, word, pwl, sugest):
         self.orgloc = self.target.get_cursor_loc()
         self.orgpos = self.target.cursor.pos
         self.wordpos = (f, t)
         self.word = word
         self.pwl = pwl
 
-        list.document.mode.set_candidates(pwl.suggest(word))
-#        list.document.mode.candidates.sort(key=lambda v: v.text.upper())
+        list.document.mode.set_candidates(sugest)
         list.document.mode.set_query(list, '')
 
         list.get_label('popup').on_console_resized()
 
 
-def show_suggests(wnd, f, t, s, pwl, callback):
+def show_suggests(wnd, f, t, s, pwl, sugest, callback):
     # select current word
     wnd.activate()
     wnd.cursor.setpos(t, middle=True)
@@ -99,7 +102,7 @@ def show_suggests(wnd, f, t, s, pwl, callback):
     filterlistdoc.mode.SEP = ' '
     list = dlg.add_doc('dlg_filterlist', 0, filterlistdoc)
 
-    doc.mode.start(wnd, list, f, t, s, pwl)
+    doc.mode.start(wnd, list, f, t, s, pwl, sugest)
 
     return dlg
 
@@ -107,12 +110,12 @@ def show_suggests(wnd, f, t, s, pwl, callback):
 RE_WORD = gappedbuf.re.compile(r"\b[a-zA-Z][a-z']{2,}\b", gappedbuf.re.A)
 
 
-def iter_words(wnd):
+def iter_words(wnd, pos):
     d = enchant.DictWithPWL("en_US", kaa.app.config.spellchecker_pwl)
 
-    pos = 0
     while True:
-        m = RE_WORD.search(wnd.document.buf, pos)
+        posto = wnd.document.marks['spellchecker'][1]
+        m = RE_WORD.search(wnd.document.buf, pos, posto)
         if not m:
             return
 
@@ -122,23 +125,39 @@ def iter_words(wnd):
             pos = t
             continue
 
-        pos = yield (f, t, s, d)
+        suggest = d.pwl.suggest(s)
+        if not suggest:
+            pos = t
+            continue
+
+        pos = yield (f, t, s, d, suggest)
 
 
 def run_spellchecker(wnd):
-    words = iter_words(wnd)
+    sel = wnd.screen.selection.get_selrange()
+    if sel:
+        pos, posto = sel
+    else:
+        pos, posto = 0, wnd.document.endpos()
 
-    def callback(pos):
-        if pos is None:
+    wnd.document.marks['spellchecker'] = (pos, posto)
+
+    wnd.screen.selection.clear()
+    words = iter_words(wnd, pos)
+
+    def callback(new_pos):
+        if new_pos is None:
+            # canceled
+            del wnd.document.marks['spellchecker']
             return
 
         try:
-            f, t, s, d = words.send(pos)
-            show_suggests(wnd, f, t, s, d, callback)
+            f, t, s, d, sugest = words.send(new_pos)
+            show_suggests(wnd, f, t, s, d, sugest, callback)
         except StopIteration:
-            pass
+            del wnd.document.marks['spellchecker']
 
     rec = next(words, None)
     if rec:
-        f, t, s, d = rec
-        show_suggests(wnd, f, t, s, d, callback)
+        f, t, s, d, sugest = rec
+        show_suggests(wnd, f, t, s, d, sugest, callback)
