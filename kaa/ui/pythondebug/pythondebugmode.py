@@ -300,7 +300,7 @@ class PythonDebuggerPanel(dialogmode.DialogMode):
         tol = doc.gettol(pos)
 
         wnd.clear_line_overlay()
-        wnd.set_line_overlay(tol, 'current_row')
+        wnd.set_line_overlay(tol, 'current-row')
 
         wnd.screen.locate(tol, middle=True, align_always=True)
         wnd.cursor.setpos(tol, middle=True)

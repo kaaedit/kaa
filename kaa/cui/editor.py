@@ -12,7 +12,7 @@ class TextEditorWindow(Window):
 
     """Text editor window"""
 
-    OVERLAY_CURSORROW = 'cursor_row'  # Name of overlay style of theme
+    OVERLAY_CURSORROW = 'cursor-row'  # Name of overlay style of theme
 
     show_lineno = True
     splitter = None
@@ -322,7 +322,7 @@ class TextEditorWindow(Window):
             self._cwnd.clrtobot()
 
             if self.document.mode.SHOW_BLANK_LINE:
-                attr = theme.get_style('blank_line_header').cui_colorattr
+                attr = theme.get_style('blank-line-header').cui_colorattr
                 for i in range(len(rows), h):
                     self._cwnd.move(i, 0)
                     self.add_str('~', attr)
