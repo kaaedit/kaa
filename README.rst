@@ -160,7 +160,7 @@ Command line options
 --init-script INIT_SCRIPT  execute file as initialization script instead of default initialization file
 --palette PALETTE     color palette. available values: dark, light.
 --term TERM, -t TERM  specify terminal type
---command command, -x command   spefify kaa command id to execute at startup e.g: kaa -x python.console / kaa -x tools.grep
+--command command, -x command   spefify kaa command id to execute at start-up e.g: kaa -x python.console / kaa -x tools.grep
 
 Usage
 =====
@@ -393,7 +393,7 @@ Cursor keys
 +--------------------+------------------------------------------------+
 | Control+a, Home    | Move cursor to top of line.                    |
 +--------------------+------------------------------------------------+
-| Control+^          | Move cursor to firsr letter of line.           |
+| Control+^          | Move cursor to first letter of line.           |
 +--------------------+------------------------------------------------+
 | Control+e, End     | Move cursor to end of line.                    |
 +--------------------+------------------------------------------------+
@@ -578,7 +578,7 @@ There are three ways to start debugger.
 kaadbg.run module
 ~~~~~~~~~~~~~~~~~~~~~~~~
 
-Execute ``kaadbg`` package in Python interpreter to connect target program with kaa debugger. ``kaadbg`` is Python package installed as a part of kaa. To use another Python interpreter than kaa installed, you can install ``kaadbg`` separately.
+``Kaadbg`` package executes your Python script with Python debugger connected to debugger window of kaa. Usually, ``kaadbg`` is Python package installed as a part of kaa. To use another Python interpreter than kaa installed, you can install ``kaadbg`` separately.
 
 ::
 
@@ -776,10 +776,10 @@ Version history
 =================
 
 
-0.27.0 - 2013.12.28
+0.27.0 - 2013.12.29
 --------------------
 
-- Alt+m key now assined as new prefferd menu key instead of alt+/ because key sequence of alt+/ could be `misinterpreted by other applications <https://twitter.com/kefir_/status/416613392879611904>`_.
+- Alt+m key now assigned as new preferred menu key instead of alt+/ because key sequence of alt+/ could be `misinterpreted by other applications <https://twitter.com/kefir_/status/416613392879611904>`_.
 
 - Alt+^ moves cursor to first non-blank character of the line.
 
