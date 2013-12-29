@@ -9,6 +9,7 @@ class DefaultMode(modebase.ModeBase):
     DOCUMENT_MODE = True
     MODENAME = 'default'
     SHOW_LINENO = False
+    SHOW_BLANK_LINE = True
     VI_COMMAND_MODE = False
 
     KEY_BINDS = [

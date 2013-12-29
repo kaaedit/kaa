@@ -402,7 +402,6 @@ class Highlighter:
             return
 
         if not self.section:
-            pos = 0
             section = Section(0, self.tokenizers[0])
             self.section = section
         else:

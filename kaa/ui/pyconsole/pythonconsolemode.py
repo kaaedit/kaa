@@ -202,7 +202,7 @@ class PythonConsoleMode(pythonmode.PythonMode):
                 self._put_script(wnd, text)
 
         from kaa.ui.texthist import texthistmode
-        texthistmode.show_history(callback, scripts)
+        texthistmode.show_history('Search history:',callback, scripts)
 
     @command('edit.paste')
     def paste(self, wnd):

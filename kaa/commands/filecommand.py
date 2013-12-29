@@ -50,7 +50,10 @@ class FileCommands(Commands):
             if disp:
                 loc = disp.get('pos', 0)
                 loc = min(loc, wnd.document.endpos())
-                wnd.cursor.setpos(loc, top=True)
+                if wnd.document.geteol(loc) != wnd.document.endpos():
+                    wnd.cursor.setpos(loc, top=True)
+                else:
+                    wnd.cursor.setpos(loc, middle=True)
 
     @command('file.open')
     @norec
@@ -155,8 +158,7 @@ class FileCommands(Commands):
 
                 if document.fileinfo and document.fileinfo.fullpathname:
                     from kaa.ui.viewdiff import viewdiffmode
-                    viewdiffmode.view_diff(
-                        document, callback=cb)
+                    viewdiffmode.view_diff(document, callback=cb)
                 else:
                     cb()
 

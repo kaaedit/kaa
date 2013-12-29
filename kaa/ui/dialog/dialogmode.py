@@ -8,6 +8,7 @@ DialogThemes = {
     'basic': [
         Style('default', 'Base3', 'Base02', False, False),
         Style('caption', 'Orange', 'Base02', nowrap=True),
+        Style('blank_line_header', 'Blue', None),
 
         Style('activemark', 'Base02', 'Yellow', nowrap=True),
         Style('nonactivemark', 'Yellow', 'Base02', nowrap=True),

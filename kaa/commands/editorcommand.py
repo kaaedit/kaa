@@ -781,7 +781,7 @@ class EditCommands(Commands):
                 kaa.app.clipboard.set(text)
 
         from kaa.ui.texthist import texthistmode
-        texthistmode.show_history(callback, words)
+        texthistmode.show_history('Search clipboard text:', callback, words)
 
 
 class CodeCommands(Commands):

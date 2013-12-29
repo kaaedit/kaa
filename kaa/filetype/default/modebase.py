@@ -59,6 +59,7 @@ class ModeBase:
     NO_WRAPINDENT = False
     SCREEN_BUILD_ENTIRE_ROWS = False
     SHOW_LINENO = False
+    SHOW_BLANK_LINE = False
     USE_UNDO = True
     DOCUMENT_MODE = False
     HIGHLIGHT_CURSOR_ROW = False

@@ -4,6 +4,7 @@ DefaultThemes = {
     'basic': [
         Style('default', 'default', 'default'),
         Style('lineno', 'White', 'Blue'),
+        Style('blank_line_header', 'Blue', None),
         Style('parenthesis_cur', 'White', 'Blue'),
         Style('parenthesis_match', 'Red', 'Yellow'),
 
@@ -13,6 +14,7 @@ DefaultThemes = {
         Style('comment', 'Cyan', None),
         Style('string', 'Blue', None),
         Style('number', 'Green', None),
+
 
         Overlay('cursor_row', None, 'Base02'),
         Overlay('breakpoint', None, 'Base02'),

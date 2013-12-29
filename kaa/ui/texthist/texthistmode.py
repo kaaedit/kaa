@@ -31,59 +31,16 @@ class TextHistMode(filterlist.FilterListMode):
                 'selectitem', 'selectitem-active', caption, c)
             self.candidates.append(c)
 
-    def _filter_items(self, query):
-        if query:
-            query = query.upper().split()
-            items = []
-            for s in self.candidates:
-                u = s.value.upper()
-                for q in query:
-                    if q not in u:
-                        break
-                else:
-                    items.append(s)
-        else:
-            items = self.candidates[:]
-
-        sel = items[0] if items else None
-        return sel, items
-
-    def on_esc_pressed(self, wnd, event):
-        popup = wnd.get_label('popup')
-        popup.destroy()
-        kaa.app.messagebar.set_message("")
-        self.callback(None)
-
-    @command('texthist.select')
-    @norec
-    @norerun
-    def on_selected(self, wnd):
-        if self.cursel:
-            self.callback(self.cursel.value)
-
-        popup = wnd.get_label('popup')
-        popup.destroy()
-        kaa.app.messagebar.set_message("")
-
-#            self.target.document.mode.put_string(
-#                self.target, self.cursel.value)
-#            self.target.screen.selection.clear()
-#            kaa.app.text.set(self.cursel.value)
-#
-#        popup = wnd.get_label('popup')
-#        popup.destroy()
-#        kaa.app.messagebar.set_message("")
-
-
-def show_history(callback, words):
-
-    doc = TextHistMode.build()
+def show_history(title, callback, words):
+    doc = filterlist.FilterListInputDlgMode.build(
+        title, callback)
     dlg = kaa.app.show_dialog(doc)
-    doc.mode.callback = callback
-    doc.mode.set_candidates(words)
-    doc.mode.set_query(dlg.get_label('editor'), '')
 
+    filterlistdoc = TextHistMode.build()
+    list = dlg.add_doc('dlg_filterlist', 0, filterlistdoc)
+
+    filterlistdoc.mode.set_candidates(words)
+    filterlistdoc.mode.set_query(list, '')
     dlg.on_console_resized()
-    kaa.app.messagebar.set_message("Hit tab/shift+tab to select text. ")
 
     return dlg
