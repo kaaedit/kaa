@@ -44,6 +44,7 @@ class PythonConsoleMode(pythonmode.PythonMode):
     DEFAULT_STATUS_MSG = 'Hit alt+Enter for history.'
     MODENAME = 'Python console'
     DOCUMENT_MODE = False
+    SHOW_BLANK_LINE = False
 
     PYTHONCONSOLE_KEY_BINDS = [
         pythonconsole_keys,

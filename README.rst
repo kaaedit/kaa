@@ -776,16 +776,27 @@ Version history
 =================
 
 
-0.27.0 - 2013.12.29/
+0.28.0 - 2013.12
 --------------------
+
+- Improve file-save-as dialog.
+
+- ^C key causes SIGINT while running Python script in Python console.
+
+- Displau blank line as vim.
+
+Past versions
+--------------
+
+0.27.0 - 2013.12.29
++++++++++++++++++++++
+
 - New command line option: --command, -x spefify kaa command id to execute on start up.
 
 - Alt+m key now assigned as new preferred menu key instead of alt+/ because key sequence of alt+/ could be `misinterpreted by other applications <https://twitter.com/kefir_/status/416613392879611904>`_.
 
 - Alt+^ moves cursor to first non-blank character of the line.
 
-Past versions
---------------
 
 0.26.1 - 2013.12.28
 +++++++++++++++++++++

@@ -106,6 +106,7 @@ fileopendlg_keys = {
 class OpenFilenameDlgMode(dialogmode.DialogMode):
     MAX_INPUT_HEIGHT = 4
     autoshrink = True
+    org_filename = ''
 
     @classmethod
     def build(cls, filename, newline, encoding, callback):
@@ -365,6 +366,9 @@ class OpenFilenameDlgMode(dialogmode.DialogMode):
         if os.path.isdir(filename):
             if not filename.endswith(os.path.sep):
                 filename += os.path.sep
+            if self.org_filename:
+                fname = os.path.basename(self.org_filename)
+                filename = os.path.join(filename, fname)
         else:
             kaa.app.messagebar.set_message('{} is not found.'.format(filename))
 
@@ -451,6 +455,8 @@ def show_filesaveas(filename, encoding, newline, callback):
         filename += os.path.sep
 
     doc = SaveAsFilenameDlgMode.build('', encoding, newline, callback)
+    doc.mode.org_filename = filename
+
     dlg = kaa.app.show_dialog(doc)
 
     filelist = DirFileListMode.build()
