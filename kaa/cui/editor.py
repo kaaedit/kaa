@@ -321,6 +321,12 @@ class TextEditorWindow(Window):
             self._cwnd.move(len(rows), 0)
             self._cwnd.clrtobot()
 
+            if self.document.mode.SHOW_BLANK_LINE:
+                attr = theme.get_style('blank_line_header').cui_colorattr
+                for i in range(len(rows), h):
+                    self._cwnd.move(i, 0)
+                    self.add_str('~', attr)
+
         if kaa.app.focus:
             if self.document.mode.is_cursor_visible():
                 kaa.app.focus._cwnd.move(cury, curx)
