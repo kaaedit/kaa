@@ -2,7 +2,7 @@ import collections
 from kaa import document
 from kaa.ui.dialog import dialogmode
 from kaa.keyboard import *
-from kaa.command import command, norec, norerun
+from kaa.command import commandid, norec, norerun
 
 
 SelectItem = collections.namedtuple(
@@ -100,7 +100,7 @@ class SelectItemList(dialogmode.DialogMode):
 
         self.cursel = newsel
 
-    @command('selectitemlist.next')
+    @commandid('selectitemlist.next')
     @norec
     @norerun
     def sel_next(self, wnd):
@@ -122,7 +122,7 @@ class SelectItemList(dialogmode.DialogMode):
         self.update_sel(wnd, newsel, bottom=True)
         return newsel
 
-    @command('selectitemlist.prev')
+    @commandid('selectitemlist.prev')
     @norec
     @norerun
     def sel_prev(self, wnd):

@@ -4,7 +4,7 @@ from kaa.ui.dialog import dialogmode
 from kaa.theme import Theme, Style
 from kaa.filetype.default import modebase, keybind
 from kaa.ui.msgbox import msgboxmode
-from kaa.command import command, Commands, norec, norerun
+from kaa.command import commandid, Commands, norec, norerun
 from kaa.commands import editorcommand
 from kaa.ui.selectlist import filterlist
 from gappedbuf.sre_constants import error as gre_error
@@ -162,7 +162,7 @@ class SearchDlgMode(dialogmode.DialogMode):
     def _show_histdlg(self, wnd, title, candidates, callback):
         filterlist.show_listdlg(title, candidates, callback)
 
-    @command('searchdlg.history')
+    @commandid('searchdlg.history')
     @norec
     @norerun
     def search_history(self, wnd):
@@ -178,21 +178,21 @@ class SearchDlgMode(dialogmode.DialogMode):
                                    'search_text').get()],
                            callback)
 
-    @command('searchdlg.toggle.ignorecase')
+    @commandid('searchdlg.toggle.ignorecase')
     @norec
     @norerun
     def toggle_option_ignorecase(self, wnd):
         self.option.ignorecase = not self.option.ignorecase
         self._option_updated()
 
-    @command('searchdlg.toggle.wordsearch')
+    @commandid('searchdlg.toggle.wordsearch')
     @norec
     @norerun
     def toggle_option_word(self, wnd):
         self.option.word = not self.option.word
         self._option_updated()
 
-    @command('searchdlg.toggle.regex')
+    @commandid('searchdlg.toggle.regex')
     @norec
     @norerun
     def toggle_option_regex(self, wnd):
@@ -262,7 +262,7 @@ class SearchDlgMode(dialogmode.DialogMode):
         if s:
             kaa.app.config.hist('search_text').add(s)
 
-    @command('searchdlg.search.next')
+    @commandid('searchdlg.search.next')
     @norec
     @norerun
     def search_next(self, wnd):
@@ -296,7 +296,7 @@ class SearchDlgMode(dialogmode.DialogMode):
 
             return ret
 
-    @command('searchdlg.search.prev')
+    @commandid('searchdlg.search.prev')
     @norec
     @norerun
     def search_prev(self, wnd):
@@ -408,7 +408,7 @@ class ReplaceDlgMode(SearchDlgMode):
     def _save_replstr(self):
         kaa.app.config.hist('repl_text').add(self.get_replace_str())
 
-    @command('replacedlg.field.next')
+    @commandid('replacedlg.field.next')
     @norec
     @norerun
     def field_next(self, wnd):
@@ -434,7 +434,7 @@ class ReplaceDlgMode(SearchDlgMode):
                                info in kaa.app.config.hist('repl_text').get()],
                            callback)
 
-    @command('replacedlg.history')
+    @commandid('replacedlg.history')
     @norec
     @norerun
     def replace_history(self, wnd):
@@ -445,7 +445,7 @@ class ReplaceDlgMode(SearchDlgMode):
         else:
             self.replace_repl_history(wnd)
 
-    @command('searchdlg.search.next')
+    @commandid('searchdlg.search.next')
     @norec
     @norerun
     def search_next(self, wnd):
@@ -496,7 +496,7 @@ class ReplaceDlgMode(SearchDlgMode):
         self._search_next(wnd)
         self.search_next(wnd)
 
-    @command('searchdlg.search.prev')
+    @commandid('searchdlg.search.prev')
     @norec
     @norerun
     def search_prev(self, wnd):

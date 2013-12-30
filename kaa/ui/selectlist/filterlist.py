@@ -6,7 +6,7 @@ from kaa.ui.selectlist import selectlist
 
 from kaa.theme import Theme, Style
 
-from kaa.command import command, norec, norerun
+from kaa.command import commandid, norec, norerun
 from kaa.keyboard import *
 from kaa.commands import editorcommand
 import kaa.filetype.default.keybind
@@ -161,14 +161,14 @@ class FilterListInputDlgMode(dialogmode.DialogMode):
         self.document.replace(f, t, s)
         wnd.cursor.setpos(f + len(s))
 
-    @command('filterlistdlg.next')
+    @commandid('filterlistdlg.next')
     @norec
     @norerun
     def next(self, wnd):
         filterlist = wnd.get_label('filterlist')
         filterlist.document.mode.sel_next(filterlist)
 
-    @command('filterlistdlg.prev')
+    @commandid('filterlistdlg.prev')
     @norec
     @norerun
     def prev(self, wnd):
@@ -182,7 +182,7 @@ class FilterListInputDlgMode(dialogmode.DialogMode):
         if self.callback:
             self.callback(value)
 
-    @command('filterlistdlg.select')
+    @commandid('filterlistdlg.select')
     @norec
     @norerun
     def on_select(self, wnd):

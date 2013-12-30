@@ -5,7 +5,7 @@ from kaa import document
 from kaa.filetype.default import defaultmode
 from kaa.ui.dialog import dialogmode
 from kaa.theme import Theme, Style, Overlay
-from kaa.command import command, norec, norerun
+from kaa.command import commandid, norec, norerun
 from kaa.keyboard import *
 from kaa.commands import (appcommand, filecommand)
 from kaa.ui.selectlist import selectlist
@@ -68,7 +68,7 @@ class BreakPoints(selectlist.SelectItemList):
         popup.destroy()
         kaa.app.messagebar.set_message('')
 
-    @command('breakpoints.delete')
+    @commandid('breakpoints.delete')
     @norec
     @norerun
     def delete_bp(self, wnd):
@@ -181,14 +181,14 @@ class PythonStackList(dialogmode.DialogMode):
             debugpanel.document.mode.show_line(fname, lno)
             debugpanel.activate()
 
-    @command('callstack_keys.prev')
+    @commandid('callstack_keys.prev')
     @norec
     @norerun
     def stack_prev(self, wnd):
         if self.cursel:
             self.update_sel(wnd, self.cursel - 1)
 
-    @command('callstack_keys.next')
+    @commandid('callstack_keys.next')
     @norec
     @norerun
     def stack_next(self, wnd):
@@ -371,14 +371,14 @@ class PythonDebuggerPanel(dialogmode.DialogMode):
     def _get_stacklist(self, wnd):
         return wnd.get_label('dlg_stacklist')
 
-    @command('callstack_keys.prev')
+    @commandid('callstack_keys.prev')
     @norec
     @norerun
     def stack_prev(self, wnd):
         w = self._get_stacklist(wnd)
         w.document.mode.stack_prev(w)
 
-    @command('callstack_keys.next')
+    @commandid('callstack_keys.next')
     @norec
     @norerun
     def stack_next(self, wnd):

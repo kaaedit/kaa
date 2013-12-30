@@ -1,5 +1,5 @@
 import kaa
-from kaa.command import Commands, command, is_enable, norec, norerun
+from kaa.command import Commands, commandid, is_enable, norec, norerun
 from kaa import document
 
 
@@ -9,25 +9,25 @@ class ApplicationCommands(Commands):
         from kaa.ui.mainmenu import menumode
         menumode.MenuMode.show_menu(wnd, name)
 
-    @command('app.mainmenu')
+    @commandid('app.mainmenu')
     @norec
     @norerun
     def show_mainmenu(self, wnd):
         self.show_menu(wnd, 'MAIN')
 
-    @command('menu.window')
+    @commandid('menu.window')
     @norec
     @norerun
     def show_windowmenu(self, wnd):
         self.show_menu(wnd, 'CHANGE-WINDOW')
 
-    @command('menu.edit.convert')
+    @commandid('menu.edit.convert')
     @norec
     @norerun
     def show_editmenuconvert(self, wnd):
         self.show_menu(wnd, 'EDIT-CONVERT')
 
-    @command('menu.code')
+    @commandid('menu.code')
     @norec
     @norerun
     def show_codemenu(self, wnd):
@@ -46,7 +46,7 @@ class ApplicationCommands(Commands):
                 for w in frame.get_editors():
                     yield w
 
-    @command('app.global.prev')
+    @commandid('app.global.prev')
     @norec
     @norerun
     def global_prev(self, wnd):
@@ -54,7 +54,7 @@ class ApplicationCommands(Commands):
             if w.document.mode.on_global_prev(w):
                 return
 
-    @command('app.global.next')
+    @commandid('app.global.next')
     @norec
     @norerun
     def global_next(self, wnd):
@@ -64,7 +64,7 @@ class ApplicationCommands(Commands):
 
     # todo: move following methods somewhere else
 
-    @command('app.show-framelist')
+    @commandid('app.show-framelist')
     @norec
     @norerun
     def show_framelist(self, wnd):
@@ -92,7 +92,7 @@ class ApplicationCommands(Commands):
             '', titles, 0, callback, selchanged)
         dlg = kaa.app.show_dialog(doc)
 
-    @command('editor.splitvert')
+    @commandid('editor.splitvert')
     @norec
     @norerun
     def editor_splitvert(self, wnd):
@@ -100,7 +100,7 @@ class ApplicationCommands(Commands):
             s = wnd.splitter.split(vert=True)
             s.wnd.activate()
 
-    @command('editor.splithorz')
+    @commandid('editor.splithorz')
     @norec
     @norerun
     def editor_splithorz(self, wnd):
@@ -108,14 +108,14 @@ class ApplicationCommands(Commands):
             s = wnd.splitter.split(vert=False)
             s.wnd.activate()
 
-    @command('editor.moveseparator')
+    @commandid('editor.moveseparator')
     @norec
     @norerun
     def editor_moveseparator(self, wnd):
         from kaa.ui.moveseparator import moveseparatormode
         moveseparatormode.move_separator(wnd)
 
-    @command('editor.nextwindow')
+    @commandid('editor.nextwindow')
     @norec
     def editor_nextwindow(self, wnd):
         splitter = wnd.parent.splitter
@@ -130,7 +130,7 @@ class ApplicationCommands(Commands):
                 n = 0
             wnds[n].activate()
 
-    @command('editor.prevwindow')
+    @commandid('editor.prevwindow')
     @norec
     def editor_prevwindow(self, wnd):
         splitter = wnd.parent.splitter
@@ -157,7 +157,7 @@ class ApplicationCommands(Commands):
 
         kaa.app.file_commands.save_documents(wnd, saves, callback)
 
-    @command('editor.joinwindow')
+    @commandid('editor.joinwindow')
     @norec
     def editor_joinwindow(self, wnd):
         if wnd.splitter and wnd.splitter.parent:
@@ -171,7 +171,7 @@ class ApplicationCommands(Commands):
 
             self.save_splitterdocs(wnd, buddy, saved)
 
-    @command('editor.switchfile')
+    @commandid('editor.switchfile')
     @norec
     @norerun
     def editor_switchfile(self, wnd):
@@ -213,28 +213,28 @@ class ApplicationCommands(Commands):
 
 class MacroCommands(Commands):
 
-    @command('macro.start-record')
+    @commandid('macro.start-record')
     @norec
     @norerun
     def start_record(self, wnd):
         kaa.app.macro.start_record()
         kaa.app.messagebar.update()
 
-    @command('macro.end-record')
+    @commandid('macro.end-record')
     @norec
     @norerun
     def end_record(self, wnd):
         kaa.app.macro.end_record()
         kaa.app.messagebar.update()
 
-    @command('macro.toggle-record')
+    @commandid('macro.toggle-record')
     @norec
     @norerun
     def toggle_record(self, wnd):
         kaa.app.macro.toggle_record()
         kaa.app.messagebar.update()
 
-    @command('macro.run')
+    @commandid('macro.run')
     @norec
     def run_macro(self, wnd):
         if kaa.app.macro.is_recording():

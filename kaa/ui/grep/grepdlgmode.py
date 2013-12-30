@@ -8,7 +8,7 @@ from kaa.ui.dialog import dialogmode
 from kaa.theme import Theme, Style
 from kaa.filetype.default import modebase, keybind
 from kaa.ui.msgbox import msgboxmode
-from kaa.command import command, Commands, norec, norerun
+from kaa.command import commandid, Commands, norec, norerun
 from kaa.commands import editorcommand
 from kaa.ui.selectlist import filterlist
 from kaa.ui.selectfile import selectfile
@@ -248,7 +248,7 @@ class GrepDlgMode(dialogmode.DialogMode):
         dir = os.path.abspath(self.get_dir())
         selectfile.show_selectdir(dir, cb)
 
-    @command('grepdlg.field.next')
+    @commandid('grepdlg.field.next')
     @norec
     @norerun
     def field_next(self, wnd):
@@ -268,7 +268,7 @@ class GrepDlgMode(dialogmode.DialogMode):
             wnd.cursor.setpos(searchfrom)
             wnd.screen.selection.set_range(searchfrom, searchto)
 
-    @command('grepdlg.history')
+    @commandid('grepdlg.history')
     @norec
     @norerun
     def grep_history(self, wnd):
@@ -323,7 +323,7 @@ class GrepDlgMode(dialogmode.DialogMode):
                                         )],
                                     callback)
 
-    @command('grepdlg.select-dir')
+    @commandid('grepdlg.select-dir')
     @norec
     @norerun
     def select_dir(self, wnd):

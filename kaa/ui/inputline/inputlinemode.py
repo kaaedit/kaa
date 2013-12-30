@@ -87,7 +87,7 @@ class InputlineMode(dialogmode.DialogMode):
         if s:
             wnd.screen.selection.set_range(f, t)
 
-    @command.command('inputline')
+    @command.commandid('inputline')
     @command.norec
     @command.norerun
     def input_line(self, w):
@@ -96,7 +96,7 @@ class InputlineMode(dialogmode.DialogMode):
         popup = w.get_label('popup')
         popup.destroy()
 
-    @command.command('inputline.history')
+    @command.commandid('inputline.history')
     @command.norec
     @command.norerun
     def input_history(self, wnd):

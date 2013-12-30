@@ -5,7 +5,7 @@ from kaa import document
 from kaa.keyboard import *
 from kaa.theme import Theme, Style
 from kaa.filetype.default import modebase, keybind, defaultmode
-from kaa.command import command, Commands, norec, norerun
+from kaa.command import commandid, Commands, norec, norerun
 from kaa.commands import editorcommand
 
 FilenameIndexThemes = {
@@ -59,7 +59,7 @@ class FilenameIndexMode(defaultmode.DefaultMode):
         wnd.cursor.setpos(wnd.cursor.adjust_nextpos(wnd.cursor.pos, tol))
         wnd.activate()
 
-    @command('filenameindex.showmatch')
+    @commandid('filenameindex.showmatch')
     @norec
     @norerun
     def show_hit(self, wnd):

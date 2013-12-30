@@ -1,7 +1,7 @@
 import functools
 
 
-def command(cmdid):
+def commandid(cmdid):
     def _f(f):
         f.COMMAND_ID = cmdid
         return f

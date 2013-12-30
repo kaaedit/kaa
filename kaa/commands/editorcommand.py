@@ -2,7 +2,7 @@ import itertools
 import re
 import unicodedata
 import kaa
-from kaa.command import Commands, command, is_enable, norec, norerun
+from kaa.command import Commands, commandid, is_enable, norec, norerun
 from kaa import document
 from kaa.filetype.default import modebase
 from gappedbuf import re as gre
@@ -10,7 +10,7 @@ from gappedbuf import re as gre
 
 class CursorCommands(Commands):
 
-    @command('cursor.right')
+    @commandid('cursor.right')
     @norerun
     def right(self, wnd):
         if wnd.screen.selection.has_mark():
@@ -29,7 +29,7 @@ class CursorCommands(Commands):
         wnd.screen.selection.end_cursor()
         wnd.screen.selection.set_to(wnd.cursor.pos)
 
-    @command('cursor.right.select')
+    @commandid('cursor.right.select')
     @norerun
     def right_select(self, wnd):
         wnd.document.mode.cancel_auto_indent(wnd)
@@ -37,7 +37,7 @@ class CursorCommands(Commands):
         wnd.cursor.right()
         wnd.screen.selection.set_to(wnd.cursor.pos)
 
-    @command('cursor.left')
+    @commandid('cursor.left')
     @norerun
     def left(self, wnd):
         if wnd.screen.selection.has_mark():
@@ -56,7 +56,7 @@ class CursorCommands(Commands):
         wnd.screen.selection.end_cursor()
         wnd.screen.selection.set_to(wnd.cursor.pos)
 
-    @command('cursor.left.select')
+    @commandid('cursor.left.select')
     @norerun
     def left_select(self, wnd):
         wnd.document.mode.cancel_auto_indent(wnd)
@@ -64,7 +64,7 @@ class CursorCommands(Commands):
         wnd.cursor.left()
         wnd.screen.selection.set_to(wnd.cursor.pos)
 
-    @command('cursor.up')
+    @commandid('cursor.up')
     @norerun
     def up(self, wnd):
         wnd.document.mode.cancel_auto_indent(wnd)
@@ -72,7 +72,7 @@ class CursorCommands(Commands):
         wnd.cursor.up()
         wnd.screen.selection.set_to(wnd.cursor.pos)
 
-    @command('cursor.up.select')
+    @commandid('cursor.up.select')
     @norerun
     def up_select(self, wnd):
         wnd.document.mode.cancel_auto_indent(wnd)
@@ -80,7 +80,7 @@ class CursorCommands(Commands):
         wnd.cursor.up()
         wnd.screen.selection.set_to(wnd.cursor.pos)
 
-    @command('cursor.down')
+    @commandid('cursor.down')
     @norerun
     def down(self, wnd):
         wnd.document.mode.cancel_auto_indent(wnd)
@@ -88,7 +88,7 @@ class CursorCommands(Commands):
         wnd.cursor.down()
         wnd.screen.selection.set_to(wnd.cursor.pos)
 
-    @command('cursor.down.select')
+    @commandid('cursor.down.select')
     @norerun
     def down_select(self, wnd):
         wnd.document.mode.cancel_auto_indent(wnd)
@@ -96,7 +96,7 @@ class CursorCommands(Commands):
         wnd.cursor.down()
         wnd.screen.selection.set_to(wnd.cursor.pos)
 
-    @command('cursor.prev-line')
+    @commandid('cursor.prev-line')
     @norerun
     def prev_line(self, wnd):
         wnd.document.mode.cancel_auto_indent(wnd)
@@ -104,7 +104,7 @@ class CursorCommands(Commands):
         wnd.cursor.prev_line()
         wnd.screen.selection.set_to(wnd.cursor.pos)
 
-    @command('cursor.next-line')
+    @commandid('cursor.next-line')
     @norerun
     def next_line(self, wnd):
         wnd.document.mode.cancel_auto_indent(wnd)
@@ -112,7 +112,7 @@ class CursorCommands(Commands):
         wnd.cursor.next_line()
         wnd.screen.selection.set_to(wnd.cursor.pos)
 
-    @command('cursor.word-right')
+    @commandid('cursor.word-right')
     @norerun
     def word_right(self, wnd):
         wnd.document.mode.cancel_auto_indent(wnd)
@@ -120,7 +120,7 @@ class CursorCommands(Commands):
         wnd.cursor.right(word=True)
         wnd.screen.selection.set_to(wnd.cursor.pos)
 
-    @command('cursor.word-right.select')
+    @commandid('cursor.word-right.select')
     @norerun
     def word_right_select(self, wnd):
         wnd.document.mode.cancel_auto_indent(wnd)
@@ -128,7 +128,7 @@ class CursorCommands(Commands):
         wnd.cursor.right(word=True)
         wnd.screen.selection.set_to(wnd.cursor.pos)
 
-    @command('cursor.word-left')
+    @commandid('cursor.word-left')
     @norerun
     def word_left(self, wnd):
         wnd.document.mode.cancel_auto_indent(wnd)
@@ -136,7 +136,7 @@ class CursorCommands(Commands):
         wnd.cursor.left(word=True)
         wnd.screen.selection.set_to(wnd.cursor.pos)
 
-    @command('cursor.word-left.select')
+    @commandid('cursor.word-left.select')
     @norerun
     def word_left_select(self, wnd):
         wnd.document.mode.cancel_auto_indent(wnd)
@@ -144,7 +144,7 @@ class CursorCommands(Commands):
         wnd.cursor.left(word=True)
         wnd.screen.selection.set_to(wnd.cursor.pos)
 
-    @command('cursor.pagedown')
+    @commandid('cursor.pagedown')
     @norerun
     def pagedown(self, wnd):
         wnd.document.mode.cancel_auto_indent(wnd)
@@ -152,7 +152,7 @@ class CursorCommands(Commands):
         wnd.cursor.pagedown()
         wnd.screen.selection.set_to(wnd.cursor.pos)
 
-    @command('cursor.pagedown.select')
+    @commandid('cursor.pagedown.select')
     @norerun
     def pagedown_select(self, wnd):
         wnd.document.mode.cancel_auto_indent(wnd)
@@ -160,7 +160,7 @@ class CursorCommands(Commands):
         wnd.cursor.pagedown()
         wnd.screen.selection.set_to(wnd.cursor.pos)
 
-    @command('cursor.pageup')
+    @commandid('cursor.pageup')
     @norerun
     def pageup(self, wnd):
         wnd.document.mode.cancel_auto_indent(wnd)
@@ -168,7 +168,7 @@ class CursorCommands(Commands):
         wnd.cursor.pageup()
         wnd.screen.selection.set_to(wnd.cursor.pos)
 
-    @command('cursor.pageup.select')
+    @commandid('cursor.pageup.select')
     @norerun
     def pageup_select(self, wnd):
         wnd.document.mode.cancel_auto_indent(wnd)
@@ -176,7 +176,7 @@ class CursorCommands(Commands):
         wnd.cursor.pageup()
         wnd.screen.selection.set_to(wnd.cursor.pos)
 
-    @command('cursor.home')
+    @commandid('cursor.home')
     @norerun
     def home(self, wnd):
         wnd.document.mode.cancel_auto_indent(wnd)
@@ -184,7 +184,7 @@ class CursorCommands(Commands):
         wnd.cursor.home()
         wnd.screen.selection.set_to(wnd.cursor.pos)
 
-    @command('cursor.home.select')
+    @commandid('cursor.home.select')
     @norerun
     def home_select(self, wnd):
         wnd.document.mode.cancel_auto_indent(wnd)
@@ -192,7 +192,7 @@ class CursorCommands(Commands):
         wnd.cursor.home()
         wnd.screen.selection.set_to(wnd.cursor.pos)
 
-    @command('cursor.end')
+    @commandid('cursor.end')
     @norerun
     def end(self, wnd):
         wnd.document.mode.cancel_auto_indent(wnd)
@@ -200,7 +200,7 @@ class CursorCommands(Commands):
         wnd.cursor.end()
         wnd.screen.selection.set_to(wnd.cursor.pos)
 
-    @command('cursor.end.select')
+    @commandid('cursor.end.select')
     @norerun
     def end_select(self, wnd):
         wnd.document.mode.cancel_auto_indent(wnd)
@@ -208,7 +208,7 @@ class CursorCommands(Commands):
         wnd.cursor.end()
         wnd.screen.selection.set_to(wnd.cursor.pos)
 
-    @command('cursor.top-of-line')
+    @commandid('cursor.top-of-line')
     @norerun
     def tol(self, wnd):
         wnd.document.mode.cancel_auto_indent(wnd)
@@ -216,7 +216,7 @@ class CursorCommands(Commands):
         wnd.cursor.tol(wnd.cursor.pos)
         wnd.screen.selection.set_to(wnd.cursor.pos)
 
-    @command('cursor.first-letter-of-line')
+    @commandid('cursor.first-letter-of-line')
     @norerun
     def first_letter(self, wnd):
         wnd.document.mode.cancel_auto_indent(wnd)
@@ -224,7 +224,7 @@ class CursorCommands(Commands):
         wnd.cursor.first_letter(wnd.cursor.pos)
         wnd.screen.selection.set_to(wnd.cursor.pos)
 
-    @command('cursor.end-of-line')
+    @commandid('cursor.end-of-line')
     @norerun
     def eol(self, wnd):
         wnd.document.mode.cancel_auto_indent(wnd)
@@ -232,7 +232,7 @@ class CursorCommands(Commands):
         wnd.cursor.eol(wnd.cursor.pos)
         wnd.screen.selection.set_to(wnd.cursor.pos)
 
-    @command('cursor.top-of-file')
+    @commandid('cursor.top-of-file')
     @norerun
     def top(self, wnd):
         wnd.document.mode.cancel_auto_indent(wnd)
@@ -240,7 +240,7 @@ class CursorCommands(Commands):
         wnd.cursor.tof()
         wnd.screen.selection.set_to(wnd.cursor.pos)
 
-    @command('cursor.top-of-file.select')
+    @commandid('cursor.top-of-file.select')
     @norerun
     def top_select(self, wnd):
         wnd.document.mode.cancel_auto_indent(wnd)
@@ -248,7 +248,7 @@ class CursorCommands(Commands):
         wnd.cursor.tof()
         wnd.screen.selection.set_to(wnd.cursor.pos)
 
-    @command('cursor.end-of-file')
+    @commandid('cursor.end-of-file')
     @norerun
     def last(self, wnd):
         wnd.document.mode.cancel_auto_indent(wnd)
@@ -256,7 +256,7 @@ class CursorCommands(Commands):
         wnd.cursor.eof()
         wnd.screen.selection.set_to(wnd.cursor.pos)
 
-    @command('cursor.end-of-file.select')
+    @commandid('cursor.end-of-file.select')
     @norerun
     def last_select(self, wnd):
         wnd.document.mode.cancel_auto_indent(wnd)
@@ -264,7 +264,7 @@ class CursorCommands(Commands):
         wnd.cursor.eof()
         wnd.screen.selection.set_to(wnd.cursor.pos)
 
-    @command('cursor.go-to-line')
+    @commandid('cursor.go-to-line')
     @norerun
     @norec
     def go_to_line(self, wnd):
@@ -297,22 +297,22 @@ class CursorCommands(Commands):
 
 class SelectionCommands(Commands):
 
-    @command('selection.begin-cursor')
+    @commandid('selection.begin-cursor')
     @norerun
     def selection_begin(self, wnd):
         wnd.screen.selection.begin_cursor(wnd.cursor.pos)
 
-    @command('selection.set-to')
+    @commandid('selection.set-to')
     @norerun
     def selection_set_end(self, wnd):
         wnd.screen.selection.set_to(wnd.cursor.pos)
 
-    @command('selection.end-cursor')
+    @commandid('selection.end-cursor')
     @norerun
     def selection_clear(self, wnd):
         wnd.screen.selection.end_cursor()
 
-    @command('selection.set-mark')
+    @commandid('selection.set-mark')
     @norerun
     def selection_set_mark(self, wnd):
         if not wnd.screen.selection.has_mark():
@@ -320,7 +320,7 @@ class SelectionCommands(Commands):
         else:
             wnd.screen.selection.set_mark(None)
 
-    @command('selection.set-rectangle-mark')
+    @commandid('selection.set-rectangle-mark')
     @norerun
     def selection_set_rectangle_mark(self, wnd):
         if not wnd.screen.selection.has_mark():
@@ -328,14 +328,14 @@ class SelectionCommands(Commands):
         else:
             wnd.screen.selection.set_rectangle_mark(None)
 
-    @command('selection.all')
+    @commandid('selection.all')
     @norerun
     def select_all(self, wnd):
         f = wnd.cursor.adjust_nextpos(wnd.cursor.pos, 0)
         t = wnd.cursor.adjust_nextpos(wnd.cursor.pos, wnd.document.endpos())
         wnd.screen.selection.set_range(f, t)
 
-    @command('selection.curline')
+    @commandid('selection.curline')
     @norerun
     def select_cur_line(self, wnd):
         tol = wnd.cursor.adjust_nextpos(
@@ -347,7 +347,7 @@ class SelectionCommands(Commands):
 
         wnd.screen.selection.set_range(tol, eol)
 
-    @command('selection.curword')
+    @commandid('selection.curword')
     @norerun
     def select_cur_word(self, wnd):
         ret = wnd.document.mode.get_word_at(wnd.cursor.pos)
@@ -358,7 +358,7 @@ class SelectionCommands(Commands):
 
             wnd.screen.selection.set_range(f, t)
 
-    @command('selection.expand-sel')
+    @commandid('selection.expand-sel')
     @norerun
     @norec
     def expand_sel(self, wnd):
@@ -381,14 +381,14 @@ class SelectionCommands(Commands):
             if kaa.app.macro.recording:
                 kaa.app.macro.record(self.select_cur_word)
 
-    @command('selection.line.begin')
+    @commandid('selection.line.begin')
     @norerun
     def lineselection_begin(self, wnd):
         tol = wnd.cursor.adjust_nextpos(
             wnd.cursor.pos, wnd.document.gettol(wnd.cursor.pos))
         wnd.screen.selection.begin_cursor(tol)
 
-    @command('selection.line.set-end')
+    @commandid('selection.line.set-end')
     @norerun
     def lineselection_set_end(self, wnd):
         f = wnd.screen.get_start()
@@ -443,7 +443,7 @@ class EditCommands(Commands):
             if wnd.document.undo:
                 wnd.document.undo.endblock()
 
-    @command('edit.delete')
+    @commandid('edit.delete')
     def delete(self, wnd):
         if self.delete_sel(wnd):
             return
@@ -454,7 +454,7 @@ class EditCommands(Commands):
         if pos < nextpos:
             wnd.document.mode.delete_string(wnd, pos, nextpos)
 
-    @command('edit.delete.word')
+    @commandid('edit.delete.word')
     def delete_word(self, wnd):
         if self.delete_sel(wnd):
             return
@@ -465,7 +465,7 @@ class EditCommands(Commands):
         if pos < nextpos:
             wnd.document.mode.delete_string(wnd, pos, nextpos)
 
-    @command('edit.delete.line')
+    @commandid('edit.delete.line')
     def delete_line(self, wnd):
         pos = wnd.cursor.pos
         nextpos = wnd.cursor.adjust_nextpos(
@@ -473,7 +473,7 @@ class EditCommands(Commands):
         if pos < nextpos:
             wnd.document.mode.delete_string(wnd, pos, nextpos)
 
-    @command('edit.delete.currentline')
+    @commandid('edit.delete.currentline')
     def delete_currentline(self, wnd):
         pos = wnd.cursor.pos
         f = wnd.cursor.adjust_nextpos(pos, wnd.document.gettol(pos))
@@ -482,7 +482,7 @@ class EditCommands(Commands):
         if f < t:
             wnd.document.mode.delete_string(wnd, f, t)
 
-    @command('edit.backspace')
+    @commandid('edit.backspace')
     def backspace(self, wnd):
         if self.delete_sel(wnd):
             return
@@ -497,7 +497,7 @@ class EditCommands(Commands):
 
             wnd.document.mode.delete_string(wnd, prevpos, pos)
 
-    @command('edit.backspace.word')
+    @commandid('edit.backspace.word')
     def backspace_word(self, wnd):
         if self.delete_sel(wnd):
             return
@@ -512,7 +512,7 @@ class EditCommands(Commands):
 
             wnd.document.mode.delete_string(wnd, prevpos, pos)
 
-    @command('edit.newline')
+    @commandid('edit.newline')
     @norerun
     def newline(self, wnd):
         if not wnd.document.mode.auto_indent:
@@ -539,7 +539,7 @@ class EditCommands(Commands):
         s = mode.build_indent_str(cols + mode.indent_width)
         mode.replace_string(wnd, f, t, s, True)
 
-    @command('edit.indent')
+    @commandid('edit.indent')
     def indent(self, wnd):
         if not wnd.screen.selection.is_selected():
             self._indent_line(wnd, wnd.cursor.pos)
@@ -588,7 +588,7 @@ class EditCommands(Commands):
         s = mode.build_indent_str(max(0, cols - mode.indent_width))
         mode.replace_string(wnd, f, t, s, True)
 
-    @command('edit.dedent')
+    @commandid('edit.dedent')
     def dedent(self, wnd):
         if not wnd.screen.selection.is_selected():
             self._dedent_line(wnd, wnd.cursor.pos)
@@ -638,7 +638,7 @@ class EditCommands(Commands):
 
         return cur_pos
 
-    @command('edit.undo')
+    @commandid('edit.undo')
     @norerun
     def undo(self, wnd):
         if wnd.document.undo and wnd.document.undo.can_undo():
@@ -669,7 +669,7 @@ class EditCommands(Commands):
 
         return newpos
 
-    @command('edit.redo')
+    @commandid('edit.redo')
     @norerun
     def redo(self, wnd):
         if wnd.document.undo and wnd.document.undo.can_redo():
@@ -712,46 +712,46 @@ class EditCommands(Commands):
             kaa.app.clipboard.set(sel)
         return sel
 
-    @command('edit.copy')
+    @commandid('edit.copy')
     def copy(self, wnd):
         self._copy_sel(wnd)
         wnd.screen.selection.set_mark(None)
 
-    @command('edit.cut')
+    @commandid('edit.cut')
     def cut(self, wnd):
         if self._copy_sel(wnd):
             self.delete_sel(wnd)
         wnd.screen.selection.clear()
 
-    @command('edit.paste')
+    @commandid('edit.paste')
     def paste(self, wnd):
         s = kaa.app.clipboard.get()
         if s:
             wnd.document.mode.put_string(wnd, s)
             wnd.screen.selection.clear()
 
-    @command('edit.conv.upper')
+    @commandid('edit.conv.upper')
     def conv_upper(self, wnd):
         s = self._get_sel(wnd)
         if s:
             wnd.document.mode.put_string(wnd, s.upper())
             wnd.screen.selection.clear()
 
-    @command('edit.conv.lower')
+    @commandid('edit.conv.lower')
     def conv_lower(self, wnd):
         s = self._get_sel(wnd)
         if s:
             wnd.document.mode.put_string(wnd, s.lower())
             wnd.screen.selection.clear()
 
-    @command('edit.conv.nfkc')
+    @commandid('edit.conv.nfkc')
     def conv_nfkc(self, wnd):
         s = self._get_sel(wnd)
         if s:
             wnd.document.mode.put_string(wnd, unicodedata.normalize('NFKC', s))
             wnd.screen.selection.clear()
 
-    @command('edit.conv.full-width')
+    @commandid('edit.conv.full-width')
     def conv_fullwidth(self, wnd):
         import pyjf3
         s = self._get_sel(wnd)
@@ -759,14 +759,14 @@ class EditCommands(Commands):
             wnd.document.mode.put_string(wnd, pyjf3.tofull(s))
             wnd.screen.selection.clear()
 
-    @command('edit.word-complete')
+    @commandid('edit.word-complete')
     @norec
     @norerun
     def complete(self, wnd):
         from kaa.ui.wordcomplete import wordcompletemode
         wordcompletemode.show_wordlist(wnd)
 
-    @command('edit.clipboard-history')
+    @commandid('edit.clipboard-history')
     @norec
     @norerun
     def clipboard_history(self, wnd):
@@ -786,7 +786,7 @@ class EditCommands(Commands):
 
 class CodeCommands(Commands):
 
-    @command('code.region.linecomment')
+    @commandid('code.region.linecomment')
     def linecomment(self, wnd):
         if not wnd.screen.selection.is_selected():
             tol = wnd.document.gettol(wnd.cursor.pos)
@@ -822,7 +822,7 @@ class CodeCommands(Commands):
             gre.escape(wnd.document.mode.LINE_COMMENT)))
         return reobj.match(wnd.document.buf, pos)
 
-    @command('code.region.unlinecomment')
+    @commandid('code.region.unlinecomment')
     def uncomment(self, wnd):
         if not wnd.screen.selection.is_selected():
             tol = wnd.document.gettol(wnd.cursor.pos)
@@ -858,7 +858,7 @@ class CodeCommands(Commands):
 
 class SearchCommands(Commands):
 
-    @command('search.showsearch')
+    @commandid('search.showsearch')
     @norec
     @norerun
     def showsearch(self, wnd):
@@ -872,7 +872,7 @@ class SearchCommands(Commands):
 
         kaa.app.show_inputline(doc)
 
-    @command('search.showreplace')
+    @commandid('search.showreplace')
     @norec
     @norerun
     def showreplace(self, wnd):
@@ -895,7 +895,7 @@ class SearchCommands(Commands):
         else:
             kaa.app.messagebar.set_message('not found')
 
-    @command('search.next')
+    @commandid('search.next')
     @norerun
     def searchnext(self, wnd):
         if not modebase.SearchOption.LAST_SEARCH:
@@ -918,7 +918,7 @@ class SearchCommands(Commands):
                     0, modebase.SearchOption.LAST_SEARCH)
                 self._show_searchresult(wnd, ret)
 
-    @command('search.prev')
+    @commandid('search.prev')
     @norerun
     def searchprev(self, wnd):
         if not modebase.SearchOption.LAST_SEARCH:

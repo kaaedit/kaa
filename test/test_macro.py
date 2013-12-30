@@ -1,7 +1,8 @@
 import kaa_testutils
 from kaa.commands import editorcommand
 import kaa.macro
-from kaa.command import command, norec
+import kaa.command
+from kaa.command import commandid, norec
 
 
 class TestMacro(kaa_testutils._TestScreenBase):
@@ -21,14 +22,14 @@ class TestMacro(kaa_testutils._TestScreenBase):
         macro = kaa.macro.Macro()
         macro.toggle_record()
 
-        @command('command1')
+        @commandid('command1')
         def f():
             pass
 
         macro.record(f)
         assert macro.get_commands() == [('command1', (), {})]
 
-        @command('command2')
+        @commandid('command2')
         @norec
         def g():
             pass

@@ -2,7 +2,7 @@ import kaa
 from kaa import document
 from kaa.ui.dialog import dialogmode
 from kaa.ui.selectlist import filterlist
-from kaa.command import command, norec, norerun
+from kaa.command import commandid, norec, norerun
 from kaa.keyboard import *
 
 
@@ -69,7 +69,7 @@ class WordCompleteInputMode(filterlist.FilterListInputDlgMode):
 
         return 0, top, wnd.mainframe.width, top + height
 
-    @command('wordcomplete.select')
+    @commandid('wordcomplete.select')
     @norec
     @norerun
     def selected(self, wnd):

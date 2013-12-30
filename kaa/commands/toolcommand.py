@@ -4,30 +4,30 @@ import curses
 import subprocess
 import kaa
 from kaa import document
-from kaa.command import Commands, command, is_enable, norec, norerun
+from kaa.command import Commands, commandid, is_enable, norec, norerun
 
 
 class ToolCommands(Commands):
 
-    @command('python.console')
+    @commandid('python.console')
     @norerun
     def pythonconsole(self, wnd):
         from kaa.ui.pyconsole import pythonconsolemode
         pythonconsolemode.show_console()
 
-    @command('python.debugger.run')
+    @commandid('python.debugger.run')
     @norerun
     def pythonchilddebugger(self, wnd):
         from kaa.ui.pythondebug import port
         port.run()
 
-    @command('python.debugger.server')
+    @commandid('python.debugger.server')
     @norerun
     def pythondebuggerserver(self, wnd):
         from kaa.ui.pythondebug import port
         port.init_server()
 
-    @command('command.rerun')
+    @commandid('command.rerun')
     @norerun
     def reruncommand(self, wnd):
         mode = wnd.document.mode
@@ -40,7 +40,7 @@ class ToolCommands(Commands):
                 return
             command(wnd)
 
-    @command('edit.paste-lines')
+    @commandid('edit.paste-lines')
     @norerun
     def edit_pastelines(self, wnd):
         from kaa.ui.pastelines import pastelinesmode
@@ -48,7 +48,7 @@ class ToolCommands(Commands):
 
         kaa.app.show_dialog(doc)
 
-    @command('tools.execute-shell-command')
+    @commandid('tools.execute-shell-command')
     @norerun
     def execute_shell_command(self, wnd):
         def callback(w, s):
@@ -116,7 +116,7 @@ class ToolCommands(Commands):
 
             return ''.join(lines)
 
-    @command('tools.make')
+    @commandid('tools.make')
     @norerun
     def execute_make(self, wnd):
         def callback(w, s):
@@ -144,7 +144,7 @@ class ToolCommands(Commands):
 
         kaa.app.show_dialog(doc)
 
-    @command('tools.spellchecker')
+    @commandid('tools.spellchecker')
     @norec
     @norerun
     def spellchecker(self, wnd):
@@ -158,7 +158,7 @@ class ToolCommands(Commands):
         from kaa.ui.spellchecker import spellcheckermode
         spellcheckermode.run_spellchecker(wnd)
 
-    @command('tools.grep')
+    @commandid('tools.grep')
     @norec
     @norerun
     def showgrep(self, wnd):

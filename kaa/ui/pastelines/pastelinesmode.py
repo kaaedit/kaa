@@ -57,7 +57,7 @@ class PasteLinesMode(dialogmode.DialogMode):
         popup.destroy()
         kaa.app.messagebar.set_message("Canceled")
 
-    @command.command('paste.lines')
+    @command.commandid('paste.lines')
     @command.norec
     @command.norerun
     def paste_lines(self, w):

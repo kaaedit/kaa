@@ -5,7 +5,7 @@ from kaa.filetype.default import defaultmode
 from gappedbuf import re as gre
 from kaa.highlight import Tokenizer, Token, Span, Keywords, EndSection, SingleToken
 from kaa.theme import Theme, Style
-from kaa.command import Commands, command, norec, norerun
+from kaa.command import Commands, commandid, norec, norerun
 from kaa.keyboard import *
 
 RstThemes = {
@@ -218,7 +218,7 @@ class RstMode(defaultmode.DefaultMode):
             yield header
             stack.append((level, header))
 
-    @command('toc.showlist')
+    @commandid('toc.showlist')
     @norec
     @norerun
     def show_toclist(self, wnd):

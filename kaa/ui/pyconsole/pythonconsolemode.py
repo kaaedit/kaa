@@ -8,7 +8,7 @@ from kaa import document
 from kaa.keyboard import *
 from kaa.filetype.default import defaultmode
 from kaa.filetype.python import pythonmode
-from kaa.command import command, Commands, norec, norerun
+from kaa.command import commandid, Commands, norec, norerun
 from kaa.theme import Theme, Style
 from kaa.ui.dialog import dialogmode
 from kaa.ui.inputline import inputlinemode
@@ -140,7 +140,7 @@ class PythonConsoleMode(pythonmode.PythonMode):
         sys.stdout = stdout
         sys.stderr = stderr
 
-    @command('python.exec')
+    @commandid('python.exec')
     @norec
     @norerun
     def exec_script(self, wnd):
@@ -194,7 +194,7 @@ class PythonConsoleMode(pythonmode.PythonMode):
 
     MAX_HISTORY = 100
 
-    @command('python.script-history')
+    @commandid('python.script-history')
     @norec
     @norerun
     def history(self, wnd):
@@ -210,7 +210,7 @@ class PythonConsoleMode(pythonmode.PythonMode):
         from kaa.ui.texthist import texthistmode
         texthistmode.show_history('Search history:',callback, scripts)
 
-    @command('edit.paste')
+    @commandid('edit.paste')
     def paste(self, wnd):
         s = kaa.app.clipboard.get()
         if s:
@@ -254,7 +254,7 @@ class PythonInputlineMode(dialogmode.DialogMode, pythonmode.PythonMode):
         popup.destroy()
         kaa.app.messagebar.set_message("Canceled")
 
-    @command('inputline')
+    @commandid('inputline')
     @norec
     @norerun
     def input_line(self, w):

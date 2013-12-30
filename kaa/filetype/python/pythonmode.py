@@ -5,7 +5,7 @@ from kaa.filetype.default import defaultmode, theme
 from kaa.highlight import Tokenizer, Keywords, Span, SingleToken
 from kaa.theme import Theme, Style
 from gappedbuf import re as gre
-from kaa.command import Commands, command, norec, norerun
+from kaa.command import Commands, commandid, norec, norerun
 from kaa.keyboard import *
 from kaa.ui.pythondebug import port
 
@@ -269,7 +269,7 @@ class PythonMode(defaultmode.DefaultMode):
             yield header
             stack.append((indent, header))
 
-    @command('toc.showlist')
+    @commandid('toc.showlist')
     @norec
     @norerun
     def show_toclist(self, wnd):
@@ -310,7 +310,7 @@ class PythonMode(defaultmode.DefaultMode):
 
         self.document.style_updated()
 
-    @command('debugger.toggle.breakpoint')
+    @commandid('debugger.toggle.breakpoint')
     @norec
     @norerun
     def toggle_breakpoint(self, wnd):

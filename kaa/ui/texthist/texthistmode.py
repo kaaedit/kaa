@@ -2,7 +2,7 @@ import kaa
 from kaa import document
 from kaa.ui.dialog import dialogmode
 from kaa.ui.selectlist import selectlist, filterlist
-from kaa.command import command, norec, norerun
+from kaa.command import commandid, norec, norerun
 from kaa.keyboard import *
 
 texthist_keys = {

@@ -2,7 +2,7 @@ import os
 import kaa
 import kaa.log
 import kaa.utils
-from kaa.command import Commands, command, is_enable, norec, norerun
+from kaa.command import Commands, commandid, is_enable, norec, norerun
 
 
 class FileCommands(Commands):
@@ -14,7 +14,7 @@ class FileCommands(Commands):
         return msgboxmode.MsgBoxMode.show_msgbox(
             caption, options, callback, keys, border)
 
-    @command('file.new')
+    @commandid('file.new')
     @norec
     @norerun
     def file_new(self, wnd):
@@ -55,7 +55,7 @@ class FileCommands(Commands):
                 else:
                     wnd.cursor.setpos(loc, middle=True)
 
-    @command('file.open')
+    @commandid('file.open')
     @norec
     @norerun
     def file_open(self, wnd, filename=''):
@@ -73,14 +73,14 @@ class FileCommands(Commands):
         from kaa.ui.selectfile import selectfile
         selectfile.show_fileopen(filename, cb)
 
-    @command('file.info')
+    @commandid('file.info')
     @norec
     @norerun
     def file_info(self, wnd):
         from kaa.ui.fileinfo import fileinfomode
         fileinfomode.show_fileinfo(wnd)
 
-    @command('file.viewdiff')
+    @commandid('file.viewdiff')
     @norec
     @norerun
     def file_viewdiff(self, wnd, callback=None):
@@ -88,7 +88,7 @@ class FileCommands(Commands):
             from kaa.ui.viewdiff import viewdiffmode
             viewdiffmode.view_diff(wnd.document, callback=None)
 
-    @command('file.save')
+    @commandid('file.save')
     @norec
     @norerun
     def file_save(self, wnd, filename=None, saved=None, document=None,
@@ -117,7 +117,7 @@ class FileCommands(Commands):
                 lambda c: saved(canceled=True) if saved else None,
                 keys=['\r', '\n'])
 
-    @command('file.saveas')
+    @commandid('file.saveas')
     @norec
     @norerun
     def file_saveas(self, wnd, saved=None, document=None):
@@ -232,7 +232,7 @@ class FileCommands(Commands):
 
         self.save_documents(frame, docs, cb, 'Save file before close?')
 
-    @command('file.close')
+    @commandid('file.close')
     @norec
     @norerun
     def file_close(self, wnd, callback=None):
@@ -264,7 +264,7 @@ class FileCommands(Commands):
                 e.document for e in editors if e.document.mode.DOCUMENT_MODE}
         return docs
 
-    @command('file.save.all')
+    @commandid('file.save.all')
     @norec
     @norerun
     def file_saveall(self, wnd):
@@ -277,7 +277,7 @@ class FileCommands(Commands):
         if docs:
             self.save_documents(wnd, docs, saved, force=True)
 
-    @command('file.close.all')
+    @commandid('file.close.all')
     @norec
     @norerun
     def file_closeall(self, wnd):
@@ -307,7 +307,7 @@ class FileCommands(Commands):
         filterlist.show_listdlg('Recently used files:',
                                 files, callback)
 
-    @command('file.recently-used-files')
+    @commandid('file.recently-used-files')
     @norec
     @norerun
     def file_recently_used_files(self, wnd):
@@ -331,7 +331,7 @@ class FileCommands(Commands):
         filterlist.show_listdlg('Recently used directories:',
                                 files, callback)
 
-    @command('file.recently-used-directories')
+    @commandid('file.recently-used-directories')
     @norec
     @norerun
     def file_recently_used_dirs(self, wnd):
@@ -341,7 +341,7 @@ class FileCommands(Commands):
 
         self._select_recentry_used_dirs(cb)
 
-    @command('file.quit')
+    @commandid('file.quit')
     @norec
     @norerun
     def file_quit(self, wnd):
@@ -419,7 +419,7 @@ class FileCommands(Commands):
 
         self.can_close_wnd(wnd, saved)
 
-    @command('file.new-to')
+    @commandid('file.new-to')
     @norec
     @norerun
     def file_new_to(self, wnd):
@@ -430,7 +430,7 @@ class FileCommands(Commands):
 
         self._open_file_to_wnd(wnd, openfile)
 
-    @command('file.open-to')
+    @commandid('file.open-to')
     @norec
     @norerun
     def file_open_to(self, wnd):
@@ -447,7 +447,7 @@ class FileCommands(Commands):
             from kaa.ui.selectfile import selectfile
             selectfile.show_fileopen(filename, cb)
 
-    @command('file.recently-used-files-to')
+    @commandid('file.recently-used-files-to')
     @norec
     @norerun
     def file_recently_used_files_to(self, wnd):
@@ -457,7 +457,7 @@ class FileCommands(Commands):
 
         self._open_file_to_wnd(wnd, selectfile)
 
-    @command('file.recently-used-directories-to')
+    @commandid('file.recently-used-directories-to')
     @norec
     @norerun
     def file_recently_used_dirs_to(self, wnd):

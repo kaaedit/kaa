@@ -1,4 +1,4 @@
-from kaa.command import Commands, command, norec, norerun
+from kaa.command import Commands, commandid, norec, norerun
 from kaa import document
 from kaa.ui.dialog import dialogmode
 from kaa.theme import Theme, Style
@@ -98,7 +98,7 @@ class ItemListMode(dialogmode.DialogMode):
                     return
             cursel = -1
 
-    @command('itemlist.prev')
+    @commandid('itemlist.prev')
     @norec
     @norerun
     def prev(self, wnd):
@@ -116,7 +116,7 @@ class ItemListMode(dialogmode.DialogMode):
 
         wnd.document.mode._update_style(wnd)
 
-    @command('itemlist.next')
+    @commandid('itemlist.next')
     @norec
     @norerun
     def next(self, wnd):
@@ -134,7 +134,7 @@ class ItemListMode(dialogmode.DialogMode):
 
         wnd.document.mode._update_style(wnd)
 
-    @command('itemlist.selected')
+    @commandid('itemlist.selected')
     @norec
     @norerun
     def selected(self, wnd):

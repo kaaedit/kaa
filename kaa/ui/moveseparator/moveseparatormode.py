@@ -1,4 +1,4 @@
-from kaa.command import Commands, command, norec, norerun
+from kaa.command import Commands, commandid, norec, norerun
 from kaa import document
 from kaa.ui.dialog import dialogmode
 from kaa.theme import Theme, Style
@@ -56,21 +56,21 @@ class MoveSeparatorMode(dialogmode.DialogMode):
     def on_str(self, wnd, s):
         pass
 
-    @command('moveseparator.prev')
+    @commandid('moveseparator.prev')
     @norec
     @norerun
     def prev(self, wnd):
         if wnd.document.mode.target:
             wnd.document.mode.target.separator_prev()
 
-    @command('moveseparator.next')
+    @commandid('moveseparator.next')
     @norec
     @norerun
     def next(self, wnd):
         if wnd.document.mode.target:
             wnd.document.mode.target.separator_next()
 
-    @command('moveseparator.done')
+    @commandid('moveseparator.done')
     @norec
     @norerun
     def done(self, wnd):

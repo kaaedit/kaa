@@ -11,7 +11,7 @@ from kaa.ui.msgbox import msgboxmode
 
 from kaa.theme import Theme, Style
 
-from kaa.command import Commands, command, norec, norerun
+from kaa.command import Commands, commandid, norec, norerun
 from kaa.keyboard import *
 from kaa.commands import editorcommand
 import kaa.filetype.default.keybind
@@ -289,7 +289,7 @@ class OpenFilenameDlgMode(dialogmode.DialogMode):
                 filename = self._build_filename(wnd)
                 self.show_filename(wnd, filename)
 
-    @command('fileopendlg.next')
+    @commandid('fileopendlg.next')
     @norec
     @norerun
     def next(self, wnd):
@@ -301,7 +301,7 @@ class OpenFilenameDlgMode(dialogmode.DialogMode):
         if cursel:
             self._update_filefield(wnd, cursel.value)
 
-    @command('fileopendlg.prev')
+    @commandid('fileopendlg.prev')
     @norec
     @norerun
     def prev(self, wnd):
@@ -343,7 +343,7 @@ class OpenFilenameDlgMode(dialogmode.DialogMode):
         # set rest of filename filename field.
         wnd.document.mode.set_filename(wnd, rest)
 
-    @command('fileopendlg.openfile')
+    @commandid('fileopendlg.openfile')
     @norec
     @norerun
     def openfile(self, wnd):
@@ -404,7 +404,7 @@ class SaveAsFilenameDlgMode(OpenFilenameDlgMode):
         return sorted(encodingdef.encodings,
                       key=lambda k: k.upper())
 
-    @command('fileopendlg.openfile')
+    @commandid('fileopendlg.openfile')
     @norec
     @norerun
     def openfile(self, wnd):

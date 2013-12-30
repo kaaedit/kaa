@@ -2,7 +2,7 @@ import kaa
 from kaa import document
 from kaa.ui.dialog import dialogmode
 from kaa.ui.selectlist import filterlist, selectlist
-from kaa.command import command, norec, norerun
+from kaa.command import commandid, norec, norerun
 from kaa.keyboard import *
 
 
@@ -134,14 +134,14 @@ class TOCListInputDlgMode(filterlist.FilterListInputDlgMode):
         super().init_keybind()
         self.keybind.add_keybind(toclistdlg_keys)
 
-    @command('toclistdlg.next_namespace')
+    @commandid('toclistdlg.next_namespace')
     @norec
     @norerun
     def sel_next_namespace(self, wnd):
         filterlist = wnd.get_label('filterlist')
         filterlist.document.mode.sel_next_namespace(filterlist)
 
-    @command('toclistdlg.prev_namespace')
+    @commandid('toclistdlg.prev_namespace')
     @norec
     @norerun
     def sel_prev_namespace(self, wnd):
