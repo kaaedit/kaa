@@ -35,7 +35,7 @@ class CuiApp:
         self.commands = {}
         self.is_availables = {}
 
-    def register_command(self, cmds):
+    def register_commandobj(self, cmds):
         self.commands.update(cmds.get_commands())
         self.is_availables.update(cmds.get_commands_is_enable())
 
@@ -43,13 +43,13 @@ class CuiApp:
         from kaa.commands import appcommand, toolcommand, filecommand
 
         self.app_commands = appcommand.ApplicationCommands()
-        self.register_command(self.app_commands)
+        self.register_commandobj(self.app_commands)
 
         self.file_commands = filecommand.FileCommands()
-        self.register_command(self.file_commands)
+        self.register_commandobj(self.file_commands)
 
-        self.register_command(toolcommand.ToolCommands())
-        self.register_command(appcommand.MacroCommands())
+        self.register_commandobj(toolcommand.ToolCommands())
+        self.register_commandobj(appcommand.MacroCommands())
 
         for name in dir(self):
             attr = getattr(self, name)

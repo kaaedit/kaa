@@ -10,7 +10,7 @@ import kaa.log
 from kaa import highlight
 from kaa import theme
 from kaa import screen
-
+from kaa import addon
 
 class SearchOption:
     RE = gappedbuf.re
@@ -90,12 +90,16 @@ class ModeBase:
         self.keybind_vi_visualmode = keyboard.KeyBind()
         self.keybind_vi_visuallinewisemode = keyboard.KeyBind()
         self.init_keybind()
+        self.init_addon_keys()
 
         self.init_commands()
+        self.init_addon_commands()
+
         self.init_menu()
 
         self.themes = []
         self.init_themes()
+        self.init_addon_themes()
         self._build_theme()
         kaa.app.translate_theme(self.theme)
 
@@ -179,20 +183,44 @@ class ModeBase:
     def init_keybind(self):
         pass
 
+    def get_class_name(self):
+        modulename = self.__class__.__module__
+        name = '.'.join((modulename, self.__class__.__name__))
+        return name
+
+    def init_addon_keys(self):
+        name = self.get_class_name()
+        keydef = addon.get_addon(name, 'keybind')
+        for editmode, keys in keydef:
+            if editmode == 'input':
+                self.keybind.add_keybind(keys)
+            elif editmode == 'command':
+                self.keybind_vi_commandmode.add_keybind(keys)
+            elif editmode == 'visual':
+                self.keybind_vi_visualmode.add_keybind(keys)
+            elif editmode == 'visualline':
+                self.keybind_vi_visuallinewisemode.add_keybind(keys)
+
     def init_commands(self):
         from kaa.commands import (editorcommand, editmodecommand)
 
-        self.register_command(editorcommand.CursorCommands())
-        self.register_command(editorcommand.EditCommands())
-        self.register_command(editorcommand.CodeCommands())
-        self.register_command(editorcommand.SelectionCommands())
-        self.register_command(editorcommand.SearchCommands())
-        self.register_command(editmodecommand.EditModeCommands())
+        self.register_commandobj(editorcommand.CursorCommands())
+        self.register_commandobj(editorcommand.EditCommands())
+        self.register_commandobj(editorcommand.CodeCommands())
+        self.register_commandobj(editorcommand.SelectionCommands())
+        self.register_commandobj(editorcommand.SearchCommands())
+        self.register_commandobj(editmodecommand.EditModeCommands())
 
         for name in dir(self):
             attr = getattr(self, name)
             if hasattr(attr, 'COMMAND_ID') and callable(attr):
                 self.commands[getattr(attr, 'COMMAND_ID')] = attr
+
+    def init_addon_commands(self):
+        name = self.get_class_name()
+        commands = addon.get_addon(name, 'commands')
+        for commandid, f in commands:
+            self.commands[commandid] = f
 
     def init_menu(self):
         pass
@@ -200,10 +228,15 @@ class ModeBase:
     def init_themes(self):
         pass
 
+    def init_addon_themes(self):
+        name = self.get_class_name()
+        themes = addon.get_addon(name, 'themes')
+        self.themes.extend(themes)
+
     def init_tokenizers(self):
         pass
 
-    def register_command(self, cmds):
+    def register_commandobj(self, cmds):
         self.commands.update(cmds.get_commands())
         self.is_availables.update(cmds.get_commands_is_enable())
 
