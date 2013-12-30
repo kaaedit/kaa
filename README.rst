@@ -541,12 +541,12 @@ When you hit enter key to execute multiline statements in console, new input dia
 
 To show script history window, hit alt+Enter key on the console.
 
-Spellchecker
--------------
+Spell checker
+--------------
 
-To use spellchecker, `PyEnchant <https://pypi.python.org/pypi/pyenchant>`_ module should be installed. 
+To use spell checker, `PyEnchant <https://pypi.python.org/pypi/pyenchant>`_ module should be installed. 
 
-On MAC OS-X install `enchant <http://www.abisource.com/projects/enchant/>` with homebrew.
+On MAC OS-X install `enchant <http://www.abisource.com/projects/enchant/>`_ with homebrew before installing PyEnchant.
 
 .. code:: sh
 
@@ -783,7 +783,7 @@ Version history
 
 - ^C key causes SIGINT while running Python script in Python console.
 
-- Displau blank line as vim.
+- Display empty lines like vim.
 
 Past versions
 --------------
