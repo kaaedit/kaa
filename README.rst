@@ -776,8 +776,16 @@ Version history
 =================
 
 
-0.28.0 - 2013.12.31
+0.29.0 - 2013.12.31
 --------------------
+
+- Check for new release of kaa.
+
+Past versions
+--------------
+
+0.28.0 - 2013.12.31
++++++++++++++++++++++
 
 - Improve file-save-as dialog.
 
@@ -785,8 +793,6 @@ Version history
 
 - Display empty lines like vim.
 
-Past versions
---------------
 
 0.27.0 - 2013.12.29
 +++++++++++++++++++++
