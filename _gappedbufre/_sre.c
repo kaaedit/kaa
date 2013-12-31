@@ -1497,7 +1497,7 @@ SRE_SEARCH(SRE_STATE* state, SRE_CODE* pattern)
                character in there, so literal search will work) */
 
             /* end can be minus value in gappedbufre */
-            if (end >= (char*)((pattern[3]-1) * state->charsize)) {
+            if ((SRE_CODE)end >= ((pattern[3]-1) * state->charsize)) {
                 end -= (pattern[3]-1) * state->charsize;
                 if (end <= ptr)
                     end = ptr + state->charsize;
