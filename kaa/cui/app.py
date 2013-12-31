@@ -260,6 +260,24 @@ class CuiApp:
         if reader in self._input_readers:
             self._input_readers.remove(reader)
 
+    def dump_panel(self):
+        import curses.panel
+        panels =[]
+        p = curses.panel.top_panel()
+        while p:
+            panels.append(p)
+            p = p.below()
+
+        for w in self.mainframe.walk_children():
+            idx = panels.index(w._panel)
+            d = getattr(w, 'document', w)
+            m = getattr(d, 'mode', w)
+            panels[idx] = m
+
+        _trace('>>>>>>>>>>>>>>>>>>>>>>')
+        _trace(panels)
+
+
     def run(self):
 #        def f(t, i):
 #            _trace(t, i)
