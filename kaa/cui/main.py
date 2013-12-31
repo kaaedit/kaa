@@ -67,7 +67,7 @@ def _download_version_no():
 
     m = re.match(r'(\d+)\.(\d+)\.(\d+)', s)
     if m:
-        latest = tuple(int(v) for v in m.groups()[1:])
+        latest = tuple(int(v) for v in m.groups())
         if latest > version.KAA_VERSION:
             kaa.app.messagebar.set_message('')
             kaa.app.call_later(1, kaa.app.messagebar.set_message, 
