@@ -5,6 +5,7 @@ import pickle
 import sys
 import select
 import curses
+import threading
 import kaa
 import kaa.log
 from . import keydef, color, dialog
@@ -18,7 +19,7 @@ class CuiApp:
     DEFAULT_THEME = 'basic'
     DEFAULT_PALETTE = 'dark'
     NUM_NEWFILE = 1
-
+    
     def __init__(self, config):
         self.config = config
         self.clipboard = clipboard.select_clipboard()
@@ -30,6 +31,8 @@ class CuiApp:
         self.theme = self.DEFAULT_THEME
         self.last_dir = '.'
         self._input_readers = []
+
+        self._lock = threading.RLock()
         self._tasks = []
 
         self.commands = {}
@@ -100,26 +103,27 @@ class CuiApp:
     def quit(self):
         self._quit = True
 
-    def call_later(self, secs, f):
-        self._tasks.append((time.time() + secs, f))
+    def call_later(self, secs, f, *args, **kwargs):
+        with self._lock:
+            self._tasks.append((time.time() + secs, f, args, kwargs))
 
     SCHEDULE_WAIT_MARGIN = 0.05
 
-    def _next_sheduled_task(self):
-        tasks = sorted(t for t, f in self._tasks)
-        if tasks:
-            wait = max(0, tasks[0] - time.time())
-            return wait + wait * self.SCHEDULE_WAIT_MARGIN
-        else:
-            None
+    def _next_scheduled_task(self):
+        with self._lock:
+            tasks = sorted(t for t, f, a, k in self._tasks)
+            if tasks:
+                wait = max(0, tasks[0] - time.time())
+                return wait + wait * self.SCHEDULE_WAIT_MARGIN
 
     def _run_scheduled_task(self):
-        now = time.time()
-        for n, (t, f) in enumerate(self._tasks):
-            if t <= now:
-                del self._tasks[n]
-                f()
-                return
+        with self._lock:
+            now = time.time()
+            for n, (t, f, a, k) in enumerate(self._tasks):
+                if t <= now:
+                    del self._tasks[n]
+                    f(*a, **k)
+                    return
 
     def get_command(self, commandid):
         cmd = self.commands.get(commandid, None)
@@ -281,7 +285,7 @@ class CuiApp:
                 try:
                     rlist, _, _ = select.select(
                         [sys.stdin] + rd, [], [],
-                        0 if nonblocking else self._next_sheduled_task())
+                        0 if nonblocking else self._next_scheduled_task())
 
                 except InterruptedError:
                     pass

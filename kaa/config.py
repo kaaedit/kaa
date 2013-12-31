@@ -192,6 +192,8 @@ class Config:
         self.hist_storage = KaaHistoryStorage(
             os.path.join(self.HISTDIR, consts.HIST_DBNAME))
 
+        self._config = self.hist_storage.get_history('Values')
+
     def close(self):
         self.hist_storage.close()
 
@@ -206,3 +208,13 @@ class Config:
                 kaa.log.exception('Error loading filetype: ' + repr(pkgname))
             else:
                 yield pkg
+
+    def save_value(self, name, value):
+        self._config.add(name, value)
+
+    def load_value(self, name, default=None):
+        values = self._config.get()
+        for n, info in values:
+            if name == n:
+                return info
+        return default

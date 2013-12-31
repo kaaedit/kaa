@@ -776,12 +776,12 @@ Version history
 =================
 
 
-0.28.0 - 2013.12
+0.28.0 - 2013.12.31
 --------------------
 
 - Improve file-save-as dialog.
 
-- ^C key causes SIGINT while running Python script in Python console.
+- Interuppt Python script with ^C key while running script in Python console.
 
 - Display empty lines like vim.
 

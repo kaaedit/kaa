@@ -1,3 +1,5 @@
+import threading
+import time
 import curses
 import os
 import sys
@@ -50,6 +52,35 @@ def run_userinit(fname):
 
         sys.modules['__kaa__'] = module
 
+URL_CHECKVERSION = 'http://www.gembook.org/kaa_checkversion/version_latest'
+CHECK_DURARION = 60*60*24 # check once a day.
+CHECK_DURARION = 1
+
+def _download_version_no():
+    import urllib.request
+    import re
+    try:
+        f = urllib.request.urlopen(URL_CHECKVERSION, timeout=60)
+        s = str(f.read(), 'ascii', errors='replace')
+    except Exception:
+        return
+
+    m = re.match(r'(\d+)\.(\d+)\.(\d+)', s)
+    if m:
+        latest = tuple(int(v) for v in m.groups()[1:])
+        if latest > version.KAA_VERSION:
+            kaa.app.messagebar.set_message('')
+            kaa.app.call_later(1, kaa.app.messagebar.set_message, 
+                'New version of kaa has released.')
+
+def _check_newversion():
+    last_checked = kaa.app.config.load_value('time_check_version', 0)
+    now = time.time()
+    if now - last_checked < CHECK_DURARION:
+        return
+
+    kaa.app.config.save_value('time_check_version', now)
+    threading.Thread(target=_download_version_no).start()
 
 def main(stdscr):
     conf = config.Config(opt)
@@ -112,6 +143,8 @@ def main(stdscr):
             else:
                 sys.exit('Unknown command: {}'.format(opt.command))
 
+
+        kaa.app.call_later(10, _check_newversion)
         kaa.app.run()
         mainframe.destroy()
         kaa.app.on_shutdown()
