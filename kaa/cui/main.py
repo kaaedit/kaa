@@ -54,7 +54,6 @@ def run_userinit(fname):
 
 URL_CHECKVERSION = 'http://www.gembook.org/kaa_checkversion/version_latest'
 CHECK_DURARION = 60*60*24 # check once a day.
-CHECK_DURARION = 1
 
 def _download_version_no():
     import urllib.request
