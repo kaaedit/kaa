@@ -73,6 +73,8 @@ class PythonMode(defaultmode.DefaultMode):
         self.tokenizers = [Tokenizer([
             Keywords('python-statement', 'keyword', KEYWORDS),
             Keywords('python-constant', 'constant', CONSTANTS),
+            SingleToken('python-decorator', 'directive',
+                        [r'@\w+']),
             SingleToken('python-numeric', 'number',
                         [r'\b[0-9]+(\.[0-9]*)*\b', r'\b\.[0-9]+\b']),
             Span('python-comment', 'comment', r'\#', '$', escape='\\'),
