@@ -5,6 +5,7 @@ class Cursor:
         self.pos = 0
         self.preferred_col = 0
         self.preferred_linecol = 0
+        self.screenpos = (-1, -1)
 
     def refresh(self, top=None, middle=None, bottom=None,
                 align_always=False):
@@ -12,6 +13,7 @@ class Cursor:
             self.pos, top=top, middle=middle, bottom=bottom,
             align_always=align_always)
         assert self.pos is not None
+        self.screenpos = (x, y)
 
     def setpos(self, pos, top=None, middle=None, bottom=None,
                align_always=False):

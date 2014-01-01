@@ -103,11 +103,11 @@ class TextEditorWindow(Window):
             self.line_overlays = {}
             self.screen.style_updated()
 
-    def bring_top(self):
-        if curses.panel.top_panel() is not self._panel:
-            super().bring_top()
-
-            self.draw_screen(force=True)
+#    def bring_top(self):
+#        if curses.panel.top_panel() is not self._panel:
+#            super().bring_top()
+#
+#            self.draw_screen(force=True)
 
     def activate(self):
         super().activate()
@@ -201,10 +201,10 @@ class TextEditorWindow(Window):
         self.screen.apply_updates()
         self.screen.row_drawn()
 
-        # save cursor position
-        if kaa.app.focus:
-            if self.document.mode.is_cursor_visible():
-                cury, curx = kaa.app.focus._cwnd.getyx()
+#        # save cursor position
+#        if kaa.app.focus:
+#            if self.document.mode.is_cursor_visible():
+#                cury, curx = kaa.app.focus._cwnd.getyx()
 
         h, w = self._cwnd.getmaxyx()
 
@@ -327,10 +327,10 @@ class TextEditorWindow(Window):
                     self._cwnd.move(i, 0)
                     self.add_str('~', attr)
 
-        if kaa.app.focus:
-            if self.document.mode.is_cursor_visible():
-                kaa.app.focus._cwnd.move(cury, curx)
-
+#        if kaa.app.focus:
+#            if self.document.mode.is_cursor_visible():
+#                kaa.app.focus._cwnd.move(cury, curx)
+#
         return
 
     def on_document_updated(self, pos, inslen, dellen):
@@ -366,16 +366,16 @@ class TextEditorWindow(Window):
         if self.document.mode.SHOW_LINENO:
             screenx = x + screen.calc_lineno_width(self.screen)
 
-        if (y, screenx) != self._cwnd.getyx():
-            h, w = self._cwnd.getmaxyx()
-            if y < h and screenx < w and y >= 0 and screenx >= 0:
-                self._cwnd.move(y, screenx)
+#        if (y, screenx) != self._cwnd.getyx():
+#            h, w = self._cwnd.getmaxyx()
+#            if y < h and screenx < w and y >= 0 and screenx >= 0:
+#                self._cwnd.move(y, screenx)
 
         self.document.mode.on_cursor_located(self, retpos, y, x)
         if self.document.mode.HIGHLIGHT_CURSOR_ROW:
             self.screen.style_updated()
 
-        return retpos, y, x
+        return retpos, y, screenx
 
     def get_cursor_loc(self):
         y, x = self._cwnd.getyx()

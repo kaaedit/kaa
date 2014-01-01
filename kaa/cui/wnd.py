@@ -21,7 +21,7 @@ class Window(kaa.context.Context):
     WAITINPUTFOR = 1000  # wait 1000ms for input
     closed = False
     editmode = None
-
+    cursor = None
     def __init__(self, parent, wnd=None, pos=None):
         """Wrap window object wnd. Create new window if wnd was omitted."""
 
@@ -91,7 +91,15 @@ class Window(kaa.context.Context):
 
     def do_input(self, nonblocking):
         """Get an input from curses"""
-        self.bring_top()
+
+        self._panel.top()
+        if self.cursor:
+            x, y = self.cursor.screenpos
+            if (y, x) != self._cwnd.getyx():
+                h, w = self._cwnd.getmaxyx()
+                if y < h and x < w and y >= 0 and x >= 0:
+                    self._cwnd.move(y, x)
+
         if nonblocking:
             self._cwnd.timeout(0)
         else:
