@@ -363,7 +363,7 @@ class FileCommands(Commands):
             fileinfo.fullpathname, fileinfo.encoding, fileinfo.newline,
             filemustexists=True)
 
-        for w in document.wnds:
+        for w in document.wnds[:]:
             w.show_doc(newdoc)
 
         if not document.closed:
