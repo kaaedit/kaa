@@ -29,13 +29,13 @@ def command(commandid, filetype=None):
     pass
 
 
-#styledef(filetype='kaa.filetype.python', theme='basic', [
+#style_def(filetype='kaa.filetype.python', theme='basic', [
 #    Sytle('default', 'white', 'black'),
 #])
 
-def styledef(filetype, theme, styles):
+def style_def(filetype, theme, styles):
     pass
 
-# addfiletype('my.python.filetype',
+# add_filetype('my.python.filetype',
 #    overrides='kaa.filetype.python')
 

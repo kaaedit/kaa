@@ -776,13 +776,23 @@ Version history
 =================
 
 
-0.29.0 - 2013.12.31
+0.30.0 - 2014.1.1
 --------------------
 
-- Check for new release of kaa.
+- Fix error on reloading modified file.
+
+- Highlight decorator in Python mode.
+
+- Version check was failed.
 
 Past versions
 --------------
+
+0.29.0 - 2013.12.31
++++++++++++++++++++++
+
+- Check for new release of kaa.
+
 
 0.28.0 - 2013.12.31
 +++++++++++++++++++++
@@ -1113,7 +1123,7 @@ Past versions
 Copyright 
 =========================
 
-Copyright (c) 2013 Atsuo Ishimoto
+Copyright (c) 2013, 2014 Atsuo Ishimoto
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
