@@ -12,6 +12,7 @@ from kaa import theme
 from kaa import screen
 from kaa import addon
 
+
 class SearchOption:
     RE = gappedbuf.re
 

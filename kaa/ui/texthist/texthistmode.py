@@ -31,6 +31,7 @@ class TextHistMode(filterlist.FilterListMode):
                 'selectitem', 'selectitem-active', caption, c)
             self.candidates.append(c)
 
+
 def show_history(title, callback, words):
     doc = filterlist.FilterListInputDlgMode.build(
         title, callback)

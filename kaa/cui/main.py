@@ -53,7 +53,8 @@ def run_userinit(fname):
         sys.modules['__kaa__'] = module
 
 URL_CHECKVERSION = 'http://www.gembook.org/kaa_checkversion/version_latest'
-CHECK_DURARION = 60*60*24 # check once a day.
+CHECK_DURARION = 60 * 60 * 24  # check once a day.
+
 
 def _download_version_no():
     import urllib.request
@@ -69,8 +70,9 @@ def _download_version_no():
         latest = tuple(int(v) for v in m.groups())
         if latest > version.KAA_VERSION:
             kaa.app.messagebar.set_message('')
-            kaa.app.call_later(1, kaa.app.messagebar.set_message, 
-                'New version of kaa has released.')
+            kaa.app.call_later(1, kaa.app.messagebar.set_message,
+                               'New version of kaa has released.')
+
 
 def _check_newversion():
     last_checked = kaa.app.config.load_value('time_check_version', 0)
@@ -80,6 +82,7 @@ def _check_newversion():
 
     kaa.app.config.save_value('time_check_version', now)
     threading.Thread(target=_download_version_no).start()
+
 
 def main(stdscr):
     conf = config.Config(opt)
@@ -119,7 +122,6 @@ def main(stdscr):
                     editor = kaa.app.show_doc(doc)
                     kaa.app.file_commands.restore_file_loc(editor)
 
-
             if dirname:
                 from kaa.ui.selectfile import selectfile
 
@@ -137,13 +139,12 @@ def main(stdscr):
 
         if opt.command:
             cmd = kaa.app.focus.document.mode.get_command(
-                    opt.command)
+                opt.command)
             is_available, command = cmd
             if command:
                 command(kaa.app.focus)
             else:
                 sys.exit('Unknown command: {}'.format(opt.command))
-
 
         kaa.app.call_later(10, _check_newversion)
         kaa.app.run()

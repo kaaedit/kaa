@@ -19,7 +19,7 @@ class CuiApp:
     DEFAULT_THEME = 'basic'
     DEFAULT_PALETTE = 'dark'
     NUM_NEWFILE = 1
-    
+
     def __init__(self, config):
         self.config = config
         self.clipboard = clipboard.select_clipboard()
@@ -262,7 +262,7 @@ class CuiApp:
 
     def dump_panel(self):
         import curses.panel
-        panels =[]
+        panels = []
         p = curses.panel.top_panel()
         while p:
             panels.append(p)
@@ -276,7 +276,6 @@ class CuiApp:
 
         _trace('>>>>>>>>>>>>>>>>>>>>>>')
         _trace(panels)
-
 
     def run(self):
 #        def f(t, i):

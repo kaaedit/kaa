@@ -22,6 +22,7 @@ class Window(kaa.context.Context):
     closed = False
     editmode = None
     cursor = None
+
     def __init__(self, parent, wnd=None, pos=None):
         """Wrap window object wnd. Create new window if wnd was omitted."""
 

@@ -480,7 +480,7 @@ class EditCommands(Commands):
         if self.delete_sel(wnd):
             return
 
-        pos =  wnd.cursor.pos
+        pos = wnd.cursor.pos
         for i in range(wnd.editmode.get_repeat()):
             wnd.cursor.right(word=True)
 
@@ -640,7 +640,8 @@ class EditCommands(Commands):
                         cols = 0
 
                     if cols:
-                        s = mode.build_indent_str(max(0, cols - mode.indent_width))
+                        s = mode.build_indent_str(
+                            max(0, cols - mode.indent_width))
                         mode.replace_string(wnd, f, t, s, False)
 
                     tol = doc.geteol(tol)
@@ -972,6 +973,6 @@ class SearchCommands(Commands):
         if not ret:
             if start != wnd.document.endpos():
                 ret = wnd.document.mode.search_prev(
-                        wnd.document.endpos(),
-                        modebase.SearchOption.LAST_SEARCH)
+                    wnd.document.endpos(),
+                    modebase.SearchOption.LAST_SEARCH)
                 self._show_searchresult(wnd, ret)

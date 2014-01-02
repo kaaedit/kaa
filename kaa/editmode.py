@@ -160,7 +160,6 @@ class CommandMode(EditMode):
                 self.add_repeat_char(wnd, event.key)
                 return
 
-
         super().on_key_pressed(wnd, event)
 
     def _get_keybinds(self, wnd):

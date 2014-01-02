@@ -27,6 +27,7 @@ PythonConsoleThemes = {
     ],
 }
 
+
 class KaaInterpreter(code.InteractiveInterpreter):
 
     def runcode(self, code):
@@ -66,7 +67,9 @@ class PythonConsoleMode(pythonmode.PythonMode):
         super().on_set_document(document)
         self.interp = KaaInterpreter()
 
-        self.document.append('Python %s\n' % sys.version, self.get_styleid('ps'))
+        self.document.append(
+            'Python %s\n' %
+            sys.version, self.get_styleid('ps'))
         self.document.append('>>>', self.get_styleid('ps'))
         self.document.append('\n', self.get_styleid('default'))
         p = self.document.endpos()
@@ -167,7 +170,7 @@ class PythonConsoleMode(pythonmode.PythonMode):
                 self.document.marks['current_script'] = (p, p)
                 wnd.cursor.setpos(p)
             else:
-                self._show_inputline(wnd, s+'\n')
+                self._show_inputline(wnd, s + '\n')
 
     def _show_inputline(self, wnd, s):
         doc = PythonInputlineMode.build(wnd, s)
@@ -208,7 +211,7 @@ class PythonConsoleMode(pythonmode.PythonMode):
                 self._put_script(wnd, text)
 
         from kaa.ui.texthist import texthistmode
-        texthistmode.show_history('Search history:',callback, scripts)
+        texthistmode.show_history('Search history:', callback, scripts)
 
     @commandid('edit.paste')
     def paste(self, wnd):
