@@ -1,7 +1,7 @@
 import kaa
 from kaa import document
 from kaa.ui.filenameindex import filenameindexmode
-from gappedbuf import re as gre
+from kaa import doc_re
 
 
 def show(commandline, s):
@@ -17,7 +17,7 @@ def show(commandline, s):
     style_filename = mode.get_styleid('filenameindex-filename')
     style_lineno = mode.get_styleid('filenameindex-lineno')
 
-    for m in mode.RE_FILENAME.finditer(doc.buf):
+    for m in mode.RE_FILENAME.finditer(doc):
         f, t = m.span('FILENAME')
         doc.setstyles(f, t, style_filename, update=False)
 

@@ -7,6 +7,7 @@ from kaa.ui.msgbox import msgboxmode
 from kaa.command import commandid, Commands, norec, norerun
 from kaa.commands import editorcommand
 from kaa.ui.selectlist import filterlist
+from kaa import doc_re
 from gappedbuf.sre_constants import error as gre_error
 
 SearchThemes = {

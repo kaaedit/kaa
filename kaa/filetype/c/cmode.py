@@ -2,7 +2,6 @@ from collections import namedtuple
 from kaa.filetype.default import defaultmode, theme
 from kaa.highlight import Tokenizer, Keywords, Span, SingleToken
 from kaa.theme import Theme, Style
-from gappedbuf import re as gre
 from kaa.command import Commands, commandid, norec, norerun
 from kaa.keyboard import *
 

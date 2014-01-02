@@ -1,6 +1,5 @@
 from collections import namedtuple
 from kaa.filetype.default import defaultmode
-from gappedbuf import re as gre
 from kaa.highlight import Tokenizer, Span, Keywords, EndSection, SingleToken
 from kaa.theme import Theme, Style
 

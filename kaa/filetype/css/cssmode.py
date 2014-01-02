@@ -1,7 +1,7 @@
 import re
 from collections import namedtuple
 from kaa.filetype.default import defaultmode
-from gappedbuf import re as gre
+from kaa import doc_re
 from kaa.highlight import Tokenizer, Span, SingleToken, Token, SubSection, EndSection
 from kaa.theme import Theme, Style
 from kaa.filetype.javascript import javascriptmode
@@ -26,12 +26,12 @@ class CSSProp(Token):
             self.close = '(?P<CLOSE>{})|'.format(close)
             self.closestyle = closestyle
 
-        self.CSS_TOP = gre.compile(
+        self.CSS_TOP = doc_re.compile(
             self.close + r'(?P<COMMENT>/\*)|(?P<STRING>[\'"])|({)')
-        self.END_COMMENT = gre.compile(r'\*/')
-        self.PROPERTY_TOP = gre.compile(
+        self.END_COMMENT = doc_re.compile(r'\*/')
+        self.PROPERTY_TOP = doc_re.compile(
             self.close + r'(?P<COMMENT>/\*)|(?P<STRING>[\'"])|:|}')
-        self.PROPERTY_VALUE = gre.compile(
+        self.PROPERTY_VALUE = doc_re.compile(
             self.close + r'(?P<COMMENT>/\*)|(?P<STRING>[\'"])|;|}')
 
     def re_start(self):
@@ -75,8 +75,7 @@ class CSSProp(Token):
         return 0
 
     def on_start(self, tokenizer, doc, pos, match):
-        buf = doc.buf
-        for f, t, tokenid in self.root_func(buf, match.start()):
+        for f, t, tokenid in self.root_func(doc, match.start()):
             if pos != f:
                 assert pos < f
                 yield (pos, f, self.span_cssws)
@@ -86,12 +85,12 @@ class CSSProp(Token):
                 return pos, None, True
         return pos, None, False
 
-    def parse_comment(self, buf, pos):
-        m = self.END_COMMENT.search(buf, pos)
+    def parse_comment(self, doc, pos):
+        m = self.END_COMMENT.search(doc, pos)
         if not m:
-            if pos != len(buf):
-                yield pos, len(buf), self.span_comment
-            return len(buf)
+            if pos != doc.endpos():
+                yield pos, doc.endpos(), self.span_comment
+            return doc.endpos()
 
         f, t = m.span()
         if pos != f:
@@ -104,14 +103,14 @@ class CSSProp(Token):
         yield f, t, self.span_comment_end
         return t
 
-    def parse_string(self, buf, pos, qmark):
-        reobj = gre.compile(r'(\\.)|({0})'.format(qmark), gre.DOTALL)
+    def parse_string(self, doc, pos, qmark):
+        reobj = doc_re.compile(r'(\\.)|({0})'.format(qmark), doc_re.DOTALL)
         cur = pos
         while True:
-            m = reobj.search(buf, cur)
+            m = reobj.search(doc, cur)
             if not m:
-                yield pos, len(buf), self.span_string
-                return len(buf)
+                yield pos, doc.endpos(), self.span_string
+                return doc.endpos()
             if m.group(1):
                 cur = m.end()
             else:
@@ -119,13 +118,13 @@ class CSSProp(Token):
                 yield m.start(), m.end(), self.span_string_end
                 return m.end()
 
-    def parse_properties(self, buf, pos):
+    def parse_properties(self, doc, pos):
         while True:
-            m = self.PROPERTY_TOP.search(buf, pos)
+            m = self.PROPERTY_TOP.search(doc, pos)
             if not m:
-                if pos != len(buf):
-                    yield pos, len(buf), self.span_propname
-                return len(buf)
+                if pos != doc.endpos():
+                    yield pos, doc.endpos(), self.span_propname
+                return doc.endpos()
 
             f, t = m.span()
             if pos != f:
@@ -133,15 +132,15 @@ class CSSProp(Token):
 
             if m.group('COMMENT'):
                 yield f, t, self.span_comment_begin
-                pos = yield from self.parse_comment(buf, t)
+                pos = yield from self.parse_comment(doc, t)
 
             elif m.group('STRING'):
                 yield f, t, self.span_string_begin
-                pos = yield from self.parse_string(buf, t, m.group('STRING'))
+                pos = yield from self.parse_string(doc, t, m.group('STRING'))
 
             elif m.group() == ':':
                 yield f, t, self.span_colon
-                pos = yield from self.parse_propvalue(buf, t)
+                pos = yield from self.parse_propvalue(doc, t)
 
             elif m.groupdict().get('CLOSE'):
                 yield f, t, self.span_close
@@ -153,13 +152,13 @@ class CSSProp(Token):
 
     root_func = parse_properties
 
-    def parse_propvalue(self, buf, pos):
+    def parse_propvalue(self, doc, pos):
         while True:
-            m = self.PROPERTY_VALUE.search(buf, pos)
+            m = self.PROPERTY_VALUE.search(doc, pos)
             if not m:
-                if pos != len(buf):
-                    yield pos, len(buf), self.span_propvalue
-                return len(buf)
+                if pos != doc.endpos():
+                    yield pos, doc.endpos(), self.span_propvalue
+                return doc.endpos()
 
             f, t = m.span()
             if pos != f:
@@ -167,11 +166,11 @@ class CSSProp(Token):
 
             if m.group('COMMENT'):
                 yield f, t, self.span_comment_begin
-                pos = yield from self.parse_comment(buf, t)
+                pos = yield from self.parse_comment(doc, t)
 
             elif m.group('STRING'):
                 yield f, t, self.span_string_begin
-                pos = yield from self.parse_string(buf, t, m.group('STRING'))
+                pos = yield from self.parse_string(doc, t, m.group('STRING'))
 
             elif m.group() == ';':
                 yield f, t, self.span_semicolon
@@ -188,13 +187,13 @@ class CSSProp(Token):
 
 class CSSToken(CSSProp):
 
-    def parse_css(self, buf, pos):
+    def parse_css(self, doc, pos):
         while True:
-            m = self.CSS_TOP.search(buf, pos)
+            m = self.CSS_TOP.search(doc, pos)
             if not m:
-                if pos != len(buf):
-                    yield pos, len(buf), self.span_selector
-                return len(buf)
+                if pos != doc.endpos():
+                    yield pos, doc.endpos(), self.span_selector
+                return doc.endpos()
 
             f, t = m.span()
             if pos != f:
@@ -202,11 +201,11 @@ class CSSToken(CSSProp):
 
             if m.group('COMMENT'):
                 yield f, t, self.span_comment_begin
-                pos = yield from self.parse_comment(buf, t)
+                pos = yield from self.parse_comment(doc, t)
 
             elif m.group('STRING'):
                 yield f, t, self.span_string_begin
-                pos = yield from self.parse_string(buf, t, m.group('STRING'))
+                pos = yield from self.parse_string(doc, t, m.group('STRING'))
 
             elif m.groupdict().get('CLOSE'):
                 yield f, t, self.span_close
@@ -214,7 +213,7 @@ class CSSToken(CSSProp):
 
             else:
                 yield f, t, self.span_open_brace
-                pos = yield from self.parse_properties(buf, t)
+                pos = yield from self.parse_properties(doc, t)
 
     root_func = parse_css
 

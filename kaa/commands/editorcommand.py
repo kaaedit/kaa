@@ -5,7 +5,7 @@ import kaa
 from kaa.command import Commands, commandid, is_enable, norec, norerun
 from kaa import document
 from kaa.filetype.default import modebase
-from gappedbuf import re as gre
+from kaa import doc_re
 
 
 class CursorCommands(Commands):
@@ -833,9 +833,9 @@ class CodeCommands(Commands):
             wnd.cursor.savecol()
 
     def _is_comment_line(self, wnd, pos):
-        reobj = gre.compile(r'[ \t]*({})'.format(
-            gre.escape(wnd.document.mode.LINE_COMMENT)))
-        return reobj.match(wnd.document.buf, pos)
+        reobj = doc_re.compile(r'[ \t]*({})'.format(
+            doc_re.escape(wnd.document.mode.LINE_COMMENT)))
+        return reobj.match(wnd.document, pos)
 
     @commandid('code.region.unlinecomment')
     def uncomment(self, wnd):

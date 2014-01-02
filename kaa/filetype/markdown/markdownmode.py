@@ -1,7 +1,7 @@
 import copy
 from collections import namedtuple
 from kaa.filetype.default import defaultmode
-from gappedbuf import re as gre
+from kaa import doc_re
 from kaa.highlight import Tokenizer, Token, Span, Keywords, EndSection, SingleToken
 from kaa.theme import Theme, Style
 from kaa.command import Commands, commandid, norec, norerun
@@ -22,7 +22,7 @@ MarkdownThemes = {
 
 
 class LinkToken(Token):
-    RE_END = gre.compile('^\S', gre.M + gre.X)
+    RE_END = doc_re.compile('^\S', doc_re.M + doc_re.X)
 
     def re_start(self):
         return r'\['
@@ -35,9 +35,9 @@ class LinkToken(Token):
         self.link = self.assign_tokenid(tokenizer, self.stylename)
 
     def get_close(self, doc, pos, chars):
-        r = gre.compile(r'\\.|' + '|'.join('\\' + c for c in chars))
+        r = doc_re.compile(r'\\.|' + '|'.join('\\' + c for c in chars))
         while True:
-            m = r.search(doc.buf, pos)
+            m = r.search(doc, pos)
             if not m:
                 return '', doc.endpos()
 
@@ -59,7 +59,7 @@ class LinkToken(Token):
                 t += 1
         yield (f, t, self.text)
 
-        m = gre.compile(r'\s*(\[|\()').match(doc.buf, t)
+        m = doc_re.compile(r'\s*(\[|\()').match(doc, t)
         if not m:
             return t, None, False
 
@@ -169,13 +169,13 @@ class MarkdownMode(defaultmode.DefaultMode):
     HEADER1 = r'^(?P<TITLE>.+)\n(?P<H1>[{}])(?P=H1)+$'.format(HEADERS)
     HEADER2 = r'^(?P<H2>\#{1,6})(?P<TITLE2>.+)$'
 
-    RE_HEADER = gre.compile('|'.join([HEADER1, HEADER2]), gre.X | gre.M)
+    RE_HEADER = doc_re.compile('|'.join([HEADER1, HEADER2]), doc_re.X | doc_re.M)
 
     def get_headers(self):
         stack = []
         pos = 0
         while True:
-            m = self.RE_HEADER.search(self.document.buf, pos)
+            m = self.RE_HEADER.search(self.document, pos)
             if not m:
                 break
 

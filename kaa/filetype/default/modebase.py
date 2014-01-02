@@ -3,7 +3,7 @@ import itertools
 import unicodedata
 import collections
 
-import gappedbuf.re
+from kaa import doc_re
 import kaa
 from kaa import keyboard, editmode
 import kaa.log
@@ -14,7 +14,7 @@ from kaa import addon
 
 
 class SearchOption:
-    RE = gappedbuf.re
+    RE = doc_re
 
     def __init__(self):
         self.text = ''
@@ -491,13 +491,13 @@ class ModeBase:
     RE_HIRAGANA = r"(?P<L_HIRAGANA>[\u3040-\u309f\u30fc]+)"
     RE_KATAKANA = r"(?P<L_KATAKANA>[\u30a0-\u30ff\u30fc]+)"
 
-    RE_SPLITWORD = gappedbuf.re.compile('|'.join((
+    RE_SPLITWORD = doc_re.compile('|'.join((
         RE_WORDCHAR, RE_WHITESPACE, RE_LF, RE_HIRAGANA, RE_KATAKANA)))
 
     def split_word(self, begin, all=False):
         """yield word in the document until line ends"""
 
-        for m in self.RE_SPLITWORD.finditer(self.document.buf, pos=begin):
+        for m in self.RE_SPLITWORD.finditer(self.document, pos=begin):
             # split unmatched characters by character category.
             f, t = m.span()
             if f != begin:
@@ -548,13 +548,13 @@ class ModeBase:
     def search_next(self, pos, searchinfo):
         regex = searchinfo.get_regex()
         pos = min(max(0, pos), self.document.endpos())
-        m = regex.search(self.document.buf, pos)
+        m = regex.search(self.document, pos)
         return m
 
     def search_prev(self, pos, searchinfo):
         regex = searchinfo.get_regex()
         last = None
-        for m in regex.finditer(self.document.buf, 0):
+        for m in regex.finditer(self.document, 0):
             span = m.span()
             if span[1] >= pos:
                 break
@@ -581,8 +581,8 @@ class ModeBase:
 
     def get_indent_range(self, pos):
         tol = self.document.gettol(pos)
-        regex = gappedbuf.re.compile(self.RE_WHITESPACE)
-        m = regex.match(self.document.buf, tol)
+        regex = doc_re.compile(self.RE_WHITESPACE)
+        m = regex.match(self.document, tol)
         if m:
             return m.span()
         else:

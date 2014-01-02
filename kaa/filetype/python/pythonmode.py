@@ -4,7 +4,7 @@ import copy
 from kaa.filetype.default import defaultmode, theme
 from kaa.highlight import Tokenizer, Keywords, Span, SingleToken
 from kaa.theme import Theme, Style
-from gappedbuf import re as gre
+from kaa import doc_re
 from kaa.command import Commands, commandid, norec, norerun
 from kaa.keyboard import *
 from kaa.ui.pythondebug import port
@@ -38,7 +38,7 @@ CONSTANTS = ['False', 'None', 'True']
 
 class PythonMode(defaultmode.DefaultMode):
     MODENAME = 'Python'
-    re_begin_block = gre.compile(r"[^#]*:\s*(#.*)?$")
+    re_begin_block = doc_re.compile(r"[^#]*:\s*(#.*)?$")
     LINE_COMMENT = '#'
 
     @classmethod
@@ -114,12 +114,12 @@ class PythonMode(defaultmode.DefaultMode):
 
         super().on_file_saved(fileinfo)
 
-    RE_BEGIN_NEWBLOCK = gre.compile(r"[^#]*\:\s*(#.*)?$", gre.M)
+    RE_BEGIN_NEWBLOCK = doc_re.compile(r"[^#]*\:\s*(#.*)?$", doc_re.M)
 
     def on_auto_indent(self, wnd):
         pos = wnd.cursor.pos
         tol = self.document.gettol(pos)
-        m = self.RE_BEGIN_NEWBLOCK.match(self.document.buf, tol, pos)
+        m = self.RE_BEGIN_NEWBLOCK.match(self.document, tol, pos)
         if not m:
             super().on_auto_indent(wnd)
         else:
@@ -133,11 +133,11 @@ class PythonMode(defaultmode.DefaultMode):
             wnd.cursor.savecol()
             self._last_autoindent = (pos + 1, wnd.cursor.pos)
 
-    RE_SEARCH_NAME = gre.compile(r'(\\.)|(\w+)|(\S)')
+    RE_SEARCH_NAME = doc_re.compile(r'(\\.)|(\w+)|(\S)')
 
     def _py_getname(self, pos):
         while True:
-            m = self.RE_SEARCH_NAME.search(self.document.buf, pos)
+            m = self.RE_SEARCH_NAME.search(self.document, pos)
             if not m:
                 return self.document.endpos()
             if m.lastindex == 1:
@@ -159,11 +159,11 @@ class PythonMode(defaultmode.DefaultMode):
 
     def _py_end_comment(self, m):
         close = r'(\\\n)|(\n)'
-        reobj = gre.compile(close)
+        reobj = doc_re.compile(close)
 
         pos = m.end()
         while True:
-            m = reobj.search(self.document.buf, pos)
+            m = reobj.search(self.document, pos)
             if not m:
                 return self.document.endpos()
             if m.lastindex == 2:
@@ -173,11 +173,11 @@ class PythonMode(defaultmode.DefaultMode):
 
     def _py_end_string(self, m):
         close = r'\\.|(?P<CLOSE>%s)' % m.group()
-        reobj = gre.compile(close)
+        reobj = doc_re.compile(close)
 
         pos = m.end()
         while True:
-            m = reobj.search(self.document.buf, pos)
+            m = reobj.search(self.document, pos)
             if not m:
                 return self.document.endpos()
             if m.lastgroup == 'CLOSE':
@@ -191,10 +191,10 @@ class PythonMode(defaultmode.DefaultMode):
 
     def _py_close_parenthesis(self, m):
         close = '|(?P<CLOSE>\\%s)' % self.PARENSIS_PAIR[m.group()]
-        reobj = gre.compile(self.TOKENIZE_SEARCH_CLOSE + close, gre.X)
+        reobj = doc_re.compile(self.TOKENIZE_SEARCH_CLOSE + close, doc_re.X)
         pos = m.end()
         while True:
-            m = reobj.search(self.document.buf, pos)
+            m = reobj.search(self.document, pos)
             if not m:
                 return self.document.endpos()
 
@@ -212,15 +212,15 @@ class PythonMode(defaultmode.DefaultMode):
             else:
                 assert 0
 
-    RE_TOKENIZE_SEARCH = gre.compile(
+    RE_TOKENIZE_SEARCH = doc_re.compile(
         r'''(?P<BACKSLASH>\\.)|(?P<CLASS>\bclass\b)|
             (?P<DEF>\bdef\b)|(?P<PARENTHESIS>[\{\[\(])|
-            (?P<COMMENT>\#)|(?P<STRING>\"\"\"|\"|\'\'\'|\')''', gre.X)
+            (?P<COMMENT>\#)|(?P<STRING>\"\"\"|\"|\'\'\'|\')''', doc_re.X)
 
     def _py_tokenize(self):
         pos = 0
         while True:
-            m = self.RE_TOKENIZE_SEARCH.search(self.document.buf, pos)
+            m = self.RE_TOKENIZE_SEARCH.search(self.document, pos)
             if not m:
                 break
             g = m.lastgroup

@@ -1,6 +1,6 @@
 from collections import namedtuple
 from kaa.filetype.default import defaultmode
-from gappedbuf import re as gre
+from kaa import doc_re
 from kaa.highlight import (Tokenizer, Span, SingleToken, Token,
                            SubSection, EndSection, SubTokenizer)
 from kaa.theme import Theme, Style
@@ -128,18 +128,17 @@ class HTMLTag(Token):
         pos, tok, close = yield from func.iter_subtokenizers(None, doc, f + 1, None)
         return pos
 
-    RE_ELEMNAME = gre.compile(r'\s*[^>\s]+')
-    RE_CLOSE = gre.compile(r'\s*/?>', gre.S)
+    RE_ELEMNAME = doc_re.compile(r'\s*[^>\s]+')
+    RE_CLOSE = doc_re.compile(r'\s*/?>', doc_re.S)
 
-    RE_ATTRNAME = gre.compile(
+    RE_ATTRNAME = doc_re.compile(
         r'>|(?P<ATTRNAME>[-._:a-zA-Z0-9]+)(?P<EQUAL>\s*=)?\s*')
-    RE_ATTRVALUE = gre.compile(r'\s*(?P<ATTRVALUE>({}))'.format(
+    RE_ATTRVALUE = doc_re.compile(r'\s*(?P<ATTRVALUE>({}))'.format(
         '|'.join(['[-._:a-zA-Z0-9]+', '(?P<Q1>"[^"]*")', "(?P<Q2>'[^']*')"])))
 
     def iter_attrs(self, tokenizer, doc, pos):
-        buf = doc.buf
         while True:
-            m = self.RE_ATTRNAME.search(buf, pos)
+            m = self.RE_ATTRNAME.search(doc, pos)
             if not m:
                 return pos
             if m.group() == '>':
@@ -158,7 +157,7 @@ class HTMLTag(Token):
             # has attribute value?
             if m.group('EQUAL'):
                 # yield values after '='
-                m = self.RE_ATTRVALUE.match(buf, pos)
+                m = self.RE_ATTRVALUE.match(doc, pos)
                 if m:
                     attrvalue = m.group('ATTRVALUE')
                     f, t = m.span('ATTRVALUE')
@@ -172,28 +171,25 @@ class HTMLTag(Token):
                         pos = t
 
     def iter_tokens(self, tokenizer, doc, pos):
-        buf = doc.buf
-        match = self.RE_ELEMNAME.match(buf, pos)
+        match = self.RE_ELEMNAME.match(doc, pos)
         if not match:
-            yield pos, len(buf), self.span_elemws
+            yield pos, doc.endpos(), self.span_elemws
             return
         yield (pos, match.end(), self.span_elemname)
 
         pos = match.end()
         pos = yield from self.iter_attrs(tokenizer, doc, pos)
 
-        m = self.RE_CLOSE.match(buf, pos)
+        m = self.RE_CLOSE.match(doc, pos)
         if m:
             yield pos, m.end(), self.span_gt
             return m.end()
         else:
-            if pos != len(buf):
-                yield pos, len(buf), self.span_elemws
-            return len(buf)
+            if pos != doc.endpos():
+                yield pos, doc.endpos(), self.span_elemws
+            return doc.endpos()
 
     def on_start(self, tokenizer, doc, pos, match):
-        buf = doc.buf
-
         yield (match.start(), match.end(), self.span_lt)
 
         pos = match.end()

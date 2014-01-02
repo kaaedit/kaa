@@ -2,7 +2,7 @@ import unicodedata
 import copy
 from collections import namedtuple
 from kaa.filetype.default import defaultmode
-from gappedbuf import re as gre
+from kaa import doc_re
 from kaa.highlight import Tokenizer, Token, Span, Keywords, EndSection, SingleToken
 from kaa.theme import Theme, Style
 from kaa.command import Commands, commandid, norec, norerun
@@ -173,14 +173,14 @@ class RstMode(defaultmode.DefaultMode):
     HEADER2 = r'''^(?P<TITLE2>.+)\n
                 (?P<H2>[{}])(?P=H2)+$'''.format(RST_HEADERS)
 
-    RE_HEADER = gre.compile('|'.join([HEADER1, HEADER2]), gre.X | gre.M)
+    RE_HEADER = doc_re.compile('|'.join([HEADER1, HEADER2]), doc_re.X | doc_re.M)
 
     def get_headers(self):
         levels = {}
         stack = []
         pos = 0
         while True:
-            m = self.RE_HEADER.search(self.document.buf, pos)
+            m = self.RE_HEADER.search(self.document, pos)
             if not m:
                 break
 

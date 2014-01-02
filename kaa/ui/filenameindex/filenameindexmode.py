@@ -1,6 +1,6 @@
 import os
 import kaa
-from gappedbuf import re as gre
+from kaa import doc_re
 from kaa import document
 from kaa.keyboard import *
 from kaa.theme import Theme, Style
@@ -111,12 +111,12 @@ class FilenameIndexMode(defaultmode.DefaultMode):
                     self._locate_doc(buddy.wnd, doc, lineno)
             kaa.app.app_commands.save_splitterdocs(wnd, buddy, callback)
 
-    RE_FILENAME = gre.compile(
+    RE_FILENAME = doc_re.compile(
         r'(?P<FILENAME>^[^:\n]+)\:(?P<LINENO>\d+)\:.*$',
-        gre.M | gre.X)
+        doc_re.M | doc_re.X)
 
     def is_match(self, pos):
-        m = self.RE_FILENAME.match(self.document.buf, pos)
+        m = self.RE_FILENAME.match(self.document, pos)
         return m
 
     def on_global_prev(self, wnd):

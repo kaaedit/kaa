@@ -1,6 +1,6 @@
-from gappedbuf import re as gre
 import collections
 from kaa import document
+from kaa import doc_re
 
 
 class Token:
@@ -68,7 +68,7 @@ class Keywords(SingleToken):
     """
 
     def re_start(self):
-        return r'\b({})\b'.format('|'.join(gre.escape(k) for k in self.tokens))
+        return r'\b({})\b'.format('|'.join(doc_re.escape(k) for k in self.tokens))
 
 
 class Span(Token):
@@ -81,8 +81,8 @@ class Span(Token):
         self.start = start
         self.escape = escape
         if escape:
-            end = '({}.)|({})'.format(gre.escape(escape), end)
-        self.end = gre.compile(end, gre.X + gre.M + gre.S)
+            end = '({}.)|({})'.format(doc_re.escape(escape), end)
+        self.end = doc_re.compile(end, doc_re.X + doc_re.M + doc_re.S)
         self._capture_end = capture_end
 
     def prepare(self, tokenizer):
@@ -101,7 +101,7 @@ class Span(Token):
     def on_start(self, tokenizer, doc, pos, match):
         yield (match.start(), match.end(), self.span_start)
 
-        for m in self.end.finditer(doc.buf, match.end()):
+        for m in self.end.finditer(doc, match.end()):
             if self.escape and m.group(1) is not None:
                 continue
 
@@ -242,7 +242,7 @@ class Tokenizer:
             self.groupnames['TERMINATE'] = None
 
         if starts:
-            self.re_starts = gre.compile('|'.join(starts), gre.M + gre.X)
+            self.re_starts = doc_re.compile('|'.join(starts), doc_re.M + doc_re.X)
 
     def register_tokenid(self, obj):
         return self.highlighter.register_tokenid(self, obj)
@@ -250,7 +250,7 @@ class Tokenizer:
     def start(self, doc, pos):
         if self.re_starts:
             while True:
-                m = self.re_starts.search(doc.buf, pos)
+                m = self.re_starts.search(doc, pos)
                 if not m:
                     break
 

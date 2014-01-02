@@ -6,7 +6,7 @@ from kaa.ui.dialog import dialogmode
 from kaa.ui.selectlist import filterlist
 from kaa.command import commandid, norec, norerun
 from kaa.keyboard import *
-import gappedbuf.re
+from kaa import doc_re
 from kaa.ui.wordcomplete import wordcompletemode
 from kaa.ui.selectlist import filterlist
 
@@ -107,7 +107,7 @@ def show_suggests(wnd, f, t, s, pwl, sugest, callback):
     return dlg
 
 
-RE_WORD = gappedbuf.re.compile(r"\b[a-zA-Z][a-z']{2,}\b", gappedbuf.re.A)
+RE_WORD = doc_re.compile(r"\b[a-zA-Z][a-z']{2,}\b", doc_re.A)
 
 
 def iter_words(wnd, pos):
@@ -115,7 +115,7 @@ def iter_words(wnd, pos):
 
     while True:
         posto = wnd.document.marks['spellchecker'][1]
-        m = RE_WORD.search(wnd.document.buf, pos, posto)
+        m = RE_WORD.search(wnd.document, pos, posto)
         if not m:
             return
 

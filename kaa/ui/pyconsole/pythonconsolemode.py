@@ -185,6 +185,9 @@ class PythonConsoleMode(pythonmode.PythonMode):
         self.exec_script(wnd)
 
     def _put_script(self, wnd, text):
+        if text.endswith('\n'):
+            text = text[:-1]
+
         self.put_string(wnd, text)
         wnd.screen.selection.clear()
         hist = kaa.app.config.hist('pyconsole_script', self.MAX_HISTORY)

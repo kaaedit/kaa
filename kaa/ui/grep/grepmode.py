@@ -3,7 +3,6 @@ import os
 import fnmatch
 import re
 
-from gappedbuf import re as gre
 import kaa
 from kaa import document
 from kaa.theme import Theme, Style
