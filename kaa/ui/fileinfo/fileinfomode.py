@@ -119,7 +119,7 @@ class FileInfoMode(dialogmode.DialogMode):
     def is_cursor_visible(self):
         return 0   # hide cursor
 
-    def on_str(self, wnd, s):
+    def on_str(self, wnd, s, overwrite=False):
         # does nothing
         pass
 

@@ -16,6 +16,12 @@ class EditModeCommands(Commands):
         kaa.app.messagebar.set_message(
             'You are in insert mode now. Type `ESC` to return command mode.')
 
+    @commandid('editmode.replace')
+    def editmode_replacemode(self, wnd):
+        wnd.document.mode.editmode_replace(wnd)
+        kaa.app.messagebar.set_message(
+            'You are in replace mode now. Type `ESC` to return command mode.')
+
     @commandid('editmode.visual')
     def editmode_visualmode(self, wnd):
         wnd.screen.selection.clear()

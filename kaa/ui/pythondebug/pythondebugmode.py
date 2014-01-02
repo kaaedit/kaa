@@ -217,7 +217,7 @@ class PythonDebuggerPanel(dialogmode.DialogMode):
         super().close()
         self.port = None
 
-    def on_str(self, wnd, s):
+    def on_str(self, wnd, s, overwrite=False):
         pass
 
     def build(self, stack):

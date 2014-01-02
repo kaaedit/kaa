@@ -9,9 +9,15 @@ class EditMode:
     repeat = None
     repeat_str = ''
 
+    _replace_str = False
+    _key_hook = None
+
     def __init__(self):
         self.pending_keys = []
         self.last_command_keys = []
+
+    def install_keyhook(self, hook):
+        self._key_hook = hook
 
     def activated(self, wnd):
         pass
@@ -20,12 +26,18 @@ class EditMode:
         if self.pending_str:
             pending = self.pending_str
             self.pending_str = ''
-            wnd.document.mode.on_str(wnd, pending)
-#            if not wnd.closed:
-#                wnd.update_window()
+            wnd.document.mode.on_str(wnd, pending, self._replace_str)
             return True
 
     def on_keyevent(self, wnd, event):
+        if self._key_hook:
+            f = self._key_hook
+            self._key_hook = None
+            event = f(wnd, event)
+
+        if not event:
+            return
+
         if event.key == '\x1b' and event.no_trailing_char:
             return self.on_esc_pressed(wnd, event)
         else:
@@ -109,6 +121,7 @@ class EditMode:
         kaa.app.messagebar.set_message('')
         self.pending_keys = []
         self.clear_repeat()
+        self._key_hook = None
         del self.last_command_keys[:]
 
         if not wnd.closed:
@@ -144,6 +157,10 @@ class EditMode:
     def set_repeat(self, n):
         self.repeat = n
 
+
+class ReplaceMode(EditMode):
+    MODENAME = 'Replace'
+    _replace_str = True
 
 class CommandMode(EditMode):
     MODENAME = 'Command'

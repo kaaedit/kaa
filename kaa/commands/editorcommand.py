@@ -487,7 +487,7 @@ class EditCommands(Commands):
     def delete_line(self, wnd):
         pos = wnd.cursor.pos
         nextpos = wnd.cursor.adjust_nextpos(
-            pos, wnd.document.find_newline(pos))
+            pos, wnd.document.get_line_to(pos))
         if pos < nextpos:
             wnd.document.mode.delete_string(wnd, pos, nextpos)
 

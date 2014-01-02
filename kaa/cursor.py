@@ -268,7 +268,7 @@ class Cursor:
         self.savecol()
 
     def eol(self, pos):
-        eol = self.wnd.document.find_newline(pos)
+        eol = self.wnd.document.get_line_to(pos)
         nextpos = self.adjust_nextpos(self.pos, eol)
         self.wnd.screen.locate(nextpos, middle=True)
         self.setpos(nextpos)

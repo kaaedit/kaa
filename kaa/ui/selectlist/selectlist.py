@@ -45,7 +45,7 @@ class SelectItemList(dialogmode.DialogMode):
         super().init_keybind()
         self.keybind.add_keybind(selectlist_keys)
 
-    def on_str(self, wnd, s):
+    def on_str(self, wnd, s, overwrite=False):
         pass
 
     def calc_height(self, wnd):

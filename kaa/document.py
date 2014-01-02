@@ -254,7 +254,7 @@ class Document:
         tol = self.buf.rfindchr('\n', 0, pos)
         return 0 if tol == -1 else tol + 1
 
-    def find_newline(self, pos):
+    def get_line_to(self, pos):
         eol = self.buf.findchr('\n', pos, len(self.buf))
         if eol == -1:
             eol = len(self.buf)

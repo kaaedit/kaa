@@ -52,7 +52,7 @@ class MoveSeparatorMode(dialogmode.DialogMode):
     def on_esc_pressed(self, wnd, event):
         self.done(wnd)
 
-    def on_str(self, wnd, s):
+    def on_str(self, wnd, s, overwrite=False):
         pass
 
     @commandid('moveseparator.prev')

@@ -134,6 +134,7 @@ emacs_keys = {
 command_mode_keys = {
     # editmode change
     'i': 'editmode.insert',
+    'R': 'editmode.replace',
     'a': ('editmode.insert', 'cursor.end-of-line'),
     'v': ('editmode.visual', 'selection.set-mark'),
     #    'V': ('editmode.visual-linewise', 'cursor.home', 'selection.set-mark'),
@@ -155,6 +156,7 @@ command_mode_keys = {
     (ctrl, 'f'): 'cursor.pagedown',
 
     # edit
+    'r': 'edit.replace-char',
     'x': 'edit.delete',
 
     # undo/redo

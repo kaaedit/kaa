@@ -81,7 +81,7 @@ class ItemListMode(dialogmode.DialogMode):
         self.cursel = None
         self.selected(wnd)
 
-    def on_str(self, wnd, s):
+    def on_str(self, wnd, s, overwrite=False):
         cursel = self.cursel
         if cursel is None:
             cursel = -1

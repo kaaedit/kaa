@@ -203,7 +203,7 @@ class ModeBase:
                 self.keybind_vi_visuallinewisemode.add_keybind(keys)
 
     def init_commands(self):
-        from kaa.commands import (editorcommand, editmodecommand)
+        from kaa.commands import (editorcommand, editmodecommand, vicommand)
 
         self.register_commandobj(editorcommand.CursorCommands())
         self.register_commandobj(editorcommand.EditCommands())
@@ -211,6 +211,7 @@ class ModeBase:
         self.register_commandobj(editorcommand.SelectionCommands())
         self.register_commandobj(editorcommand.SearchCommands())
         self.register_commandobj(editmodecommand.EditModeCommands())
+        self.register_commandobj(vicommand.ViCommands())
 
         for name in dir(self):
             attr = getattr(self, name)
@@ -251,6 +252,9 @@ class ModeBase:
 
     def editmode_insert(self, wnd):
         wnd.set_editmode(editmode.EditMode())
+
+    def editmode_replace(self, wnd):
+        wnd.set_editmode(editmode.ReplaceMode())
 
     def editmode_visual(self, wnd):
         wnd.set_editmode(editmode.VisualMode())
@@ -313,8 +317,8 @@ class ModeBase:
     def on_edited(self, wnd):
         pass
 
-    def on_str(self, wnd, s):
-        self.put_string(wnd, s)
+    def on_str(self, wnd, s, overwrite=False):
+        self.put_string(wnd, s, overwrite=overwrite)
         wnd.screen.selection.clear()
 
         if kaa.app.macro.is_recording():
@@ -434,8 +438,8 @@ class ModeBase:
                     posto += (len(s) - (t - f))
                 posfrom = wnd.document.geteol(posfrom)
 
-    def put_string(self, wnd, s):
-        s = wnd.document.mode.filter_string(wnd, s)
+    def put_string(self, wnd, s, overwrite=False):
+        s = self.filter_string(wnd, s)
 
         if wnd.screen.selection.is_selected():
             if wnd.screen.selection.is_rectangular():
@@ -449,7 +453,12 @@ class ModeBase:
                 f, t = sel
                 self.replace_string(wnd, f, t, s)
         else:
-            self.insert_string(wnd, wnd.cursor.pos, s)
+            if not overwrite:
+                self.insert_string(wnd, wnd.cursor.pos, s)
+            else:
+                eol = wnd.document.get_line_to(wnd.cursor.pos)
+                posto = min(wnd.cursor.pos+len(s), eol)
+                self.replace_string(wnd, wnd.cursor.pos, posto, s)
 
     def update_charattr(self, wnd):
         if wnd.charattrs:

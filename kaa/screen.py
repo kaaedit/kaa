@@ -669,7 +669,7 @@ class Screen:
                     return pos
                 p += charcols
 
-        return self.document.find_newline(tol)
+        return self.document.get_line_to(tol)
 
     def _fillscreen(self):
         while True:

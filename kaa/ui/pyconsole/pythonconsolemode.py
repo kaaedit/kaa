@@ -87,14 +87,14 @@ class PythonConsoleMode(pythonmode.PythonMode):
         wnd.cursor.setpos(f)
         self.document.undo.clear()
 
-    def put_string(self, wnd, s):
+    def put_string(self, wnd, s, overwrite=False):
         pos = wnd.cursor.pos
         f, t = self.document.marks['current_script']
         if not (f <= pos <= t):
             wnd.cursor.setpos(t)
             wnd.screen.selection.clear()
 
-        super().put_string(wnd, s)
+        super().put_string(wnd, s, overwrite)
 
     def replace_string(self, wnd, pos, posto, s, update_cursor=True):
         f, t = self.document.marks['current_script']
