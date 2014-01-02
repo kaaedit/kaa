@@ -139,7 +139,7 @@ class EditMode:
         return self.repeat is not None
 
     def get_repeat(self):
-        return self.repeat
+        return self.repeat or 1
 
     def set_repeat(self, n):
         self.repeat = n
@@ -153,9 +153,13 @@ class CommandMode(EditMode):
         if not self.pending_keys:
             if (isinstance(event.key, str) and (event.key > '0') and
                     (event.key in string.digits)):
-
                 self.add_repeat_char(wnd, event.key)
                 return
+
+            if (event.key == '0') and self.repeat_str:
+                self.add_repeat_char(wnd, event.key)
+                return
+
 
         super().on_key_pressed(wnd, event)
 

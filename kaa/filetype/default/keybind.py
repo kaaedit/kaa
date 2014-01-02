@@ -132,21 +132,30 @@ emacs_keys = {
 
 # vi like commands
 command_mode_keys = {
-    # command mode
+    # editmode change
+    'i': 'editmode.insert',
+    'a': ('editmode.insert', 'cursor.end-of-line'),
+    'v': ('editmode.visual', 'selection.set-mark'),
+    #    'V': ('editmode.visual-linewise', 'cursor.home', 'selection.set-mark'),
+
+    # cursor command
     'h': 'cursor.left',
     'l': 'cursor.right',
     'k': 'cursor.up',
     'j': 'cursor.down',
-    'gg': 'cursor.top-of-file',
-    'G': 'cursor.end-of-file',
+
+    'w': 'cursor.word-right',
+    'b': 'cursor.word-left',
+
+    '0': 'cursor.top-of-line',
+    '^': 'cursor.first-letter-of-line',
+    '$': 'cursor.end-of-line',
+
+    (ctrl, 'b'): 'cursor.pageup',
+    (ctrl, 'f'): 'cursor.pagedown',
 
     # edit
     'x': 'edit.delete',
-
-    # editmode change
-    'i': 'editmode.insert',
-    'v': ('editmode.visual', 'selection.set-mark'),
-    #    'V': ('editmode.visual-linewise', 'cursor.home', 'selection.set-mark'),
 
     # undo/redo
     'u': 'edit.undo',

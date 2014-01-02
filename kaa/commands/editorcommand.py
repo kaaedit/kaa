@@ -14,17 +14,19 @@ class CursorCommands(Commands):
     @norerun
     def right(self, wnd):
         if wnd.screen.selection.has_mark():
-            wnd.cursor.right()
+            for i in range(wnd.editmode.get_repeat()):
+                wnd.cursor.right()
         elif wnd.screen.selection.is_selected():
-            range = wnd.screen.selection.get_selrange()
-            if wnd.cursor.pos > range[1]:
+            selrange = wnd.screen.selection.get_selrange()
+            if wnd.cursor.pos > selrange[1]:
                 wnd.cursor.right()
             else:
                 wnd.cursor.setpos(wnd.cursor.adjust_nextpos(
-                    wnd.cursor.pos, range[1]))
+                    wnd.cursor.pos, selrange[1]))
         else:
             wnd.document.mode.cancel_auto_indent(wnd)
-            wnd.cursor.right()
+            for i in range(wnd.editmode.get_repeat()):
+                wnd.cursor.right()
 
         wnd.screen.selection.end_cursor()
         wnd.screen.selection.set_to(wnd.cursor.pos)
@@ -34,24 +36,27 @@ class CursorCommands(Commands):
     def right_select(self, wnd):
         wnd.document.mode.cancel_auto_indent(wnd)
         wnd.screen.selection.begin_cursor(wnd.cursor.pos)
-        wnd.cursor.right()
+        for i in range(wnd.editmode.get_repeat()):
+            wnd.cursor.right()
         wnd.screen.selection.set_to(wnd.cursor.pos)
 
     @commandid('cursor.left')
     @norerun
     def left(self, wnd):
         if wnd.screen.selection.has_mark():
-            wnd.cursor.left()
+            for i in range(wnd.editmode.get_repeat()):
+                wnd.cursor.left()
         elif wnd.screen.selection.is_selected():
-            range = wnd.screen.selection.get_selrange()
-            if wnd.cursor.pos < range[0]:
+            selrange = wnd.screen.selection.get_selrange()
+            if wnd.cursor.pos < selrange[0]:
                 wnd.cursor.left()
             else:
                 wnd.cursor.setpos(wnd.cursor.adjust_nextpos(
-                    wnd.cursor.pos, range[0]))
+                    wnd.cursor.pos, selrange[0]))
         else:
             wnd.document.mode.cancel_auto_indent(wnd)
-            wnd.cursor.left()
+            for i in range(wnd.editmode.get_repeat()):
+                wnd.cursor.left()
 
         wnd.screen.selection.end_cursor()
         wnd.screen.selection.set_to(wnd.cursor.pos)
@@ -69,7 +74,8 @@ class CursorCommands(Commands):
     def up(self, wnd):
         wnd.document.mode.cancel_auto_indent(wnd)
         wnd.screen.selection.end_cursor()
-        wnd.cursor.up()
+        for i in range(wnd.editmode.get_repeat()):
+            wnd.cursor.up()
         wnd.screen.selection.set_to(wnd.cursor.pos)
 
     @commandid('cursor.up.select')
@@ -77,7 +83,8 @@ class CursorCommands(Commands):
     def up_select(self, wnd):
         wnd.document.mode.cancel_auto_indent(wnd)
         wnd.screen.selection.begin_cursor(wnd.cursor.pos)
-        wnd.cursor.up()
+        for i in range(wnd.editmode.get_repeat()):
+            wnd.cursor.up()
         wnd.screen.selection.set_to(wnd.cursor.pos)
 
     @commandid('cursor.down')
@@ -85,7 +92,8 @@ class CursorCommands(Commands):
     def down(self, wnd):
         wnd.document.mode.cancel_auto_indent(wnd)
         wnd.screen.selection.end_cursor()
-        wnd.cursor.down()
+        for i in range(wnd.editmode.get_repeat()):
+            wnd.cursor.down()
         wnd.screen.selection.set_to(wnd.cursor.pos)
 
     @commandid('cursor.down.select')
@@ -93,7 +101,8 @@ class CursorCommands(Commands):
     def down_select(self, wnd):
         wnd.document.mode.cancel_auto_indent(wnd)
         wnd.screen.selection.begin_cursor(wnd.cursor.pos)
-        wnd.cursor.down()
+        for i in range(wnd.editmode.get_repeat()):
+            wnd.cursor.down()
         wnd.screen.selection.set_to(wnd.cursor.pos)
 
     @commandid('cursor.prev-line')
@@ -101,7 +110,8 @@ class CursorCommands(Commands):
     def prev_line(self, wnd):
         wnd.document.mode.cancel_auto_indent(wnd)
         wnd.screen.selection.end_cursor()
-        wnd.cursor.prev_line()
+        for i in range(wnd.editmode.get_repeat()):
+            wnd.cursor.prev_line()
         wnd.screen.selection.set_to(wnd.cursor.pos)
 
     @commandid('cursor.next-line')
@@ -109,7 +119,8 @@ class CursorCommands(Commands):
     def next_line(self, wnd):
         wnd.document.mode.cancel_auto_indent(wnd)
         wnd.screen.selection.end_cursor()
-        wnd.cursor.next_line()
+        for i in range(wnd.editmode.get_repeat()):
+            wnd.cursor.next_line()
         wnd.screen.selection.set_to(wnd.cursor.pos)
 
     @commandid('cursor.word-right')
@@ -117,7 +128,8 @@ class CursorCommands(Commands):
     def word_right(self, wnd):
         wnd.document.mode.cancel_auto_indent(wnd)
         wnd.screen.selection.end_cursor()
-        wnd.cursor.right(word=True)
+        for i in range(wnd.editmode.get_repeat()):
+            wnd.cursor.right(word=True)
         wnd.screen.selection.set_to(wnd.cursor.pos)
 
     @commandid('cursor.word-right.select')
@@ -125,7 +137,8 @@ class CursorCommands(Commands):
     def word_right_select(self, wnd):
         wnd.document.mode.cancel_auto_indent(wnd)
         wnd.screen.selection.begin_cursor(wnd.cursor.pos)
-        wnd.cursor.right(word=True)
+        for i in range(wnd.editmode.get_repeat()):
+            wnd.cursor.right(word=True)
         wnd.screen.selection.set_to(wnd.cursor.pos)
 
     @commandid('cursor.word-left')
@@ -133,7 +146,8 @@ class CursorCommands(Commands):
     def word_left(self, wnd):
         wnd.document.mode.cancel_auto_indent(wnd)
         wnd.screen.selection.end_cursor()
-        wnd.cursor.left(word=True)
+        for i in range(wnd.editmode.get_repeat()):
+            wnd.cursor.left(word=True)
         wnd.screen.selection.set_to(wnd.cursor.pos)
 
     @commandid('cursor.word-left.select')
@@ -141,7 +155,8 @@ class CursorCommands(Commands):
     def word_left_select(self, wnd):
         wnd.document.mode.cancel_auto_indent(wnd)
         wnd.screen.selection.begin_cursor(wnd.cursor.pos)
-        wnd.cursor.left(word=True)
+        for i in range(wnd.editmode.get_repeat()):
+            wnd.cursor.left(word=True)
         wnd.screen.selection.set_to(wnd.cursor.pos)
 
     @commandid('cursor.pagedown')
@@ -149,7 +164,8 @@ class CursorCommands(Commands):
     def pagedown(self, wnd):
         wnd.document.mode.cancel_auto_indent(wnd)
         wnd.screen.selection.end_cursor()
-        wnd.cursor.pagedown()
+        for i in range(wnd.editmode.get_repeat()):
+            wnd.cursor.pagedown()
         wnd.screen.selection.set_to(wnd.cursor.pos)
 
     @commandid('cursor.pagedown.select')
@@ -157,7 +173,8 @@ class CursorCommands(Commands):
     def pagedown_select(self, wnd):
         wnd.document.mode.cancel_auto_indent(wnd)
         wnd.screen.selection.begin_cursor(wnd.cursor.pos)
-        wnd.cursor.pagedown()
+        for i in range(wnd.editmode.get_repeat()):
+            wnd.cursor.pagedown()
         wnd.screen.selection.set_to(wnd.cursor.pos)
 
     @commandid('cursor.pageup')
@@ -165,7 +182,8 @@ class CursorCommands(Commands):
     def pageup(self, wnd):
         wnd.document.mode.cancel_auto_indent(wnd)
         wnd.screen.selection.end_cursor()
-        wnd.cursor.pageup()
+        for i in range(wnd.editmode.get_repeat()):
+            wnd.cursor.pageup()
         wnd.screen.selection.set_to(wnd.cursor.pos)
 
     @commandid('cursor.pageup.select')
@@ -173,7 +191,8 @@ class CursorCommands(Commands):
     def pageup_select(self, wnd):
         wnd.document.mode.cancel_auto_indent(wnd)
         wnd.screen.selection.begin_cursor(wnd.cursor.pos)
-        wnd.cursor.pageup()
+        for i in range(wnd.editmode.get_repeat()):
+            wnd.cursor.pageup()
         wnd.screen.selection.set_to(wnd.cursor.pos)
 
     @commandid('cursor.home')
@@ -448,69 +467,75 @@ class EditCommands(Commands):
         if self.delete_sel(wnd):
             return
 
-        pos = wnd.cursor.pos
-        nextpos = wnd.document.get_nextpos(pos)
-        nextpos = wnd.cursor.adjust_nextpos(pos, nextpos)
-        if pos < nextpos:
-            wnd.document.mode.delete_string(wnd, pos, nextpos)
+        for i in range(wnd.editmode.get_repeat()):
+            pos = wnd.cursor.pos
+            nextpos = wnd.document.get_nextpos(pos)
+            nextpos = wnd.cursor.adjust_nextpos(pos, nextpos)
+            if pos < nextpos:
+                wnd.document.mode.delete_string(wnd, pos, nextpos)
 
     @commandid('edit.delete.word')
     def delete_word(self, wnd):
         if self.delete_sel(wnd):
             return
 
-        pos = wnd.cursor.pos
-        wnd.cursor.right(word=True)
-        nextpos = wnd.cursor.pos
-        if pos < nextpos:
-            wnd.document.mode.delete_string(wnd, pos, nextpos)
+        for i in range(wnd.editmode.get_repeat()):
+            pos = wnd.cursor.pos
+            wnd.cursor.right(word=True)
+            nextpos = wnd.cursor.pos
+            if pos < nextpos:
+                wnd.document.mode.delete_string(wnd, pos, nextpos)
 
     @commandid('edit.delete.line')
     def delete_line(self, wnd):
-        pos = wnd.cursor.pos
-        nextpos = wnd.cursor.adjust_nextpos(
-            pos, wnd.document.find_newline(pos))
-        if pos < nextpos:
-            wnd.document.mode.delete_string(wnd, pos, nextpos)
+        for i in range(wnd.editmode.get_repeat()):
+            pos = wnd.cursor.pos
+            nextpos = wnd.cursor.adjust_nextpos(
+                pos, wnd.document.find_newline(pos))
+            if pos < nextpos:
+                wnd.document.mode.delete_string(wnd, pos, nextpos)
 
     @commandid('edit.delete.currentline')
     def delete_currentline(self, wnd):
-        pos = wnd.cursor.pos
-        f = wnd.cursor.adjust_nextpos(pos, wnd.document.gettol(pos))
-        t = wnd.cursor.adjust_nextpos(pos, wnd.document.geteol(f))
+        for i in range(wnd.editmode.get_repeat()):
+            pos = wnd.cursor.pos
+            f = wnd.cursor.adjust_nextpos(pos, wnd.document.gettol(pos))
+            t = wnd.cursor.adjust_nextpos(pos, wnd.document.geteol(f))
 
-        if f < t:
-            wnd.document.mode.delete_string(wnd, f, t)
+            if f < t:
+                wnd.document.mode.delete_string(wnd, f, t)
 
     @commandid('edit.backspace')
     def backspace(self, wnd):
         if self.delete_sel(wnd):
             return
 
-        pos = wnd.cursor.pos
-        prevpos = wnd.cursor.adjust_nextpos(
-            pos, wnd.document.get_prevpos(pos))
-        if prevpos < pos:
-            if pos == wnd.screen.pos:
-                # locate cursor before delete to scroll half page up
-                wnd.cursor.setpos(prevpos)
+        for i in range(wnd.editmode.get_repeat()):
+            pos = wnd.cursor.pos
+            prevpos = wnd.cursor.adjust_nextpos(
+                pos, wnd.document.get_prevpos(pos))
+            if prevpos < pos:
+                if pos == wnd.screen.pos:
+                    # locate cursor before delete to scroll half page up
+                    wnd.cursor.setpos(prevpos)
 
-            wnd.document.mode.delete_string(wnd, prevpos, pos)
+                wnd.document.mode.delete_string(wnd, prevpos, pos)
 
     @commandid('edit.backspace.word')
     def backspace_word(self, wnd):
         if self.delete_sel(wnd):
             return
 
-        pos = wnd.cursor.pos
-        wnd.cursor.left(word=True)
-        prevpos = wnd.cursor.pos
-        if prevpos < pos:
-            if prevpos < wnd.screen.pos:
-                # locate cursor before delete to scroll half page up
-                wnd.cursor.setpos(prevpos)
+        for i in range(wnd.editmode.get_repeat()):
+            pos = wnd.cursor.pos
+            wnd.cursor.left(word=True)
+            prevpos = wnd.cursor.pos
+            if prevpos < pos:
+                if prevpos < wnd.screen.pos:
+                    # locate cursor before delete to scroll half page up
+                    wnd.cursor.setpos(prevpos)
 
-            wnd.document.mode.delete_string(wnd, prevpos, pos)
+                wnd.document.mode.delete_string(wnd, prevpos, pos)
 
     @commandid('edit.newline')
     @norerun
@@ -545,33 +570,34 @@ class EditCommands(Commands):
             self._indent_line(wnd, wnd.cursor.pos)
             return
 
-        doc = wnd.document
-        tol, eol = doc.mode.get_line_sel(wnd)
-        wnd.screen.selection.set_range(tol, eol)
+        for i in range(wnd.editmode.get_repeat()):
+            doc = wnd.document
+            tol, eol = doc.mode.get_line_sel(wnd)
+            wnd.screen.selection.set_range(tol, eol)
 
-        if wnd.document.undo:
-            wnd.document.undo.beginblock()
-        try:
-            mode = wnd.document.mode
-            while tol < wnd.screen.selection.get_end():
-                f, t = mode.get_indent_range(tol)
-                if f != t:
-                    cols = mode.calc_cols(f, t)
-                else:
-                    cols = 0
-
-                endpos = doc.endpos()
-                eol = doc.geteol(tol)
-
-                if (t + 1 < eol != endpos) or (t < eol == endpos):
-                    s = mode.build_indent_str(cols + mode.indent_width)
-                    mode.replace_string(wnd, f, t, s, False)
-                    tol = eol + (len(s) - (t - f))
-                else:
-                    tol = eol
-        finally:
             if wnd.document.undo:
-                wnd.document.undo.endblock()
+                wnd.document.undo.beginblock()
+            try:
+                mode = wnd.document.mode
+                while tol < wnd.screen.selection.get_end():
+                    f, t = mode.get_indent_range(tol)
+                    if f != t:
+                        cols = mode.calc_cols(f, t)
+                    else:
+                        cols = 0
+
+                    endpos = doc.endpos()
+                    eol = doc.geteol(tol)
+
+                    if (t + 1 < eol != endpos) or (t < eol == endpos):
+                        s = mode.build_indent_str(cols + mode.indent_width)
+                        mode.replace_string(wnd, f, t, s, False)
+                        tol = eol + (len(s) - (t - f))
+                    else:
+                        tol = eol
+            finally:
+                if wnd.document.undo:
+                    wnd.document.undo.endblock()
 
         f, t = wnd.screen.selection.get_selrange()
         wnd.cursor.setpos(f)
@@ -594,29 +620,30 @@ class EditCommands(Commands):
             self._dedent_line(wnd, wnd.cursor.pos)
             return
 
-        doc = wnd.document
-        tol, eol = doc.mode.get_line_sel(wnd)
-        wnd.screen.selection.set_range(tol, eol)
+        for i in range(wnd.editmode.get_repeat()):
+            doc = wnd.document
+            tol, eol = doc.mode.get_line_sel(wnd)
+            wnd.screen.selection.set_range(tol, eol)
 
-        if wnd.document.undo:
-            wnd.document.undo.beginblock()
-        try:
-            mode = wnd.document.mode
-            while tol < wnd.screen.selection.get_end():
-                f, t = mode.get_indent_range(tol)
-                if f != t:
-                    cols = mode.calc_cols(f, t)
-                else:
-                    cols = 0
-
-                if cols:
-                    s = mode.build_indent_str(max(0, cols - mode.indent_width))
-                    mode.replace_string(wnd, f, t, s, False)
-
-                tol = doc.geteol(tol)
-        finally:
             if wnd.document.undo:
-                wnd.document.undo.endblock()
+                wnd.document.undo.beginblock()
+            try:
+                mode = wnd.document.mode
+                while tol < wnd.screen.selection.get_end():
+                    f, t = mode.get_indent_range(tol)
+                    if f != t:
+                        cols = mode.calc_cols(f, t)
+                    else:
+                        cols = 0
+
+                    if cols:
+                        s = mode.build_indent_str(max(0, cols - mode.indent_width))
+                        mode.replace_string(wnd, f, t, s, False)
+
+                    tol = doc.geteol(tol)
+            finally:
+                if wnd.document.undo:
+                    wnd.document.undo.endblock()
 
         f, t = wnd.screen.selection.get_selrange()
         wnd.cursor.setpos(f)
@@ -641,17 +668,18 @@ class EditCommands(Commands):
     @commandid('edit.undo')
     @norerun
     def undo(self, wnd):
-        if wnd.document.undo and wnd.document.undo.can_undo():
-            wnd.screen.selection.clear()
-            pos = None
-            for rec in wnd.document.undo.undo():
-                pos = self._undo(wnd, rec)
+        for i in range(wnd.editmode.get_repeat()):
+            if wnd.document.undo and wnd.document.undo.can_undo():
+                wnd.screen.selection.clear()
+                pos = None
+                for rec in wnd.document.undo.undo():
+                    pos = self._undo(wnd, rec)
 
-            if pos is not None:
-                wnd.cursor.setpos(pos)
-                wnd.cursor.savecol()
+                if pos is not None:
+                    wnd.cursor.setpos(pos)
+                    wnd.cursor.savecol()
 
-            wnd.document.mode.on_edited(wnd)
+                wnd.document.mode.on_edited(wnd)
 
     def _redo(self, wnd, rec):
         (action, args, kwargs) = rec
@@ -672,17 +700,18 @@ class EditCommands(Commands):
     @commandid('edit.redo')
     @norerun
     def redo(self, wnd):
-        if wnd.document.undo and wnd.document.undo.can_redo():
-            wnd.screen.selection.clear()
-            pos = None
-            for rec in wnd.document.undo.redo():
-                pos = self._redo(wnd, rec)
+        for i in range(wnd.editmode.get_repeat()):
+            if wnd.document.undo and wnd.document.undo.can_redo():
+                wnd.screen.selection.clear()
+                pos = None
+                for rec in wnd.document.undo.redo():
+                    pos = self._redo(wnd, rec)
 
-            if pos is not None:
-                wnd.cursor.setpos(pos)
-                wnd.cursor.savecol()
+                if pos is not None:
+                    wnd.cursor.setpos(pos)
+                    wnd.cursor.savecol()
 
-            wnd.document.mode.on_edited(wnd)
+                wnd.document.mode.on_edited(wnd)
 
     def _get_sel(self, wnd):
         if wnd.screen.selection.is_selected():

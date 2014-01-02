@@ -94,7 +94,7 @@ class Window(kaa.context.Context):
 
         self._panel.top()
         if self.cursor:
-            x, y = self.cursor.screenpos
+            x, y = self.cursor.last_screenpos
             if (y, x) != self._cwnd.getyx():
                 h, w = self._cwnd.getmaxyx()
                 if y < h and x < w and y >= 0 and x >= 0:

@@ -54,6 +54,7 @@ class _dialogwnd(wnd.Window, kaa.context.ContextRoot):
 
     def on_focus(self):
         """Got focus"""
+        super().on_focus()
         if self.parent and not self.parent.closed:
             self.parent.focused_child = self
 

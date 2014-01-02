@@ -186,6 +186,10 @@ class TextEditorWindow(Window):
         return ret
 
     def draw_screen(self, force=False):
+        if 'statusbar' in repr(self.document.mode):
+            return
+        if 'messagebar' in repr(self.document.mode):
+            return
         try:
             self._draw_screen(force=force)
         except curses.error:
@@ -201,10 +205,10 @@ class TextEditorWindow(Window):
         self.screen.apply_updates()
         self.screen.row_drawn()
 
-#        # save cursor position
-#        if kaa.app.focus:
-#            if self.document.mode.is_cursor_visible():
-#                cury, curx = kaa.app.focus._cwnd.getyx()
+        # save cursor position
+        if kaa.app.focus:
+            if self.document.mode.is_cursor_visible():
+                cury, curx = kaa.app.focus._cwnd.getyx()
 
         h, w = self._cwnd.getmaxyx()
 
@@ -330,7 +334,7 @@ class TextEditorWindow(Window):
 #        if kaa.app.focus:
 #            if self.document.mode.is_cursor_visible():
 #                kaa.app.focus._cwnd.move(cury, curx)
-#
+        _trace('===================== draw', self.document.mode)
         return
 
     def on_document_updated(self, pos, inslen, dellen):
