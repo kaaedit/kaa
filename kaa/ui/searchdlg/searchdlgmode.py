@@ -534,12 +534,10 @@ class ReplaceDlgMode(SearchDlgMode):
         self.lastsearch = None
         newstr = self.get_replace_str()
 
-        if self.target.document.undo:
-            self.target.document.undo.beginblock()
         pos = 0
         n = 0
         lastpos = None
-        try:
+        with self.target.document.undo_group():
             while True:
                 ret = self.target.document.mode.search_next(pos, self.option)
                 self.lasthit = ret.span() if ret else None
@@ -551,9 +549,6 @@ class ReplaceDlgMode(SearchDlgMode):
                     n += 1
                 else:
                     break
-        finally:
-            if self.target.document.undo:
-                self.target.document.undo.endblock()
 
         if lastpos is not None:
             self.target.cursor.setpos(lastpos)

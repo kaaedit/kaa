@@ -440,9 +440,7 @@ class EditCommands(Commands):
                 return self._delete_rect_sel(wnd)
 
     def _delete_rect_sel(self, wnd):
-        if wnd.document.undo:
-            wnd.document.undo.beginblock()
-        try:
+        with wnd.document.undo_group():
             (posfrom, posto, colfrom, colto
              ) = wnd.screen.selection.get_rect_range()
 
@@ -458,9 +456,6 @@ class EditCommands(Commands):
                 posfrom = wnd.document.geteol(posfrom)
 
             return True
-        finally:
-            if wnd.document.undo:
-                wnd.document.undo.endblock()
 
     @commandid('edit.delete')
     def delete(self, wnd):
@@ -578,9 +573,7 @@ class EditCommands(Commands):
             tol, eol = doc.mode.get_line_sel(wnd)
             wnd.screen.selection.set_range(tol, eol)
 
-            if wnd.document.undo:
-                wnd.document.undo.beginblock()
-            try:
+            with wnd.document.undo_group():
                 mode = wnd.document.mode
                 while tol < wnd.screen.selection.get_end():
                     f, t = mode.get_indent_range(tol)
@@ -598,9 +591,6 @@ class EditCommands(Commands):
                         tol = eol + (len(s) - (t - f))
                     else:
                         tol = eol
-            finally:
-                if wnd.document.undo:
-                    wnd.document.undo.endblock()
 
         f, t = wnd.screen.selection.get_selrange()
         wnd.cursor.setpos(f)
@@ -628,9 +618,7 @@ class EditCommands(Commands):
             tol, eol = doc.mode.get_line_sel(wnd)
             wnd.screen.selection.set_range(tol, eol)
 
-            if wnd.document.undo:
-                wnd.document.undo.beginblock()
-            try:
+            with wnd.document.undo_group():
                 mode = wnd.document.mode
                 while tol < wnd.screen.selection.get_end():
                     f, t = mode.get_indent_range(tol)
@@ -645,9 +633,6 @@ class EditCommands(Commands):
                         mode.replace_string(wnd, f, t, s, False)
 
                     tol = doc.geteol(tol)
-            finally:
-                if wnd.document.undo:
-                    wnd.document.undo.endblock()
 
         f, t = wnd.screen.selection.get_selrange()
         wnd.cursor.setpos(f)
@@ -760,7 +745,7 @@ class EditCommands(Commands):
     def paste(self, wnd):
         s = kaa.app.clipboard.get()
         if s:
-            with wnd.document.undo.group():
+            with wnd.document.undo_group():
                 for i in range(wnd.editmode.get_repeat()):
                     wnd.document.mode.put_string(wnd, s)
                     wnd.screen.selection.clear()
@@ -835,18 +820,13 @@ class CodeCommands(Commands):
             tol, eol = wnd.document.mode.get_line_sel(wnd)
             wnd.screen.selection.set_range(tol, eol)
 
-            if wnd.document.undo:
-                wnd.document.undo.beginblock()
-            try:
+            with wnd.document.undo_group():
                 mode = wnd.document.mode
                 while tol < wnd.screen.selection.get_end():
                     wnd.document.mode.insert_string(
                         wnd, tol, wnd.document.mode.LINE_COMMENT,
                         update_cursor=False)
                     tol = wnd.document.geteol(tol)
-            finally:
-                if wnd.document.undo:
-                    wnd.document.undo.endblock()
 
             f, t = wnd.screen.selection.get_selrange()
             wnd.cursor.setpos(f)
@@ -871,9 +851,7 @@ class CodeCommands(Commands):
             tol, eol = wnd.document.mode.get_line_sel(wnd)
             wnd.screen.selection.set_range(tol, eol)
 
-            if wnd.document.undo:
-                wnd.document.undo.beginblock()
-            try:
+            with wnd.document.undo_group():
                 mode = wnd.document.mode
                 while tol < wnd.screen.selection.get_end():
                     m = self._is_comment_line(wnd, tol)
@@ -882,9 +860,6 @@ class CodeCommands(Commands):
                         wnd.document.mode.delete_string(
                             wnd, f, t, update_cursor=False)
                     tol = wnd.document.geteol(tol)
-            finally:
-                if wnd.document.undo:
-                    wnd.document.undo.endblock()
 
             f, t = wnd.screen.selection.get_selrange()
             wnd.cursor.setpos(f)

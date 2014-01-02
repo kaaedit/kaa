@@ -416,9 +416,7 @@ class ModeBase:
             self.on_edited(wnd)
 
     def replace_rect(self, wnd, repto):
-        if wnd.document.undo:
-            wnd.document.undo.beginblock()
-        try:
+        with wnd.document.undo_group():
             (posfrom, posto, colfrom, colto
              ) = wnd.screen.selection.get_rect_range()
 
@@ -435,9 +433,6 @@ class ModeBase:
                     self.replace_string(wnd, f, t, s)
                     posto += (len(s) - (t - f))
                 posfrom = wnd.document.geteol(posfrom)
-        finally:
-            if wnd.document.undo:
-                wnd.document.undo.endblock()
 
     def put_string(self, wnd, s):
         s = wnd.document.mode.filter_string(wnd, s)
