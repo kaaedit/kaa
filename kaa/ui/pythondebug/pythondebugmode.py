@@ -387,8 +387,7 @@ class PythonDebuggerPanel(dialogmode.DialogMode):
 
 
 def show_callstack(port, stack):
-    buf = document.Buffer()
-    doc = document.Document(buf)
+    doc = document.Document()
     doc.set_title('Python call stack')
     mode = PythonDebuggerPanel()
     mode.port = port
@@ -399,8 +398,7 @@ def show_callstack(port, stack):
     dlg = kaa.app.show_inputline(doc)
     ret = dlg.get_label('editor')
 
-    buf = document.Buffer()
-    stacklist = document.Document(buf)
+    stacklist = document.Document()
     stacklistmode = PythonStackList()
     stacklist.setmode(stacklistmode)
     stacklistmode.build(stack)

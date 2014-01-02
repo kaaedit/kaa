@@ -276,8 +276,7 @@ class PythonInputlineMode(dialogmode.DialogMode, pythonmode.PythonMode):
 
     @classmethod
     def build(cls, target, s):
-        buf = document.Buffer()
-        doc = document.Document(buf)
+        doc = document.Document()
         doc.append(s)
         mode = cls()
         doc.setmode(mode)
@@ -286,8 +285,7 @@ class PythonInputlineMode(dialogmode.DialogMode, pythonmode.PythonMode):
 
 
 def show_console():
-    buf = document.Buffer()
-    cons = document.Document(buf)
+    cons = document.Document()
     mode = PythonConsoleMode()
     cons.setmode(mode)
     cons.set_title('<Python console>')

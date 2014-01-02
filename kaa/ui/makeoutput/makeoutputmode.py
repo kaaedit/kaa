@@ -5,8 +5,7 @@ from kaa import doc_re
 
 
 def show(commandline, s):
-    buf = document.Buffer()
-    doc = document.Document(buf)
+    doc = document.Document()
     doc.set_title(' '.join(commandline.split()))
     mode = MakeoutputMode()
     doc.setmode(mode)

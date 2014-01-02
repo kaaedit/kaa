@@ -110,8 +110,7 @@ class OpenFilenameDlgMode(dialogmode.DialogMode):
 
     @classmethod
     def build(cls, filename, newline, encoding, callback):
-        buf = document.Buffer()
-        doc = document.Document(buf)
+        doc = document.Document()
         mode = cls()
         doc.setmode(mode)
 
@@ -472,8 +471,7 @@ class SelectDirDlgMode(OpenFilenameDlgMode):
 
     @classmethod
     def build(cls, filename, callback):
-        buf = document.Buffer()
-        doc = document.Document(buf)
+        doc = document.Document()
         mode = cls()
         doc.setmode(mode)
 

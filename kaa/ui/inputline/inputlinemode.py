@@ -111,8 +111,7 @@ class InputlineMode(dialogmode.DialogMode):
 
     @classmethod
     def build(cls, caption, callback, filter=None, history=(), value=''):
-        buf = document.Buffer()
-        doc = document.Document(buf)
+        doc = document.Document()
         mode = cls()
         doc.setmode(mode)
         mode.caption = caption

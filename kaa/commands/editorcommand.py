@@ -874,8 +874,7 @@ class SearchCommands(Commands):
     def showsearch(self, wnd):
         from kaa.ui.searchdlg import searchdlgmode
 
-        buf = document.Buffer()
-        doc = document.Document(buf)
+        doc = document.Document()
         mode = searchdlgmode.SearchDlgMode(target=wnd)
         doc.setmode(mode)
         mode.build_document()
@@ -888,8 +887,7 @@ class SearchCommands(Commands):
     def showreplace(self, wnd):
         from kaa.ui.searchdlg import searchdlgmode
 
-        buf = document.Buffer()
-        doc = document.Document(buf)
+        doc = document.Document()
         mode = searchdlgmode.ReplaceDlgMode(target=wnd)
         doc.setmode(mode)
         mode.build_document()

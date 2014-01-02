@@ -28,8 +28,7 @@ class ItemListMode(dialogmode.DialogMode):
 
     @classmethod
     def build(cls, caption, items, sel, callback, onchange=None):
-        buf = document.Buffer()
-        doc = document.Document(buf)
+        doc = document.Document()
         mode = cls()
         doc.setmode(mode)
 

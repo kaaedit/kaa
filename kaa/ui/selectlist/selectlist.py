@@ -32,8 +32,7 @@ class SelectItemList(dialogmode.DialogMode):
 
     @classmethod
     def build(cls):
-        buf = document.Buffer()
-        doc = document.Document(buf)
+        doc = document.Document()
         mode = cls()
         doc.setmode(mode)
 

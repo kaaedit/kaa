@@ -60,8 +60,7 @@ def view_diff(curdoc, callback=None):
     diff = ''.join(difflib.unified_diff(org_lines, cur_lines,
                                         curdoc.fileinfo.fullpathname, '(buffer)'))
 
-    buf = document.Buffer()
-    doc = document.Document(buf)
+    doc = document.Document()
     doc.insert(0, diff)
 
     mode = ViewDiffMode()

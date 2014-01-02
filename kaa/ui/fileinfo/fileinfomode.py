@@ -258,8 +258,7 @@ class FileInfoMode(dialogmode.DialogMode):
 
 
 def show_fileinfo(target):
-    buf = document.Buffer()
-    doc = document.Document(buf)
+    doc = document.Document()
     mode = FileInfoMode(target)
     doc.setmode(mode)
 

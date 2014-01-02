@@ -72,8 +72,7 @@ class CuiApp:
         from kaa.ui.messagebar import messagebarmode
         self.messagebar = messagebarmode.MessageBarMode()
 
-        buf = document.Buffer()
-        doc = document.Document(buf)
+        doc = document.Document()
         doc.setmode(self.messagebar)
         mainframe.set_messagebar(doc)
 

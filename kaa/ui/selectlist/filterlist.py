@@ -102,8 +102,7 @@ class FilterListInputDlgMode(dialogmode.DialogMode):
 
     @classmethod
     def build(cls, caption, callback):
-        buf = document.Buffer()
-        doc = document.Document(buf)
+        doc = document.Document()
         mode = cls()
         doc.setmode(mode)
 

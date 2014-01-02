@@ -206,8 +206,7 @@ def _search(dir, option, doc):
 def grep(option, target):
 
     if not target:
-        buf = document.Buffer()
-        doc = document.Document(buf)
+        doc = document.Document()
         mode = GrepMode()
         doc.setmode(mode)
     else:

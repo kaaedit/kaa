@@ -74,8 +74,7 @@ class MsgBoxMode(dialogmode.DialogMode):
 
     @classmethod
     def build_msgbox(cls, caption, options, callback, keys=None, border=False):
-        buf = document.Buffer()
-        doc = document.Document(buf)
+        doc = document.Document()
         mode = cls()
         mode.callback = callback
         mode.keys = keys

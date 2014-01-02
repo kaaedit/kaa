@@ -154,8 +154,7 @@ class Splitter:
     def _build_statusbar(self):
         self.statusbar = editor.TextEditorWindow(parent=self.frame)
 
-        buf = document.Buffer()
-        doc = document.Document(buf)
+        doc = document.Document()
         mode = statusbarmode.StatusBarMode()
         doc.setmode(mode)
         self.statusbar.show_doc(doc)

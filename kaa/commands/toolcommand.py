@@ -164,8 +164,7 @@ class ToolCommands(Commands):
     def showgrep(self, wnd):
         from kaa.ui.grep import grepdlgmode
 
-        buf = document.Buffer()
-        doc = document.Document(buf)
+        doc = document.Document()
         mode = grepdlgmode.GrepDlgMode(wnd)
         doc.setmode(mode)
         mode.build_document()

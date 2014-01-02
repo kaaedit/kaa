@@ -17,8 +17,7 @@ class SpellCheckerWordInputMode(wordcompletemode.WordCompleteInputMode):
 
     @classmethod
     def build(cls, target):
-        buf = document.Buffer()
-        doc = document.Document(buf)
+        doc = document.Document()
         mode = cls()
         doc.setmode(mode)
         mode.target = target

@@ -74,8 +74,7 @@ class PasteLinesMode(dialogmode.DialogMode):
 
     @classmethod
     def build(cls, target):
-        buf = document.Buffer()
-        doc = document.Document(buf)
+        doc = document.Document()
         mode = cls()
         doc.setmode(mode)
         mode.target = target
