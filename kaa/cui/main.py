@@ -116,7 +116,9 @@ def main(stdscr):
                         dirname = filename
                 else:
                     doc = kaa.app.storage.openfile(filename)
-                    kaa.app.show_doc(doc)
+                    editor = kaa.app.show_doc(doc)
+                    kaa.app.file_commands.restore_file_loc(editor)
+
 
             if dirname:
                 from kaa.ui.selectfile import selectfile

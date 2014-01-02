@@ -43,7 +43,7 @@ class FileCommands(Commands):
                 wnd.activate()
             return True
 
-    def _restore_file_loc(self, wnd):
+    def restore_file_loc(self, wnd):
         if wnd.document.fileinfo:
             disp = kaa.app.config.hist('filedisp').find(
                 wnd.document.fileinfo.fullpathname)
@@ -68,7 +68,7 @@ class FileCommands(Commands):
 
             doc = kaa.app.storage.openfile(filename, encoding, newline)
             editor = kaa.app.show_doc(doc)
-            self._restore_file_loc(editor)
+            self.restore_file_loc(editor)
 
         from kaa.ui.selectfile import selectfile
         selectfile.show_fileopen(filename, cb)
@@ -410,7 +410,7 @@ class FileCommands(Commands):
                 doc = kaa.app.storage.openfile(filename, encoding, newline)
 
             wnd.show_doc(doc)
-            self._restore_file_loc(wnd)
+            self.restore_file_loc(wnd)
 
         def saved(canceled):
             if canceled:
