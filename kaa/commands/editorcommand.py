@@ -467,75 +467,78 @@ class EditCommands(Commands):
         if self.delete_sel(wnd):
             return
 
+        pos = nextpos = wnd.cursor.pos
         for i in range(wnd.editmode.get_repeat()):
-            pos = wnd.cursor.pos
-            nextpos = wnd.document.get_nextpos(pos)
-            nextpos = wnd.cursor.adjust_nextpos(pos, nextpos)
-            if pos < nextpos:
-                wnd.document.mode.delete_string(wnd, pos, nextpos)
+            nextpos = wnd.document.get_nextpos(nextpos)
+
+        nextpos = wnd.cursor.adjust_nextpos(pos, nextpos)
+        if pos < nextpos:
+            wnd.document.mode.delete_string(wnd, pos, nextpos)
 
     @commandid('edit.delete.word')
     def delete_word(self, wnd):
         if self.delete_sel(wnd):
             return
 
+        pos =  wnd.cursor.pos
         for i in range(wnd.editmode.get_repeat()):
-            pos = wnd.cursor.pos
             wnd.cursor.right(word=True)
-            nextpos = wnd.cursor.pos
-            if pos < nextpos:
-                wnd.document.mode.delete_string(wnd, pos, nextpos)
+
+        nextpos = wnd.cursor.pos
+        if pos < nextpos:
+            wnd.document.mode.delete_string(wnd, pos, nextpos)
 
     @commandid('edit.delete.line')
     def delete_line(self, wnd):
-        for i in range(wnd.editmode.get_repeat()):
-            pos = wnd.cursor.pos
-            nextpos = wnd.cursor.adjust_nextpos(
-                pos, wnd.document.find_newline(pos))
-            if pos < nextpos:
-                wnd.document.mode.delete_string(wnd, pos, nextpos)
+        pos = wnd.cursor.pos
+        nextpos = wnd.cursor.adjust_nextpos(
+            pos, wnd.document.find_newline(pos))
+        if pos < nextpos:
+            wnd.document.mode.delete_string(wnd, pos, nextpos)
 
     @commandid('edit.delete.currentline')
     def delete_currentline(self, wnd):
+        pos = wnd.cursor.pos
+        f = t = wnd.cursor.adjust_nextpos(pos, wnd.document.gettol(pos))
         for i in range(wnd.editmode.get_repeat()):
-            pos = wnd.cursor.pos
-            f = wnd.cursor.adjust_nextpos(pos, wnd.document.gettol(pos))
-            t = wnd.cursor.adjust_nextpos(pos, wnd.document.geteol(f))
+            t = wnd.cursor.adjust_nextpos(pos, wnd.document.geteol(t))
 
-            if f < t:
-                wnd.document.mode.delete_string(wnd, f, t)
+        if f < t:
+            wnd.document.mode.delete_string(wnd, f, t)
 
     @commandid('edit.backspace')
     def backspace(self, wnd):
         if self.delete_sel(wnd):
             return
 
+        pos = prevpos = wnd.cursor.pos
         for i in range(wnd.editmode.get_repeat()):
-            pos = wnd.cursor.pos
             prevpos = wnd.cursor.adjust_nextpos(
-                pos, wnd.document.get_prevpos(pos))
-            if prevpos < pos:
-                if pos == wnd.screen.pos:
-                    # locate cursor before delete to scroll half page up
-                    wnd.cursor.setpos(prevpos)
+                pos, wnd.document.get_prevpos(prevpos))
 
-                wnd.document.mode.delete_string(wnd, prevpos, pos)
+        if prevpos < pos:
+            if pos == wnd.screen.pos:
+                # locate cursor before delete to scroll half page up
+                wnd.cursor.setpos(prevpos)
+
+            wnd.document.mode.delete_string(wnd, prevpos, pos)
 
     @commandid('edit.backspace.word')
     def backspace_word(self, wnd):
         if self.delete_sel(wnd):
             return
 
+        pos = wnd.cursor.pos
         for i in range(wnd.editmode.get_repeat()):
-            pos = wnd.cursor.pos
             wnd.cursor.left(word=True)
-            prevpos = wnd.cursor.pos
-            if prevpos < pos:
-                if prevpos < wnd.screen.pos:
-                    # locate cursor before delete to scroll half page up
-                    wnd.cursor.setpos(prevpos)
 
-                wnd.document.mode.delete_string(wnd, prevpos, pos)
+        prevpos = wnd.cursor.pos
+        if prevpos < pos:
+            if prevpos < wnd.screen.pos:
+                # locate cursor before delete to scroll half page up
+                wnd.cursor.setpos(prevpos)
+
+            wnd.document.mode.delete_string(wnd, prevpos, pos)
 
     @commandid('edit.newline')
     @norerun
@@ -756,8 +759,10 @@ class EditCommands(Commands):
     def paste(self, wnd):
         s = kaa.app.clipboard.get()
         if s:
-            wnd.document.mode.put_string(wnd, s)
-            wnd.screen.selection.clear()
+            with wnd.document.undo.group():
+                for i in range(wnd.editmode.get_repeat()):
+                    wnd.document.mode.put_string(wnd, s)
+                    wnd.screen.selection.clear()
 
     @commandid('edit.conv.upper')
     def conv_upper(self, wnd):
@@ -966,6 +971,7 @@ class SearchCommands(Commands):
 
         if not ret:
             if start != wnd.document.endpos():
-                ret = wnd.document.mode.search_prev(wnd.document.endpos(),
-                                                    modebase.SearchOption.LAST_SEARCH)
+                ret = wnd.document.mode.search_prev(
+                        wnd.document.endpos(),
+                        modebase.SearchOption.LAST_SEARCH)
                 self._show_searchresult(wnd, ret)

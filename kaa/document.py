@@ -1,3 +1,4 @@
+import contextlib
 import weakref
 import re
 import gappedbuf
@@ -432,6 +433,12 @@ class Undo:
             self._next_undo = len(self._actions)
         else:
             block._closed = True
+
+    @contextlib.contextmanager
+    def group(self):
+        self.beginblock()
+        yield None
+        self.endblock()
 
     def _add(self, action, *args, **kwargs):
         # Can not redo thereafter
