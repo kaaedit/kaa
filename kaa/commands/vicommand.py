@@ -18,7 +18,7 @@ class ViCommands(Commands):
 
     def hook_replacechar(self, wnd, keyevent):
         s = keyevent.key[0]
-        if s >= ' ':
+        if isinstance(s, str) and s >= ' ':
             wnd.document.mode.put_string(wnd, s, overwrite=True)
             return None
         return keyevent
