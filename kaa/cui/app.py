@@ -291,6 +291,7 @@ class CuiApp:
                     kaa.log.error('Internal error: invalid focus window.')
                     break
 
+                self.focus.restore_cursor_pos()
                 if not nonblocking:
                     # update screen before sleep.
                     curses.panel.update_panels()

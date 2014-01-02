@@ -89,16 +89,18 @@ class Window(kaa.context.Context):
     _lasterror = ''
     _skipped = 0
 
-    def do_input(self, nonblocking):
-        """Get an input from curses"""
-
-        self._panel.top()
+    def restore_cursor_pos(self):
         if self.cursor:
             x, y = self.cursor.last_screenpos
             if (y, x) != self._cwnd.getyx():
                 h, w = self._cwnd.getmaxyx()
                 if y < h and x < w and y >= 0 and x >= 0:
                     self._cwnd.move(y, x)
+
+    def do_input(self, nonblocking):
+        """Get an input from curses"""
+
+        self._panel.top()
 
         if nonblocking:
             self._cwnd.timeout(0)

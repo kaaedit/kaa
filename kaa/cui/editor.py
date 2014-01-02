@@ -334,7 +334,6 @@ class TextEditorWindow(Window):
 #        if kaa.app.focus:
 #            if self.document.mode.is_cursor_visible():
 #                kaa.app.focus._cwnd.move(cury, curx)
-        _trace('===================== draw', self.document.mode)
         return
 
     def on_document_updated(self, pos, inslen, dellen):
