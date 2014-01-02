@@ -74,7 +74,7 @@ class PythonMode(defaultmode.DefaultMode):
             Keywords('python-statement', 'keyword', KEYWORDS),
             Keywords('python-constant', 'constant', CONSTANTS),
             SingleToken('python-decorator', 'directive',
-                        [r'@\w+']),
+                        [r'@\w[\w.]*']),
             SingleToken('python-numeric', 'number',
                         [r'\b[0-9]+(\.[0-9]*)*\b', r'\b\.[0-9]+\b']),
             Span('python-comment', 'comment', r'\#', '$', escape='\\'),
