@@ -661,12 +661,13 @@ Vi binding
 .. warning::
    Python debugger is experimental at this point.
 
-Kaa currentry supports some basic vi-like key bindings. To activate vi bindings, create `~/.kaa/__kaa__.py` file with following lines.
+Kaa currentry supports some basic vi-like key bindings, but are disabled by default. To activate vi bindings, create `~/.kaa/__kaa__.py` file with following lines.
 
 .. code:: python
 
    from kaa.filetype.default.defaultmode import DefaultMode
    DefaultMode.VI_COMMAND_MODE = True
+
 
 Command mode
 ++++++++++++++++++
@@ -859,9 +860,19 @@ Links
 Version history
 =================
 
+0.31.0 - 2014.1.3
+--------------------
+
+- Cursor position was wrong at start up.
+
+- Add some vi-like commands.
+
+
+Past versions
+--------------
 
 0.30.0 - 2014.1.1
---------------------
++++++++++++++++++++++
 
 - Fix error on reloading modified file.
 
@@ -869,8 +880,6 @@ Version history
 
 - Version check was failed.
 
-Past versions
---------------
 
 0.29.0 - 2013.12.31
 +++++++++++++++++++++
