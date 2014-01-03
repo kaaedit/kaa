@@ -68,7 +68,9 @@ class Keywords(SingleToken):
     """
 
     def re_start(self):
-        return r'\b({})\b'.format('|'.join(doc_re.escape(k) for k in self.tokens))
+        return (
+            r'\b({})\b'.format('|'.join(doc_re.escape(k) for k in self.tokens))
+        )
 
 
 class Span(Token):
@@ -242,7 +244,9 @@ class Tokenizer:
             self.groupnames['TERMINATE'] = None
 
         if starts:
-            self.re_starts = doc_re.compile('|'.join(starts), doc_re.M + doc_re.X)
+            self.re_starts = doc_re.compile(
+                '|'.join(starts),
+                doc_re.M + doc_re.X)
 
     def register_tokenid(self, obj):
         return self.highlighter.register_tokenid(self, obj)

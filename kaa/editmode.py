@@ -22,7 +22,7 @@ class EditMode:
 
     def install_post_key_hook(self, hook):
         self._post_key_hook = hook
-        
+
     def activated(self, wnd):
         pass
 
@@ -177,6 +177,7 @@ class EditMode:
 class ReplaceMode(EditMode):
     MODENAME = 'Replace'
     _replace_str = True
+
 
 class CommandMode(EditMode):
     MODENAME = 'Command'

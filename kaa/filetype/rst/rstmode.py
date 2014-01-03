@@ -173,7 +173,8 @@ class RstMode(defaultmode.DefaultMode):
     HEADER2 = r'''^(?P<TITLE2>.+)\n
                 (?P<H2>[{}])(?P=H2)+$'''.format(RST_HEADERS)
 
-    RE_HEADER = doc_re.compile('|'.join([HEADER1, HEADER2]), doc_re.X | doc_re.M)
+    RE_HEADER = doc_re.compile(
+        '|'.join([HEADER1, HEADER2]), doc_re.X | doc_re.M)
 
     def get_headers(self):
         levels = {}

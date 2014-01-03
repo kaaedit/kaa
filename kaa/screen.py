@@ -319,7 +319,7 @@ class Selection:
             return None
 
         if not self._linewise:
-            if  start == end:
+            if start == end:
                 return None
             return tuple(sorted((start, end)))
 

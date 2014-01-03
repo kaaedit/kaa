@@ -183,7 +183,6 @@ class Document:
         if self.undo:
             self.undo.endblock()
 
-
     def set_title(self, title):
         self.title = title
 

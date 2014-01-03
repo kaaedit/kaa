@@ -35,8 +35,8 @@ class ViCommands(Commands):
         if isinstance(s, str) and s == 'd':
             wnd.document.mode.on_commands(wnd, ['edit.delete.currentline'])
         else:
-            f = functools.partial(
-                    self._hook_delete_next_move, wnd.cursor.pos)
+            f = functools.partial(self._hook_delete_next_move,
+                                  wnd.cursor.pos)
             wnd.editmode.install_post_key_hook(f)
             return keyevent
 
@@ -46,9 +46,3 @@ class ViCommands(Commands):
                 f, t = sorted((posfrom, wnd.cursor.pos))
                 if f != t and t <= wnd.document.endpos():
                     wnd.document.mode.delete_string(wnd, f, t)
-
-
-
-
-
-

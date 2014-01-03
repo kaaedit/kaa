@@ -457,7 +457,7 @@ class ModeBase:
                 self.insert_string(wnd, wnd.cursor.pos, s)
             else:
                 eol = wnd.document.get_line_to(wnd.cursor.pos)
-                posto = min(wnd.cursor.pos+len(s), eol)
+                posto = min(wnd.cursor.pos + len(s), eol)
                 self.replace_string(wnd, wnd.cursor.pos, posto, s)
 
     def update_charattr(self, wnd):

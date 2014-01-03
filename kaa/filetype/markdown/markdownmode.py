@@ -169,7 +169,8 @@ class MarkdownMode(defaultmode.DefaultMode):
     HEADER1 = r'^(?P<TITLE>.+)\n(?P<H1>[{}])(?P=H1)+$'.format(HEADERS)
     HEADER2 = r'^(?P<H2>\#{1,6})(?P<TITLE2>.+)$'
 
-    RE_HEADER = doc_re.compile('|'.join([HEADER1, HEADER2]), doc_re.X | doc_re.M)
+    RE_HEADER = doc_re.compile(
+        '|'.join([HEADER1, HEADER2]), doc_re.X | doc_re.M)
 
     def get_headers(self):
         stack = []
