@@ -197,6 +197,7 @@ class Selection:
         self._marks = document.Marks()
         self.screen = screen
         self._rectangular = False
+        self._linewise = False
 
     def _get_cursor_start(self):
         return self._marks.get('start', None)
@@ -209,7 +210,7 @@ class Selection:
 
         return self._get_cursor_start() is not None
 
-    def get_end(self):
+    def _get_cursor_end(self):
         return self._marks.get('end', None)
 
     def _set_end(self, pos):
@@ -237,6 +238,7 @@ class Selection:
     def set_mark(self, pos):
         cur = self.get_selrange()
         self._rectangular = False
+        self._linewise = False
 
         self._set_mark(pos)
         if pos is not None:
@@ -245,11 +247,18 @@ class Selection:
             self.screen.style_updated()
             return True
 
+    def set_linewise_mark(self, pos):
+        self.set_mark(pos)
+        self.set_to(pos)
+        self._linewise = True
+        self.screen.style_updated()
+
     def set_rectangle_mark(self, pos):
         ret = self.set_mark(pos)
         self._rectangular = True
+        self._linewise = False
 
-    def begin_cursor(self, pos):
+    def begin_cursor_sel(self, pos):
         """Start cursor range selection if it was not started"""
 
         if self.has_mark():
@@ -258,6 +267,7 @@ class Selection:
         if self._is_cursor_started():
             return
 
+        self._linewise = False
         self._rectangular = False
         self._set_cursor_start(pos)
         self._set_end(pos)
@@ -267,13 +277,13 @@ class Selection:
 
         if not self.has_mark() and not self._is_cursor_started():
             return
-        changed = self.get_end() != pos
+        changed = self._get_cursor_end() != pos
         self._set_end(pos)
 
         if changed:
             self.screen.style_updated()
 
-    def end_cursor(self):
+    def end_cursor_sel(self):
         """Clear selection"""
 
         changed = self._is_cursor_started()
@@ -294,6 +304,7 @@ class Selection:
         self._set_cursor_start(None)
         self._set_end(None)
         self._set_mark(None)
+        self._linewise = False
 
         if changed:
             self.screen.style_updated()
@@ -303,16 +314,28 @@ class Selection:
         if start is None:
             start = self._get_mark()
 
-        end = self.get_end()
-        if start is None or end is None or (start == end):
+        end = self._get_cursor_end()
+        if start is None or end is None:
             return None
 
-        return tuple(sorted((start, end)))
+        if not self._linewise:
+            if  start == end:
+                return None
+            return tuple(sorted((start, end)))
+
+        if start < end:
+            s = self.screen.document.gettol(start)
+            e = self.screen.document.geteol(end)
+        else:
+            s = self.screen.document.gettol(end)
+            e = self.screen.document.geteol(start)
+        return (s, e)
 
     def set_range(self, f, t):
         self._rectangular = False
+        self._linewise = False
         start = self._get_cursor_start()
-        end = self.get_end()
+        end = self._get_cursor_end()
         if (start, end) != (f, t):
             self._set_cursor_start(f)
             self._set_end(t)

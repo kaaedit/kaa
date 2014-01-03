@@ -565,7 +565,7 @@ Python debugger
 ---------------
 
 .. warning::
-   Python debugger is highly experimental at this point.
+   Python debugger is experimental at this point.
     
 
 Kaa can be used as front-end of Python debugger module(``bdb``) running in another process. Although kaa itself requires Python 3.3 or later, you can use Python 2.6 or later in the target process. 
@@ -653,6 +653,90 @@ Inspect variables
 ++++++++++++++++++
 
 To see value of variables, select ``Expr`` on the debugger window by pressing ``alt+E`` key and enter Python expression you want to inspect like ``self.spam``.
+
+
+Vi binding
+----------
+
+.. warning::
+   Python debugger is experimental at this point.
+
+Kaa currentry supports some basic vi-like key bindings. To activate vi bindings, create `~/.kaa/__kaa__.py` file with following lines.
+
+.. code:: python
+
+   from kaa.filetype.default.defaultmode import DefaultMode
+   DefaultMode.VI_COMMAND_MODE = True
+
+Command mode
+++++++++++++++++++
+
+Unlike vi, kaa is in insert-mode at start up. Hit escape key to move to command mode.
+
+mode commands
+~~~~~~~~~~~~~~~~~~~~~~~~
+
++--------------------+------------------------------------------------+
+| i                  | Insert mode.                                   |
++--------------------+------------------------------------------------+
+| R                  | Replace mode.                                  |
++--------------------+------------------------------------------------+
+| A                  | Append text after the end of line.             |
++--------------------+------------------------------------------------+
+| v                  | Characterwise visual mode.                     |
++--------------------+------------------------------------------------+
+| V                  | Linewise visual mode.                          |
++--------------------+------------------------------------------------+
+
+
+cursor commands
+~~~~~~~~~~~~~~~~~~~~~~~~
+
++--------------------+------------------------------------------------+
+| h                  | Cursor right.                                  |
++--------------------+------------------------------------------------+
+| l                  | Cursor left.                                   |
++--------------------+------------------------------------------------+
+| k                  | Cursor up.                                     |
++--------------------+------------------------------------------------+
+| j                  | Cursor down.                                   |
++--------------------+------------------------------------------------+
+| w                  | Cursor word right.                             |
++--------------------+------------------------------------------------+
+| b                  | Cursor word left.                              |
++--------------------+------------------------------------------------+
+| 0                  | Cursor to top of line.                         |
++--------------------+------------------------------------------------+
+| ^                  | Cursor to first character of line.             |
++--------------------+------------------------------------------------+
+| $                  | Cursor to end of line.                         |
++--------------------+------------------------------------------------+
+| gg                 | Cursor to top of file.                         |
++--------------------+------------------------------------------------+
+| G                  | Cursor to end of file.                         |
++--------------------+------------------------------------------------+
+| Control+b          | Page up.                                       |
++--------------------+------------------------------------------------+
+| Control+f          | Page down.                                     |
++--------------------+------------------------------------------------+
+
+
+Edit commands
+~~~~~~~~~~~~~~~~
+
++--------------------+------------------------------------------------+
+| r                  | Replace a character.                           |
++--------------------+------------------------------------------------+
+| x                  | Delete a character.                            |
++--------------------+------------------------------------------------+
+| d                  | Delete to next move.                           |
++--------------------+------------------------------------------------+
+| u                  | Undo last edit.                                |
++--------------------+------------------------------------------------+
+| Control+r          | Redo last undo.                                |
++--------------------+------------------------------------------------+
+| y                  | Copy selection.                                |
++--------------------+------------------------------------------------+
 
 
 Customization

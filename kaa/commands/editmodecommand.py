@@ -32,5 +32,5 @@ class EditModeCommands(Commands):
         wnd.screen.selection.clear()
         tol = wnd.cursor.adjust_nextpos(
             wnd.cursor.pos, wnd.document.gettol(wnd.cursor.pos))
-        wnd.screen.selection.begin_cursor(tol)
+        wnd.screen.selection.begin_cursor_sel(tol)
         wnd.document.mode.editmode_visual_linewise(wnd)

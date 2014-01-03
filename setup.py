@@ -43,7 +43,6 @@ setup(
             "License :: OSI Approved :: MIT License", ],
     license='MIT License',
     install_requires=['curses_ex', 'pyjf3', 'setproctitle', 'kaadbg >= 0.3.0'],
-    zip_safe=True,
     packages = find_packages(),
     ext_modules = [ext],
     entry_points = {

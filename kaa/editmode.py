@@ -11,6 +11,7 @@ class EditMode:
 
     _replace_str = False
     _key_hook = None
+    _post_key_hook = None
 
     def __init__(self):
         self.pending_keys = []
@@ -19,6 +20,9 @@ class EditMode:
     def install_keyhook(self, hook):
         self._key_hook = hook
 
+    def install_post_key_hook(self, hook):
+        self._post_key_hook = hook
+        
     def activated(self, wnd):
         pass
 
@@ -113,7 +117,16 @@ class EditMode:
                 del self.last_command_keys[:-3]
 
                 wnd.document.mode.on_commands(wnd, commands)
+
         finally:
+            if self._post_key_hook and (s or commands):
+                f = self._post_key_hook
+                self._post_key_hook = None
+
+                # flush pending str before hook runs.
+                self.flush_pending_str(wnd)
+                event = f(wnd, s, commands)
+
             if s or commands or not candidate:
                 self.pending_keys = []
 
@@ -121,7 +134,10 @@ class EditMode:
         kaa.app.messagebar.set_message('')
         self.pending_keys = []
         self.clear_repeat()
+
         self._key_hook = None
+        self._post_key_hook = None
+
         del self.last_command_keys[:]
 
         if not wnd.closed:

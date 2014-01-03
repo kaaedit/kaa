@@ -135,9 +135,9 @@ command_mode_keys = {
     # editmode change
     'i': 'editmode.insert',
     'R': 'editmode.replace',
-    'a': ('editmode.insert', 'cursor.end-of-line'),
+    'A': ('editmode.insert', 'cursor.end-of-line'),
     'v': ('editmode.visual', 'selection.set-mark'),
-    #    'V': ('editmode.visual-linewise', 'cursor.home', 'selection.set-mark'),
+    'V': ('editmode.visual-linewise', 'selection.set-linewise-mark'),
 
     # cursor command
     'h': 'cursor.left',
@@ -152,16 +152,23 @@ command_mode_keys = {
     '^': 'cursor.first-letter-of-line',
     '$': 'cursor.end-of-line',
 
+    'gg': 'cursor.top-of-file',
+    'G': 'cursor.end-of-file',
+
     (ctrl, 'b'): 'cursor.pageup',
     (ctrl, 'f'): 'cursor.pagedown',
 
     # edit
-    'r': 'edit.replace-char',
+    'r': 'edit.replace-next-char',
     'x': 'edit.delete',
+    'd': 'edit.delete-next-move',
 
     # undo/redo
     'u': 'edit.undo',
     (ctrl, 'r'): 'edit.redo',
+
+    # clipboard
+    'y': ('edit.copy', 'editmode.command'),
 }
 
 visual_mode_keys = {
@@ -185,11 +192,11 @@ visual_mode_keys = {
 }
 
 visual_linewise_mode_keys = {
-    up: ('cursor.up', 'cursor.end'),
-    down: ('cursor.down', 'cursor.end'),
+    up: 'cursor.prev-line',
+    down: 'cursor.next-line',
 
-    'k': ('cursor.up', 'cursor.end'),
-    'j': ('cursor.down', 'cursor.end'),
+    'k': 'cursor.prev-line',
+    'j': 'cursor.next-line',
 
     'y': ('edit.copy', 'selection.end-cursor', 'editmode.command'),
 }
