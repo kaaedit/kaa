@@ -21,6 +21,7 @@ class TextEditorWindow(Window):
     editmode = None
     visible = True
     highlight_cursor_row = False
+    _command_repeat = 1
 
     def _oninit(self):
         super()._oninit()
@@ -468,3 +469,11 @@ class TextEditorWindow(Window):
                 editmode=self.editmode.MODENAME,
             )
             return updated
+
+    def set_command_repeat(self, n):
+        self._command_repeat = n
+
+    def get_command_repeat(self):
+        return self._command_repeat
+
+

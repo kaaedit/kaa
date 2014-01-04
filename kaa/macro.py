@@ -1,6 +1,9 @@
 import kaa
 
 
+rec_command = object()
+rec_string = object()
+
 class Macro:
     recording = False
     commands = ()
@@ -23,38 +26,41 @@ class Macro:
     def get_commands(self):
         return self.commands
 
-    def record(self, f, *args, **kwargs):
-        if not hasattr(f, 'NOREC'):
-            commandid = f.COMMAND_ID
-            self.commands.append((commandid, args, kwargs))
+    def record(self, n_repeat, commandid, *args, **kwargs):
+        if not isinstance(commandid, str):
+            if  hasattr(commandid, 'NOREC'):
+                return
 
-    def record_string(self, s):
-        if not self.commands or not isinstance(self.commands[-1], str):
-            self.commands.append(s)
-        else:
-            self.commands[-1] += s
+            commandid = commandid.COMMAND_ID
+            
+        self.commands.append((rec_command, n_repeat, commandid, args, kwargs))
 
-    def record_repeatcount(self, n):
-        if not self.commands or not isinstance(self.commands[-1], (int, type(None))):
-            self.commands.append(n)
+    def record_string(self, s, overwrite):
+        if (not self.commands 
+              or self.commands[-1][0] is not rec_string 
+              or self.commands[-1][1] != overwrite):
+            self.commands.append([rec_string, overwrite, s])
         else:
-            self.commands[-1] = n
+            self.commands[-1][2] += s
 
     def run(self, wnd):
         if self.recording:
             return
 
         mode = wnd.document.mode
-        for cmd in self.commands:
-            if isinstance(cmd, str):
-                wnd.document.mode.put_string(wnd, cmd)
+        for rec in self.commands:
+            if rec[0] is rec_string:
+                wnd.document.mode.put_string(wnd, rec[2], overwrite=rec[1])
                 wnd.screen.selection.clear()
-            elif isinstance(cmd, (int, type(None))):
-                wnd.editmode.set_repeat(cmd)
             else:
-                commandid, args, kwargs = cmd
-                if callable(commandid):
-                    commandid(wnd)
-                else:
-                    is_available, cmd = mode.get_command(commandid)
-                    cmd(wnd, *args, **kwargs)
+                n_repeat, commandid, args, kwargs = rec[1:]
+                wnd.set_command_repeat(n_repeat)
+                try:
+                    if callable(commandid):
+                        commandid(wnd)
+                    else:
+                        is_available, cmd = mode.get_command(commandid)
+                        cmd(wnd, *args, **kwargs)
+                finally:
+                    wnd.set_command_repeat(1)
+

@@ -24,14 +24,6 @@ def norerun(f):
     f.NORERUN = True
     return f
 
-# def repeat(f):
-#    def rep(self, wnd, *args, **kwargs):
-#        n = 1 if not wnd.editmode.has_repeat() else wnd.editmode.get_repeat()
-#        for i in range(n):
-#            f(self, wnd, *args, **kwargs)
-#    functools.update_wrapper(rep, f)
-#    return rep
-
 
 class Commands:
 

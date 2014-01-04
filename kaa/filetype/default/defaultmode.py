@@ -90,7 +90,7 @@ class DefaultMode(modebase.ModeBase):
             if command:
                 command(wnd)
                 if kaa.app.macro.is_recording():
-                    kaa.app.macro.record(command)
+                    kaa.app.macro.record(1, command)
 
     def on_keypressed(self, wnd, event, s, commands, candidate):
         if not commands and not candidate:

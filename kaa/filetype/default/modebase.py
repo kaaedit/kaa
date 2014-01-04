@@ -322,16 +322,13 @@ class ModeBase:
         wnd.screen.selection.clear()
 
         if kaa.app.macro.is_recording():
-            kaa.app.macro.record_string(s)
+            kaa.app.macro.record_string(s, overwrite)
         if self.highlight:
             # run highlighter a bit to display changes immediately.
             self.highlight.update_style(self.document, batch=50)
 
-    def add_lastcommands(self, commandids):
-        if self.current_lastcommands is not None:
-            self.current_lastcommands.extend(commandids)
-
-    def on_commands(self, wnd, commandids):
+    def on_commands(self, wnd, commandids, n_repeat=1):
+        wnd.set_command_repeat(n_repeat)
         try:
             if callable(commandids):
                 commandids(wnd)
@@ -348,16 +345,16 @@ class ModeBase:
 
                 command(wnd)
                 if kaa.app.macro.is_recording():
-                    kaa.app.macro.record(command)
+                    kaa.app.macro.record(n_repeat, command)
 
                 if not getattr(command, 'NORERUN', False):
                     self.current_lastcommands.append(commandid)
 
             if self.current_lastcommands:
-                kaa.app.lastcommands = self.current_lastcommands
+                kaa.app.lastcommands = (n_repeat, self.current_lastcommands)
 
         finally:
-            wnd.editmode.clear_repeat()
+            wnd.set_command_repeat(1)
             self.current_lastcommands = None
 
     def on_esc_pressed(self, wnd, event):

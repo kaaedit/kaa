@@ -31,14 +31,19 @@ class ToolCommands(Commands):
     @norerun
     def reruncommand(self, wnd):
         mode = wnd.document.mode
-        for commandid in kaa.app.lastcommands:
-            is_available, command = mode.get_command(commandid)
-            if not command:
-                msg = 'command {!r} is not registered.'.format(commandid)
-                kaa.app.messagebar.set_message(msg)
-                kaa.log.error(msg)
-                return
-            command(wnd)
+        n_repeat, commandids = kaa.app.lastcommands
+        wnd.set_command_repeat(n_repeat)
+        try:
+            for commandid in commandids:
+                is_available, command = mode.get_command(commandid)
+                if not command:
+                    msg = 'command {!r} is not registered.'.format(commandid)
+                    kaa.app.messagebar.set_message(msg)
+                    kaa.log.error(msg)
+                    return
+                command(wnd)
+        finally:
+            wnd.set_command_repeat(1)
 
     @commandid('edit.paste-lines')
     @norerun

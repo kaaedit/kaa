@@ -116,7 +116,8 @@ class EditMode:
                 self.last_command_keys.append(self.pending_keys)
                 del self.last_command_keys[:-3]
 
-                wnd.document.mode.on_commands(wnd, commands)
+                wnd.document.mode.on_commands(wnd, commands, self.get_repeat())
+                self.clear_repeat()
 
         finally:
             if self._post_key_hook and (s or commands):
@@ -152,15 +153,11 @@ class EditMode:
     def clear_repeat(self):
         self.repeat = None
         self.repeat_str = ''
-        if kaa.app.macro.is_recording():
-            kaa.app.macro.record_repeatcount(None)
 
     def add_repeat_char(self, wnd, c):
         self.repeat_str += c
         try:
             self.set_repeat(int(self.repeat_str))
-            if kaa.app.macro.is_recording():
-                kaa.app.macro.record_repeatcount(self.repeat)
         except ValueError:
             self.init_repeat()
 

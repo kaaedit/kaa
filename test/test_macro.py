@@ -26,7 +26,7 @@ class TestMacro(kaa_testutils._TestScreenBase):
         def f():
             pass
 
-        macro.record(f)
+        macro.record(1, f)
         assert macro.get_commands() == [('command1', (), {})]
 
         @commandid('command2')
@@ -34,7 +34,7 @@ class TestMacro(kaa_testutils._TestScreenBase):
         def g():
             pass
 
-        macro.record(g)
+        macro.record(1, g)
         assert macro.get_commands() == [('command1', (), {})]
 
     def test_run(self):
@@ -44,10 +44,10 @@ class TestMacro(kaa_testutils._TestScreenBase):
         macro.toggle_record()
 
         mode = wnd.document.mode
-        macro.record(mode.get_command('cursor.right')[1])
-        macro.record(mode.get_command('cursor.right')[1])
-        macro.record(mode.get_command('cursor.right')[1])
-        macro.record(mode.get_command('cursor.left')[1])
+        macro.record(1, mode.get_command('cursor.right')[1])
+        macro.record(1, mode.get_command('cursor.right')[1])
+        macro.record(1, mode.get_command('cursor.right')[1])
+        macro.record(1, mode.get_command('cursor.left')[1])
         macro.toggle_record()
 
         macro.run(wnd)
