@@ -27,7 +27,8 @@ class TestMacro(kaa_testutils._TestScreenBase):
             pass
 
         macro.record(1, f)
-        assert macro.get_commands() == [('command1', (), {})]
+        assert macro.get_commands() == [
+            (kaa.macro.rec_command, 1, 'command1', (), {})]
 
         @commandid('command2')
         @norec
@@ -35,7 +36,7 @@ class TestMacro(kaa_testutils._TestScreenBase):
             pass
 
         macro.record(1, g)
-        assert macro.get_commands() == [('command1', (), {})]
+        assert macro.get_commands() == [(kaa.macro.rec_command, 1, 'command1', (), {})]
 
     def test_run(self):
         wnd = self._getwnd("abc\ndef\n")
@@ -56,8 +57,8 @@ class TestMacro(kaa_testutils._TestScreenBase):
 
         macro.toggle_record()
 
-        macro.record_string('123')
-        macro.record_string('45')
+        macro.record_string('123', False)
+        macro.record_string('45', False)
         macro.toggle_record()
 
         macro.run(wnd)

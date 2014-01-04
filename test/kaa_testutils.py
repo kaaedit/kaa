@@ -24,6 +24,12 @@ class _DmyWnd(context.Context):
     def get_context_parent(self):
         return None
 
+    def get_command_repeat(self, *args, **kwargs):
+        return 1
+
+    def set_command_repeat(self, *args, **kwargs):
+        pass
+
     def locate_cursor(self, pos, top=None, middle=None, bottom=None, align_always=False):
         return pos, 0, 0
 
