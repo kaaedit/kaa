@@ -13,6 +13,7 @@ class CursorCommands(Commands):
     @commandid('cursor.right')
     @norerun
     def right(self, wnd):
+        wnd.document.mode.cancel_auto_indent(wnd)
         if wnd.screen.selection.has_mark():
             for i in range(wnd.editmode.get_repeat()):
                 wnd.cursor.right()
@@ -24,7 +25,6 @@ class CursorCommands(Commands):
                 wnd.cursor.setpos(wnd.cursor.adjust_nextpos(
                     wnd.cursor.pos, selrange[1]))
         else:
-            wnd.document.mode.cancel_auto_indent(wnd)
             for i in range(wnd.editmode.get_repeat()):
                 wnd.cursor.right()
 
@@ -43,6 +43,7 @@ class CursorCommands(Commands):
     @commandid('cursor.left')
     @norerun
     def left(self, wnd):
+        wnd.document.mode.cancel_auto_indent(wnd)
         if wnd.screen.selection.has_mark():
             for i in range(wnd.editmode.get_repeat()):
                 wnd.cursor.left()
@@ -54,7 +55,6 @@ class CursorCommands(Commands):
                 wnd.cursor.setpos(wnd.cursor.adjust_nextpos(
                     wnd.cursor.pos, selrange[0]))
         else:
-            wnd.document.mode.cancel_auto_indent(wnd)
             for i in range(wnd.editmode.get_repeat()):
                 wnd.cursor.left()
 

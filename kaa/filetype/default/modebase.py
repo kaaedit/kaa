@@ -605,6 +605,7 @@ class ModeBase:
         else:
             return ' ' * col
 
+
     def cancel_auto_indent(self, wnd):
         if self._last_autoindent:
             f, t = (min(max(0, p), self.document.endpos())
@@ -619,6 +620,7 @@ class ModeBase:
                         self.delete_string(
                             wnd, f, t, update_cursor=False)
                         wnd.cursor.setpos(f)
+                        return True
 
     def on_auto_indent(self, wnd):
         pos = wnd.cursor.pos
