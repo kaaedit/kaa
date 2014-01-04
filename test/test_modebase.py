@@ -1,3 +1,4 @@
+from unittest.mock import patch
 import kaa_testutils
 from kaa.filetype.default import defaultmode, modebase
 
@@ -100,3 +101,32 @@ class TestDefaultMode(kaa_testutils._TestScreenBase):
             0, doc.endpos(), [1, 1, 1, 2, 2, 2, 2, 2, 2, 1, 1, 1])
 
         assert doc.mode.find_match_parenthesis(0) == 11
+
+    def test_auto_indent(self):
+        script = '''
+a
+'''
+        wnd = self._getwnd(script)
+        with patch.object(wnd.cursor, 'pos', new=2):
+            wnd.document.mode.on_auto_indent(wnd)
+        assert wnd.document.gettext(0, wnd.document.endpos()) == '\na\n\n'
+
+        script = '''
+    a
+'''
+        wnd = self._getwnd(script)
+        with patch.object(wnd.cursor, 'pos', new=6):
+            wnd.document.mode.on_auto_indent(wnd)
+        assert wnd.document.gettext(0, wnd.document.endpos()
+            ) == '\n    a\n    \n'
+
+        script = '''
+    a
+'''
+        wnd = self._getwnd(script)
+        with patch.object(wnd.cursor, 'pos', new=5):
+            wnd.document.mode.on_auto_indent(wnd)
+        assert wnd.document.gettext(0, wnd.document.endpos()
+            ) == '\n\n    a\n'
+
+

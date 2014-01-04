@@ -114,25 +114,6 @@ class PythonMode(defaultmode.DefaultMode):
 
         super().on_file_saved(fileinfo)
 
-    RE_BEGIN_NEWBLOCK = doc_re.compile(r"[^#]*\:\s*(#.*)?$", doc_re.M)
-
-    def on_auto_indent(self, wnd):
-        pos = wnd.cursor.pos
-        tol = self.document.gettol(pos)
-        m = self.RE_BEGIN_NEWBLOCK.match(self.document, tol, pos)
-        if not m:
-            super().on_auto_indent(wnd)
-        else:
-            f, t = self.get_indent_range(pos)
-            t = min(t, pos)
-            cols = self.calc_cols(f, t)
-            indent = self.build_indent_str(cols + self.indent_width)
-            indent = '\n' + indent
-            self.insert_string(wnd, pos, indent, update_cursor=False)
-            wnd.cursor.setpos(pos + len(indent))
-            wnd.cursor.savecol()
-            self._last_autoindent = (pos + 1, wnd.cursor.pos)
-
     RE_SEARCH_NAME = doc_re.compile(r'(\\.)|(\w+)|(\S)')
 
     def _py_getname(self, pos):
@@ -154,7 +135,7 @@ class PythonMode(defaultmode.DefaultMode):
             f, t = self.get_indent_range(m.start())
             cols = self.calc_cols(f, t)
 
-            yield token, f, cols, name
+            yield token, f, (cols, name)
         return end
 
     def _py_end_comment(self, m):
@@ -217,8 +198,7 @@ class PythonMode(defaultmode.DefaultMode):
             (?P<DEF>\bdef\b)|(?P<PARENTHESIS>[\{\[\(])|
             (?P<COMMENT>\#)|(?P<STRING>\"\"\"|\"|\'\'\'|\')''', doc_re.X)
 
-    def _py_tokenize(self):
-        pos = 0
+    def _parse_names(self, pos):
         while True:
             m = self.RE_TOKENIZE_SEARCH.search(self.document, pos)
             if not m:
@@ -239,9 +219,14 @@ class PythonMode(defaultmode.DefaultMode):
             else:
                 assert 0
 
+    def _py_getfuncs(self):
+        for token, pos, (indent, name) in self._parse_names(0):
+            if token in {'class', 'def'}:
+                yield token, pos, indent, name
+
     def get_headers(self):
         stack = []
-        for token, pos, indent, name in self._py_tokenize():
+        for token, pos, indent, name in self._py_getfuncs():
             dispname = name if token is 'class' else name + '()'
             headertype = 'namespace' if token == 'class' else 'function'
             if not stack:
@@ -277,6 +262,81 @@ class PythonMode(defaultmode.DefaultMode):
     def show_toclist(self, wnd):
         from kaa.ui.toclist import toclistmode
         toclistmode.show_toclist(wnd, list(self.get_headers()))
+
+    RE_SPLIT_LINE = doc_re.compile(
+        r'''(?P<BACKSLASH>\\.)|(?P<OPEN_PARENTHESIS>[\{\[\(])|
+            (?P<CLOSE_PARENTHESIS>[\}\]\)])|(?P<COMMENT>\#)|
+            (?P<STRING>\"\"\"|\"|\'\'\'|\')|(?P<COLON>:)''', 
+        doc_re.X)
+
+    def _get_indent_reasons(self, pos, posto):
+        while pos < posto:
+            m = self.RE_SPLIT_LINE.search(self.document, pos, posto)
+            if not m:
+                break
+
+            g = m.lastgroup
+            if g == 'BACKSLASH':
+                pos = m.end()
+            elif g == 'OPEN_PARENTHESIS':
+                yield 'open_parenthesis', m.span(), m.group()
+                pos = m.end()
+            elif g == 'CLOSE_PARENTHESIS':
+                yield 'close_parenthesis', m.span(), m.group()
+                pos = m.end()
+            elif g == 'COMMENT':
+                pos = self._py_end_comment(m)
+            elif g == 'STRING':
+                pos = self._py_end_string(m)
+            elif g == 'COLON':
+                yield 'colon', m.span(), m.group()
+                pos = m.end()
+            else:
+                assert 0
+
+    def calc_next_indent(self, pos):
+        tol = self.document.gettol(pos)
+        tokens = list(self._get_indent_reasons(tol, pos))
+        if not tokens:
+            return None
+
+        f, t = self.get_indent_range(pos)
+        t = min(t, pos)
+        cols = self.calc_cols(f, t)
+
+        if tokens[-1][0] == 'colon':
+            return cols + self.indent_width
+
+        p = 0
+        for token, tokenpos, s in tokens:
+            if token == 'open_parenthesis':
+                p += 1
+            elif token == 'close_parenthesis':
+                p -= 1
+
+        if p > 0:
+            return cols + self.indent_width
+        elif p == 0:
+            return None
+        else:
+            if not cols:
+                return cols
+
+            # if parenthesis closing and the parenthesis is only
+            # element in the line, then don't dedent line.
+            # e.g.
+            #    a =  [1,2,3,4,
+            #    ]    <- Don't dedent next line.        
+            if len(tokens) == 1:
+                close_f, close_t = tokens[0][1]
+                if close_f == t:
+                    return None
+
+            parent_cols = self.get_parent_indent(pos)
+            if parent_cols is None:
+                return max(0, cols - self.indent_width)
+            else:
+                return parent_cols
 
     def get_breakpoints(self):
         for k, v in self.document.marks.items():

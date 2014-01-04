@@ -416,6 +416,13 @@ class ModeBase:
                                       cur_pos, wnd.cursor.pos)
             self.on_edited(wnd)
 
+    def delete_ws(self, wnd, pos, update_cursor=False):
+        m = doc_re.compile(r'[ \t]+').match(self.document, pos)
+        if m:
+            f, t = m.span()
+            self.delete_string(wnd, f, t, update_cursor=update_cursor)
+            return t - f
+
     def replace_rect(self, wnd, repto):
         with wnd.document.undo_group():
             (posfrom, posto, colfrom, colto
@@ -602,6 +609,18 @@ class ModeBase:
         else:
             return ' ' * col
 
+    def get_parent_indent(self, pos):
+        tol = self.document.gettol(pos)
+        f, t = self.get_indent_range(tol)
+        cols = self.calc_cols(f, t)
+
+        while tol:
+            eol = tol
+            tol = self.document.gettol(eol - 1)
+            f, t = self.get_indent_range(tol)
+            pcols = self.calc_cols(f, t)
+            if pcols < cols:
+                return pcols
 
     def cancel_auto_indent(self, wnd):
         if self._last_autoindent:
@@ -619,29 +638,35 @@ class ModeBase:
                         wnd.cursor.setpos(f)
                         return True
 
+    def calc_next_indent(self, pos):
+        return None
+
     def on_auto_indent(self, wnd):
         pos = wnd.cursor.pos
         f, t = self.get_indent_range(pos)
-        indent = self.document.gettext(f, min(pos, t))
         if pos <= t:
             b = self.document.get_line_break(pos)
             self.insert_string(wnd, f, '\n', update_cursor=False)
-            wnd.cursor.setpos(wnd.cursor.pos + 1)
+            wnd.cursor.setpos(pos + 1)
             wnd.cursor.savecol()
 
             # if new line don't hava non-ws char,
             # thie line should be subject to cancel-indent.
             if t == b:
                 self._last_autoindent = (f + 1, wnd.cursor.pos)
+            return
 
+        indentcol = self.calc_next_indent(pos)
+        if indentcol is None:
+            indent = self.document.gettext(f, min(pos, t))
         else:
-            indent = '\n' + indent
-            self.insert_string(wnd, pos, indent, update_cursor=False)
-            wnd.cursor.setpos(pos + len(indent))
-            wnd.cursor.savecol()
-            self._last_autoindent = (pos + 1, wnd.cursor.pos)
+            indent = self.build_indent_str(indentcol)
 
+        self.insert_string(wnd, pos, '\n' + indent, update_cursor=False)
+        self.delete_ws(wnd, pos + len(indent) + 1)
+        wnd.cursor.setpos(pos + len(indent) + 1)
         wnd.cursor.savecol()
+        self._last_autoindent = (pos + 1, wnd.cursor.pos)
 
     def calc_cols(self, f, t):
         chars = self.document.gettext(f, t)

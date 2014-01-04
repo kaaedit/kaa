@@ -4,6 +4,7 @@ import kaa
 rec_command = object()
 rec_string = object()
 
+
 class Macro:
     recording = False
     commands = ()
@@ -28,17 +29,17 @@ class Macro:
 
     def record(self, n_repeat, commandid, *args, **kwargs):
         if not isinstance(commandid, str):
-            if  hasattr(commandid, 'NOREC'):
+            if hasattr(commandid, 'NOREC'):
                 return
 
             commandid = commandid.COMMAND_ID
-            
+
         self.commands.append((rec_command, n_repeat, commandid, args, kwargs))
 
     def record_string(self, s, overwrite):
-        if (not self.commands 
-              or self.commands[-1][0] is not rec_string 
-              or self.commands[-1][1] != overwrite):
+        if (not self.commands
+                or self.commands[-1][0] is not rec_string
+                or self.commands[-1][1] != overwrite):
             self.commands.append([rec_string, overwrite, s])
         else:
             self.commands[-1][2] += s
@@ -63,4 +64,3 @@ class Macro:
                         cmd(wnd, *args, **kwargs)
                 finally:
                     wnd.set_command_repeat(1)
-

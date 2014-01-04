@@ -475,5 +475,3 @@ class TextEditorWindow(Window):
 
     def get_command_repeat(self):
         return self._command_repeat
-
-
