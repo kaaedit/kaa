@@ -860,16 +860,24 @@ Links
 Version history
 =================
 
-0.31.0 - 2014.1.3
+0.32.0 - 2014.1.5
 --------------------
+
+- Impove auto indentation of Python mode.
+
+- Support vi-style repeat count in macro record and in repeating last change.
+
+
+Past versions
+--------------
+
+0.31.0 - 2014.1.3
++++++++++++++++++++++
 
 - Cursor position was wrong at start up.
 
 - Add some vi-like commands.
 
-
-Past versions
---------------
 
 0.30.0 - 2014.1.1
 +++++++++++++++++++++
