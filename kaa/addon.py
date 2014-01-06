@@ -1,43 +1,61 @@
 from kaa.keyboard import *
-
-_class_addoons = {}
+from kaa.theme import Style
+import kaa.command
+from kaa.command import norec, norerun, commandid
+import kaa.config
+_class_addons = {}
 
 
 def add_class_addon(classname, key, value):
-    d = _class_addoons.setdefault(classname, {})
+    d = _class_addons.setdefault(classname, {})
     d.setdefault(key, []).append(value)
 
 
-def get_addon(name, key):
-    d = _class_addoons.get(name, None)
+def get_addon(name, key, default=()):
+    d = _class_addons.get(name, None)
     if d:
-        return d.get(key, ())
-    return ()
+        return d.get(key, default)
+    return default
 
-# keybind(filetype='kaa.filetype.python', editmode='input', {
-# })
+# keybind(
+#     filemode='kaa.filetype.python.pythonmode.PythonMode', 
+#     editmode='input', 
+#     keys = {
+#     })
 
 
-def keybind(filetype=None, editmode='input', keymap=None):
-    pass
+def keybind(filemode='kaa.filetype.default.defaultmode.DefaultMode',
+            editmode='input', keymap=None):
+    
+    add_class_addon(filemode, 'keybind', (editmode, keymap))	
 
-
-# @command(filetype='kaa.filetype.python.pythonmode.PythonMode',
+# @command(filemode='kaa.filetype.python.pythonmode.PythonMode',
 #          commandid='abc.def')
 # @norec
 # def abc_def(wnd):
 #    pass
 
-def command(commandid, filetype=None):
-    pass
+def command(commandid, 
+        filemode='kaa.filetype.default.defaultmode.DefaultMode'):
+
+    def _f(f):
+        kaa.command.commandid(commandid)(f)
+        add_class_addon(filemode, 'command', f)	
+        return f
+    return _f
 
 
-# style_def(filetype='kaa.filetype.python', theme='basic', [
-#    Sytle('default', 'white', 'black'),
-#])
+# theme_def(filetype='kaa.filetype.python', theme={
+#   'basic': [
+#    	Sytle('default', 'white', 'black'),
+#   ])
 
-def style_def(filetype, theme, styles):
-    pass
+def theme_def(filemode='kaa.filetype.default.defaultmode.DefaultMode', 
+              theme=None):
+    add_class_addon(filemode, 'style', theme)
 
-# add_filetype('my.python.filetype',
-#    overrides='kaa.filetype.python')
+
+# add_filetype('my.python.filetype')
+
+def add_filetype(name):
+    kaa.config.FILETYPES.append(name)

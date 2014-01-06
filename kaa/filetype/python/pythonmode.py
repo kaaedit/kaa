@@ -266,7 +266,7 @@ class PythonMode(defaultmode.DefaultMode):
     RE_SPLIT_LINE = doc_re.compile(
         r'''(?P<BACKSLASH>\\.)|(?P<OPEN_PARENTHESIS>[\{\[\(])|
             (?P<CLOSE_PARENTHESIS>[\}\]\)])|(?P<COMMENT>\#)|
-            (?P<STRING>\"\"\"|\"|\'\'\'|\')|(?P<COLON>:)''', 
+            (?P<STRING>\"\"\"|\"|\'\'\'|\')|(?P<COLON>:)''',
         doc_re.X)
 
     def _get_indent_reasons(self, pos, posto):
@@ -326,7 +326,7 @@ class PythonMode(defaultmode.DefaultMode):
             # element in the line, then don't dedent line.
             # e.g.
             #    a =  [1,2,3,4,
-            #    ]    <- Don't dedent next line.        
+            #    ]    <- Don't dedent next line.
             if len(tokens) == 1:
                 close_f, close_t = tokens[0][1]
                 if close_f == t:

@@ -205,6 +205,7 @@ class ModeBase:
     def init_commands(self):
         from kaa.commands import (editorcommand, editmodecommand, vicommand)
 
+        # todo: re-design command injection
         self.register_commandobj(editorcommand.CursorCommands())
         self.register_commandobj(editorcommand.EditCommands())
         self.register_commandobj(editorcommand.CodeCommands())
@@ -220,9 +221,10 @@ class ModeBase:
 
     def init_addon_commands(self):
         name = self.get_class_name()
-        commands = addon.get_addon(name, 'commands')
-        for commandid, f in commands:
-            self.commands[commandid] = f
+        commands = addon.get_addon(name, 'command')
+
+        for f in commands:
+            self.commands[f.COMMAND_ID] = f
 
     def init_menu(self):
         pass
@@ -232,7 +234,7 @@ class ModeBase:
 
     def init_addon_themes(self):
         name = self.get_class_name()
-        themes = addon.get_addon(name, 'themes')
+        themes = addon.get_addon(name, 'style')
         self.themes.extend(themes)
 
     def init_tokenizers(self):

@@ -124,13 +124,13 @@ If you use Gnome terminal and wishes to access menu by F1 key, you should config
 Color setting
 -------------
 
-Kaa looks better with 256 color mode of terminal emulator. With Terminal.app you can set 256 color mode:
+Kaa looks better with 256 color mode of terminal emulator. For Terminal.app on Mac OS X, you can set 256 color mode with following procedure:
 
 1. Select Preferences menu.
 2. Open the Settings tab.
 3. Select `xterm-256color` for `"Declare terminal as"` field.
 
-For iTerm2, you can:
+For iTerm2, you can set 256 color mode with following procedure:
 
 1. Select Preferences menu.
 2. Open the Profiles tab.
@@ -746,7 +746,18 @@ Customization
 Kaa executes a Python script file at `~/.kaa/__kaa__.py` on start up. You can write Python script to customize kaa as you like.
 
 
-Sample - Show line numbers
+Change color palette
+----------------------------------
+
+Change default color palette to ``light``.
+
+.. code:: python
+
+   import kaa
+   kaa.app.DEFAULT_PALETTE = 'light'  # Use `light' palette. Default is `dark'
+
+
+Show line numbers
 ----------------------------------
 
 .. code:: python
@@ -762,32 +773,68 @@ Sample - Show line numbers
    from kaa.filetype.html import htmlmode
    htmlmode.HTMLMode.SHOW_LINENO = True
 
-Sample - Customize key binding
+Customize keybind
 ----------------------------------
 
-Assign same keyboard shortcut of splitting windows command as Emacs.
+Function `kaa.addon.keybind()` registers custom keybind.
 
 .. code:: python
 
-    from kaa.keyboard import *
-    from kaa.filetype.default.defaultmode import DefaultMode
-    
-    DefaultMode.KEY_BINDS.append({
-       ((ctrl, 'x'), '2'): 'editor.splithorz'    # Assign C-x 2 
+    keybind(filemode='kaa.filetype.default.defaultmode.DefaultMode', 
+        editmode='input', keys = {})
+
+`filemode` is a name of mode class to install keybind. `editmode` is a name of editmode which should be one of `insert`, `command`, `visual` or `visualline`. `keys` is a dictionary of keybind and command name.
+
+.. code:: python
+
+    # sample to register custom keybind.
+    from kaa.addon import *
+    keybind(keymap={
+        (alt, 'q'): 'file.quit', # assign Alt+q to quit kaa.
+        ((ctrl, 'x'), '2'): 
+            'editor.splithorz'   # Assign C-x 2 to split window.
     })
-   
-In this example, key sequence C-x 2 (control+x followed by 2) is assigned to 'editor.splithorz' command.
 
-Sample - Change color palette
+Create custom command
 ----------------------------------
 
-Change color palette to ``light``.
+Functions with `@kaa.addon.command` decorator are registered as kaa command.
 
 .. code:: python
 
-   import kaa
-   kaa.app.DEFAULT_PALETTE = 'light'  # Use `light' palette. Default is `dark'
+    command(commandid, 
+        filemode='kaa.filetype.default.defaultmode.DefaultMode'):
 
+`commandid` is identifier of command in string. `filemode` is a name if mode class to register command.
+
+.. code:: python
+
+    # sample command to insert text at the top of file.
+    @command('test.command')
+    def testcommand(wnd):
+        wnd.cursor.setpos(0)
+        wnd.document.mode.put_string(wnd, 'sample text\n')
+
+Change color theme
+-------------------------
+
+Function `kaa.addon.theme_def()` could be used to customize color theme.
+
+.. code:: python
+
+    theme_def(filemode='kaa.filetype.default.defaultmode.DefaultMode', 
+                  theme=None)
+
+`filemode` is a name if mode class to register theme. `theme` is a dictionary of theme name and list of styles. Currently, the valid theme name is `basic` only.
+
+.. code:: python
+
+    # update default foreground color to red.
+    theme_def(theme={
+        'basic': [
+           Style('default', 'red', None),
+        ]
+    })
 
 Hacking
 ==========
