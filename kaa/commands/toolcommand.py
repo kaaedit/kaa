@@ -31,6 +31,8 @@ class ToolCommands(Commands):
     @norerun
     def reruncommand(self, wnd):
         mode = wnd.document.mode
+        if not kaa.app.lastcommands:
+            return
         n_repeat, commandids = kaa.app.lastcommands
         wnd.set_command_repeat(n_repeat)
         try:
