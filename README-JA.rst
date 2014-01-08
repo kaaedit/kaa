@@ -673,7 +673,7 @@ kaa は、起動時に ファイル `~/.kaa/__kaa__.py` をPythonスクリプト
 .. code:: python
 
     keybind(filemode='kaa.filetype.default.defaultmode.DefaultMode', 
-        editmode='input', keys = {})
+        editmode='input', keymap={})
 
 `filemode` にはキーバインドを登録するモードクラスの名前を指定します。`editmode` には編集モードとして `insert`, `command`, `visual`, `visualline` のいずれかの値を指定します。 `keys` には、キーバインドとコマンド名の辞書を指定します。
 
@@ -681,11 +681,11 @@ kaa は、起動時に ファイル `~/.kaa/__kaa__.py` をPythonスクリプト
 
 .. code:: python
 
-    from kaa.keyboard import *
-    from kaa.filetype.default.defaultmode import DefaultMode
-    
-    DefaultMode.KEY_BINDS.append({
-       ((ctrl, 'x'), '2'): 'editor.splithorz'    # Assign C-x 2 
+    # sample to register custom keybind.
+    from kaa.addon import *
+    keybind(keymap={
+        ((ctrl, 'x'), '2'): 
+            'editor.splithorz'   # Assign C-x 2 to split window.
     })
 
 

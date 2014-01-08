@@ -781,9 +781,9 @@ Function `kaa.addon.keybind()` registers custom keybind.
 .. code:: python
 
     keybind(filemode='kaa.filetype.default.defaultmode.DefaultMode', 
-        editmode='input', keys = {})
+        editmode='input', keymap = {})
 
-`filemode` is a name of mode class to install keybind. `editmode` is a name of editmode which should be one of `insert`, `command`, `visual` or `visualline`. `keys` is a dictionary of keybind and command name.
+`filemode` is a name of mode class to install keybind. `editmode` is a name of editmode which should be one of `insert`, `command`, `visual` or `visualline`. `keymap` is a dictionary of keybind and command name.
 
 Following example assign `Control+x 2` key to split window as Emacs.
 
