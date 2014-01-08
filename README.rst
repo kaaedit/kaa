@@ -785,12 +785,13 @@ Function `kaa.addon.keybind()` registers custom keybind.
 
 `filemode` is a name of mode class to install keybind. `editmode` is a name of editmode which should be one of `insert`, `command`, `visual` or `visualline`. `keys` is a dictionary of keybind and command name.
 
+Following example assign `Control+x 2` key to split window as Emacs.
+
 .. code:: python
 
     # sample to register custom keybind.
     from kaa.addon import *
     keybind(keymap={
-        (alt, 'q'): 'file.quit', # assign Alt+q to quit kaa.
         ((ctrl, 'x'), '2'): 
             'editor.splithorz'   # Assign C-x 2 to split window.
     })
@@ -907,16 +908,22 @@ Links
 Version history
 =================
 
-0.32.0 - 2014.1.5
+0.33.0 - 2014.1.8
 --------------------
+
+- new `kaa.addon` module to customize kaa.
+
+
+Past versions
+--------------
+
+0.32.0 - 2014.1.5
++++++++++++++++++++++
 
 - Impove auto indentation of Python mode.
 
 - Support vi-style repeat count in macro record and in repeating last change.
 
-
-Past versions
---------------
 
 0.31.0 - 2014.1.3
 +++++++++++++++++++++

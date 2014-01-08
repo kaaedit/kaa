@@ -635,7 +635,18 @@ Make
 
 kaa は、起動時に ファイル `~/.kaa/__kaa__.py` をPythonスクリプトファイルとして実行します。このファイルには、kaa をカスタマイズするためのスクリプトを記述できます。
 
-例 - 行番号表示
+色テーマ設定
+----------------------------------
+
+色パレットを、``light`` に設定します。
+
+.. code:: python
+
+   import kaa
+   kaa.app.DEFAULT_PALETTE = 'light' # `light' テーマを指定。デフォルトは`dark'
+
+
+行番号表示
 ----------------------------------
 
 .. code:: python
@@ -654,10 +665,19 @@ kaa は、起動時に ファイル `~/.kaa/__kaa__.py` をPythonスクリプト
    htmlmode.HTMLMode.SHOW_LINENO = True
 
 
-Sample - キー割り当てのカスタマイズ
+キー割り当てのカスタマイズ
 ---------------------------------------
 
-ウィンドウ分割を、Emacs と同じキーに割り当てます。
+キーのコマンドを割り当ては、関数 `kaa.addon.keybind()` を利用します。
+
+.. code:: python
+
+    keybind(filemode='kaa.filetype.default.defaultmode.DefaultMode', 
+        editmode='input', keys = {})
+
+`filemode` にはキーバインドを登録するモードクラスの名前を指定します。`editmode` には編集モードとして `insert`, `command`, `visual`, `visualline` のいずれかの値を指定します。 `keys` には、キーバインドとコマンド名の辞書を指定します。
+
+次のサンプルでは、ウィンドウ分割を Emacs と同じ `Control+x 2` キーに割り当てます。
 
 .. code:: python
 
@@ -667,19 +687,49 @@ Sample - キー割り当てのカスタマイズ
     DefaultMode.KEY_BINDS.append({
        ((ctrl, 'x'), '2'): 'editor.splithorz'    # Assign C-x 2 
     })
-   
-この例では、`C-x 2` というキーシーケンス（`control+x` の後、`2` を入力) に、'editor.splithorz' コマンドを割り当てています。
 
 
-Sample - 色テーマ設定
+コマンドの作成
 ----------------------------------
 
-色パレットを、``light`` に設定します。
+Pythonの関数にデコレータ `@kaa.addon.command` を指定して、kaa のコマンドとして登録できます。
 
 .. code:: python
 
-   import kaa
-   kaa.app.DEFAULT_PALETTE = 'light' # `light' テーマを指定。デフォルトは`dark'
+    command(commandid, 
+        filemode='kaa.filetype.default.defaultmode.DefaultMode'):
+
+`commandid` はコマンドIDを文字列で指定します。 `filemode` は、コマンドを登録するモードクラスを文字列で指定します。
+
+.. code:: python
+
+    # sample command to insert text at the top of file.
+    @command('test.command')
+    def testcommand(wnd):
+        wnd.cursor.setpos(0)
+        wnd.document.mode.put_string(wnd, 'sample text\n')
+
+        
+表示色のカスタマイズ
+-------------------------
+
+テキストの表示色は、 `kaa.addon.theme_def()` で指定します。
+
+.. code:: python
+
+    theme_def(filemode='kaa.filetype.default.defaultmode.DefaultMode', 
+                  theme=None)
+
+`filemode` には色を指定するモードクラスの名前を指定します。`theme` には、テーマ名とスタイルオブジェクトのリストを辞書形式で指定します。現在のところ、テーマ名は `basic` のみが指定可能です。
+
+.. code:: python
+
+    # update default foreground color to red.
+    theme_def(theme={
+        'basic': [
+           Style('default', 'red', None),
+        ]
+    })
 
 
 Links
@@ -691,7 +741,7 @@ Links
 
 - `Python Package Index(PyPI) <http://pypi.python.org/pypi/kaaedit/>`_
 
-        
+
 Copyright 
 =========================
 
