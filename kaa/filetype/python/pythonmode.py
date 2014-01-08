@@ -78,19 +78,19 @@ class PythonMode(defaultmode.DefaultMode):
             SingleToken('python-numeric', 'number',
                         [r'\b[0-9]+(\.[0-9]*)*\b', r'\b\.[0-9]+\b']),
             Span('python-comment', 'comment', r'\#', '$', escape='\\'),
-            Span('python-string31', 'string', 'r?"""', '"""', escape='\\'),
-            Span('python-string32', 'string', "r?'''", "'''", escape='\\'),
-            Span('python-string11', 'string', 'r?"', '"', escape='\\'),
-            Span('python-string12', 'string', "r?'", "'", escape='\\'),
+            Span('python-string31', 'string', '[rR]?"""', '"""', escape='\\'),
+            Span('python-string32', 'string', "[rR]?'''", "'''", escape='\\'),
+            Span('python-string11', 'string', '[rR]?"', '"', escape='\\'),
+            Span('python-string12', 'string', "[rR]?'", "'", escape='\\'),
 
             Span('python-bytes31', 'python-bytes',
-                 '(br?|r?b)"""', '"', escape='\\'),
+                 '([bB][rR]?|[rR]?[bB])"""', '"', escape='\\'),
             Span('python-bytes32', 'python-bytes',
-                 "(br?|r?b)'''", "'''", escape='\\'),
+                 "([bB][rR]?|[rR]?[bB])'''", "'''", escape='\\'),
             Span('python-bytes11', 'python-bytes',
-                 '(br?|r?b)"', '"', escape='\\'),
+                 '([bB][rR]?|[rR]?[bB])"', '"', escape='\\'),
             Span('python-bytes12', 'python-bytes',
-                 "(br?|r?b)'", "'", escape='\\'),
+                 "([bB][rR]?|[rR]?[bB])'", "'", escape='\\'),
         ])]
 
     def on_set_document(self, document):
