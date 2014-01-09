@@ -826,7 +826,7 @@ Function `kaa.addon.theme_def()` could be used to customize color theme.
     theme_def(filemode='kaa.filetype.default.defaultmode.DefaultMode', 
                   theme=None)
 
-`filemode` is a name if mode class to register theme. `theme` is a dictionary of theme name and list of styles. Currently, the valid theme name is `basic` only.
+`filemode` is a name if mode class to register theme. `theme` is a dictionary of theme name and list of styles. Currently, the pnly valid theme name is `basic`.
 
 .. code:: python
 

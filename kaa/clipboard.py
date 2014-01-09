@@ -5,6 +5,8 @@ import kaa
 
 
 def select_clipboard():
+    """Select clipboard class for the platform."""
+
     if sys.platform == 'darwin':
         return MacClipboard()
     elif X11Clipboard.check():
@@ -14,12 +16,17 @@ def select_clipboard():
 
 
 class Clipboard:
+    """Basic clipboard class without platform's native clipboard."""
+
+    # Max history of clipboard entry.
     MAX_CLIPBOARD = 10
 
     def _get_hist(self):
         return kaa.app.config.hist('clipboard', max_hist=self.MAX_CLIPBOARD)
 
     def get(self):
+        """Get current clipboard entry."""
+
         all = self.get_all()
         ret = all[0] if all else ''
         if ret:
@@ -27,6 +34,8 @@ class Clipboard:
         return ret
 
     def get_all(self):
+        """Get clipboard history."""
+
         return [s for s, i in self._get_hist().get() if s]
 
     def _set(self, s):
@@ -37,7 +46,7 @@ class Clipboard:
 
 
 class NativeClipboard(Clipboard):
-
+    """Base class of platform's native clipboard."""
     def get(self):
         try:
             s = self._get_native_clipboard()
@@ -57,6 +66,9 @@ class NativeClipboard(Clipboard):
 
 
 class MacClipboard(NativeClipboard):
+    """For MAC OS X"""
+
+
     COPYCOMMAND = 'pbcopy'
     PASTECOMMAND = 'pbpaste'
 
@@ -72,6 +84,8 @@ class MacClipboard(NativeClipboard):
 
 
 class X11Clipboard(NativeClipboard):
+    """For UN*X"""
+
     CLIPCOMMAND = 'xsel'
     COPYCOMMAND = 'xsel -i -b'
     PASTECOMMAND = 'xsel -o -b'
