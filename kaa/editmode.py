@@ -88,13 +88,17 @@ class EditMode:
         return ret
 
     def _show_pending_keys(self, s, commands, candidates):
-        if s or commands or not candidates:
+        if s or commands or not candidates or not self.pending_keys:
             kaa.app.messagebar.set_message('')
         else:
             cur = self._keys_to_str(self.pending_keys)
             curlen = len(cur)
-            nextkeys = set(self._keys_to_str(k)[curlen:curlen + 1][0]
-                           for k, commands in candidates)
+
+            nextkeys = set()
+            for k, commands in candidates:
+                keys = self._keys_to_str(k)
+                if len(keys) > curlen:
+                    nextkeys.add(keys[curlen:curlen + 1][0])
 
             msg = ' '.join(cur) + ' [%s]' % (', '.join(sorted(nextkeys)))
             kaa.app.messagebar.set_message(msg)
