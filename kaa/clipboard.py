@@ -16,6 +16,7 @@ def select_clipboard():
 
 
 class Clipboard:
+
     """Basic clipboard class without platform's native clipboard."""
 
     # Max history of clipboard entry.
@@ -46,7 +47,9 @@ class Clipboard:
 
 
 class NativeClipboard(Clipboard):
+
     """Base class of platform's native clipboard."""
+
     def get(self):
         try:
             s = self._get_native_clipboard()
@@ -66,8 +69,8 @@ class NativeClipboard(Clipboard):
 
 
 class MacClipboard(NativeClipboard):
-    """For MAC OS X"""
 
+    """For MAC OS X"""
 
     COPYCOMMAND = 'pbcopy'
     PASTECOMMAND = 'pbpaste'
@@ -84,6 +87,7 @@ class MacClipboard(NativeClipboard):
 
 
 class X11Clipboard(NativeClipboard):
+
     """For UN*X"""
 
     CLIPCOMMAND = 'xsel'

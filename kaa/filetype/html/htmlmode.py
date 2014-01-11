@@ -205,10 +205,10 @@ class HTMLTag(Token):
 
 def build_tokenizers():
 
-    HTMLTOKENS = namedtuple('htmltokens', ['keywords', 'comment',
-                                           'xmlpi', 'xmldef', 'endtag', 'jsstart', 'cssstart',
-                                           'htmltag', 'jsattr1', 'jsattr2', 'cssattr1',
-                                           'cssattr2'])
+    HTMLTOKENS = namedtuple('htmltokens',
+                            ['keywords', 'comment', 'xmlpi', 'xmldef', 'endtag',
+                             'jsstart', 'cssstart', 'htmltag', 'jsattr1', 'jsattr2',
+                             'cssattr1', 'cssattr2'])
 
     keywords = SingleToken('html-entityrefs', 'keyword',
                            [r'&\w+;', r'&\#x[0-9a-hA-H]+;', r'&\#[0-9]+;'])

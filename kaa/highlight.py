@@ -20,18 +20,20 @@ class Token:
         """Called when token started. Yield (pos, posto, tokenid)
         until exhausted"""
 
-    def get_tokenids(self, highlighter, tokenizer):
+    def get_tokenids(self):
         return tuple(self.tokenids.keys())
 
-    def resume_pos(self, highlighter, tokenizer, doc, pos):
+    def find_token_top(self, doc, pos):
         # Returns top of current keyword
         if 0 < pos < len(doc.styles):
-            p = doc.styles.rfindint(
-                self.get_tokenids(highlighter, tokenizer),
-                0, pos, comp_ne=True)
+            p = doc.styles.rfindint(self.get_tokenids(), 0, pos,
+                                    comp_ne=True)
             if p != -1:
                 return p + 1
         return 0
+
+    def resume_pos(self, highlighter, tokenizer, doc, pos):
+        return self.find_token_top(doc, pos)
 
     def assign_tokenid(self, tokenizer, stylename):
         tokenid = tokenizer.register_tokenid(self)
@@ -157,13 +159,19 @@ class SubTokenizer(Token):
         ret = yield from self.iter_subtokenizers(tokenizer, doc, pos, match)
         return ret
 
-    def resume_pos(self, highlighter, tokenizer, doc, pos):
+    def find_token_top(self, doc, pos):
         # Returns top of current keyword
         if 0 < pos < len(doc.styles):
-            p = doc.styles.rfindint(tuple(self.sub_tokens.keys()), 0, pos,
-                                    comp_ne=True)
-            if p > 0:
-                return highlighter.get_resume_pos(doc, p)
+            p = doc.styles.rfindint(tuple(self.sub_tokens.keys()),
+                                    0, pos, comp_ne=True)
+            if p != -1:
+                return p + 1
+        return 0
+
+    def resume_pos(self, highlighter, tokenizer, doc, pos):
+        ret = self.find_token_top(doc, pos)
+        if ret > 0:
+            return highlighter.get_resume_pos(doc, ret)
         return 0
 
     def get_stylename(self, tokenid):
@@ -444,11 +452,14 @@ class Highlighter:
 
         tokenizer, token = self.tokenids.get(style)
         if not token:
+            # token is not defined here. (e.g. white spaces)
+            # resume at beggining of this non-defined area.
             p = doc.styles.rfindint([style], 0, pos, comp_ne=True)
             if p != -1:
                 return p + 1
             return 0
 
+        # Let the token at the pos determin resume pos.
         return token.resume_pos(self, tokenizer, doc, pos)
 
     def updated(self, doc, pos, inslen, dellen):

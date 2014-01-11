@@ -28,35 +28,33 @@ def get_addon(name, key, default=()):
 
 def keybind(filemode='kaa.filetype.default.defaultmode.DefaultMode',
             editmode='input', keymap=None):
-    
     """Register keybind.
 
-    filemode -- Mode class name to register keybind. 
+    filemode -- Mode class name to register keybind.
                   (default 'kaa.filetype.default.defaultmode.DefaultMode)
-    editmode -- Editmode to register keybind. 
-                  Valid values are:'insert', 'command', 'visual', 'visualline'. 
+    editmode -- Editmode to register keybind.
+                  Valid values are:'insert', 'command', 'visual', 'visualline'.
                   (default 'input')
 
     keymap -- Dictionary of keybind and command name.
 
     ex)
         keybind(
-             filemode='kaa.filetype.python.pythonmode.PythonMode', 
+             filemode='kaa.filetype.python.pythonmode.PythonMode',
              keys = {
-                    ((ctrl, 'q'), '2'): 
+                    ((ctrl, 'q'), '2'):
                         'editor.splithorz'})   # Assign C-q 2 to split window.
     """
 
-    add_class_addon(filemode, 'keybind', (editmode, keymap))	
+    add_class_addon(filemode, 'keybind', (editmode, keymap))
 
 
-def command(commandid, 
-        filemode='kaa.filetype.default.defaultmode.DefaultMode'):
-
+def command(commandid,
+            filemode='kaa.filetype.default.defaultmode.DefaultMode'):
     """Decorator to register command.
 
     commandid -- command id
-    filemode -- Mode class name to register keybind. 
+    filemode -- Mode class name to register keybind.
                   (default 'kaa.filetype.default.defaultmode.DefaultMode)
 
     ex)
@@ -69,7 +67,7 @@ def command(commandid,
 
     def _f(f):
         kaa.command.commandid(commandid)(f)
-        add_class_addon(filemode, 'command', f)	
+        add_class_addon(filemode, 'command', f)
         return f
     return _f
 
@@ -79,11 +77,11 @@ def command(commandid,
 #    	Sytle('default', 'white', 'black'),
 #   ])
 
-def theme_def(filemode='kaa.filetype.default.defaultmode.DefaultMode', 
+def theme_def(filemode='kaa.filetype.default.defaultmode.DefaultMode',
               theme=None):
     """Update theme color.
 
-    filemode -- Mode class name to register keybind. 
+    filemode -- Mode class name to register keybind.
                   (default 'kaa.filetype.default.defaultmode.DefaultMode)
     theme -- Dictionary of theme name and list of styles. Currently, the only
              valid theme name is 'basic'.
