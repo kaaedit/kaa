@@ -32,6 +32,34 @@ class Token:
                 return p + 1
         return 0
 
+    def get_prev_token(self, tokenizer, doc, pos):
+        """Find previous token"""
+
+        pos = self.find_token_top(doc, pos)
+        if pos == 0:
+            # current token is at top of the document.
+            return (None, None)
+
+        pos -= 1
+        while True:
+            # Get token at the pos
+            style = doc.styles.getints(pos, pos + 1)[0]
+            token = tokenizer.get_token(style)
+            if token:
+                return token, token.find_token_top(pos)
+
+            # no token here.
+            if pos == 0:
+                break
+
+            # get previous style
+            pos = doc.styles.rfindint([style], 0, pos, comp_ne=True)
+            if pos == -1:
+                break
+
+        return (None, None)
+            
+
     def resume_pos(self, highlighter, tokenizer, doc, pos):
         return self.find_token_top(doc, pos)
 
@@ -147,6 +175,9 @@ class SubTokenizer(Token):
         ret = self.tokenizer.highlighter.register_tokenid(self.tokenizer, self)
         self.sub_tokens[ret] = token
         return ret
+
+    def get_token(self, tokenid):
+        return self.tokenizer.highlighter.get_token(tokenid)
 
     def re_start(self):
         return self.start
@@ -431,34 +462,65 @@ class Highlighter:
                 section.end = pos
                 section = section.parent
 
+    def get_prev_token(self, doc, pos):
+        """Return ((tokenizer, token), pos) of previous token."""
+        
+        if pos == 0:
+            return None, None
+
+        pos -= 1
+        while True:
+            style = doc.styles.getints(pos, pos + 1)[0]
+            if style == 0:
+                # not highlighted yet.
+                pass
+            else:
+                pair = self.tokenids.get(style, None)
+                # if pair is None, then this style invalid.
+                # May be set by tokenizer.
+                if pair:
+                    # if token is None, then token is not defined here. 
+                    # (e.g. white spaces)
+                    if pair[1]:
+                        return pair, pos
+
+            pos = doc.styles.rfindint([style], 0, pos, comp_ne=True)
+            if pos == -1:
+                return None, None
+
     def get_resume_pos(self, doc, pos):
         if pos == 0:
             return pos
 
-        # check a character proceeding to updated pos
-        pos -= 1
-        style = doc.styles.getints(pos, pos + 1)[0]
-        if style == 0:
-            # not highlighted yet.
-            p = doc.styles.rfindint([0], 0, pos, comp_ne=True)
-            if p != -1:
-                return p + 1
-            return 0
+#        # check a character proceeding to updated pos
+#        pos -= 1
+#        style = doc.styles.getints(pos, pos + 1)[0]
+#        if style == 0:
+#            # not highlighted yet.
+#            p = doc.styles.rfindint([0], 0, pos, comp_ne=True)
+#            if p != -1:
+#                return p + 1
+#            return 0
+#
+#        pair = self.tokenids.get(style)
+#        if not pair:
+#            # Invalid. this style is not set by tokenizer.
+#            return 0
+#
+#        tokenizer, token = self.tokenids.get(style)
+#        if not token:
+#            # token is not defined here. (e.g. white spaces)
+#            # resume at beggining of this non-defined area.
+#            p = doc.styles.rfindint([style], 0, pos, comp_ne=True)
+#            if p != -1:
+#                return p + 1
+#            return 0
+#        return token.resume_pos(self, tokenizer, doc, pos)
 
-        pair = self.tokenids.get(style)
+        pair, pos = self.get_prev_token(doc, pos)
         if not pair:
-            # Invalid. this style is not set by tokenizer.
             return 0
-
-        tokenizer, token = self.tokenids.get(style)
-        if not token:
-            # token is not defined here. (e.g. white spaces)
-            # resume at beggining of this non-defined area.
-            p = doc.styles.rfindint([style], 0, pos, comp_ne=True)
-            if p != -1:
-                return p + 1
-            return 0
-
+        tokenizer, token = pair
         # Let the token at the pos determin resume pos.
         return token.resume_pos(self, tokenizer, doc, pos)
 

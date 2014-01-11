@@ -2,7 +2,7 @@ import kaa_testutils
 from kaa import highlight
 
 
-class TestKeyword(kaa_testutils._TestDocBase):
+class TestTokens(kaa_testutils._TestDocBase):
 
     def test_keyword(self):
         kwds = highlight.Keywords(
@@ -163,6 +163,24 @@ class TestKeyword(kaa_testutils._TestDocBase):
             (9, 11, tokenizer1.nulltoken),
         ] == ret
 
+    def test_get_prev_token(self):
+        kwds = highlight.Keywords(
+            'keywords', 'keyword', ['if', 'while', 'for'])
+        tokenizer = highlight.Tokenizer([kwds])
+
+        doc = self._getdoc('if while for ')
+        hl = highlight.Highlighter(tokenizers=[tokenizer])
+
+        assert [
+            (0, 2, kwds.tokenid),
+            (2, 3, hl.tokenizers[0].nulltoken),
+            (3, 8, kwds.tokenid),
+            (8, 9, hl.tokenizers[0].nulltoken),
+            (9, 12, kwds.tokenid),
+            (12, 13, hl.tokenizers[0].nulltoken)
+        ] == list((f, t, style) for f, t, style in hl.highlight(doc, 0))
+
+
 
 class TestSection:
 
@@ -295,12 +313,13 @@ class TestHighlight(kaa_testutils._TestDocBase):
         doc = self.get_doc()
         list(hl.highlight(doc, 0))
         doc.styles.setints(14, 19, kwds.tokenid)
+        doc.styles.setints(19, 28, endsection.section_end)
 
         assert 0 == hl.get_resume_pos(doc, 0)
         assert 0 == hl.get_resume_pos(doc, 1)
         assert 14 == hl.get_resume_pos(doc, 16)
         assert 19 == hl.get_resume_pos(doc, 28)
-        assert 19 == hl.get_resume_pos(doc, 29)
+        assert 19 == hl.get_resume_pos(doc, 50)
 
         tokens = list(hl.highlight(doc, 19))
         assert [
