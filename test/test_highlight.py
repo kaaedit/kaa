@@ -163,24 +163,6 @@ class TestTokens(kaa_testutils._TestDocBase):
             (9, 11, tokenizer1.nulltoken),
         ] == ret
 
-    def test_get_prev_token(self):
-        kwds = highlight.Keywords(
-            'keywords', 'keyword', ['if', 'while', 'for'])
-        tokenizer = highlight.Tokenizer([kwds])
-
-        doc = self._getdoc('if while for ')
-        hl = highlight.Highlighter(tokenizers=[tokenizer])
-
-        assert [
-            (0, 2, kwds.tokenid),
-            (2, 3, hl.tokenizers[0].nulltoken),
-            (3, 8, kwds.tokenid),
-            (8, 9, hl.tokenizers[0].nulltoken),
-            (9, 12, kwds.tokenid),
-            (12, 13, hl.tokenizers[0].nulltoken)
-        ] == list((f, t, style) for f, t, style in hl.highlight(doc, 0))
-
-
 
 class TestSection:
 

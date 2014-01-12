@@ -13,6 +13,12 @@ class Token:
         """Called to setup tokenizer"""
         self.tokenids = {}
 
+    def get_token_at(self, doc, pos):
+        return self
+
+    def get_token(self, style):
+        return self
+        
     def re_start(self):
         """Returns regular expression to find begging of token"""
 
@@ -38,27 +44,9 @@ class Token:
         pos = self.find_token_top(doc, pos)
         if pos == 0:
             # current token is at top of the document.
-            return (None, None)
+            return (None, None, None)
 
-        pos -= 1
-        while True:
-            # Get token at the pos
-            style = doc.styles.getints(pos, pos + 1)[0]
-            token = tokenizer.get_token(style)
-            if token:
-                return token, token.find_token_top(pos)
-
-            # no token here.
-            if pos == 0:
-                break
-
-            # get previous style
-            pos = doc.styles.rfindint([style], 0, pos, comp_ne=True)
-            if pos == -1:
-                break
-
-        return (None, None)
-            
+        return tokenizer.highlighter.get_prev_token(doc, pos-1)
 
     def resume_pos(self, highlighter, tokenizer, doc, pos):
         return self.find_token_top(doc, pos)
@@ -172,12 +160,25 @@ class SubTokenizer(Token):
         self.subtokenizer.prepare(self)
 
     def register_tokenid(self, tokenizer, token):
-        ret = self.tokenizer.highlighter.register_tokenid(self.tokenizer, self)
+        t = self if token else None
+        ret = self.tokenizer.highlighter.register_tokenid(self.tokenizer, t)
         self.sub_tokens[ret] = token
         return ret
 
     def get_token(self, tokenid):
+        if tokenid in self.sub_tokens:
+            return self.sub_tokens[tokenid]
         return self.tokenizer.highlighter.get_token(tokenid)
+
+    def get_token_at(self, doc, pos):
+        if pos < len(doc.styles):
+            style = doc.styles.getints(pos, pos + 1)[0]
+            return self.get_token(style)
+
+        return self
+
+    def get_prev_token(self, doc, pos):
+        return self.tokenizer.highlighter.get_prev_token(doc, pos)
 
     def re_start(self):
         return self.start
@@ -194,7 +195,7 @@ class SubTokenizer(Token):
         # Returns top of current keyword
         if 0 < pos < len(doc.styles):
             p = doc.styles.rfindint(tuple(self.sub_tokens.keys()),
-                                    0, pos, comp_ne=True)
+                                    0, pos+1, comp_ne=True)
             if p != -1:
                 return p + 1
         return 0
@@ -289,6 +290,9 @@ class Tokenizer:
 
     def register_tokenid(self, obj):
         return self.highlighter.register_tokenid(self, obj)
+
+    def get_token(self, tokenid):
+        return self.highlighter.get_token(tokenid)
 
     def start(self, doc, pos):
         if self.re_starts:
@@ -463,10 +467,10 @@ class Highlighter:
                 section = section.parent
 
     def get_prev_token(self, doc, pos):
-        """Return ((tokenizer, token), pos) of previous token."""
+        """Return (tokenizer, token, pos) at pos or before pos."""
         
         if pos == 0:
-            return None, None
+            return None, None, None
 
         pos -= 1
         while True:
@@ -481,12 +485,13 @@ class Highlighter:
                 if pair:
                     # if token is None, then token is not defined here. 
                     # (e.g. white spaces)
-                    if pair[1]:
-                        return pair, pos
+                    tokenizer, token = pair
+                    if token:
+                        return tokenizer, token, pos
 
             pos = doc.styles.rfindint([style], 0, pos, comp_ne=True)
             if pos == -1:
-                return None, None
+                return None, None, None
 
     def get_resume_pos(self, doc, pos):
         if pos == 0:
@@ -517,10 +522,10 @@ class Highlighter:
 #            return 0
 #        return token.resume_pos(self, tokenizer, doc, pos)
 
-        pair, pos = self.get_prev_token(doc, pos)
-        if not pair:
+        tokenizer, token, pos = self.get_prev_token(doc, pos)
+        if not token:
             return 0
-        tokenizer, token = pair
+
         # Let the token at the pos determin resume pos.
         return token.resume_pos(self, tokenizer, doc, pos)
 

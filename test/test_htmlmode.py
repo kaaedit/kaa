@@ -144,11 +144,24 @@ class TestHTMLHighlight(kaa_testutils._TestDocBase):
         assert [
             (0, 6, hl.tokenizers[0].tokens.keywords.tokenid),
             (6, 14, hl.tokenizers[0].tokens.jsstart.section_start),
-            (14, 16, hl.tokenizers[1].tokens[0].tokenid),
-            (16, 25, hl.tokenizers[1].tokens[-1].section_end),
+            (14, 16, hl.tokenizers[1].tokens.keywords.tokenid),
+            (16, 25, hl.tokenizers[1].tokens.stop.section_end),
             (25, 27, hl.tokenizers[0].nulltoken),
             (27, 33, hl.tokenizers[0].tokens.keywords.tokenid),
         ] == list((f, t, style) for f, t, style in hl.highlight(doc, 0))
+
+        hl = highlight.Highlighter(tokenizers=self.tokenizers)
+        doc = self._getdoc("&nbsp;<script>/abc/</script>if&nbsp;")
+        hl.update_style(doc)
+        assert ([hl.tokenizers[0].tokens.keywords.tokenid]*6 +
+                [hl.tokenizers[0].tokens.jsstart.section_start]*8 +
+                [hl.tokenizers[1].tokens.regex.span_start] +
+                [hl.tokenizers[1].tokens.regex.span_mid]*3 +
+                [hl.tokenizers[1].tokens.regex.span_end] +
+                [hl.tokenizers[1].tokens.stop.section_end]*9 +
+                [hl.tokenizers[0].nulltoken]*2 +
+                [hl.tokenizers[0].tokens.keywords.tokenid]*6
+               ) == doc.styles.getints(0, 36)
 
     def test_style(self):
         hl = highlight.Highlighter(tokenizers=self.tokenizers)
@@ -220,6 +233,26 @@ class TestHTMLHighlight(kaa_testutils._TestDocBase):
             (8, 10, hl.tokenizers[0].
                      tokens.jsattr1.subtokenizer.tokens.comment2.span_start),
             (10, 11, hl.tokenizers[0].tokens.jsattr1.subtokenizer.nulltoken),
+            (11, 12, hl.tokenizers[0].tokens.htmltag.span_attrvalue),
+        ] == list((f, t, style) for f, t, style in hl.highlight(doc, 0))
+
+    def test_javascriptattr5(self):
+        hl = highlight.Highlighter(tokenizers=self.tokenizers)
+        doc = self._getdoc('''<a ona='/a/\'''')
+
+        assert [
+            (0, 1, hl.tokenizers[0].tokens.htmltag.span_lt),
+            (1, 2, hl.tokenizers[0].tokens.htmltag.span_elemname),
+            (2, 3, hl.tokenizers[0].tokens.htmltag.span_elemws),
+            (3, 6, hl.tokenizers[0].tokens.htmltag.span_attrname),
+            (6, 7, hl.tokenizers[0].tokens.htmltag.span_elemws),
+            (7, 8, hl.tokenizers[0].tokens.htmltag.span_attrvalue),
+            (8, 9, hl.tokenizers[0].
+                     tokens.jsattr1.subtokenizer.tokens.regex.span_start),
+            (9, 10, hl.tokenizers[0].
+                     tokens.jsattr1.subtokenizer.tokens.regex.span_mid),
+            (10, 11, hl.tokenizers[0].
+                     tokens.jsattr1.subtokenizer.tokens.regex.span_end),
             (11, 12, hl.tokenizers[0].tokens.htmltag.span_attrvalue),
         ] == list((f, t, style) for f, t, style in hl.highlight(doc, 0))
 
