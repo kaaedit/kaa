@@ -908,14 +908,22 @@ Links
 Version history
 =================
 
-0.33.0 - 2014.1.8
+0.34.0 - 2014.1.13
 --------------------
 
-- new `kaa.addon` module to customize kaa.
+- Highlight regex literal in Javascipt mode.
+
+- Impove auto indentation of Python mode.
 
 
 Past versions
 --------------
+
+0.33.0 - 2014.1.8
++++++++++++++++++++++
+
+- new `kaa.addon` module to customize kaa.
+
 
 0.32.0 - 2014.1.5
 +++++++++++++++++++++
