@@ -294,6 +294,25 @@ class PythonMode(defaultmode.DefaultMode):
             else:
                 assert 0
 
+    def _calc_parenthesis_balance(self, tokens):
+        p = 0
+        for token, tokenpos, s in tokens:
+            if token == 'open_parenthesis':
+                p += 1
+            elif token == 'close_parenthesis':
+                p -= 1
+        return p
+
+    def _find_parenthesis_open_line(self, pos):
+        while pos > 0:
+            tol = self.document.gettol(pos)
+            tokens = list(self._get_indent_reasons(tol, pos))
+            p = self._calc_parenthesis_balance(tokens)
+            if p > 0:
+                return tol
+            pos = tol -1
+        return None
+
     def calc_next_indent(self, pos):
         tol = self.document.gettol(pos)
         tokens = list(self._get_indent_reasons(tol, pos))
@@ -307,37 +326,19 @@ class PythonMode(defaultmode.DefaultMode):
         if tokens[-1][0] == 'colon':
             return cols + self.indent_width
 
-        p = 0
-        for token, tokenpos, s in tokens:
-            if token == 'open_parenthesis':
-                p += 1
-            elif token == 'close_parenthesis':
-                p -= 1
-
+        p = self._calc_parenthesis_balance(tokens)
         if p > 0:
             return cols + self.indent_width
         elif p == 0:
             return None
         else:
-            if not cols:
-                return cols
-
-            # if parenthesis closing and the parenthesis is only
-            # element in the line, then don't dedent line.
-            # e.g.
-            #    a =  [1,2,3,4,
-            #    ]    <- Don't dedent next line.
-            if len(tokens) == 1:
-                close_f, close_t = tokens[0][1]
-                if close_f == t:
-                    return None
-
-            parent_cols = self.get_parent_indent(pos)
-            if parent_cols is None:
-                return max(0, cols - self.indent_width)
-            else:
-                return parent_cols
-
+            open_line = self._find_parenthesis_open_line(tol-1)
+            if open_line is None:
+                return None
+            f, t = self.get_indent_range(open_line)
+            t = min(t, pos)
+            return self.calc_cols(f, t)
+            
     def get_breakpoints(self):
         for k, v in self.document.marks.items():
             if isinstance(k, port.BreakPoint):
