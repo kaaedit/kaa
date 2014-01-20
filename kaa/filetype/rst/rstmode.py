@@ -124,7 +124,7 @@ def build_tokenizer():
                       r'\*\*', r'\*\*', escape='\\'),
             RstInline('rst-emphasis', 'emphasis',
                       r'\*', r'\*', escape='\\'),
-            RstInline('rst-literal', 'literal', r'``', r'``', escape='\\'),
+            RstInline('rst-literal', 'literal', r'``', r'``', escape=''),
             RstInline('rst-interpreted', 'reference', r'`', r'`_?_?',
                       escape='\\'),
             SingleToken('rst-reference', 'reference',
