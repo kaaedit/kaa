@@ -67,7 +67,7 @@ abc()
         with patch.object(wnd.cursor, 'pos', new=15):
             wnd.document.mode.on_auto_indent(wnd)
         assert wnd.document.gettext(0, wnd.document.endpos()
-            ) == '\n  abc\n    abc)\n  \n'
+            ) == '\n  abc\n    abc)\n    \n'
 
         # test closed parenthesis, but no dedent required
         script = '''
