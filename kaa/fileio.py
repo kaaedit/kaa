@@ -159,6 +159,7 @@ class FileStorage:
         # todo: move most of codes to mode class.
         if not nohist:
             self._save_hist(filename)
+        old_fileinfo = doc.fileinfo
 
         if not doc.fileinfo:
             fileinfo = kaa.app.storage.get_fileinfo(
@@ -177,9 +178,12 @@ class FileStorage:
             if doc.fileinfo.newline is None:
                 doc.fileinfo.newline = kaa.app.config.DEFAULT_NEWLINE
 
-        modecls = select_mode(filename)
-        if type(doc.mode) is not modecls:
-            doc.setmode(modecls())
+        # update mode if file ext was
+        old_ext = '' if not old_fileinfo else old_fileinfo.file_ext
+        if old_ext.upper() != os.path.splitext(filename)[1].upper():
+            modecls = select_mode(filename)
+            if type(doc.mode) is not modecls:
+                doc.setmode(modecls())
 
         doc.mode.update_fileinfo(doc.fileinfo, doc)
 
@@ -225,6 +229,10 @@ class FileInfo:
     @property
     def nlchars(self):
         return consts.NEWLINE_CHARS[self.newline]
+
+    @property
+    def file_ext(self):
+        return os.path.splitext(self.fullpathname)[1]
 
     def __init__(self):
         self.encoding = kaa.app.config.DEFAULT_ENCODING
