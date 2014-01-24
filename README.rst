@@ -908,16 +908,24 @@ Links
 Version history
 =================
 
-0.34.0 - 2014.1.13
+0.35.0 - 2014.1.24
 --------------------
+
+- Impove highlighting of reStructuredText mode.
+
+- Don't update mode class on saving file if ext part of filename is not changed.
+
+
+Past versions
+--------------
+
+0.34.0 - 2014.1.13
++++++++++++++++++++++
 
 - Highlight regex literal in Javascipt mode.
 
 - Impove auto indentation of Python mode.
 
-
-Past versions
---------------
 
 0.33.0 - 2014.1.8
 +++++++++++++++++++++
