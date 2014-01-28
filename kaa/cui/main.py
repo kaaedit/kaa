@@ -52,7 +52,9 @@ def run_userinit(fname):
 
         sys.modules['__kaa__'] = module
 
-URL_CHECKVERSION = 'http://www.gembook.org/kaa_checkversion/version_latest'
+URL_CHECKVERSION_HOST = 'http://www.gembook.org'
+URL_CHECKVERSION_PATH = '/kaa_checkversion/version_latest'
+
 CHECK_DURARION = 60 * 60 * 24  # check once a day.
 
 
@@ -60,7 +62,8 @@ def _download_version_no():
     import urllib.request
     import re
     try:
-        f = urllib.request.urlopen(URL_CHECKVERSION, timeout=60)
+        url = URL_CHECKVERSION_HOST + URL_CHECKVERSION_PATH
+        f = urllib.request.urlopen(url, timeout=60)
         s = str(f.read(), 'ascii', errors='replace')
     except Exception:
         return
