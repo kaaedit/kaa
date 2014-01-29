@@ -908,16 +908,23 @@ Links
 Version history
 =================
 
-0.35.0 - 2014.1.24
+0.36.0 - 2014.1.29
 --------------------
+
+- An Error raised when file open dialog displayed at startup was canceled. 
+  `Reported by hirokiky <https://github.com/kaaedit/kaa/issues/115>`_
+
+
+Past versions
+--------------
+
+0.35.0 - 2014.1.24
++++++++++++++++++++++
 
 - Impove highlighting of reStructuredText mode.
 
 - Don't update mode class on saving file if ext part of filename is not changed.
 
-
-Past versions
---------------
 
 0.34.0 - 2014.1.13
 +++++++++++++++++++++
