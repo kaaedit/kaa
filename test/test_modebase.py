@@ -28,6 +28,21 @@ class TestDefaultMode(kaa_testutils._TestScreenBase):
             (0, 1, '\n', '_LF'),
         ) == tuple(mode.split_word(0))
 
+    def test_getwordat(self):
+        mode = self._getmode()
+        doc = self._getdoc('abc 0123 abcあいうdef')
+        doc.setmode(mode)
+
+        assert mode.get_word_at(0) == (0, 3, 'L_WORDCHAR')
+        assert mode.get_word_at(3) == (0, 3, 'L_WORDCHAR')
+        assert mode.get_word_at(4) == (4, 8, 'L_WORDCHAR')
+        assert mode.get_word_at(8) == (4, 8, 'L_WORDCHAR')
+        assert mode.get_word_at(9) == (9, 12, 'L_WORDCHAR')
+        assert mode.get_word_at(11) == (9, 12, 'L_WORDCHAR')
+        assert mode.get_word_at(12) == (12, 15, 'L_HIRAGANA')
+        assert mode.get_word_at(15) == (15, 18, 'L_WORDCHAR')
+
+
     def test_search_next(self):
         w = self._getwnd('abcdefgabcdefg/efg/EFG')
 

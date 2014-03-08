@@ -533,22 +533,13 @@ class ModeBase:
         for f, t, s, cg in self.split_word(tol):
             if t <= pos:
                 if cg != 'Z_WHITESPACE':
-                    if t == pos and cg[0] == 'L':
-                        return (f, t, cg)
-                    else:
-                        ret = (f, t, cg)
-            elif cg == '_LF':
-                break
+                    ret = (f, t, cg)
             else:
-                if cg == 'Z_WHITESPACE':
-                    if f == pos:
-                        return ret
-                    else:
-                        return
-                return (f, t, cg)
+                if cg not in {'_LF', 'Z_WHITESPACE'}:
+                    ret = (f, t, cg)
+                break
 
-        if ret and ret[1] == pos:
-            return ret
+        return ret
 
     def get_word_list(self):
         words = collections.OrderedDict()
