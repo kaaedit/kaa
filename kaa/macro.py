@@ -37,12 +37,7 @@ class Macro:
         self.commands.append((rec_command, n_repeat, commandid, args, kwargs))
 
     def record_string(self, s, overwrite):
-        if (not self.commands
-                or self.commands[-1][0] is not rec_string
-                or self.commands[-1][1] != overwrite):
-            self.commands.append([rec_string, overwrite, s])
-        else:
-            self.commands[-1][2] += s
+        self.commands.append([rec_string, overwrite, s])
 
     def run(self, wnd):
         if self.recording:

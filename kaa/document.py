@@ -411,6 +411,13 @@ class Undo:
     def __init__(self):
         self.clear()
 
+    def _dump(self, lv=0):
+        _trace('    '*lv, '======================')
+        for a in self._actions:
+            _trace('    ' * lv, a)
+            if isinstance(a[0], Undo):
+                a[0]._dump(lv+1)
+
     def clear(self):
         self._actions = []      # edit operations
         self._closed = False    # Closed group undo block

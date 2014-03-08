@@ -242,10 +242,4 @@ class MacroCommands(Commands):
         if not kaa.app.macro.get_commands():
             return
 
-        if wnd.document.undo:
-            wnd.document.undo.beginblock()
-        try:
-            kaa.app.macro.run(wnd)
-        finally:
-            if wnd.document.undo:
-                wnd.document.undo.endblock()
+        kaa.app.macro.run(wnd)
