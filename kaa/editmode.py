@@ -69,9 +69,15 @@ class EditMode:
         return None, None, candidates
 
     def _on_str(self, wnd, s):
+        if not wnd.document.mode.DELAY_STR:
+            self.flush_pending_str(wnd)
+
         for c in s:
             if c in '\t\r\n' or c >= ' ':
                 self.pending_str += c
+
+                if not wnd.document.mode.DELAY_STR:
+                    self.flush_pending_str(wnd)
 
     def _keys_to_str(self, keys):
         ret = []

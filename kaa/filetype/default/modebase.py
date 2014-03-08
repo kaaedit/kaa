@@ -65,6 +65,7 @@ class ModeBase:
     DOCUMENT_MODE = False
     HIGHLIGHT_CURSOR_ROW = False
     SHOW_CURSOR = True
+    DELAY_STR = True
 
     tab_width = 8
     indent_width = 4

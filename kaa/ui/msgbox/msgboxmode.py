@@ -20,7 +20,8 @@ class MsgBoxMode(dialogmode.DialogMode):
     autoshrink = True
     SEPARATOR = '/'
     USE_UNDO = False
-
+    DELAY_STR = False
+    
     def init_themes(self):
         super().init_themes()
         self.themes.append(MsgBoxThemes)
