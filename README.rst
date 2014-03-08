@@ -908,15 +908,23 @@ Links
 Version history
 =================
 
-0.36.0 - 2014.1.29
+0.37.0 - 2014.3.8
 --------------------
 
-- An Error raised when file open dialog displayed at startup was canceled. 
-  `Reported by hirokiky <https://github.com/kaaedit/kaa/issues/115>`_
+- Home directory was not expanded to open file in Grep window.
 
+- Undo command in the macro was not worked properly.
+
+- Command 'selection.curword` doesn't select Japanese word.
 
 Past versions
 --------------
+
+0.36.0 - 2014.1.29
++++++++++++++++++++++
+
+- An Error raised when file open dialog displayed at startup was canceled. 
+  `Reported by hirokiky <https://github.com/kaaedit/kaa/issues/115>`_
 
 0.35.0 - 2014.1.24
 +++++++++++++++++++++
