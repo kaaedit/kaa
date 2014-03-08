@@ -80,7 +80,7 @@ class FilenameIndexMode(defaultmode.DefaultMode):
         except ValueError:
             lineno = 1
 
-        filename = os.path.abspath(filename)
+        filename = os.path.abspath(os.path.expanduser(filename))
         doc = document.Document.find_filename(filename)
         if not doc:
             enc = self.encoding
