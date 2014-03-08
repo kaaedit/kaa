@@ -109,6 +109,10 @@ class EditMode:
             msg = ' '.join(cur) + ' [%s]' % (', '.join(sorted(nextkeys)))
             kaa.app.messagebar.set_message(msg)
 
+    def on_non_command_str(self, wnd, event, s):
+        self._on_str(wnd, s)
+        del self.last_command_keys[:]
+
     def on_key_pressed(self, wnd, event):
         s, commands, candidate = self._get_command(wnd, event)
         s, commands, candidate = wnd.document.mode.on_keypressed(
@@ -117,8 +121,7 @@ class EditMode:
         self._show_pending_keys(s, commands, candidate)
         try:
             if s:
-                self._on_str(wnd, s)
-                del self.last_command_keys[:]
+                self.on_non_command_str(wnd, event, s)
 
             elif commands:
                 self.flush_pending_str(wnd)
@@ -188,6 +191,16 @@ class ReplaceMode(EditMode):
 
 class CommandMode(EditMode):
     MODENAME = 'Command'
+
+    def on_non_command_str(self, wnd, event, s):
+        is_available, command = wnd.document.mode.get_command(
+                                    'editmode.insert')
+        if command:
+            self.flush_pending_str(wnd)
+            command(wnd)
+            wnd.document.mode.on_str(wnd, s, False)
+        else:
+            super().on_non_command_str(wnd, event, s)
 
     def on_key_pressed(self, wnd, event):
         # check if key is repeat count
