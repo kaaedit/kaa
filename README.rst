@@ -537,7 +537,7 @@ In the grep result window, use F9 and F10 key to traverse matches forward/backwa
 Python console
 --------------
 
-When you hit enter key to execute multiline statements in console, new input dialog appears to edit rest of script. In the dialog, you can edit script as normal editor screen. After you finish to edit your script, hit alt+Enter key to execute the script.
+You can type Python script as normal Python interpreter. To execute script, you should hit enter key at very last of the script. Otherwise, newline character is inserted as text editor. You can move cursor upper or below to edit multiline script.
 
 To show script history window, hit alt+Enter key on the console.
 
@@ -908,17 +908,24 @@ Links
 Version history
 =================
 
-0.37.0 - 2014.3.8
+0.38.0 - 2014.3.9
 --------------------
+
+- [Pytho console] Multiline scripts could be edited inplace. Edit window is no longer displayed. To execute script, cursor must located at end of script.
+
+- [Pytho console] local namespace is shared among console.
+
+Past versions
+--------------
+
+0.37.0 - 2014.3.8
++++++++++++++++++++++
 
 - Home directory was not expanded to open file in Grep window.
 
 - Undo command in the macro was not worked properly.
 
 - Command 'selection.curword` doesn't select Japanese word.
-
-Past versions
---------------
 
 0.36.0 - 2014.1.29
 +++++++++++++++++++++
