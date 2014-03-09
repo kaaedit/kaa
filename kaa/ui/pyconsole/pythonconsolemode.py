@@ -28,8 +28,10 @@ PythonConsoleThemes = {
 
 
 class KaaInterpreter(code.InteractiveInterpreter):
+    localdict = {"__name__": "__console__", "__doc__": None}
+
     def __init__(self, document):
-        super().__init__()
+        super().__init__(self.localdict)
         self.document = document
 
     def runcode(self, code):
