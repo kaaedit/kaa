@@ -14,6 +14,7 @@ from kaa.ui.dialog import dialogmode
 
 pythonconsole_keys = {
     ('\r'): 'python.exec',
+    (ctrl, 'c'): 'python.clear',
     (alt, '\r'): 'python.script-history',
     (alt, '\n'): 'python.script-history',
 }
@@ -97,11 +98,17 @@ class PythonConsoleMode(pythonmode.PythonMode):
         f, t = self.document.marks['current_script']
         wnd.cursor.setpos(f)
 
-    def on_esc_pressed(self, wnd, event):
+    @commandid('python.clear')
+    @norec
+    @norerun
+    def clear_line(self, wnd):
         f, t = self.document.marks['current_script']
         self.document.delete(f, t)
         wnd.cursor.setpos(f)
         self.document.undo.clear()
+
+    def on_esc_pressed(self, wnd, event):
+        self.clear_line(wnd)
 
     def put_string(self, wnd, s, overwrite=False):
         pos = wnd.cursor.pos
