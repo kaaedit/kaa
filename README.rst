@@ -911,9 +911,9 @@ Version history
 0.38.0 - 2014.3.9
 --------------------
 
-- [Pytho console] Multiline scripts could be edited inplace. Edit window is no longer displayed. To execute script, cursor must located at end of script.
+- [Python console] Multiline scripts could be edited in-place. Edit window is no longer displayed. To execute script, cursor must be located at end of script.
 
-- [Pytho console] local namespace is shared among console.
+- [Python console] local namespace is shared among consoles.
 
 Past versions
 --------------
