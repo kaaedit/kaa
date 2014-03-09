@@ -11,7 +11,6 @@ from kaa.filetype.python import pythonmode
 from kaa.command import commandid, Commands, norec, norerun
 from kaa.theme import Theme, Style
 from kaa.ui.dialog import dialogmode
-from kaa.ui.inputline import inputlinemode
 
 pythonconsole_keys = {
     ('\r'): 'python.exec',
@@ -29,16 +28,31 @@ PythonConsoleThemes = {
 
 
 class KaaInterpreter(code.InteractiveInterpreter):
+    def __init__(self, document):
+        super().__init__()
+        self.document = document
 
     def runcode(self, code):
+        # stop undo
+        self.document.use_undo(False)
         # send newline before running script
         sys.stdout.write('\n')
-        super().runcode(code)
+        try:
+            super().runcode(code)
+        finally:
+            # stop undo
+            self.document.use_undo(True)
 
     def showsyntaxerror(self, filename=None):
+        # stop undo
+        self.document.use_undo(False)
         # send newline before show error
         sys.stdout.write('\n')
-        super().showsyntaxerror(filename)
+        try:
+            super().showsyntaxerror(filename)
+        finally:
+            # stop undo
+            self.document.use_undo(True)
 
 
 class PythonConsoleMode(pythonmode.PythonMode):
@@ -65,7 +79,7 @@ class PythonConsoleMode(pythonmode.PythonMode):
 
     def on_set_document(self, document):
         super().on_set_document(document)
-        self.interp = KaaInterpreter()
+        self.interp = KaaInterpreter(document=document)
 
         self.document.append(
             'Python %s\n' %
@@ -137,19 +151,26 @@ class PythonConsoleMode(pythonmode.PythonMode):
         sys.stdout = out(self.document, style_stdout)
         sys.stderr = out(self.document, style_stderr)
 
-        yield
+        try:
+            yield
 
-        sys.stdin = stdin
-        sys.stdout = stdout
-        sys.stderr = stderr
+        finally:
+            sys.stdin = stdin
+            sys.stdout = stdout
+            sys.stderr = stderr
 
     @commandid('python.exec')
     @norec
     @norerun
-    def exec_script(self, wnd):
-        self.document.undo.clear()
+    def on_enter(self, wnd):
+
+        #todo: undo
         f, t = self.document.marks['current_script']
-        s = wnd.document.gettext(f, t).lstrip()
+        tail = wnd.document.gettext(wnd.cursor.pos, t).strip()
+        if tail:
+            self.on_commands(wnd, ['edit.newline'])
+            return
+        s = wnd.document.gettext(f, t).lstrip().rstrip(' \t')
         with self._redirect_output(wnd):
             curses.cbreak()
             try:
@@ -158,6 +179,7 @@ class PythonConsoleMode(pythonmode.PythonMode):
                 curses.raw()
 
             if not ret:
+                wnd.document.undo.clear()
                 if s.strip():
                     hist = kaa.app.config.hist(
                         'pyconsole_script',
@@ -170,19 +192,8 @@ class PythonConsoleMode(pythonmode.PythonMode):
                 self.document.marks['current_script'] = (p, p)
                 wnd.cursor.setpos(p)
             else:
-                self._show_inputline(wnd, s + '\n')
-
-    def _show_inputline(self, wnd, s):
-        doc = PythonInputlineMode.build(wnd, s)
-        kaa.app.show_dialog(doc)
-        kaa.app.messagebar.set_message('')
-
-    def exec_str(self, wnd, s):
-        s = s.rstrip() + '\n'
-        f, t = self.document.marks['current_script']
-        self.document.replace(f, t, s,
-                              style=self.get_styleid('default'))
-        self.exec_script(wnd)
+                self.on_commands(wnd, ['edit.newline'])
+                return
 
     def _put_script(self, wnd, text):
         if text.endswith('\n'):
@@ -192,11 +203,6 @@ class PythonConsoleMode(pythonmode.PythonMode):
         wnd.screen.selection.clear()
         hist = kaa.app.config.hist('pyconsole_script', self.MAX_HISTORY)
         hist.add(text)
-
-        f, t = self.document.marks['current_script']
-        s = wnd.document.gettext(f, t)
-        if '\n' in s:
-            self._show_inputline(wnd, s)
 
     MAX_HISTORY = 100
 
@@ -221,67 +227,6 @@ class PythonConsoleMode(pythonmode.PythonMode):
         s = kaa.app.clipboard.get()
         if s:
             self._put_script(wnd, s)
-
-
-inputline_keys = {
-    (alt, '\r'): ('inputline'),
-    (alt, '\n'): ('inputline'),
-}
-
-
-class PythonInputlineMode(dialogmode.DialogMode, pythonmode.PythonMode):
-    DEFAULT_STATUS_MSG = 'Hit alt+Enter to execute script.'
-
-    DOCUMENT_MODE = False
-    autoshrink = True
-    USE_UNDO = True
-    auto_indent = True
-    border = True
-
-    PYTHONINPUTLINE_KEY_BINDS = [
-        inputline_keys
-    ]
-
-    def init_keybind(self):
-        super().init_keybind()
-        self.register_keys(self.keybind, self.PYTHONINPUTLINE_KEY_BINDS)
-
-    def init_tokenizers(self):
-        pythonmode.PythonMode.init_tokenizers(self)
-
-    def on_add_window(self, wnd):
-        super().on_add_window(wnd)
-        wnd.cursor.setpos(self.document.endpos())
-        kaa.app.messagebar.set_message('')
-
-    def on_esc_pressed(self, wnd, event):
-        # todo: run callback
-        popup = wnd.get_label('popup')
-        popup.destroy()
-        kaa.app.messagebar.set_message("Canceled")
-
-    @commandid('inputline')
-    @norec
-    @norerun
-    def input_line(self, w):
-        s = self.document.gettext(0, self.document.endpos())
-        target = self.target
-
-        # close before execute
-        popup = w.get_label('popup')
-        popup.destroy()
-
-        target.document.mode.exec_str(target, s)
-        kaa.app.messagebar.set_message("")
-
-    @classmethod
-    def build(cls, target, s):
-        doc = document.Document()
-        doc.append(s)
-        mode = cls()
-        doc.setmode(mode)
-        mode.target = target
-        return doc
 
 
 def show_console():
