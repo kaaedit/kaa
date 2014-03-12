@@ -14,7 +14,6 @@ from kaa.ui.dialog import dialogmode
 
 pythonconsole_keys = {
     ('\r'): 'python.exec',
-    (ctrl, 'c'): 'python.clear',
     (alt, '\r'): 'python.script-history',
     (alt, '\n'): 'python.script-history',
 }
