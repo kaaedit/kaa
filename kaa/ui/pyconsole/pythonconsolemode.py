@@ -171,9 +171,12 @@ class PythonConsoleMode(pythonmode.PythonMode):
     @norec
     @norerun
     def on_enter(self, wnd):
-
-        #todo: undo
         f, t = self.document.marks['current_script']
+
+        if wnd.cursor.pos < f:
+            wnd.cursor.setpos(f)
+            return
+
         tail = wnd.document.gettext(wnd.cursor.pos, t).strip()
         if tail:
             self.on_commands(wnd, ['edit.newline'])
