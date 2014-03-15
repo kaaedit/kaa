@@ -73,7 +73,6 @@ class ModeBase:
     auto_indent = True
 
     closed = False
-    current_lastcommands = None
     theme = None
     highlight = None
     _check_fileupdate = 0
@@ -337,7 +336,7 @@ class ModeBase:
                 commandids(wnd)
                 return
 
-            self.current_lastcommands = []
+            current_lastcommands = []
             for commandid in commandids:
                 is_available, command = self.get_command(commandid)
                 if not command:
@@ -351,14 +350,13 @@ class ModeBase:
                     kaa.app.macro.record(n_repeat, command)
 
                 if not getattr(command, 'NORERUN', False):
-                    self.current_lastcommands.append(commandid)
+                    current_lastcommands.append(commandid)
 
-            if self.current_lastcommands:
-                kaa.app.lastcommands = (n_repeat, self.current_lastcommands)
+            if current_lastcommands:
+                kaa.app.lastcommands = (n_repeat, current_lastcommands)
 
         finally:
             wnd.set_command_repeat(1)
-            self.current_lastcommands = None
 
     def on_esc_pressed(self, wnd, event):
         pass
