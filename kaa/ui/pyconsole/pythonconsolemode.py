@@ -13,9 +13,9 @@ from kaa.theme import Theme, Style
 from kaa.ui.dialog import dialogmode
 
 pythonconsole_keys = {
-    ('\r'): 'python.exec',
-    (alt, '\r'): 'python.script-history',
-    (alt, '\n'): 'python.script-history',
+    ('\r'): 'pythonconsole.newline',
+    (alt, '\r'): 'pythonconsole.script-history',
+    (alt, '\n'): 'pythonconsole.script-history',
 }
 
 PythonConsoleThemes = {
@@ -97,7 +97,7 @@ class PythonConsoleMode(pythonmode.PythonMode):
         f, t = self.document.marks['current_script']
         wnd.cursor.setpos(f)
 
-    @commandid('python.clear')
+    @commandid('pythonconsole.clear')
     @norec
     @norerun
     def clear_line(self, wnd):
@@ -167,20 +167,12 @@ class PythonConsoleMode(pythonmode.PythonMode):
             sys.stdout = stdout
             sys.stderr = stderr
 
-    @commandid('python.exec')
+
+    @commandid('pythonconsole.exec')
     @norec
     @norerun
-    def on_enter(self, wnd):
+    def exec_script(self, wnd):
         f, t = self.document.marks['current_script']
-
-        if wnd.cursor.pos < f:
-            wnd.cursor.setpos(f)
-            return
-
-        tail = wnd.document.gettext(wnd.cursor.pos, t).strip()
-        if tail:
-            self.on_commands(wnd, ['edit.newline'])
-            return
         s = wnd.document.gettext(f, t).lstrip().rstrip(' \t')
         with self._redirect_output(wnd):
             curses.cbreak()
@@ -206,6 +198,22 @@ class PythonConsoleMode(pythonmode.PythonMode):
                 self.on_commands(wnd, ['edit.newline'])
                 return
 
+
+    @commandid('pythonconsole.newline')
+    def on_enter(self, wnd):
+        f, t = self.document.marks['current_script']
+
+        if wnd.cursor.pos < f:
+            wnd.cursor.setpos(f)
+            return
+
+        tail = wnd.document.gettext(wnd.cursor.pos, t).strip()
+        if tail:
+            self.on_commands(wnd, ['edit.newline'])
+            return
+
+        self.exec_script(wnd)
+
     def _put_script(self, wnd, text):
         if text.endswith('\n'):
             text = text[:-1]
@@ -217,7 +225,7 @@ class PythonConsoleMode(pythonmode.PythonMode):
 
     MAX_HISTORY = 100
 
-    @commandid('python.script-history')
+    @commandid('pythonconsole.script-history')
     @norec
     @norerun
     def history(self, wnd):
