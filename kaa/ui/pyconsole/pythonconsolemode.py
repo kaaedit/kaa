@@ -2,6 +2,7 @@ import curses
 import code
 import sys
 import traceback
+import time
 from contextlib import contextmanager
 import kaa
 from kaa import document
@@ -150,10 +151,19 @@ class PythonConsoleMode(pythonmode.PythonMode):
             def __init__(self, document, style):
                 self.document = document
                 self.style = style
+                self._cache = []
 
             def write(self, s):
-                if not self.document.closed:
-                    self.document.append(s, self.style)
+                if self.document.closed:
+                    return
+                self._cache.append(s)
+                if '\n' in s:
+                    self.flush()
+
+            def flush(self):
+                if self._cache:
+                    self.document.append(''.join(self._cache), self.style)
+                    self._cache = []
 
         sys.stdin = None
         sys.stdout = out(self.document, style_stdout)
@@ -163,10 +173,12 @@ class PythonConsoleMode(pythonmode.PythonMode):
             yield
 
         finally:
+            sys.stdout.flush()
+            sys.stderr.flush()
+
             sys.stdin = stdin
             sys.stdout = stdout
             sys.stderr = stderr
-
 
     @commandid('pythonconsole.exec')
     @norec
@@ -177,11 +189,14 @@ class PythonConsoleMode(pythonmode.PythonMode):
         with self._redirect_output(wnd):
             curses.cbreak()
             try:
+                start = time.time()
                 ret = self.interp.runsource(s)
+                end = time.time()
             finally:
                 curses.raw()
 
             if not ret:
+                kaa.app.messagebar.set_message('Execued in {} secs'.format(end-start))
                 wnd.document.undo.clear()
                 if s.strip():
                     hist = kaa.app.config.hist(
@@ -197,7 +212,6 @@ class PythonConsoleMode(pythonmode.PythonMode):
             else:
                 self.on_commands(wnd, ['edit.newline'])
                 return
-
 
     @commandid('pythonconsole.newline')
     def on_enter(self, wnd):
