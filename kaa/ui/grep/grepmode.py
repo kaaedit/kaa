@@ -155,7 +155,7 @@ def _search(dir, option, doc):
             doc.append(cur_line[f:t], style_match)
             pos = t
 
-        if pos != len(line):
+        if pos != len(cur_line):
             doc.append(cur_line[t:], style_default)
 
         doc.append('\n', style_default)
