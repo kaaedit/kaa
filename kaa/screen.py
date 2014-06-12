@@ -415,7 +415,6 @@ class Screen:
     def _oninit(self):
         self.document = None
         self.nowrap = False
-        self.build_entire_rows = False
 
         # Rows displayed on screen
         # A row at self.rows[0] should be start from top
@@ -440,7 +439,6 @@ class Screen:
 
         self.document = doc
         self.nowrap = doc.mode.SCREEN_NOWRAP
-        self.build_entire_rows = doc.mode.SCREEN_BUILD_ENTIRE_ROWS
 
     def close(self):
         self.document = self.selection = None
@@ -456,14 +454,23 @@ class Screen:
             return -1, -1
         return (rows[0].posfrom, rows[-1].posto)
 
-    def get_total_height(self):
-        self.apply_updates()
+    def get_total_height(self, max_height):
 
-        if self.build_entire_rows:
-            if self.rows:
-                assert self.rows[0].posfrom == 0
+        # build all rows
+        ret = 0
+        tol = 0
+        while True:
+            eol, s = self.document.getline(tol)
+            styles = self.document.getstyles(tol, eol)
+            rows = self._buildrow(tol, s, styles)
+            tol = eol
+            ret += sum(r.height for r in rows)
+            if ret >= max_height:
+                break
+            if self.is_lastrow(rows[-1]):
+                break
 
-        return sum(r.height for r in self.rows)
+        return ret
 
     def setsize(self, width, height):
         if self.width != width or self.height != height:
@@ -486,34 +493,6 @@ class Screen:
         width = max(2, self.width - linenowidth)
         return col_splitter(width, pos, dispchrs, dispcols,
                             positions, intervals, styles, self.document.mode.stylemap, nowrap=self.nowrap, nowrapindent=nowrapindent)
-
-    def _set_rowport(self):
-
-        # Update bottom of visible rows
-        height = 0
-        for i in range(self.portfrom, len(self.rows)):
-            if height >= self.height:
-                self.portto = i
-                break
-            height += self.rows[i].height
-        else:
-            self.portto = len(self.rows)
-
-        # Remove unnecessary rows
-        if not self.build_entire_rows:
-            porttop = self.rows[self.portfrom].tol
-            for i, row in enumerate(self.rows):
-                if row.tol == porttop:
-                    del self.rows[0:i]
-                    self.portfrom -= i
-                    self.portto -= i
-                    break
-
-            portend = self.rows[self.portto - 1].tol
-            for i, row in enumerate(self.rows[self.portto:]):
-                if row.tol != portend:
-                    del self.rows[self.portto + i:]
-                    break
 
     def on_document_updated(self, pos, inslen, dellen):
         self.selection.on_document_updated(pos, inslen, dellen)
@@ -701,14 +680,39 @@ class Screen:
                 break
 
             height = sum(row.height for row in self.rows[self.portfrom:])
-            if not self.build_entire_rows and (height >= self.height):
+            if height >= self.height:
                 break
 
             eol, s = self.document.getline(bottomrow.posto)
             styles = self.document.getstyles(bottomrow.posto, eol)
             self.rows.extend(self._buildrow(bottomrow.posto, s, styles))
 
-        self._set_rowport()
+
+        # Update bottom of visible rows
+        height = 0
+        for i in range(self.portfrom, len(self.rows)):
+            if height >= self.height:
+                self.portto = i
+                break
+            height += self.rows[i].height
+        else:
+            self.portto = len(self.rows)
+
+        # Remove unnecessary rows
+        porttop = self.rows[self.portfrom].tol
+        for i, row in enumerate(self.rows):
+            if row.tol == porttop:
+                del self.rows[0:i]
+                self.portfrom -= i
+                self.portto -= i
+                break
+
+        portend = self.rows[self.portto - 1].tol
+        for i, row in enumerate(self.rows[self.portto:]):
+            if row.tol != portend:
+                del self.rows[self.portto + i:]
+                break
+
 
     def locate(self, pos, top=False, middle=False, bottom=False,
                align_always=False, refresh=False):
@@ -725,13 +729,6 @@ class Screen:
         if not refresh and (posidx != -1):
             if not align_always and (self.portfrom <= posidx < self.portto):
                 return False
-
-        elif self.build_entire_rows:
-            eol, s = self.document.getline(0)
-            styles = self.document.getstyles(0, eol)
-            self.rows = self._buildrow(0, s, styles)
-            self._fillscreen()
-            posidx, posrow = self.getrow(pos)
 
         else:
             # build specified row

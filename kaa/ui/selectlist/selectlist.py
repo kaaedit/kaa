@@ -49,8 +49,7 @@ class SelectItemList(dialogmode.DialogMode):
         pass
 
     def calc_height(self, wnd):
-        height = wnd.screen.get_total_height()
-        height = min(height, wnd.mainframe.height // 2)
+        height = wnd.screen.get_total_height(wnd.mainframe.height // 2)
         return height
 
     def update_doc(self, items):

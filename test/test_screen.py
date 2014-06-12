@@ -376,12 +376,6 @@ class TestScreen(kaa_testutils._TestScreenBase):
         assert row3.posfrom == 7
         assert row3.posto == 10
 
-    def test_locate_build_entire_rows(self):
-        scrn = self._getscreen("012345\nabcdef\n01234", width=10, height=1)
-        scrn.build_entire_rows = True
-        scrn.locate(0, top=True, refresh=True)
-        assert len(scrn.rows) == 3
-
     def test_linedown(self):
         scrn = self._getscreen("", height=1)
         assert scrn.linedown() == False
