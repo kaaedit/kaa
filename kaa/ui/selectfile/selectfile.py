@@ -82,9 +82,9 @@ class DirFileListMode(selectlist.SelectItemList):
     def show_files(self, wnd):
         self.cursel = None
         dirs = [selectlist.SelectItem(
-            'selectitem', 'selectitem-active', name, name) for name in self.dirs]
+            'selectitem', 'selectitem-active', name.replace('&', '&&'), name) for name in self.dirs]
         files = [selectlist.SelectItem(
-            'selectitem2', 'selectitem-active', name, name) for name in self.files]
+            'selectitem2', 'selectitem-active', name.replace('&', '&&'), name) for name in self.files]
         items = dirs + files
         if self.filterfunc:
             items = [item for item in items if self.filterfunc(item.text)]
@@ -509,7 +509,7 @@ class DirListMode(DirFileListMode):
     def show_files(self, wnd):
         self.cursel = None
         dirs = [selectlist.SelectItem(
-            'selectitem', 'selectitem-active', name, name) for name in self.dirs]
+            'selectitem', 'selectitem-active', name.replace('&', '&&'), name) for name in self.dirs]
         if self.filterfunc:
             dirs = [item for item in dirs if self.filterfunc(item.text)]
         self.update_doc(dirs)

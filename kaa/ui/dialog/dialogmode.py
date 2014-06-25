@@ -205,6 +205,7 @@ class FormBuilder:
 
             if stylename:
                 style_id = self.document.mode.get_styleid(stylename)
+
             if shortcut_style:
                 shortcut_style_id = self.document.mode.get_styleid(
                     shortcut_style)
@@ -222,6 +223,7 @@ class FormBuilder:
 
                 f = self.document.endpos()
                 c = m.group()[1]
+                self.document.append(c)
                 if c != '&':
                     if on_shortcut:
                         self.document.mode.keybind.add_keybind(
@@ -235,13 +237,12 @@ class FormBuilder:
                     if shortcut_mark:
                         self.document.marks[shortcut_mark] = f
 
-                self.document.append(c)
-                if shortcut_style:
-                    self.document.setstyles(
-                        f,
-                        f + 1,
-                        shortcut_style_id,
-                        update=False)
+                    if shortcut_style:
+                        self.document.setstyles(
+                            f,
+                            f + 1,
+                            shortcut_style_id,
+                            update=False)
 
                 lastpos = m.end()
 

@@ -86,6 +86,7 @@ class ItemListMode(dialogmode.DialogMode):
         if cursel is None:
             cursel = -1
         c = s[-1]
+        c = (c.lower(), c.upper())
         cont = True
         while cont:
             if cursel < 0:

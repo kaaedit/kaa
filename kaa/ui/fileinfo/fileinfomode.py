@@ -133,6 +133,7 @@ class FileInfoMode(dialogmode.DialogMode):
             modes.append(pkg.FileTypeInfo.get_modetype())
 
         names = [mode.MODENAME for mode in modes]
+        titles = ['%s' % name.replace('&', '&&') for name in names]
 
         def callback(n):
             if n is None:
@@ -145,7 +146,7 @@ class FileInfoMode(dialogmode.DialogMode):
 
         doc = itemlistmode.ItemListMode.build(
             'Select file mode:',
-            names,
+            titles,
             names.index(self.target.document.mode.MODENAME),
             callback)
 
@@ -165,7 +166,7 @@ class FileInfoMode(dialogmode.DialogMode):
                 self.build_doc()
 
         doc = itemlistmode.ItemListMode.build(
-            'Use tab for indent?',
+            'Show line number?',
             values,
             int(self.target.document.mode.SHOW_LINENO),
             callback)
