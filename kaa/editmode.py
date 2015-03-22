@@ -194,7 +194,7 @@ class CommandMode(EditMode):
 
     def on_non_command_str(self, wnd, event, s):
         is_available, command = wnd.document.mode.get_command(
-                                    'editmode.insert')
+            'editmode.insert')
         if command:
             self.flush_pending_str(wnd)
             command(wnd)

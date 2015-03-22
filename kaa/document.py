@@ -412,11 +412,11 @@ class Undo:
         self.clear()
 
     def _dump(self, lv=0):
-        _trace('    '*lv, '======================')
+        _trace('    ' * lv, '======================')
         for a in self._actions:
             _trace('    ' * lv, a)
             if isinstance(a[0], Undo):
-                a[0]._dump(lv+1)
+                a[0]._dump(lv + 1)
 
     def clear(self):
         self._actions = []      # edit operations

@@ -6,7 +6,7 @@ class MenuMode(msgboxmode.MsgBoxMode):
     SEPARATOR = '/'
     USE_UNDO = False
     CLOSE_ON_DEL_WINDOW = True
-    
+
     @classmethod
     def show_menu(cls, wnd, itemname, parentitems=None):
 

@@ -196,7 +196,8 @@ class PythonConsoleMode(pythonmode.PythonMode):
                 curses.raw()
 
             if not ret:
-                kaa.app.messagebar.set_message('Execued in {} secs'.format(end-start))
+                kaa.app.messagebar.set_message(
+                    'Execued in {} secs'.format(end - start))
                 wnd.document.undo.clear()
                 if s.strip():
                     hist = kaa.app.config.hist(

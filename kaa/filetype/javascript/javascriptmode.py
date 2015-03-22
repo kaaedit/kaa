@@ -7,22 +7,26 @@ JavaScriptThemes = {
     'basic': [],
 }
 
+
 class JSRegex(Span):
+
     def on_start(self, tokenizer, doc, pos, match):
-        valid_tokens = (tokenizer.tokens.keywords, tokenizer.tokens.punctuation1)
+        valid_tokens = (
+            tokenizer.tokens.keywords,
+            tokenizer.tokens.punctuation1)
         ignore_tokens = (tokenizer.tokens.comment1, tokenizer.tokens.comment2)
 
-        p = pos-1
+        p = pos - 1
         while p >= 0:
             style = doc.styles.getints(p, p + 1)[0]
             token = tokenizer.get_token(style)
             # if token is subtokenizer, get actual token inside subtokenizer.
             if token:
                 token = token.get_token(style)
-            
+
             if not token or token in ignore_tokens:
                 # ignore comment tokens
-                oldp=p
+                oldp = p
                 p = doc.styles.rfindint([style], 0, p, comp_ne=True)
                 if p == -1:
                     break
@@ -37,7 +41,7 @@ class JSRegex(Span):
                 break
 
             ret = yield from tokenizer.tokens.punctuation1.on_start(
-                                tokenizer, doc, pos, match)
+                tokenizer, doc, pos, match)
             return ret
 
         ret = yield from super().on_start(tokenizer, doc, pos, match)
@@ -50,19 +54,20 @@ class JSRegex(Span):
         else:
             return self.find_token_top(doc, pos)
 
+
 def build_tokenizer(stop=None, terminates=None):
     JSTOKENS = namedtuple(
         'jstokens', ['stop', 'keywords', 'number', 'comment1', 'comment2',
                      'string1', 'string2', 'regex', 'punctuation1', 'punctuation2'])
 
     keywords = Keywords(
-                'javascript-keyword', 'keyword',
-                ["break", "case", "catch", "continue", "debugger", "default",
-                 "delete", "do", "else", "finally", "for", "function", "if", "in",
-                 "instanceof", "new", "return", "switch", "this", "throw", "try",
-                 "typeof", "var", "void", "while", "with", "class", "enum", "export",
-                 "extends", "import", "super", "implements", "interface", "let",
-                 "package", "private", "protected", "public", "static", "yield", ])
+        'javascript-keyword', 'keyword',
+        ["break", "case", "catch", "continue", "debugger", "default",
+         "delete", "do", "else", "finally", "for", "function", "if", "in",
+         "instanceof", "new", "return", "switch", "this", "throw", "try",
+         "typeof", "var", "void", "while", "with", "class", "enum", "export",
+         "extends", "import", "super", "implements", "interface", "let",
+         "package", "private", "protected", "public", "static", "yield", ])
 
     number = SingleToken('javascript-numeric', 'number',
                          [r'\b[0-9]+(\.[0-9]*)*\b', r'\b\.[0-9]+\b'])
@@ -76,13 +81,14 @@ def build_tokenizer(stop=None, terminates=None):
                     r'/', r'/\w*', escape='\\')
 
     punctuation1 = SingleToken('javascript-punctuation1', 'default',
-                         [r'[+\-*/~&?:|=%;<>^({[,:]'])
+                               [r'[+\-*/~&?:|=%;<>^({[,:]'])
 
     punctuation2 = SingleToken('javascript-punctuation2', 'default',
-                         [r'\S'])
+                               [r'\S'])
 
-    tokens = JSTOKENS(stop, keywords, number, comment1, comment2, string1, string2,
-                      regex, punctuation1, punctuation2)
+    tokens = JSTOKENS(
+        stop, keywords, number, comment1, comment2, string1, string2,
+        regex, punctuation1, punctuation2)
 
     return Tokenizer(tokens, terminates=terminates)
 

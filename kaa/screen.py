@@ -687,7 +687,6 @@ class Screen:
             styles = self.document.getstyles(bottomrow.posto, eol)
             self.rows.extend(self._buildrow(bottomrow.posto, s, styles))
 
-
         # Update bottom of visible rows
         height = 0
         for i in range(self.portfrom, len(self.rows)):
@@ -712,7 +711,6 @@ class Screen:
             if row.tol != portend:
                 del self.rows[self.portto + i:]
                 break
-
 
     def locate(self, pos, top=False, middle=False, bottom=False,
                align_always=False, refresh=False):

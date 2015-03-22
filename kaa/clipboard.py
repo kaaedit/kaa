@@ -72,6 +72,7 @@ class NativeClipboard(Clipboard):
         except Exception as e:
             kaa.log.error('Error to paste', exc_info=True)
 
+
 class MacClipboard(NativeClipboard):
 
     """For MAC OS X"""
@@ -110,7 +111,11 @@ class X11Clipboard(NativeClipboard):
                                        universal_newlines=True)
 
     def _set_native_clipboard(self, s):
-        p = subprocess.Popen(self.COPYCOMMAND, stdin=subprocess.PIPE, shell=True, universal_newlines=True)
+        p = subprocess.Popen(
+            self.COPYCOMMAND,
+            stdin=subprocess.PIPE,
+            shell=True,
+            universal_newlines=True)
         p.stdin.write(s)
         p.stdin.close()
         p.wait()

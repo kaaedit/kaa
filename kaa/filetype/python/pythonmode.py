@@ -310,7 +310,7 @@ class PythonMode(defaultmode.DefaultMode):
             p = self._calc_parenthesis_balance(tokens)
             if p > 0:
                 return tol
-            pos = tol -1
+            pos = tol - 1
         return None
 
     def calc_next_indent(self, pos):
@@ -332,13 +332,13 @@ class PythonMode(defaultmode.DefaultMode):
         elif p == 0:
             return None
         else:
-            open_line = self._find_parenthesis_open_line(tol-1)
+            open_line = self._find_parenthesis_open_line(tol - 1)
             if open_line is None:
                 return None
             f, t = self.get_indent_range(open_line)
             t = min(t, pos)
             return self.calc_cols(f, t)
-            
+
     def get_breakpoints(self):
         for k, v in self.document.marks.items():
             if isinstance(k, port.BreakPoint):

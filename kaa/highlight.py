@@ -18,7 +18,7 @@ class Token:
 
     def get_token(self, style):
         return self
-        
+
     def re_start(self):
         """Returns regular expression to find begging of token"""
 
@@ -46,7 +46,7 @@ class Token:
             # current token is at top of the document.
             return (None, None, None)
 
-        return tokenizer.highlighter.get_prev_token(doc, pos-1)
+        return tokenizer.highlighter.get_prev_token(doc, pos - 1)
 
     def resume_pos(self, highlighter, tokenizer, doc, pos):
         return self.find_token_top(doc, pos)
@@ -195,7 +195,7 @@ class SubTokenizer(Token):
         # Returns top of current keyword
         if 0 < pos < len(doc.styles):
             p = doc.styles.rfindint(tuple(self.sub_tokens.keys()),
-                                    0, pos+1, comp_ne=True)
+                                    0, pos + 1, comp_ne=True)
             if p != -1:
                 return p + 1
         return 0
@@ -468,7 +468,7 @@ class Highlighter:
 
     def get_prev_token(self, doc, pos):
         """Return (tokenizer, token, pos) at pos or before pos."""
-        
+
         if pos == 0:
             return None, None, None
 
@@ -483,7 +483,7 @@ class Highlighter:
                 # if pair is None, then this style invalid.
                 # May be set by tokenizer.
                 if pair:
-                    # if token is None, then token is not defined here. 
+                    # if token is None, then token is not defined here.
                     # (e.g. white spaces)
                     tokenizer, token = pair
                     if token:
@@ -497,11 +497,11 @@ class Highlighter:
         if pos == 0:
             return pos
 
-#        # check a character proceeding to updated pos
+# check a character proceeding to updated pos
 #        pos -= 1
 #        style = doc.styles.getints(pos, pos + 1)[0]
 #        if style == 0:
-#            # not highlighted yet.
+# not highlighted yet.
 #            p = doc.styles.rfindint([0], 0, pos, comp_ne=True)
 #            if p != -1:
 #                return p + 1
@@ -509,13 +509,13 @@ class Highlighter:
 #
 #        pair = self.tokenids.get(style)
 #        if not pair:
-#            # Invalid. this style is not set by tokenizer.
+# Invalid. this style is not set by tokenizer.
 #            return 0
 #
 #        tokenizer, token = self.tokenids.get(style)
 #        if not token:
-#            # token is not defined here. (e.g. white spaces)
-#            # resume at beggining of this non-defined area.
+# token is not defined here. (e.g. white spaces)
+# resume at beggining of this non-defined area.
 #            p = doc.styles.rfindint([style], 0, pos, comp_ne=True)
 #            if p != -1:
 #                return p + 1
