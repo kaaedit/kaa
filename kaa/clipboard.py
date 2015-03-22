@@ -1,7 +1,9 @@
+
 import sys
 import subprocess
 import shutil
 import kaa
+import kaa.log
 
 
 def select_clipboard():
@@ -55,9 +57,12 @@ class NativeClipboard(Clipboard):
             s = self._get_native_clipboard()
             if s:
                 self._set(s)
-            return s
+                return s
+            else:
+                return super().get()
+
         except Exception:
-            kaa.log.error('Error to paste', exc_info=True)
+            kaa.log.error('Error to copy', exc_info=True)
             return super().get()
 
     def set(self, s):
@@ -65,8 +70,7 @@ class NativeClipboard(Clipboard):
         try:
             self._set_native_clipboard(s)
         except Exception as e:
-            pass
-
+            kaa.log.error('Error to paste', exc_info=True)
 
 class MacClipboard(NativeClipboard):
 
@@ -90,19 +94,13 @@ class X11Clipboard(NativeClipboard):
 
     """For UN*X"""
 
-    CLIPCOMMAND = 'xsel'
-    COPYCOMMAND = 'xsel -i -b'
-    PASTECOMMAND = 'xsel -o -b'
+    CLIPCOMMAND = 'xclip'
+    COPYCOMMAND = 'xclip -i -selection clipboard'
+    PASTECOMMAND = 'xclip  -o -selection clipboard'
 
     @classmethod
     def check(cls):
         if not shutil.which(X11Clipboard.CLIPCOMMAND):
-            return False
-
-        ret = subprocess.call(cls.CLIPCOMMAND, stdin=subprocess.PIPE,
-                              universal_newlines=True, stdout=subprocess.PIPE,
-                              stderr=subprocess.PIPE, shell=True)
-        if ret:
             return False
 
         return True
@@ -112,8 +110,7 @@ class X11Clipboard(NativeClipboard):
                                        universal_newlines=True)
 
     def _set_native_clipboard(self, s):
-        p = subprocess.Popen(self.COPYCOMMAND, stdin=subprocess.PIPE,
-                             universal_newlines=True, stdout=subprocess.PIPE,
-                             stderr=subprocess.PIPE, shell=True)
-        p.communicate(s)
+        p = subprocess.Popen(self.COPYCOMMAND, stdin=subprocess.PIPE, shell=True, universal_newlines=True)
+        p.stdin.write(s)
+        p.stdin.close()
         p.wait()
