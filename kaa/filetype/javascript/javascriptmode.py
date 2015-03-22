@@ -1,4 +1,5 @@
 from collections import namedtuple
+import kaa
 from kaa.filetype.default import defaultmode
 from kaa.highlight import Tokenizer, Span, Keywords, EndSection, SingleToken
 from kaa.theme import Theme, Style
@@ -9,43 +10,52 @@ JavaScriptThemes = {
 
 
 class JSRegex(Span):
+    OPERATORS = set('+\-*/~&?:|=%;<>^({[,:]')
 
-    def on_start(self, tokenizer, doc, pos, match):
-        valid_tokens = (
-            tokenizer.tokens.keywords,
-            tokenizer.tokens.punctuation1)
-        ignore_tokens = (tokenizer.tokens.comment1, tokenizer.tokens.comment2)
-
+    def _is_regex(self, tokenizer, doc, pos):
+        # check if current token is valid regex expr or not
+        ignore_tokens = {tokenizer.tokens.comment1, tokenizer.tokens.comment2}
         p = pos - 1
         while p >= 0:
-            style = doc.styles.getints(p, p + 1)[0]
-            token = tokenizer.get_token(style)
-            # if token is subtokenizer, get actual token inside subtokenizer.
-            if token:
-                token = token.get_token(style)
+            _tokenizer, token, prev = tokenizer.highlighter.get_prev_token(doc, p)
 
-            if not token or token in ignore_tokens:
-                # ignore comment tokens
-                oldp = p
-                p = doc.styles.rfindint([style], 0, p, comp_ne=True)
-                if p == -1:
-                    break
-                continue
+            if token is None:
+                return True
+            else:
+                end_prev_token = token.find_token_end(doc, prev)
 
-            if token in valid_tokens:
-                # regex can be put here.
-                break
+            if end_prev_token <= p:
+                s = doc.gettext(end_prev_token, p+1).strip()
+                if s:
+                    if s[-1] in self.OPERATORS:
+                        # current token begin just after operator.
+                        return True
+                    else:
+                        return False
 
-            if token not in tokenizer.tokens:
-                # Token is not JS token. May be embedded in HTML.
-                break
 
-            ret = yield from tokenizer.tokens.punctuation1.on_start(
+            if tokenizer is not _tokenizer:
+                return True
+
+            if not token:
+                return True
+
+            if token not in ignore_tokens:
+                return False
+
+            p = prev-1
+
+        return True
+
+    def on_start(self, tokenizer, doc, pos, match):
+        if not self._is_regex(tokenizer, doc, pos):
+            # This '/' is not regex, but divide operator
+            ret = yield from tokenizer.tokens.punctuation.on_start(
                 tokenizer, doc, pos, match)
             return ret
-
-        ret = yield from super().on_start(tokenizer, doc, pos, match)
-        return ret
+        else:
+            ret = yield from super().on_start(tokenizer, doc, pos, match)
+            return ret
 
     def resume_pos(self, highlighter, tokenizer, doc, pos):
         t, token, p = self.get_prev_token(tokenizer, doc, pos)
@@ -58,7 +68,7 @@ class JSRegex(Span):
 def build_tokenizer(stop=None, terminates=None):
     JSTOKENS = namedtuple(
         'jstokens', ['stop', 'keywords', 'number', 'comment1', 'comment2',
-                     'string1', 'string2', 'regex', 'punctuation1', 'punctuation2'])
+                     'string1', 'string2', 'regex', 'punctuation'])
 
     keywords = Keywords(
         'javascript-keyword', 'keyword',
@@ -80,15 +90,13 @@ def build_tokenizer(stop=None, terminates=None):
     regex = JSRegex('javascript-regex', 'string',
                     r'/', r'/\w*', escape='\\')
 
-    punctuation1 = SingleToken('javascript-punctuation1', 'default',
-                               [r'[+\-*/~&?:|=%;<>^({[,:]'])
+    punctuation = SingleToken('javascript-punctuation', 'default',
+                               [r'[+\-*/~&?:|=%;<>^(){}[],:'])
 
-    punctuation2 = SingleToken('javascript-punctuation2', 'default',
-                               [r'\S'])
 
     tokens = JSTOKENS(
         stop, keywords, number, comment1, comment2, string1, string2,
-        regex, punctuation1, punctuation2)
+        regex, punctuation)
 
     return Tokenizer(tokens, terminates=terminates)
 

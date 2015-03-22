@@ -1,4 +1,5 @@
 import collections
+import kaa
 from kaa import document
 from kaa import doc_re
 
@@ -37,6 +38,15 @@ class Token:
             if p != -1:
                 return p + 1
         return 0
+
+    def find_token_end(self, doc, pos):
+        # Returns end of current keyword
+        if 0 < pos < len(doc.styles):
+            p = doc.styles.findint(self.get_tokenids(), pos, len(doc.styles),
+                                    comp_ne=True)
+            if p != -1:
+                return p
+        return len(doc.styles)
 
     def get_prev_token(self, tokenizer, doc, pos):
         """Find previous token"""
@@ -203,6 +213,7 @@ class SubTokenizer(Token):
     def resume_pos(self, highlighter, tokenizer, doc, pos):
         ret = self.find_token_top(doc, pos)
         if ret > 0:
+            # resume highlight before this token
             return highlighter.get_resume_pos(doc, ret)
         return 0
 
@@ -487,6 +498,8 @@ class Highlighter:
                     # (e.g. white spaces)
                     tokenizer, token = pair
                     if token:
+                        # if token is subtokenizer, get actual token inside subtokenizer.
+                        token = token.get_token(style)
                         return tokenizer, token, pos
 
             pos = doc.styles.rfindint([style], 0, pos, comp_ne=True)
@@ -496,31 +509,6 @@ class Highlighter:
     def get_resume_pos(self, doc, pos):
         if pos == 0:
             return pos
-
-# check a character proceeding to updated pos
-#        pos -= 1
-#        style = doc.styles.getints(pos, pos + 1)[0]
-#        if style == 0:
-# not highlighted yet.
-#            p = doc.styles.rfindint([0], 0, pos, comp_ne=True)
-#            if p != -1:
-#                return p + 1
-#            return 0
-#
-#        pair = self.tokenids.get(style)
-#        if not pair:
-# Invalid. this style is not set by tokenizer.
-#            return 0
-#
-#        tokenizer, token = self.tokenids.get(style)
-#        if not token:
-# token is not defined here. (e.g. white spaces)
-# resume at beggining of this non-defined area.
-#            p = doc.styles.rfindint([style], 0, pos, comp_ne=True)
-#            if p != -1:
-#                return p + 1
-#            return 0
-#        return token.resume_pos(self, tokenizer, doc, pos)
 
         tokenizer, token, pos = self.get_prev_token(doc, pos)
         if not token:

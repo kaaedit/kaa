@@ -239,7 +239,6 @@ class TestHTMLHighlight(kaa_testutils._TestDocBase):
     def test_javascriptattr5(self):
         hl = highlight.Highlighter(tokenizers=self.tokenizers)
         doc = self._getdoc('''<a ona='/a/\'''')
-
         assert [
             (0, 1, hl.tokenizers[0].tokens.htmltag.span_lt),
             (1, 2, hl.tokenizers[0].tokens.htmltag.span_elemname),

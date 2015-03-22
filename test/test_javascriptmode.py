@@ -19,12 +19,12 @@ class TestJavascriptHighlight(kaa_testutils._TestDocBase):
 
     def test_not_regex(self):
         hl = highlight.Highlighter(tokenizers=self.tokenizers)
-        doc = self._getdoc('a /abc/')
+        doc = self._getdoc('if a /abc/')
         hl.update_style(doc)
-        styles = doc.styles.getints(0, 7)
-        assert styles == ([self.tokenizers[0].tokens.punctuation2.tokenid] +
-                          [self.tokenizers[0].nulltoken] +
-                          [self.tokenizers[0].tokens.punctuation1.tokenid] +
-                          [self.tokenizers[0].tokens.punctuation2.tokenid]*3 +
-                          [self.tokenizers[0].tokens.punctuation1.tokenid])
+        styles = doc.styles.getints(0, 10)
+        assert styles == ([self.tokenizers[0].tokens.keywords.tokenid]*2 +
+                          [self.tokenizers[0].nulltoken]*3 +
+                          [self.tokenizers[0].tokens.punctuation.tokenid] +
+                          [self.tokenizers[0].nulltoken]*3 +
+                          [self.tokenizers[0].tokens.punctuation.tokenid])
 
