@@ -908,16 +908,24 @@ Links
 Version history
 =================
 
+0.40.0 - 2015.3.23
+--------------------
+
+- [JavaScript mode] Fix highlighting of regex token.
+
+- [JavaScript mode] Highlight parenthesis under cursor.
+
+- Use xclip instead of xsel for clilpboard on Unix.
+
+Past versions
+--------------
+
 0.39.0 - 2014.3.18
 --------------------
 
 - [Python console] Display time consumed to execute script.
 
 - [Python console] Optimize text output.
-
-
-Past versions
---------------
 
 0.38.0 - 2014.3.9
 ++++++++++++++++++++++
@@ -1324,7 +1332,7 @@ Past versions
 Copyright 
 =========================
 
-Copyright (c) 2013, 2014 Atsuo Ishimoto
+Copyright (c) 2013 - 2015 Atsuo Ishimoto
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
