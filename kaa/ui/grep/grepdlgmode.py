@@ -421,7 +421,8 @@ class GrepDlgMode(dialogmode.DialogMode):
                 self.option.filenames):
 
             kaa.app.config.hist('grep_text').add(self.option.text)
-            path = os.path.abspath(self.option.directory)
+            path = os.path.abspath(os.path.expanduser(
+                self.option.directory))
             kaa.app.config.hist('grep_dirname').add(path)
             kaa.app.config.hist('grep_filename').add(self.option.filenames)
 
