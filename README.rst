@@ -908,8 +908,16 @@ Links
 Version history
 =================
 
-0.40.0 - 2015.3.23
+0.41.0 - 2015.3.25
 --------------------
+
+- History of grep directory was not saved correctly.
+
+Past versions
+--------------
+
+0.40.0 - 2015.3.23
+++++++++++++++++++++++
 
 - [JavaScript mode] Fix highlighting of regex token.
 
@@ -917,11 +925,8 @@ Version history
 
 - Use xclip instead of xsel for clilpboard on Unix.
 
-Past versions
---------------
-
 0.39.0 - 2014.3.18
---------------------
+++++++++++++++++++++++
 
 - [Python console] Display time consumed to execute script.
 
