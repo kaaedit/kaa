@@ -908,13 +908,18 @@ Links
 Version history
 =================
 
-0.41.0 - 2015.3.25
+0.42.0 - 2015.4.5
 --------------------
 
-- History of grep directory was not saved correctly.
+- HTML highlighter respects type attribute of script element.
 
 Past versions
 --------------
+
+0.41.0 - 2015.3.25
+++++++++++++++++++++++
+
+- History of grep directory was not saved correctly.
 
 0.40.0 - 2015.3.23
 ++++++++++++++++++++++
