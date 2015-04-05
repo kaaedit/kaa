@@ -470,7 +470,7 @@ class Screen:
             if self.is_lastrow(rows[-1]):
                 break
 
-        return ret
+        return min(max_height, ret)
 
     def setsize(self, width, height):
         if self.width != width or self.height != height:

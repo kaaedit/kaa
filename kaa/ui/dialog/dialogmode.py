@@ -3,6 +3,7 @@ import string
 from kaa import cursor, keyboard
 from kaa.filetype.default import modebase
 from kaa.theme import Theme, Style
+from kaa.exceptions import KaaError
 
 DialogThemes = {
     'basic': [
@@ -138,9 +139,12 @@ class DialogMode(modebase.ModeBase):
             t = t - sum(heights)
         else:
             t = b
+        if t < 0:
+            raise KaaError(
+                'Invalid window position {!r}:{!r}/{!r}'.format(self, rects, rc_input))
 
         positions = []
-        for w, (wl, wt, wr, wb) in zip(inputs, rects):
+        for wl, wt, wr, wb in rects:
             b = t + (wb - wt)
             positions.append((l, t, r, b))
             t = b + 1
