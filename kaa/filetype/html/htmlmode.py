@@ -136,7 +136,7 @@ class HTMLTag(Token):
     RE_ATTRVALUE = doc_re.compile(r'\s*(?P<ATTRVALUE>({}))'.format(
         '|'.join(['[-._:a-zA-Z0-9]+', '(?P<Q1>"[^"]*")', "(?P<Q2>'[^']*')"])))
 
-    def iter_attrs(self, tokenizer, doc, pos):
+    def iter_attrs(self, tokenizer, doc, pos, attrs):
         while True:
             m = self.RE_ATTRNAME.search(doc, pos)
             if not m:
@@ -149,6 +149,9 @@ class HTMLTag(Token):
             yield f, t, self.span_attrname
             attrname = m.group('ATTRNAME')
 
+            # save attr-name
+            attrs.append([attrname, None])
+
             # yield after attr-name
             pos = m.end()
 
@@ -158,51 +161,82 @@ class HTMLTag(Token):
                 m = self.RE_ATTRVALUE.match(doc, pos)
                 if m:
                     attrvalue = m.group('ATTRVALUE')
-                    f, t = m.span('ATTRVALUE')
+
+                    # save attr-name
+                    if m.group('Q1') or m.group('Q2'):
+                        attrvalue = attrvalue[1:-1]
+                    attrs[-1][1] = attrvalue
+
 
                     if attrname.lower().startswith('on'):
                         pos = yield from self.yield_jsattr(tokenizer, doc, m)
                     elif attrname.lower() == 'style':
                         pos = yield from self.yield_cssattr(tokenizer, doc, m)
                     else:
+                        f, t = m.span('ATTRVALUE')
                         yield f, t, self.span_attrvalue
                         pos = t
 
-    def iter_tokens(self, tokenizer, doc, pos):
+    def iter_tokens(self, tokenizer, doc, pos, attrs):
         match = self.RE_ELEMNAME.match(doc, pos)
         if not match:
-            return doc.endpos()
+            return
         yield (pos, match.end(), self.span_elemname)
 
         pos = match.end()
-        pos = yield from self.iter_attrs(tokenizer, doc, pos)
+        pos = yield from self.iter_attrs(tokenizer, doc, pos, attrs)
 
         m = self.RE_CLOSE.match(doc, pos)
         if m:
             yield pos, m.end(), self.span_gt
-            return m.end()
-        else:
-            return doc.endpos()
 
-    def on_start(self, tokenizer, doc, pos, match):
-        yield (match.start(), match.end(), self.span_lt)
+    def get_contents_tokenizer(self, tokenizer, doc, pos, attrs):
+        return pos, None, False
 
-        pos = match.end()
-        for f, t, tokenid in self.iter_tokens(tokenizer, doc, match.end()):
+    def iter_tag(self, tokenizer, doc, pos, f):
+        yield (f, f+1, self.span_lt)
+
+        pos = f + 1
+        attrs = []
+        for f, t, tokenid in self.iter_tokens(tokenizer, doc, pos, attrs):
             assert f <= t
             assert pos <= f
             if pos != f:
                 yield (pos, f, self.span_elemws)
             yield (f, t, tokenid)
             pos = t
-        return pos, None, False
+
+        pos, childtokenizer, close = self.get_contents_tokenizer(
+            tokenizer, doc, pos, attrs)
+        return pos, childtokenizer, close
+
+    def on_start(self, tokenizer, doc, pos, match):
+        ret = yield from self.iter_tag(tokenizer, doc, pos, match.start())
+        return ret
+
+class ScriptTag(HTMLTag):
+    def __init__(self, name, stylename, jstokenizer):
+        super().__init__(name, stylename)
+        self.jstokenizer = jstokenizer
+
+    def re_start(self):
+        return r'<\s*script'
+
+    def get_contents_tokenizer(self, tokenizer, doc, pos, attrs):
+        for name, value in attrs:
+            if name=='type':
+                if value and value.lower() != 'text/javascript':
+                    return pos, None, False
+                break
+
+        return pos, self.jstokenizer, False
 
 
 def build_tokenizers():
 
     HTMLTOKENS = namedtuple('htmltokens',
                             ['keywords', 'comment', 'xmlpi', 'xmldef', 'endtag',
-                             'jsstart', 'cssstart', 'htmltag', 'jsattr1', 'jsattr2',
+                             'scripttag', 'cssstart', 'htmltag', 'jsattr1', 'jsattr2',
                              'cssattr1', 'cssattr2'])
 
     keywords = SingleToken('html-entityrefs', 'keyword',
@@ -212,14 +246,17 @@ def build_tokenizers():
     xmlpi = Span('xmlpi', 'html-decl', r'<\?', r'\?>')
     xmldef = Span('xmldef', 'html-decl', r'<!', r'>')
 
-    endtag = Span('html-endtag', 'html-tag', r'</', r'>')
-    htmltag = HTMLTag('html', 'default')
 
     jsstop = EndSection('end-javascript', 'html-tag', r'</\s*script\s*>')
     jstokenizer = javascriptmode.build_tokenizer(jsstop)
 
-    jsstart = SubSection('start-javascript', 'html-tag',
-                         r'<\s*script(\s+[^>]*)*>', jstokenizer)
+#    jssection = SubSection('javascript-section', 'html-tag',
+#                         None, jstokenizer)
+    
+    scripttag = ScriptTag('script', 'default', jstokenizer)
+
+    endtag = Span('html-endtag', 'html-tag', r'</', r'>')
+    htmltag = HTMLTag('html', 'default')
 
     csstokenizer = cssmode.build_tokenizer(r'</\s*style\s*>', 'html-tag')
 
@@ -238,7 +275,7 @@ def build_tokenizers():
 
     return [Tokenizer(
         HTMLTOKENS(
-            keywords, comment, xmlpi, xmldef, endtag, jsstart, cssstart, htmltag,
+            keywords, comment, xmlpi, xmldef, endtag, scripttag, cssstart, htmltag,
             jsattr1, jsattr2, styleattr1, styleattr2)),
             jstokenizer, csstokenizer]
 

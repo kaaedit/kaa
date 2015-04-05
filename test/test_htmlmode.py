@@ -143,7 +143,9 @@ class TestHTMLHighlight(kaa_testutils._TestDocBase):
         doc = self._getdoc("&nbsp;<script>if</script>if&nbsp;")
         assert [
             (0, 6, hl.tokenizers[0].tokens.keywords.tokenid),
-            (6, 14, hl.tokenizers[0].tokens.jsstart.section_start),
+            (6, 7, hl.tokenizers[0].tokens.scripttag.span_lt),
+            (7, 13, hl.tokenizers[0].tokens.scripttag.span_elemname),
+            (13, 14, hl.tokenizers[0].tokens.scripttag.span_gt),
             (14, 16, hl.tokenizers[1].tokens.keywords.tokenid),
             (16, 25, hl.tokenizers[1].tokens.stop.section_end),
             (25, 27, hl.tokenizers[0].nulltoken),
@@ -151,10 +153,30 @@ class TestHTMLHighlight(kaa_testutils._TestDocBase):
         ] == list((f, t, style) for f, t, style in hl.highlight(doc, 0))
 
         hl = highlight.Highlighter(tokenizers=self.tokenizers)
+        doc = self._getdoc(
+            "&nbsp;<script type='text/javascript'>if</script>if&nbsp;")
+        assert [
+            (0, 6, hl.tokenizers[0].tokens.keywords.tokenid),
+            (6, 7, hl.tokenizers[0].tokens.scripttag.span_lt),
+            (7, 13, hl.tokenizers[0].tokens.scripttag.span_elemname),
+            (13, 14, hl.tokenizers[0].tokens.scripttag.span_elemws),
+            (14, 18, hl.tokenizers[0].tokens.scripttag.span_attrname),
+            (18, 19, hl.tokenizers[0].tokens.scripttag.span_elemws),
+            (19, 36, hl.tokenizers[0].tokens.scripttag.span_attrvalue),
+            (36, 37, hl.tokenizers[0].tokens.scripttag.span_gt),
+            (37, 39, hl.tokenizers[1].tokens.keywords.tokenid),
+            (39, 48, hl.tokenizers[1].tokens.stop.section_end),
+            (48, 50, hl.tokenizers[0].nulltoken),
+            (50, 56, hl.tokenizers[0].tokens.keywords.tokenid),
+        ] == list((f, t, style) for f, t, style in hl.highlight(doc, 0))
+
+        hl = highlight.Highlighter(tokenizers=self.tokenizers)
         doc = self._getdoc("&nbsp;<script>/abc/</script>if&nbsp;")
         hl.update_style(doc)
         assert ([hl.tokenizers[0].tokens.keywords.tokenid]*6 +
-                [hl.tokenizers[0].tokens.jsstart.section_start]*8 +
+                [hl.tokenizers[0].tokens.scripttag.span_lt] +
+                [hl.tokenizers[0].tokens.scripttag.span_elemname]*6 +
+                [hl.tokenizers[0].tokens.scripttag.span_gt] +
                 [hl.tokenizers[1].tokens.regex.span_start] +
                 [hl.tokenizers[1].tokens.regex.span_mid]*3 +
                 [hl.tokenizers[1].tokens.regex.span_end] +
