@@ -117,7 +117,7 @@ class TestHTMLHighlight(kaa_testutils._TestDocBase):
             (1, 4, hl.tokenizers[0].tokens.htmltag.span_elemname),
             (4, 5, hl.tokenizers[0].tokens.htmltag.span_elemws),
             (5, 8, hl.tokenizers[0].tokens.htmltag.span_attrname),
-            (8, 10, hl.tokenizers[0].tokens.htmltag.span_elemws),
+            (8, 10, hl.tokenizers[0].nulltoken),
         ] == list((f, t, style) for f, t, style in hl.highlight(doc, 0))
 
         doc = self._getdoc("<abc xyz=>")
@@ -213,8 +213,7 @@ class TestHTMLHighlight(kaa_testutils._TestDocBase):
             (1, 2, hl.tokenizers[0].tokens.htmltag.span_elemname),
             (2, 3, hl.tokenizers[0].tokens.htmltag.span_elemws),
             (3, 6, hl.tokenizers[0].tokens.htmltag.span_attrname),
-            (6, 7, hl.tokenizers[0].tokens.htmltag.span_elemws),
-            (7, 8, hl.tokenizers[0].tokens.htmltag.span_elemws),
+            (6, 8, hl.tokenizers[0].tokens.htmltag.span_elemws),
             (8, 10, hl.tokenizers[0].tokens.htmltag.span_attrname),
             (10, 11, hl.tokenizers[0].tokens.htmltag.span_gt),
         ] == list((f, t, style) for f, t, style in hl.highlight(doc, 0))

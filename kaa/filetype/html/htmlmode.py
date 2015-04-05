@@ -151,8 +151,6 @@ class HTMLTag(Token):
 
             # yield after attr-name
             pos = m.end()
-            if t != pos:
-                yield t, pos, self.span_elemws
 
             # has attribute value?
             if m.group('EQUAL'):
@@ -173,8 +171,7 @@ class HTMLTag(Token):
     def iter_tokens(self, tokenizer, doc, pos):
         match = self.RE_ELEMNAME.match(doc, pos)
         if not match:
-            yield pos, doc.endpos(), self.span_elemws
-            return
+            return doc.endpos()
         yield (pos, match.end(), self.span_elemname)
 
         pos = match.end()
@@ -185,8 +182,6 @@ class HTMLTag(Token):
             yield pos, m.end(), self.span_gt
             return m.end()
         else:
-            if pos != doc.endpos():
-                yield pos, doc.endpos(), self.span_elemws
             return doc.endpos()
 
     def on_start(self, tokenizer, doc, pos, match):
