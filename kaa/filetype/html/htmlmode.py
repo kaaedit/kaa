@@ -167,7 +167,6 @@ class HTMLTag(Token):
                         attrvalue = attrvalue[1:-1]
                     attrs[-1][1] = attrvalue
 
-
                     if attrname.lower().startswith('on'):
                         pos = yield from self.yield_jsattr(tokenizer, doc, m)
                     elif attrname.lower() == 'style':
@@ -194,7 +193,7 @@ class HTMLTag(Token):
         return pos, None, False
 
     def iter_tag(self, tokenizer, doc, pos, f):
-        yield (f, f+1, self.span_lt)
+        yield (f, f + 1, self.span_lt)
 
         pos = f + 1
         attrs = []
@@ -214,7 +213,9 @@ class HTMLTag(Token):
         ret = yield from self.iter_tag(tokenizer, doc, pos, match.start())
         return ret
 
+
 class ScriptTag(HTMLTag):
+
     def __init__(self, name, stylename, jstokenizer):
         super().__init__(name, stylename)
         self.jstokenizer = jstokenizer
@@ -224,7 +225,7 @@ class ScriptTag(HTMLTag):
 
     def get_contents_tokenizer(self, tokenizer, doc, pos, attrs):
         for name, value in attrs:
-            if name=='type':
+            if name == 'type':
                 if value and value.lower() != 'text/javascript':
                     return pos, None, False
                 break
@@ -235,7 +236,7 @@ class ScriptTag(HTMLTag):
 def build_tokenizers():
 
     HTMLTOKENS = namedtuple('htmltokens',
-                            ['keywords', 'comment', 'xmlpi', 'xmldef', 'endtag',
+                            ['keywords', 'comment', 'xmlpi', 'xmldef', 'jsstop', 'endtag',
                              'scripttag', 'cssstart', 'htmltag', 'jsattr1', 'jsattr2',
                              'cssattr1', 'cssattr2'])
 
@@ -246,13 +247,9 @@ def build_tokenizers():
     xmlpi = Span('xmlpi', 'html-decl', r'<\?', r'\?>')
     xmldef = Span('xmldef', 'html-decl', r'<!', r'>')
 
+    jsstop = SingleToken('end-javascript', 'html-tag', [r'</\s*script\s*>'])
+    jstokenizer = javascriptmode.build_tokenizer(terminates=r'</\s*script\s*>')
 
-    jsstop = EndSection('end-javascript', 'html-tag', r'</\s*script\s*>')
-    jstokenizer = javascriptmode.build_tokenizer(jsstop)
-
-#    jssection = SubSection('javascript-section', 'html-tag',
-#                         None, jstokenizer)
-    
     scripttag = ScriptTag('script', 'default', jstokenizer)
 
     endtag = Span('html-endtag', 'html-tag', r'</', r'>')
@@ -275,7 +272,7 @@ def build_tokenizers():
 
     return [Tokenizer(
         HTMLTOKENS(
-            keywords, comment, xmlpi, xmldef, endtag, scripttag, cssstart, htmltag,
+            keywords, comment, xmlpi, xmldef, jsstop, endtag, scripttag, cssstart, htmltag,
             jsattr1, jsattr2, styleattr1, styleattr2)),
             jstokenizer, csstokenizer]
 

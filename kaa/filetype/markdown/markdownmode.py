@@ -105,7 +105,8 @@ def build_tokenizer():
                                 ['escape', 'header1', 'header2',
                                  'hr', 'link', 'image',
                                  'strong1', 'strong2',
-                                 'emphasis1', 'emphasis2', 'code1', 'code2'])
+                                 'emphasis1', 'emphasis2',
+                                 'code1', 'code2', 'code3'])
 
     return Tokenizer(MARKDOWNTOKENS(
         # escape
@@ -134,8 +135,9 @@ def build_tokenizer():
         MDInline('md-emphasis2', 'emphasis', r'_', r'_|$', escape='\\'),
 
         # code
-        MDInline('md-code1', 'literal', r'``', r'``', escape='\\'),
+        Span('md-code1', 'literal', r'^```', r'^```\s*$', escape='\\'),
         MDInline('md-code2', 'literal', r'`', r'`', escape='\\'),
+        Span('md-code3', 'literal', r'^\ {4,}', r'$', escape='\\'),
     ))
 
 

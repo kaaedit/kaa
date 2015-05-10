@@ -103,12 +103,8 @@ class TestMarkdownHighlight(kaa_testutils._TestDocBase):
             (5, 6, self.tokens.emphasis2.span_end),
         ] == list((f, t, style) for f, t, style in hl.highlight(doc, 0))
 
-        doc = self._getdoc('``text``')
-        assert [
-            (0, 2, self.tokens.code1.span_start),
-            (2, 6, self.tokens.code1.span_mid),
-            (6, 8, self.tokens.code1.span_end),
-        ] == list((f, t, style) for f, t, style in hl.highlight(doc, 0))
+    def test_literal(self):
+        hl = highlight.Highlighter(tokenizers=self.tokenizers)
 
         doc = self._getdoc('`text`')
         assert [
@@ -117,9 +113,26 @@ class TestMarkdownHighlight(kaa_testutils._TestDocBase):
             (5, 6, self.tokens.code2.span_end),
         ] == list((f, t, style) for f, t, style in hl.highlight(doc, 0))
 
+        doc = self._getdoc('```\ntext\n```\n')
+        assert [
+            (0, 3, self.tokens.code1.span_start),
+            (3, 9, self.tokens.code1.span_mid),
+            (9, 13, self.tokens.code1.span_end),
+        ] == list((f, t, style) for f, t, style in hl.highlight(doc, 0))
+
         doc = self._getdoc('` text`')
         assert [
             (0, 1, self.tokenizers[0].nulltoken),
             (1, 6, self.tokenizers[0].nulltoken),
             (6, 7, self.tokenizers[0].nulltoken),
         ] == list((f, t, style) for f, t, style in hl.highlight(doc, 0))
+
+        doc = self._getdoc('    text\na')
+        assert [
+            (0, 4, self.tokens.code3.span_start),
+            (4, 8, self.tokens.code3.span_mid),
+            (8, 8, self.tokens.code3.span_end),
+            (8, 10, self.tokenizers[0].nulltoken),
+        ] == list((f, t, style) for f, t, style in hl.highlight(doc, 0))
+
+
