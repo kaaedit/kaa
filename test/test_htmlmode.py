@@ -147,7 +147,7 @@ class TestHTMLHighlight(kaa_testutils._TestDocBase):
             (7, 13, hl.tokenizers[0].tokens.scripttag.span_elemname),
             (13, 14, hl.tokenizers[0].tokens.scripttag.span_gt),
             (14, 16, hl.tokenizers[1].tokens.keywords.tokenid),
-            (16, 25, hl.tokenizers[1].tokens.stop.section_end),
+            (16, 25, hl.tokenizers[0].tokens.jsstop.tokenid),
             (25, 27, hl.tokenizers[0].nulltoken),
             (27, 33, hl.tokenizers[0].tokens.keywords.tokenid),
         ] == list((f, t, style) for f, t, style in hl.highlight(doc, 0))
@@ -165,7 +165,7 @@ class TestHTMLHighlight(kaa_testutils._TestDocBase):
             (19, 36, hl.tokenizers[0].tokens.scripttag.span_attrvalue),
             (36, 37, hl.tokenizers[0].tokens.scripttag.span_gt),
             (37, 39, hl.tokenizers[1].tokens.keywords.tokenid),
-            (39, 48, hl.tokenizers[1].tokens.stop.section_end),
+            (39, 48, hl.tokenizers[0].tokens.jsstop.tokenid),
             (48, 50, hl.tokenizers[0].nulltoken),
             (50, 56, hl.tokenizers[0].tokens.keywords.tokenid),
         ] == list((f, t, style) for f, t, style in hl.highlight(doc, 0))
@@ -180,10 +180,23 @@ class TestHTMLHighlight(kaa_testutils._TestDocBase):
                 [hl.tokenizers[1].tokens.regex.span_start] +
                 [hl.tokenizers[1].tokens.regex.span_mid]*3 +
                 [hl.tokenizers[1].tokens.regex.span_end] +
-                [hl.tokenizers[1].tokens.stop.section_end]*9 +
+                [hl.tokenizers[0].tokens.jsstop.tokenid]*9 +
                 [hl.tokenizers[0].nulltoken]*2 +
                 [hl.tokenizers[0].tokens.keywords.tokenid]*6
                ) == doc.styles.getints(0, 36)
+
+        hl = highlight.Highlighter(tokenizers=self.tokenizers)
+        doc = self._getdoc("&nbsp;<script>if //</script>")
+        hl.update_style(doc)
+        assert ([hl.tokenizers[0].tokens.keywords.tokenid]*6 +
+                [hl.tokenizers[0].tokens.scripttag.span_lt] +
+                [hl.tokenizers[0].tokens.scripttag.span_elemname]*6 +
+                [hl.tokenizers[0].tokens.scripttag.span_gt] +
+                [hl.tokenizers[1].tokens.keywords.tokenid]*2 +
+                [hl.tokenizers[1].nulltoken] +
+                [hl.tokenizers[1].tokens.comment2.span_start]*2 +
+                [hl.tokenizers[0].tokens.jsstop.tokenid]*9
+               ) == doc.styles.getints(0, 28)
 
     def test_style(self):
         hl = highlight.Highlighter(tokenizers=self.tokenizers)
@@ -253,6 +266,8 @@ class TestHTMLHighlight(kaa_testutils._TestDocBase):
             (7, 8, hl.tokenizers[0].tokens.htmltag.span_attrvalue),
             (8, 10, hl.tokenizers[0].
                      tokens.jsattr1.subtokenizer.tokens.comment2.span_start),
+            (10, 10, hl.tokenizers[0].
+                     tokens.jsattr1.subtokenizer.tokens.comment2.span_end),
             (10, 11, hl.tokenizers[0].tokens.jsattr1.subtokenizer.nulltoken),
             (11, 12, hl.tokenizers[0].tokens.htmltag.span_attrvalue),
         ] == list((f, t, style) for f, t, style in hl.highlight(doc, 0))

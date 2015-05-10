@@ -17,7 +17,7 @@ class Token:
     def get_token_at(self, doc, pos):
         return self
 
-    def get_token(self, style):
+    def get_token_from_tokenid(self, tokenid):
         return self
 
     def re_start(self):
@@ -43,7 +43,7 @@ class Token:
         # Returns end of current keyword
         if 0 < pos < len(doc.styles):
             p = doc.styles.findint(self.get_tokenids(), pos, len(doc.styles),
-                                    comp_ne=True)
+                                   comp_ne=True)
             if p != -1:
                 return p
         return len(doc.styles)
@@ -110,13 +110,24 @@ class Span(Token):
 
         self.start = start
         self.escape = escape
-        if escape:
-            end = '({}.)|({})'.format(doc_re.escape(escape), end)
-        self.end = doc_re.compile(end, doc_re.X + doc_re.M + doc_re.S)
+        self._end = end
         self._capture_end = capture_end
 
     def prepare(self, tokenizer):
         super().prepare(tokenizer)
+
+        end = self._end
+        self.terminates = None
+        if tokenizer.terminates:
+            self.terminates = tokenizer.terminates
+            end = '(?P<TERMINATES>{})|({})'.format(self.terminates, end)
+
+        if self.escape:
+            end = '(?P<ESCAPE>{}.)|({})'.format(
+                doc_re.escape(self.escape),
+                end)
+
+        self.end = doc_re.compile(end, doc_re.X + doc_re.M + doc_re.S)
 
         self.span_start = self.assign_tokenid(tokenizer, self.stylename)
         self.span_mid = self.assign_tokenid(tokenizer, self.stylename)
@@ -132,8 +143,12 @@ class Span(Token):
         yield (match.start(), match.end(), self.span_start)
 
         for m in self.end.finditer(doc, match.end()):
-            if self.escape and m.group(1) is not None:
+            if self.escape and m.group('ESCAPE') is not None:
                 continue
+
+            if self.terminates and m.group('TERMINATES') is not None:
+                yield (match.end(), m.start(), self.span_mid)
+                return m.start(), None, False
 
             if match.end() != m.start():
                 if not self._is_end(doc, m):
@@ -141,8 +156,9 @@ class Span(Token):
                 yield (match.end(), m.start(), self.span_mid)
 
             if self._capture_end:
-                if m.start() != m.end():
-                    yield (m.start(), m.end(), self.span_end)
+#                if m.start() != m.end():
+#                    yield (m.start(), m.end(), self.span_end)
+                yield (m.start(), m.end(), self.span_end)
                 end = m.end()
             else:
                 end = m.start()
@@ -175,7 +191,7 @@ class SubTokenizer(Token):
         self.sub_tokens[ret] = token
         return ret
 
-    def get_token(self, tokenid):
+    def get_token_from_tokenid(self, tokenid):
         if tokenid in self.sub_tokens:
             return self.sub_tokens[tokenid]
         return self.tokenizer.highlighter.get_token(tokenid)
@@ -498,8 +514,6 @@ class Highlighter:
                     # (e.g. white spaces)
                     tokenizer, token = pair
                     if token:
-                        # if token is subtokenizer, get actual token inside subtokenizer.
-                        token = token.get_token(style)
                         return tokenizer, token, pos
 
             pos = doc.styles.rfindint([style], 0, pos, comp_ne=True)

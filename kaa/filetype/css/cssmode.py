@@ -7,6 +7,8 @@ from kaa.theme import Theme, Style
 from kaa.filetype.javascript import javascriptmode
 from kaa import encodingdef
 
+# todo: highlighter should be written.
+
 CSSThemes = {
     'basic': [
         Style('css-selector', 'magenta', 'default'),
