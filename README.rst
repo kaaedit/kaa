@@ -908,14 +908,20 @@ Links
 Version history
 =================
 
-0.42.0 - 2015.4.5
+0.43.0 - 2015.5.10
 --------------------
 
-- HTML highlighter respects type attribute of script element.
+- [HTML mode] Handle Javascript line (//) comments in HTML attributes/elements collectly.
+
+- [Markdown mode] Highlight pre style(both indented block/Github style \`\`\` markup)
 
 Past versions
 --------------
 
+0.42.0 - 2015.4.5
+++++++++++++++++++++++
+
+- HTML highlighter respects type attribute of script element.
 0.41.0 - 2015.3.25
 ++++++++++++++++++++++
 
