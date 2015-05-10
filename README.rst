@@ -826,7 +826,7 @@ Function `kaa.addon.theme_def()` could be used to customize color theme.
     theme_def(filemode='kaa.filetype.default.defaultmode.DefaultMode', 
                   theme=None)
 
-`filemode` is a name if mode class to register theme. `theme` is a dictionary of theme name and list of styles. Currently, the pnly valid theme name is `basic`.
+`filemode` is a name if mode class to register theme. `theme` is a dictionary of theme name and list of styles. Currently, the only valid theme name is `basic`.
 
 .. code:: python
 
@@ -911,7 +911,7 @@ Version history
 0.43.0 - 2015.5.10
 --------------------
 
-- [HTML mode] Handle Javascript line (//) comments in HTML attributes/elements collectly.
+- [HTML mode] Handle Javascript line (//) comments in HTML attributes/elements correctly.
 
 - [Markdown mode] Highlight pre style(both indented block/Github style \`\`\` markup)
 
