@@ -922,6 +922,7 @@ Past versions
 ++++++++++++++++++++++
 
 - HTML highlighter respects type attribute of script element.
+
 0.41.0 - 2015.3.25
 ++++++++++++++++++++++
 
