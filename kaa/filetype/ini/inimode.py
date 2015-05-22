@@ -7,7 +7,7 @@ from kaa.highlight import Tokenizer, Span
 from kaa.keyboard import ctrl
 from kaa.theme import Style
 
-IniThemes = {
+INIThemes = {
     'basic': [
         Style('section', 'Blue', None, bold=True),
         Style('param-name', 'Orange', None, bold=True),
@@ -37,8 +37,8 @@ ini_keys = {
 }
 
 
-class IniMode(defaultmode.DefaultMode):
-    MODENAME = 'Ini'
+class INIMode(defaultmode.DefaultMode):
+    MODENAME = 'INI'
     LINE_COMMENT = ';'
 
     RE_SECTION = doc_re.compile(r'^\[(?P<SECTION>.+)\]$', doc_re.M)
@@ -49,7 +49,7 @@ class IniMode(defaultmode.DefaultMode):
 
     def init_themes(self):
         super().init_themes()
-        self.themes.append(IniThemes)
+        self.themes.append(INIThemes)
 
     def init_menu(self):
         super().init_menu()

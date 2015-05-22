@@ -6,5 +6,5 @@ class FileTypeInfo(filetypedef.FileTypeInfo):
 
     @classmethod
     def get_modetype(cls):
-        from kaa.filetype.ini.inimode import IniMode
-        return IniMode
+        from kaa.filetype.ini.inimode import INIMode
+        return INIMode
