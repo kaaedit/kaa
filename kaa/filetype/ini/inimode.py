@@ -32,7 +32,7 @@ ini_keys = {
 class IniMode(defaultmode.DefaultMode):
     MODENAME = 'Ini'
 
-    RE_SECTION = doc_re.compile(r'\[(?P<SECTION>.+)\]')
+    RE_SECTION = doc_re.compile(r'^\[(?P<SECTION>.+)\]$', doc_re.M)
 
     def init_keybind(self):
         super().init_keybind()
