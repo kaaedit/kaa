@@ -1,3 +1,5 @@
+import copy
+
 from kaa import doc_re
 from kaa.command import commandid, norec, norerun
 from kaa.filetype.default import defaultmode
@@ -11,6 +13,12 @@ IniThemes = {
         Style('param-name', 'Orange', None, bold=True),
     ]
 }
+
+INIMENU = [
+    ['&Comment', None, 'code.region.linecomment'],
+    ['&Uncomment', None, 'code.region.unlinecomment'],
+    ['&Table of contents', None, 'toc.showlist'],
+]
 
 
 def build_tokenizer():
@@ -31,6 +39,7 @@ ini_keys = {
 
 class IniMode(defaultmode.DefaultMode):
     MODENAME = 'Ini'
+    LINE_COMMENT = ';'
 
     RE_SECTION = doc_re.compile(r'^\[(?P<SECTION>.+)\]$', doc_re.M)
 
@@ -41,6 +50,10 @@ class IniMode(defaultmode.DefaultMode):
     def init_themes(self):
         super().init_themes()
         self.themes.append(IniThemes)
+
+    def init_menu(self):
+        super().init_menu()
+        self.menu['CODE'] = copy.deepcopy(INIMENU)
 
     def init_tokenizers(self):
         self.tokenizers = [build_tokenizer()]
