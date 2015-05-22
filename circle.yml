@@ -10,4 +10,4 @@ dependencies:
     - pip install pytest
 test:
     override:
-        - py.test
+        - py.test test test_gappedbuf
