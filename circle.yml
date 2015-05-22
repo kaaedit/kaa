@@ -1,0 +1,13 @@
+machine:
+  python:
+    version: 3.4.2
+
+dependencies:
+  pre:
+    - sudo apt-get update -qq
+    - sudo apt-get install -qq libncursesw5 libncurses5-dev libncursesw5-dev
+    - sudo apt-get install -qq python3-dev
+    - pip install pytest
+test:
+    override:
+        - py.test test test_gappedbuf
