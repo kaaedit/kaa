@@ -158,6 +158,7 @@ class Config:
         'kaa.filetype.diff',
         'kaa.filetype.rst',
         'kaa.filetype.markdown',
+        'kaa.filetype.json',
         'kaa.filetype.c',
     ]
 
