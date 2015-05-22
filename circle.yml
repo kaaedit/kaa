@@ -7,7 +7,7 @@ dependencies:
     - sudo apt-get update -qq
     - sudo apt-get install -qq libncursesw5 libncurses5-dev libncursesw5-dev
     - sudo apt-get install -qq python3-dev
-    - pip install py.test
+    - pip install pytest
 test:
     override:
         - py.test
