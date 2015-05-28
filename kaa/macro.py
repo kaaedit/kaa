@@ -9,6 +9,8 @@ class Macro:
     recording = False
     commands = ()
 
+    RERUN_MACRO_MESSAGE = "Type F5 to run the macro again."
+
     def start_record(self):
         self.recording = True
         self.commands = []
@@ -59,3 +61,4 @@ class Macro:
                         cmd(wnd, *args, **kwargs)
                 finally:
                     wnd.set_command_repeat(1)
+        kaa.app.messagebar.set_message(self.RERUN_MACRO_MESSAGE)
