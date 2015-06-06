@@ -908,15 +908,24 @@ Links
 Version history
 =================
 
-0.43.0 - 2015.5.10
+
+0.44.0 - 2015.6.7
 --------------------
+
+- New file mode: INI file. [`Contributed by hirokiky <https://github.com/kaaedit/kaa/pull/125>`_]
+
+- New file mode: JSON file. [`Contributed by hirokiky <https://github.com/kaaedit/kaa/pull/126>`_]
+
+
+Past versions
+--------------
+
+0.43.0 - 2015.5.10
+++++++++++++++++++++++
 
 - [HTML mode] Handle Javascript line (//) comments in HTML attributes/elements correctly.
 
 - [Markdown mode] Highlight pre style(both indented block/Github style \`\`\` markup)
-
-Past versions
---------------
 
 0.42.0 - 2015.4.5
 ++++++++++++++++++++++
