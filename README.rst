@@ -912,9 +912,9 @@ Version history
 0.44.0 - 2015.6.7
 --------------------
 
-- New file mode: INI file. [`Contributed by hirokiky <https://github.com/kaaedit/kaa/pull/125>`_]
+- New file mode: INI file. [`PR #125 Contributed by hirokiky <https://github.com/kaaedit/kaa/pull/125>`_]
 
-- New file mode: JSON file. [`Contributed by hirokiky <https://github.com/kaaedit/kaa/pull/126>`_]
+- New file mode: JSON file. [`PR #126 Contributed by hirokiky <https://github.com/kaaedit/kaa/pull/126>`_]
 
 
 Past versions
