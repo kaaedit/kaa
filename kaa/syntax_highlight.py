@@ -1,8 +1,21 @@
 from types import SimpleNamespace
 
 
+def get_prev_token(root, doc, pos):
+    endpos = doc.endpos()
+    if pos >= endpos:
+        pos = endpos - 1
+
+    if pos <= 0:
+        return root
+
+    pos -= 1 
+    token_id = doc.styles[pos]
+    token = root.get_token(token_id)
+        
+
 def run(doc, root, pos, endpos):
-    f, t, token = root.get_prev_token(pos)
+    f, t, token = get_prev_token(doc, pos)
     if token:
         root, *rest = token.get_path()
         yield from root.resume(rest, doc, f, endpos)
@@ -12,6 +25,20 @@ def run(doc, root, pos, endpos):
 
 
 class Token:
+    def __init__(self, parent):
+        self._parent = parent
+
+
+    def get_path(self):
+        if self._parent:
+            path = self._parent.get_path()
+        else:
+            path = []
+        
+        path.append(self)
+        return path
+
+
     def token_from_style(self, style):
         if style in self.styles:
             return self
@@ -68,7 +95,7 @@ class Tokenizer(Token):
             root, *rest = path
             pos = yield from root.resume(rest, doc, pos, endpos)
         else:
-            pos = self.get_token_start(doc, pos)
+            pos = self.get_token_head(doc, pos)
 
         pos = yield from self.run(doc, pos, endpos)
         return pos
