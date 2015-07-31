@@ -1,22 +1,28 @@
 from types import SimpleNamespace
 
 
-def get_prev_token(root, doc, pos):
+def iter_prev_token(root, doc, pos):
     endpos = doc.endpos()
     if pos >= endpos:
         pos = endpos - 1
 
-    if pos <= 0:
-        return root
-
     pos -= 1 
-    token_id = doc.styles[pos]
-    token = root.get_token(token_id)
-        
+
+    while True:
+        if pos <= 0:
+            return
+
+        token_id = doc.styles[pos]
+        token = root.get_token(token_id)
+        f, t = token.get_range(pos)
+        yield f, t, token
+
+        pos = f - 1
+
+
 
 def run(doc, root, pos, endpos):
-    f, t, token = get_prev_token(doc, pos)
-    if token:
+    for f, t, token in get_prev_token(doc, pos):
         root, *rest = token.get_path()
         yield from root.resume(rest, doc, f, endpos)
         return
