@@ -95,7 +95,6 @@ kaa.app = DmyApp(config)
 kaa.app.init_commands()
 
 
-
 class _TestDocBase:
     DEFAULTMODECLASS = defaultmode.DefaultMode
 
