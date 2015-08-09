@@ -2,12 +2,12 @@ import io
 import keyword
 import copy
 from kaa.filetype.default import defaultmode, theme
-from kaa.highlight import Tokenizer, Keywords, Span, SingleToken
 from kaa.theme import Theme, Style
 from kaa import doc_re
 from kaa.command import Commands, commandid, norec, norerun
 from kaa.keyboard import *
 from kaa.ui.pythondebug import port
+from kaa.syntax_highlight import *
 
 PythonThemes = {
     'basic': [
@@ -34,6 +34,32 @@ KEYWORDS = ['and', 'as', 'assert', 'break', 'class', 'continue', 'def',
             'with', 'yield']
 
 CONSTANTS = ['False', 'None', 'True']
+
+
+
+PythonTokenizer = Root(tokens=(
+    ("keyword", Keywords('keyword', KEYWORDS)),
+    ("constant", Keywords('constant', CONSTANTS)),
+    ("decorator", SingleToken('directive', [r'@\w[\w.]*'])),
+    ("number", SingleToken('number', 
+                [r'\b[0-9]+(\.[0-9]*)*\b', r'\b\.[0-9]+\b'])),
+    ("comment", Span('comment', r'\#', '$', escape='\\')),
+
+    ("string31", Span('string', '[rR]?"""', '"""', escape='\\')),
+    ("string32", Span('string', "[rR]?'''", "'''", escape='\\')),
+    ("string11", Span('string', '[rR]?"', '"', escape='\\')),
+    ("string12", Span('string', "[rR]?'", "'", escape='\\')),
+
+    ('bytes31', Span('python-bytes',
+         '([bB][rR]?|[rR]?[bB])"""', '"""', escape='\\')),
+    ('bytes32', Span('python-bytes',
+         "([bB][rR]?|[rR]?[bB])'''", "'''", escape='\\')),
+    ('bytes11', Span('python-bytes',
+         '([bB][rR]?|[rR]?[bB])"', '"', escape='\\')),
+    ('bytes12', Span('python-bytes',
+         "([bB][rR]?|[rR]?[bB])'", "'", escape='\\')),
+))
+
 
 
 class PythonMode(defaultmode.DefaultMode):

@@ -1,3 +1,4 @@
+import types
 from kaa import doc_re
 
 def begin_tokenizer(doc, root, begin, end, updated):
@@ -14,12 +15,10 @@ def begin_tokenizer(doc, root, begin, end, updated):
 
 class Token:
     styles = ()
-    def __init__(self, tokenizer, stylename):
-        self.tokenizer = tokenizer
+    def __init__(self, stylename):
         self.stylename = stylename
         self._style_ids = []
 
-        self.prepare()
 
     def register_styles(self, *names):
         l = self.tokenizer.get_styleid_map()
@@ -48,34 +47,46 @@ class Token:
         else:
             return p+1
 
-    def prepare(self):
-        pass
+    def set_tokenizer(self, tokenizer):
+        self.tokenizer = tokenizer
+        self.prepare()
 
 class DefaultToken(Token):
     def prepare(self):
         self.register_styles("styleid_default")
 
 class Tokenizer:
-    def __init__(self, parent, terminates):
+    def __init__(self, parent, terminates, tokens=()):
         self.parent = parent
-        self._tokens = []
         self._terminates = terminates
-        self._defaulttoken = DefaultToken(self, 'default')
-        self.styleid_default = self._defaulttoken.styleid_default
+        self._token_list = []
+        self.tokens = types.SimpleNamespace()
+
+        self.tokens.default = DefaultToken('default')
+        self.tokens.default.set_tokenizer(self)
+        self.styleid_default = self.tokens.default.styleid_default
+
+        for name, token in tokens:
+            self.add_token(name, token)
+
         self.prepare()
 
-    def prepare(self):
-        pass
+
+    def add_token(self, name, token):
+        self._token_list.append(token)
+        setattr(self.tokens, name, token)
+        token.set_tokenizer(self)
 
     def get_styleid_map(self):
-        return self.parent.get_styleid_map()
+        if self.parent:
+            return self.parent.get_styleid_map()
+        else:
+            return self.styleid_map
 
-    def add_tokens(self, *tokens):
-        self._tokens.extend(tokens)
-
+    def prepare(self):
         self.groupnames = {}
         starts = []
-        for i, token in enumerate(self._tokens):
+        for i, token in enumerate(self._token_list):
             start = token.re_start()
             if start:
                 name = 'G{}'.format(i)
@@ -126,15 +137,6 @@ class Tokenizer:
 
         return pos
 
-
-class Root(Tokenizer):
-    def __init__(self):
-        self.styleid_map = {}
-        super().__init__(None, '')
-
-    def get_styleid_map(self):
-        return self.styleid_map
-
     def get_token_at(self, doc, pos):
         styleid = doc.styles.getints(pos, pos+1)[0]
         return self.get_styleid_token(styleid)
@@ -143,9 +145,15 @@ class Root(Tokenizer):
         return self.get_styleid_map()[styleid]
 
 
+class Root(Tokenizer):
+    def __init__(self, tokens=()):
+        self.styleid_map = {}
+        super().__init__(None, '', tokens)
+
+
 class SingleToken(Token):
-    def __init__(self, parent, stylename, tokens):
-        super().__init__(parent, stylename)
+    def __init__(self, stylename, tokens):
+        super().__init__(stylename)
         self._tokens = tokens
 
     def prepare(self):
@@ -170,7 +178,7 @@ class Keywords(SingleToken):
 
 class Span(Token):
 
-    def __init__(self, parent, stylename, start, end, escape=None,
+    def __init__(self, stylename, start, end, escape=None,
                  capture_end=True, terminates=None):
 
         self._start = start
@@ -179,7 +187,7 @@ class Span(Token):
         self._capture_end = capture_end
         self._terminates = terminates
 
-        super().__init__(parent, stylename)
+        super().__init__(stylename)
 
 
     def prepare(self):
