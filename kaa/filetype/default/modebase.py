@@ -78,7 +78,6 @@ class ModeBase:
     _check_fileupdate = 0
     _last_autoindent = None
 
-    
     @classmethod
     def update_fileinfo(cls, fileinfo, document=None):
         pass
@@ -108,7 +107,10 @@ class ModeBase:
         self.tokenizers = []
         self.init_tokenizers()
 
-        self.tokenizer = self.get_tokenizer()
+        self._highlight_done = 0
+        self._highlight_iter = None
+
+        self.init_tokenizer()
         
         self.stylemap = {}
         self.stylenamemap = {}
@@ -136,6 +138,8 @@ class ModeBase:
         self.tokenizers = None
         self.tokenizer = None
         self.stylemap = None
+        self._highlight_done = 0
+        self._highlight_iter = None
 
     def _build_style_map(self):
         self.stylemap[0] = self.theme.get_style('default')
@@ -160,8 +164,9 @@ class ModeBase:
 
     def on_document_updated(self, pos, inslen, dellen):
         self._last_autoindent = None
-        if self.highlight:
-            self.highlight.updated(self.document, pos, inslen, dellen)
+        if pos <= self._highlight_done:
+            self._highlight_done = pos
+            self._highlight_iter = None
 
     def on_file_saved(self, fileinfo):
         pass
@@ -243,8 +248,8 @@ class ModeBase:
     def init_tokenizers(self):
         pass
 
-    def get_tokenizer(self):
-        return DefaultTokenizer
+    def init_tokenizer(self):
+        self.tokenizer = DefaultTokenizer
 
     def register_commandobj(self, cmds):
         self.commands.update(cmds.get_commands())
@@ -494,6 +499,32 @@ class ModeBase:
             return self.highlight.update_style(
                 self.document,
                 batch=self.HIGHLIGHTBATCH)
+
+    def run_tokenizer(self, batch=HIGHLIGHTBATCH):
+        if not self._highlight_iter:
+            self._highlight_iter = syntax_highlight.begin_tokenizer(
+                self.document, self.tokenizer, self._highlight_done)
+
+        try:
+            for n, (start, end, style) in enumerate(self._highlight_iter):
+                start = max(marktop, start)
+                end = min(markend, end)
+                updated = True
+                updatefrom = min(start, updatefrom)
+                updateto = max(end, updateto)
+                doc.styles.setints(start, end, style)
+                if batch and (n > batch):
+                    return True
+
+                if end >= markend:
+                    return False
+            else:
+                return False
+
+        finally:
+            if doc.endpos() == 0 or updated and (updatefrom != updateto):
+                doc.style_updated(updatefrom, updateto)
+                self.updatepos = updateto
 
     def _split_chars(self, begin, end):
         """split characters by character category."""

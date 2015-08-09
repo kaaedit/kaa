@@ -96,8 +96,8 @@ class PythonMode(defaultmode.DefaultMode):
         self.themes.append(PythonThemes)
 
 
-    def get_tokenizer(self):
-        return PythonTokenizer
+    def init_tokenizer(self):
+        self.tokenizer = PythonTokenizer
 
     def on_set_document(self, document):
         super().on_set_document(document)

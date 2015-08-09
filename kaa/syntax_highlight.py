@@ -1,15 +1,15 @@
 import types
 from kaa import doc_re
 
-def begin_tokenizer(doc, root, begin, end, updated):
+def begin_tokenizer(doc, root, updated):
     if updated:
         token = root.get_token_at(doc, updated-1)
-        parents, pos = token.get_resume_pos(doc, begin, end, updated-1)
+        parents, pos = token.get_resume_pos(doc, updated-1)
         for parent in parents:
-            pos = yield from parent.run(doc, pos, end)
+            pos = yield from parent.run(doc, pos)
         return pos
     else:
-        pos = yield from root.run(doc, 0, end)
+        pos = yield from root.run(doc, 0)
         return pos
 
 
@@ -38,11 +38,11 @@ class Token:
     def get_stylename(self, styleid):
         return self._stylename
 
-    def get_resume_pos(self, doc, begin, end, pos):
+    def get_resume_pos(self, doc, pos):
         return (list(self.get_tokenizers()),
-            self.get_token_begin(doc, begin, end, pos))
+            self.get_token_begin(doc, pos))
 
-    def get_token_begin(self, doc, begin, end, pos):
+    def get_token_begin(self, doc, pos):
         p = doc.styles.rfindint(self._style_ids, 0, pos,
                                 comp_ne=True)
         if p == -1:
@@ -106,37 +106,39 @@ class Tokenizer:
                 '|'.join(starts),
                 doc_re.M + doc_re.X)
 
-    def get_resume_pos(self, doc, begin, end, pos):
+    def get_resume_pos(self, doc, pos):
         parents = [self] + list(self.get_parents())
         return parents, pos
 
-    def resume(self, doc, begin, end, updated):
-        pos = yield from self.run(doc, updated, end)
+    def resume(self, doc, updated):
+        pos = yield from self.run(doc, updated)
         if self.parent:
-            pos = yield from self.parent.run(doc, pos, end)
+            pos = yield from self.parent.run(doc, pos)
         return pos
 
-    def run(self, doc, pos, end):
-        if self.re_starts:
-            while True:
-                m = self.re_starts.search(doc, pos, end)
-                if not m:
-                    break
+    def run(self, doc, pos):
+        if not self.re_starts:
+            return doc.endpos()
 
-                f, t = m.span()
-                if f != pos:
-                    yield (pos, f, self.styleid_default)
-                    pos = f
+        while True:
+            m = self.re_starts.search(doc, pos)
+            if not m:
+                break
 
-                if m.lastgroup == 'TERMINATE':
-                    return f
+            f, t = m.span()
+            if f != pos:
+                yield (pos, f, self.styleid_default)
+                pos = f
 
-                child = self.groupnames[m.lastgroup]
-                pos = yield from child.on_start(doc, m, end)
+            if m.lastgroup == 'TERMINATE':
+                return f
 
-        if pos != end:
-            yield (pos, end, self.styleid_default)
-            pos = end
+            child = self.groupnames[m.lastgroup]
+            pos = yield from child.on_start(doc, m)
+
+        if pos != doc.endpos():
+            yield (pos, doc.endpos(), self.styleid_default)
+            pos = doc.endpos()
 
         return pos
 
@@ -165,7 +167,7 @@ class SingleToken(Token):
     def re_start(self):
         return r'({})'.format('|'.join(self._tokens))
 
-    def on_start(self, doc, match, end):
+    def on_start(self, doc, match):
         yield (match.start(), match.end(), self.styleid_token)
         return match.end()
 
@@ -214,7 +216,7 @@ class Span(Token):
     def _is_end(self, doc, m):
         return True
 
-    def on_start(self, doc, match, end):
+    def on_start(self, doc, match):
         pos = match.end()
         yield (match.start(), pos, self.styleid_begin)
 

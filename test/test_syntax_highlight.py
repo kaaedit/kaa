@@ -10,7 +10,7 @@ class TestHighlight(kaa_testutils._TestDocBase):
         ])
 
         tokenizer = syntax_highlight.begin_tokenizer(
-            doc, root, 0, doc.endpos(), 0)
+            doc, root, 0)
 
         styles = list(tokenizer)
         assert styles == [
@@ -32,7 +32,7 @@ class TestHighlight(kaa_testutils._TestDocBase):
         ])
 
         tokenizer = syntax_highlight.begin_tokenizer(
-            doc, root, 0, doc.endpos(), 0)
+            doc, root, 0)
 
         styles = list(tokenizer)
         assert styles == [
@@ -55,7 +55,7 @@ class TestHighlight(kaa_testutils._TestDocBase):
             [('keyword', syntax_highlight.Keywords('keyword', ['abc', 'ghi']))])
 
         tokeniter = syntax_highlight.begin_tokenizer(
-            doc, root, 0, doc.endpos(), 2)
+            doc, root, 2)
 
         styles = list(tokeniter)
         assert styles == [
@@ -63,7 +63,7 @@ class TestHighlight(kaa_testutils._TestDocBase):
             (4, 7, root.tokens.keyword.styleid_token)]
 
         tokeniter = syntax_highlight.begin_tokenizer(
-            doc, root, 0, doc.endpos(), 6)
+            doc, root, 6)
 
         doc.styles.setints(4, 7, root.tokens.keyword.styleid_token)
         styles = list(tokeniter)
@@ -77,9 +77,9 @@ class TestHighlight_Nest(kaa_testutils._TestDocBase):
         doc = self._getdoc('   abc   123')
 
         class SubKeyword(syntax_highlight.Keywords):
-            def on_start(self, doc, match, end):
-                pos = yield from super().on_start(doc, match, end)
-                return (yield from sub.run(doc, pos, end))
+            def on_start(self, doc, match):
+                pos = yield from super().on_start(doc, match)
+                return (yield from sub.run(doc, pos))
 
         root = syntax_highlight.Root([
             ('subkeyword', SubKeyword('keyword', ['abc']))])
@@ -95,7 +95,7 @@ class TestHighlight_Nest(kaa_testutils._TestDocBase):
 
         # parse at blank
         tokeniter = syntax_highlight.begin_tokenizer(
-            doc, root, 0, doc.endpos(), 2)
+            doc, root, 2)
 
         styles = list(tokeniter)
         assert styles == [
@@ -107,7 +107,7 @@ class TestHighlight_Nest(kaa_testutils._TestDocBase):
 
         # parse at first token
         tokeniter = syntax_highlight.begin_tokenizer(
-            doc, root, 0, doc.endpos(), 4)
+            doc, root, 4)
 
         styles = list(tokeniter)
         assert styles == [
@@ -117,7 +117,7 @@ class TestHighlight_Nest(kaa_testutils._TestDocBase):
 
         # parse at blank of sub2
         tokeniter = syntax_highlight.begin_tokenizer(
-            doc, root, 0, doc.endpos(), 8)
+            doc, root, 8)
 
         styles = list(tokeniter)
         assert styles == [
@@ -127,7 +127,7 @@ class TestHighlight_Nest(kaa_testutils._TestDocBase):
 
         # parse at blank of keyword2
         tokeniter = syntax_highlight.begin_tokenizer(
-            doc, root, 0, doc.endpos(), 11)
+            doc, root, 11)
 
         styles = list(tokeniter)
         assert styles == [
