@@ -95,29 +95,9 @@ class PythonMode(defaultmode.DefaultMode):
         super().init_themes()
         self.themes.append(PythonThemes)
 
-    def init_tokenizers(self):
-        self.tokenizers = [Tokenizer([
-            Keywords('python-statement', 'keyword', KEYWORDS),
-            Keywords('python-constant', 'constant', CONSTANTS),
-            SingleToken('python-decorator', 'directive',
-                        [r'@\w[\w.]*']),
-            SingleToken('python-numeric', 'number',
-                        [r'\b[0-9]+(\.[0-9]*)*\b', r'\b\.[0-9]+\b']),
-            Span('python-comment', 'comment', r'\#', '$', escape='\\'),
-            Span('python-string31', 'string', '[rR]?"""', '"""', escape='\\'),
-            Span('python-string32', 'string', "[rR]?'''", "'''", escape='\\'),
-            Span('python-string11', 'string', '[rR]?"', '"', escape='\\'),
-            Span('python-string12', 'string', "[rR]?'", "'", escape='\\'),
 
-            Span('python-bytes31', 'python-bytes',
-                 '([bB][rR]?|[rR]?[bB])"""', '"', escape='\\'),
-            Span('python-bytes32', 'python-bytes',
-                 "([bB][rR]?|[rR]?[bB])'''", "'''", escape='\\'),
-            Span('python-bytes11', 'python-bytes',
-                 '([bB][rR]?|[rR]?[bB])"', '"', escape='\\'),
-            Span('python-bytes12', 'python-bytes',
-                 "([bB][rR]?|[rR]?[bB])'", "'", escape='\\'),
-        ])]
+    def get_tokenizer(self):
+        return PythonTokenizer
 
     def on_set_document(self, document):
         super().on_set_document(document)

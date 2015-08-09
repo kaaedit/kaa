@@ -11,7 +11,7 @@ from kaa import highlight
 from kaa import theme
 from kaa import screen
 from kaa import addon
-
+from kaa import syntax_highlight
 
 class SearchOption:
     RE = doc_re
@@ -48,6 +48,7 @@ class SearchOption:
 
 SearchOption.LAST_SEARCH = SearchOption()
 
+DefaultTokenizer = syntax_highlight.Root()
 
 class ModeBase:
     (UNDO_INSERT,
@@ -77,6 +78,7 @@ class ModeBase:
     _check_fileupdate = 0
     _last_autoindent = None
 
+    
     @classmethod
     def update_fileinfo(cls, fileinfo, document=None):
         pass
@@ -105,6 +107,9 @@ class ModeBase:
 
         self.tokenizers = []
         self.init_tokenizers()
+
+        self.tokenizer = self.get_tokenizer()
+        
         self.stylemap = {}
         self.stylenamemap = {}
         self.highlight = highlight.Highlighter(self.tokenizers)
@@ -129,23 +134,22 @@ class ModeBase:
         self.highlight.close()
         self.highlight = None
         self.tokenizers = None
+        self.tokenizer = None
         self.stylemap = None
 
     def _build_style_map(self):
         self.stylemap[0] = self.theme.get_style('default')
-        for tokenid in self.highlight.tokenids:
-            assert tokenid not in self.stylemap
-            token = self.highlight.get_token(tokenid)
+        for styleid, token in self.tokenizer.styleid_map.items():
             if token:
-                stylename = token.get_stylename(tokenid)
+                stylename = token.get_stylename(styleid)
                 style = self.theme.get_style(stylename)
 
-                self.stylemap[tokenid] = style
-                self.stylenamemap[style.name] = tokenid
+                self.stylemap[styleid] = style
+                self.stylenamemap[style.name] = styleid
             else:
                 style = self.theme.get_style('default')
-                self.stylemap[tokenid] = style
-                self.stylenamemap[style.name] = tokenid
+                self.stylemap[styleid] = style
+                self.stylenamemap[style.name] = styleid
 
     def on_set_document(self, document):
         self.document = document
@@ -238,6 +242,9 @@ class ModeBase:
 
     def init_tokenizers(self):
         pass
+
+    def get_tokenizer(self):
+        return DefaultTokenizer
 
     def register_commandobj(self, cmds):
         self.commands.update(cmds.get_commands())

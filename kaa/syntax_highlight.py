@@ -16,7 +16,7 @@ def begin_tokenizer(doc, root, begin, end, updated):
 class Token:
     styles = ()
     def __init__(self, stylename):
-        self.stylename = stylename
+        self._stylename = stylename
         self._style_ids = []
 
 
@@ -34,6 +34,9 @@ class Token:
         while tokenizer:
             yield tokenizer
             tokenizer = tokenizer.parent
+
+    def get_stylename(self, styleid):
+        return self._stylename
 
     def get_resume_pos(self, doc, begin, end, pos):
         return (list(self.get_tokenizers()),
