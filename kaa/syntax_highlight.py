@@ -2,9 +2,10 @@ import types
 from kaa import doc_re
 
 def begin_tokenizer(doc, root, updated):
-    if updated:
-        token = root.get_token_at(doc, updated-1)
-        parents, pos = token.get_resume_pos(doc, updated-1)
+    updated = min(updated, doc.endpos()-1)
+    if updated >= 1:
+        token = root.get_token_at(doc, updated)
+        parents, pos = token.get_resume_pos(doc, updated)
         for parent in parents:
             pos = yield from parent.run(doc, pos)
         return pos
@@ -59,6 +60,7 @@ class DefaultToken(Token):
         self.register_styles("styleid_default")
 
 class Tokenizer:
+    re_starts = None
     def __init__(self, parent, terminates, tokens=()):
         self.parent = parent
         self._terminates = terminates
@@ -105,10 +107,6 @@ class Tokenizer:
             self.re_starts = doc_re.compile(
                 '|'.join(starts),
                 doc_re.M + doc_re.X)
-
-    def get_resume_pos(self, doc, pos):
-        parents = [self] + list(self.get_parents())
-        return parents, pos
 
     def resume(self, doc, updated):
         pos = yield from self.run(doc, updated)

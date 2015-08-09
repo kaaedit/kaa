@@ -336,9 +336,9 @@ class ModeBase:
 
         if kaa.app.macro.is_recording():
             kaa.app.macro.record_string(s, overwrite)
-        if self.highlight:
-            # run highlighter a bit to display changes immediately.
-            self.highlight.update_style(self.document, batch=50)
+
+        # run highlighter a bit to display changes immediately.
+        self.run_tokenizer(batch=50)
 
     def on_commands(self, wnd, commandids, n_repeat=1):
         wnd.set_command_repeat(n_repeat)
@@ -486,7 +486,7 @@ class ModeBase:
         if self.closed:
             return
 
-        ret = self.run_highlight()
+        ret = self.run_tokenizer()
         return ret
 
     def get_line_overlays(self):
@@ -500,31 +500,49 @@ class ModeBase:
                 self.document,
                 batch=self.HIGHLIGHTBATCH)
 
+    def _get_highlight_range(self):
+        return (0, self.document.endpos())
+
     def run_tokenizer(self, batch=HIGHLIGHTBATCH):
+        range_start, range_end = self._get_highlight_range()
+
+        if self._highlight_done < range_start:
+            self._highlight_done = range_start
+
         if not self._highlight_iter:
+            f = max(range_start, self._highlight_done-1)
             self._highlight_iter = syntax_highlight.begin_tokenizer(
-                self.document, self.tokenizer, self._highlight_done)
+                self.document, self.tokenizer, f)
 
-        try:
-            for n, (start, end, style) in enumerate(self._highlight_iter):
-                start = max(marktop, start)
-                end = min(markend, end)
-                updated = True
-                updatefrom = min(start, updatefrom)
-                updateto = max(end, updateto)
-                doc.styles.setints(start, end, style)
-                if batch and (n > batch):
-                    return True
+        updatefrom = self.document.endpos()
+        updateto = range_start
+        updated = False
+        finished = False
 
-                if end >= markend:
-                    return False
-            else:
-                return False
+        for n, (f, t, style) in enumerate(self._highlight_iter):
+            f = max(range_start, f)
+            t = min(range_end, t)
+            if f < t:
+                self.document.styles.setints(f, t, style)
 
-        finally:
-            if doc.endpos() == 0 or updated and (updatefrom != updateto):
-                doc.style_updated(updatefrom, updateto)
-                self.updatepos = updateto
+            updated = True
+            updatefrom = min(f, updatefrom)
+            updateto = max(t, updateto)
+
+            if batch and (n > batch):
+                break
+
+            if t >= range_end:
+                finished = True
+                break
+        else:
+            finished = True
+
+        if self.document.endpos() == 0 or updated and (updatefrom != updateto):
+            self.document.style_updated(updatefrom, updateto)
+            self._highlight_done = updateto
+
+        return not finished # returns False if finished to terminate idle loop.
 
     def _split_chars(self, begin, end):
         """split characters by character category."""
