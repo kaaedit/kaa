@@ -14,11 +14,11 @@ class TestHighlight(kaa_testutils._TestDocBase):
 
         styles = list(tokenizer)
         assert styles == [
-            (0, 1, root.styleid_blank), 
+            (0, 1, root.styleid_default), 
             (1, 4, keyword.styleid_token), 
-            (4, 9, root.styleid_blank), 
+            (4, 9, root.styleid_default), 
             (9, 12, keyword.styleid_token),
-            (12, 13, root.styleid_blank),]
+            (12, 13, root.styleid_default),]
 
     def test_span(self):
         doc = self._getdoc(' ab\\cc def ghi ')
@@ -35,16 +35,16 @@ class TestHighlight(kaa_testutils._TestDocBase):
 
         styles = list(tokenizer)
         assert styles == [
-            (0, 1, root.styleid_blank), 
+            (0, 1, root.styleid_default), 
             (1, 2, span1.styleid_begin), 
             (2, 5, span1.styleid_mid), 
             (5, 6, span1.styleid_end), 
-            (6, 7, root.styleid_blank), 
+            (6, 7, root.styleid_default), 
             (7, 8, span2.styleid_begin), 
             (8, 9, span2.styleid_mid), 
-            (9, 11, root.styleid_blank), 
+            (9, 11, root.styleid_default), 
             (11, 12, span3.styleid_begin), 
-            (12, 15, root.styleid_blank), 
+            (12, 15, root.styleid_default), 
         ]
 
     def test_resume(self):
@@ -59,7 +59,7 @@ class TestHighlight(kaa_testutils._TestDocBase):
 
         styles = list(tokeniter)
         assert styles == [
-            (1, 4, root.styleid_blank), 
+            (0, 4, root.styleid_default), 
             (4, 7, keyword.styleid_token)]
 
         tokeniter = syntax_highlight.begin_tokenizer(
@@ -90,9 +90,9 @@ class TestHighlight_Nest(kaa_testutils._TestDocBase):
         keyword = SubKeyword(root, 'keyword', ['abc'])
         root.add_tokens(keyword)
 
-        doc.styles.setints(0, 3, root.styleid_blank)
+        doc.styles.setints(0, 3, root.styleid_default)
         doc.styles.setints(3, 6, keyword.styleid_token)
-        doc.styles.setints(6, 9, sub.styleid_blank)
+        doc.styles.setints(6, 9, sub.styleid_default)
         doc.styles.setints(9, 12, keyword2.styleid_token)
 
         # parse at blank
@@ -101,9 +101,9 @@ class TestHighlight_Nest(kaa_testutils._TestDocBase):
 
         styles = list(tokeniter)
         assert styles == [
-            (1, 3, root.styleid_blank),
+            (0, 3, root.styleid_default),
             (3, 6, keyword.styleid_token),
-            (6, 9, sub.styleid_blank),
+            (6, 9, sub.styleid_default),
             (9, 12, keyword2.styleid_token)]
 
 
@@ -114,7 +114,7 @@ class TestHighlight_Nest(kaa_testutils._TestDocBase):
         styles = list(tokeniter)
         assert styles == [
             (3, 6, keyword.styleid_token),
-            (6, 9, sub.styleid_blank),
+            (6, 9, sub.styleid_default),
             (9, 12, keyword2.styleid_token)]
 
         # parse at blank of sub2
@@ -123,7 +123,7 @@ class TestHighlight_Nest(kaa_testutils._TestDocBase):
 
         styles = list(tokeniter)
         assert styles == [
-            (7, 9, sub.styleid_blank),
+            (6, 9, sub.styleid_default),
             (9, 12, keyword2.styleid_token)]
 
 

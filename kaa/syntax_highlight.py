@@ -14,33 +14,30 @@ def begin_tokenizer(doc, root, begin, end, updated):
 
 class Token:
     styles = ()
-    def __init__(self, parent, stylename):
-        self.parent = parent
+    def __init__(self, tokenizer, stylename):
+        self.tokenizer = tokenizer
         self.stylename = stylename
         self._style_ids = []
 
         self.prepare()
 
-    def get_parents(self):
-        ret = []
-        token = self
-        while token.parent:
-            yield token.parent
-            token = token.parent
-
-    def get_styleid_list(self):
-        return self.parent.get_styleid_list()
-
     def register_styles(self, *names):
-        l = self.get_styleid_list()
+        l = self.tokenizer.get_styleid_map()
         for name in names:
             styleid = len(l)
-            l.append(self)
+            l[styleid] = self
             self._style_ids.append(styleid)
             setattr(self, name, styleid)
 
+    def get_tokenizers(self):
+        ret = []
+        tokenizer = self.tokenizer
+        while tokenizer:
+            yield tokenizer
+            tokenizer = tokenizer.parent
+
     def get_resume_pos(self, doc, begin, end, pos):
-        return (list(self.get_parents()),
+        return (list(self.get_tokenizers()),
             self.get_token_begin(doc, begin, end, pos))
 
     def get_token_begin(self, doc, begin, end, pos):
@@ -54,15 +51,24 @@ class Token:
     def prepare(self):
         pass
 
+class DefaultToken(Token):
+    def prepare(self):
+        self.register_styles("styleid_default")
 
-class Tokenizer(Token):
+class Tokenizer:
     def __init__(self, parent, terminates):
-        super().__init__(parent, '')
+        self.parent = parent
         self._tokens = []
         self._terminates = terminates
+        self._defaulttoken = DefaultToken(self, 'default')
+        self.styleid_default = self._defaulttoken.styleid_default
+        self.prepare()
 
     def prepare(self):
-        self.register_styles("styleid_blank")
+        pass
+
+    def get_styleid_map(self):
+        return self.parent.get_styleid_map()
 
     def add_tokens(self, *tokens):
         self._tokens.extend(tokens)
@@ -105,7 +111,7 @@ class Tokenizer(Token):
 
                 f, t = m.span()
                 if f != pos:
-                    yield (pos, f, self.styleid_blank)
+                    yield (pos, f, self.styleid_default)
                     pos = f
 
                 if m.lastgroup == 'TERMINATE':
@@ -115,7 +121,7 @@ class Tokenizer(Token):
                 pos = yield from child.on_start(doc, m, end)
 
         if pos != end:
-            yield (pos, end, self.styleid_blank)
+            yield (pos, end, self.styleid_default)
             pos = end
 
         return pos
@@ -123,18 +129,18 @@ class Tokenizer(Token):
 
 class Root(Tokenizer):
     def __init__(self):
-        self.styleid_list = []
+        self.styleid_map = {}
         super().__init__(None, '')
 
-    def get_styleid_list(self):
-        return self.styleid_list
+    def get_styleid_map(self):
+        return self.styleid_map
 
     def get_token_at(self, doc, pos):
         styleid = doc.styles.getints(pos, pos+1)[0]
         return self.get_styleid_token(styleid)
 
     def get_styleid_token(self, styleid):
-        return self.get_styleid_list()[styleid]
+        return self.get_styleid_map()[styleid]
 
 
 class SingleToken(Token):
