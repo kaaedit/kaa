@@ -3,9 +3,9 @@ import copy
 from kaa import doc_re
 from kaa.command import commandid, norec, norerun
 from kaa.filetype.default import defaultmode
-from kaa.highlight import Tokenizer, Span
 from kaa.keyboard import ctrl
 from kaa.theme import Style
+from kaa.syntax_highlight import *
 
 INIThemes = {
     'basic': [
@@ -14,19 +14,18 @@ INIThemes = {
     ]
 }
 
+
+IniTokenizer = Root(tokens=(
+    ('comment', Span('comment', r';', '$')),
+    ('section', Span('section', r'^\[', r'\]')),
+    ('param-name', SingleToken('param-name', [r"^([a-zA-Z0-9_-])+"]),
+)))
+
 INIMENU = [
     ['&Comment', None, 'code.region.linecomment'],
     ['&Uncomment', None, 'code.region.unlinecomment'],
     ['&Table of contents', None, 'toc.showlist'],
 ]
-
-
-def build_tokenizer():
-    return Tokenizer([
-        Span('ini-section', 'section', r'^\[(?P<SECTION>.+)\]', '$'),
-        Span('ini-comment', 'comment', r';.*', '$'),
-        Span('ini-param-name', 'param-name', r'^([a-zA-Z0-9_-])+\s*', r'(\s*|\=)'),
-    ])
 
 MDMENU = [
     ['&Table of contents', None, 'toc.showlist'],
@@ -55,8 +54,8 @@ class INIMode(defaultmode.DefaultMode):
         super().init_menu()
         self.menu['CODE'] = copy.deepcopy(INIMENU)
 
-    def init_tokenizers(self):
-        self.tokenizers = [build_tokenizer()]
+    def init_tokenizer(self):
+        self.tokenizer = IniTokenizer
 
     def get_sections(self):
         pos = 0

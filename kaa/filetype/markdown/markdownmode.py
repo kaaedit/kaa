@@ -6,9 +6,13 @@ from kaa.highlight import Tokenizer, Token, Span, Keywords, EndSection, SingleTo
 from kaa.theme import Theme, Style
 from kaa.command import Commands, commandid, norec, norerun
 from kaa.keyboard import *
+from kaa.syntax_highlight import *
+
+
 
 MarkdownThemes = {
     'basic': [
+        Style('escape', 'default', 'default'),
         Style('header', 'Blue', None),
         Style('hr', 'Green', None),
         Style('strong', 'Magenta', None),
@@ -70,7 +74,7 @@ class LinkToken(Token):
         else:
             c, end = self.get_close(doc, m.end(), '")')
             if c == '"':
-                c, end = self.get_close(doc, end, '"')
+                c, end = self.get_close(doc, end, '')
                 c, end = self.get_close(doc, end, ')')
             yield t, end, self.url
 
@@ -141,6 +145,78 @@ def build_tokenizer():
     ))
 
 
+
+class LinkToken(Span):
+    def __init__(self, stylename):
+        super().__init__(stylename, r'\[', r']', escape=r'\\')
+
+    def prepare(self):
+        super().prepare()
+
+    RE_DESC_BEGIN = doc_re.compile(r'\s*\(?')
+    RE_DESC = doc_re.compile(r'[")]')
+    def on_start(self, doc, match):
+        # [xxx](yyy "xzzzz")
+        pos, terminates = yield from super().on_start(doc, match)
+        if pos == doc.endpos():
+            return pos, terminates
+
+        m = self.RE_DESC_BEGIN.match(doc, pos)
+        if not m:
+            return pos, False
+        else:
+            f, t = m.span()
+            c = doc.gettext(t-1, t)
+            if c == '(':
+                while True:
+                    m = self.RE_DESC.search(doc, t)
+                    if not m:
+                        t = doc.endpos()
+                        break
+                    f, t = m.span()
+                    c = doc.gettext(t-1, t)
+                    if c == ')':
+                        break
+                    while True:
+                        t = doc.findchr(t, '\\"')
+                        if t == -1:
+                            t = doc.endpos()
+                            break
+                        if doc.gettext(t, t+1) == '\\':
+                            t += 2
+                        else:
+                            t += 1
+                            break
+                    
+
+            yield (pos, t, self.styleid_span)
+            return t, False
+
+MarkdownTokenizer = Root(tokens=(
+    ('escape', SingleToken('escape', [r'\\.'])),
+    ('hr', SingleToken('hr', [r'^(\-{3,}|_{3,}|\*{3,})$'])),
+
+    ('header1', SingleToken('header', [r'^.+\n(?P<H1>[-=])(?P=H1)+$'])),
+    ('header2', SingleToken('header', [r'^\#{1,6}.*$'])),
+
+    ('strong1', Span('strong', r'\*\*(?!\s)', r'\*\*|$', escape='\\')),
+    ('strong2', Span('strong', r'__(?!\s)', r'__|$', escape='\\')),
+
+    ('emphasis1', Span('emphasis', r'\*(?!\s)', r'\*|$', escape='\\')),
+    ('emphasis2', Span('emphasis', r'_(?!\s)', r'_|$', escape='\\')),
+
+    ('code1', Span('literal', r'^```', r'^```\s*$', escape='\\')),
+    ('code2', Span('literal', r'^\ {4,}', r'$')),
+    ('code3', Span('literal', r'`(?!\s)', r'`|$', escape='\\')),
+
+    ('link', LinkToken('reference')),
+))
+
+
+
+
+
+
 MDMENU = [
     ['&Table of contents', None, 'toc.showlist'],
 ]
@@ -165,8 +241,12 @@ class MarkdownMode(defaultmode.DefaultMode):
         super().init_themes()
         self.themes.append(MarkdownThemes)
 
-    def init_tokenizers(self):
-        self.tokenizers = [build_tokenizer()]
+#    def init_tokenizers(self):
+#        self.tokenizers = [build_tokenizer()]
+
+    def init_tokenizer(self):
+        self.tokenizer = MarkdownTokenizer
+
 
     HEADER1 = r'^(?P<TITLE>.+)\n(?P<H1>[{}])(?P=H1)+$'.format(HEADERS)
     HEADER2 = r'^(?P<H2>\#{1,6})(?P<TITLE2>.+)$'

@@ -3,12 +3,19 @@ from kaa import doc_re
 
 def begin_tokenizer(doc, root, updated):
     updated = min(updated, doc.endpos()-1)
-    if updated >= 1:
+    # find default token
+    while updated >= 1:
         token = root.get_token_at(doc, updated)
-        parents, pos = token.get_resume_pos(doc, updated)
-        for parent in parents:
+        pos = token.get_token_begin(doc, updated)
+        if not isinstance(token, DefaultToken):
+            updated = pos - 1
+            continue
+
+        for parent in token.get_tokenizers():
             pos = yield from parent.run(doc, pos)
+        
         return pos
+
     else:
         pos = yield from root.run(doc, 0)
         return pos
@@ -38,10 +45,6 @@ class Token:
 
     def get_stylename(self, styleid):
         return self._stylename
-
-    def get_resume_pos(self, doc, pos):
-        return (list(self.get_tokenizers()),
-            self.get_token_begin(doc, pos))
 
     def get_token_begin(self, doc, pos):
         p = doc.styles.rfindint(self._style_ids, 0, pos,
@@ -132,7 +135,9 @@ class Tokenizer:
                 return f
 
             child = self.groupnames[m.lastgroup]
-            pos = yield from child.on_start(doc, m)
+            pos, terminates = yield from child.on_start(doc, m)
+            if terminates:
+                return pos
 
         if pos != doc.endpos():
             yield (pos, doc.endpos(), self.styleid_default)
@@ -167,7 +172,7 @@ class SingleToken(Token):
 
     def on_start(self, doc, match):
         yield (match.start(), match.end(), self.styleid_token)
-        return match.end()
+        return match.end(), False
 
 
 class Keywords(SingleToken):
@@ -195,7 +200,7 @@ class Span(Token):
 
     def prepare(self):
         self.register_styles(
-            "styleid_begin", "styleid_mid", "styleid_end")
+            "styleid_span")
 
         end = self._end
         if self._terminates:
@@ -216,7 +221,7 @@ class Span(Token):
 
     def on_start(self, doc, match):
         pos = match.end()
-        yield (match.start(), pos, self.styleid_begin)
+        yield (match.start(), pos, self.styleid_span)
 
         for m in self._re_end.finditer(doc, pos):
             if self._escape and m.group('ESCAPE') is not None:
@@ -226,19 +231,19 @@ class Span(Token):
                 continue
 
             if pos != m.start():
-                yield (pos, m.start(), self.styleid_mid)
+                yield (pos, m.start(), self.styleid_span)
 
             if self._terminates and m.group('TERMINATES') is not None:
-                return m.start()
+                return m.start(), False
 
             if self._capture_end:
-                yield (m.start(), m.end(), self.styleid_end)
-                return m.end()
+                yield (m.start(), m.end(), self.styleid_span)
+                return m.end(), False
             else:
-                return m.start()
+                return m.start(), False
         else:
-            yield (pos, doc.endpos(), self.styleid_mid)
-            return doc.endpos()
+            yield (pos, doc.endpos(), self.styleid_span)
+            return doc.endpos(), False
 
 
 #class HTMLTag(Token):
