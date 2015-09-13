@@ -1,8 +1,9 @@
 import types
 from kaa import doc_re
 
+
 def begin_tokenizer(doc, root, updated):
-    updated = min(updated, doc.endpos()-1)
+    updated = min(updated, doc.endpos() - 1)
     # find default token
     while updated >= 1:
         token = root.get_token_at(doc, updated)
@@ -13,7 +14,7 @@ def begin_tokenizer(doc, root, updated):
 
         for parent in token.get_tokenizers():
             pos = yield from parent.run(doc, pos)
-        
+
         return pos
 
     else:
@@ -23,11 +24,11 @@ def begin_tokenizer(doc, root, updated):
 
 class Token:
     styles = ()
+
     def __init__(self, stylename, terminates=False):
         self._stylename = stylename
         self._style_ids = []
         self.terminates = terminates
-
 
     def register_styles(self, *names):
         l = self.tokenizer.get_styleid_map()
@@ -53,22 +54,25 @@ class Token:
         if p == -1:
             return 0
         else:
-            return p+1
+            return p + 1
 
     def set_tokenizer(self, tokenizer):
         self.tokenizer = tokenizer
         self.prepare()
 
+
 class DefaultToken(Token):
+
     def prepare(self):
         self.register_styles("styleid_default")
+
 
 class Tokenizer:
     DEFAUT_TOKEN = DefaultToken
     re_starts = None
 
     def __init__(self, parent, terminates, *, default_style='default',
-            tokens=()):
+                 tokens=()):
         self.parent = parent
         self.terminates = terminates
         self._token_list = []
@@ -82,7 +86,6 @@ class Tokenizer:
             self.add_token(name, token)
 
         self.prepare()
-
 
     def add_token(self, name, token):
         self._token_list.append(token)
@@ -150,7 +153,7 @@ class Tokenizer:
         return pos
 
     def get_token_at(self, doc, pos):
-        styleid = doc.styles.getints(pos, pos+1)[0]
+        styleid = doc.styles.getints(pos, pos + 1)[0]
         return self.get_styleid_token(styleid)
 
     def get_styleid_token(self, styleid):
@@ -158,12 +161,14 @@ class Tokenizer:
 
 
 class Root(Tokenizer):
+
     def __init__(self, tokens=()):
         self.styleid_map = {}
-        super().__init__(None, '', tokens=tokens)
+        super().__init__(None, None, tokens=tokens)
 
 
 class SingleToken(Token):
+
     def __init__(self, stylename, tokens, terminates=False):
         super().__init__(stylename, terminates=terminates)
         self._tokens = tokens
@@ -180,26 +185,26 @@ class SingleToken(Token):
 
 
 class Keywords(SingleToken):
+
     def re_start(self):
         return (
-            r'\b({})\b'.format('|'.join(doc_re.escape(k) 
-                for k in self._tokens))
+            r'\b({})\b'.format('|'.join(doc_re.escape(k)
+                                        for k in self._tokens))
         )
-
 
 
 class Span(Token):
 
     def __init__(self, stylename, start, end, escape=None,
-                 capture_end=True, terminates=False):
+                 capture_end=True, terminates=None):
 
         self._start = start
         self._escape = escape
         self._end = end
         self._capture_end = capture_end
+        self._terminates = terminates
 
         super().__init__(stylename, terminates=terminates)
-
 
     def prepare(self):
         self.register_styles(
@@ -210,10 +215,14 @@ class Span(Token):
             end = '(?P<TERMINATES>{})|({})'.format(
                 self.tokenizer.terminates, end)
 
+        if self._terminates:
+            end = '(?P<TERMINATES2>{})|({})'.format(
+                self._terminates, end)
+
         if self._escape:
             end = '(?P<ESCAPE>{}.)|({})'.format(
                 doc_re.escape(self._escape), end)
-
+        self._eee = end
         self._re_end = doc_re.compile(end, doc_re.X + doc_re.M + doc_re.S)
 
     def re_start(self):
@@ -239,17 +248,22 @@ class Span(Token):
             if self.tokenizer.terminates and m.group('TERMINATES') is not None:
                 return m.start(), True
 
+            if self._terminates and m.group('TERMINATES2') is not None:
+                return m.start(), True
+
             if self._capture_end:
-                yield (m.start(), m.end(), self.styleid_span)
+                if m.start() != m.end():
+                    yield (m.start(), m.end(), self.styleid_span)
                 return m.end(), self.terminates
             else:
                 return m.start(), self.terminates
         else:
-            yield (pos, doc.endpos(), self.styleid_span)
+            if pos != doc.endpos():
+                yield (pos, doc.endpos(), self.styleid_span)
             return doc.endpos(), self.terminates
 
 
-#class HTMLTag(Token):
+# class HTMLTag(Token):
 #    def on_start(self, doc, m, endpos):
 #        angle_f, angle_t = m.span(1)
 #        yield (angle_f, angle_t, self.styles.angle)
@@ -273,5 +287,5 @@ class Span(Token):
 #                pos = yield from self.css.run(doc, pos, endpos)
 #
 #        return pos
-#        
+#
 #

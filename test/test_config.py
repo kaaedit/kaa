@@ -3,6 +3,7 @@ from kaa import config
 
 
 class TestHistory:
+
     def test_history(self):
         storage = config.KaaHistoryStorage('')
         try:
@@ -13,18 +14,18 @@ class TestHistory:
 
             assert hist.get() == [('1', 1), ('2', 2)]
             assert hist.find('1') == 1
-            
+
             storage.flush()
             assert hist.get() == [('1', 1), ('2', 2)]
             assert hist.find('1') == 1
 
             hist.add('1', 1)
             hist.add('3', 3)
-            assert hist.get() == [('3', 3), ('1', 1), ('2', 2),]
+            assert hist.get() == [('3', 3), ('1', 1), ('2', 2), ]
 
             storage.flush()
-            assert hist.get() == [('3', 3), ('1', 1), ('2', 2),]
-            
+            assert hist.get() == [('3', 3), ('1', 1), ('2', 2), ]
+
         finally:
             storage.close()
 

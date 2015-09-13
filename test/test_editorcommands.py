@@ -85,7 +85,7 @@ class TestEdit(kaa_testutils._TestScreenBase):
         wnd.screen.selection.set_range(0, 3)
         cmd.indent(wnd)
         assert wnd.document.gettext(0, 12) == "    a\n    a"
-        
+
     def test_undo_ins(self):
         wnd = self._getwnd("")
         cmd = editorcommand.EditCommands()

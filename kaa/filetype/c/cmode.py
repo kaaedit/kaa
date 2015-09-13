@@ -27,16 +27,14 @@ CTokenizer = Root(tokens=(
     ("directive",  SingleToken('directive', [r'\#\s*\w+'])),
     ("keyword", Keywords('keyword', KEYWORDS)),
     ("constant", Keywords('constant', CONSTANTS)),
-    ("number", SingleToken('number', 
-                [r'\b[0-9]+(\.[0-9]*)*\b', r'\b\.[0-9]+\b'])),
+    ("number", SingleToken('number',
+                           [r'\b[0-9]+(\.[0-9]*)*\b', r'\b\.[0-9]+\b'])),
     ("comment1", Span('comment', r'/\*', '\*/', escape='\\')),
     ("comment2", Span('comment', r'//', '$', escape='\\')),
 
     ("string1", Span('string', '"', '"', escape='\\')),
     ("string2", Span('string', "'", "'", escape='\\')),
 ))
-
-
 
 
 class CMode(defaultmode.DefaultMode):
@@ -52,4 +50,3 @@ class CMode(defaultmode.DefaultMode):
 
     def init_tokenizer(self):
         self.tokenizer = CTokenizer
-

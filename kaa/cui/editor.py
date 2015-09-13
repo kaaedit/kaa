@@ -130,7 +130,8 @@ class TextEditorWindow(Window):
         if frame:
             frame.bring_top()
             frame.set_active_editor(self)
-            frame.mainframe.register_childframe(frame)  # bring frame to the top of frame list
+            # bring frame to the top of frame list
+            frame.mainframe.register_childframe(frame)
 
     def on_focus(self):
         super().on_focus()

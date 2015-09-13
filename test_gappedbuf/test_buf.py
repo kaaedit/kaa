@@ -2,11 +2,13 @@ import pytest
 import sys
 import _gappedbuf
 
+
 class TestGappedBuf:
+
     def test_gappedbuf(self):
         buf = _gappedbuf.GappedBuffer()
         buf.insert(0, 'abc')
-        
+
         assert buf[0] == 'a'
         assert buf[1] == 'b'
         assert buf[2] == 'c'
@@ -33,7 +35,7 @@ class TestGappedBuf:
 
     def test_expand(self):
         buf = _gappedbuf.GappedBuffer()
-        buf.insert(0, '1'*4096)
+        buf.insert(0, '1' * 4096)
 
         assert buf.bufsize == 4096
         assert buf.gap == 4096
@@ -45,8 +47,8 @@ class TestGappedBuf:
         assert buf.gap == 4097
         assert buf.gapsize == 1023
         assert buf.numelems == 4097
-        
-        assert buf[:] == '1'*4097
+
+        assert buf[:] == '1' * 4097
 
     def test_append(self):
         buf = _gappedbuf.GappedBuffer()
@@ -56,14 +58,14 @@ class TestGappedBuf:
 
     def test_del(self):
         buf = _gappedbuf.GappedBuffer()
-        s = '0123456789'*500
+        s = '0123456789' * 500
         buf.insert(0, s)
         buf.delete(0, 1)
 
         assert buf.gap == 0
         assert buf.numelems == 4999
-        assert buf.gapsize == buf.bufsize - buf.numelems 
-        
+        assert buf.gapsize == buf.bufsize - buf.numelems
+
         s = s[1:]
         assert buf[:] == s
 
@@ -71,17 +73,17 @@ class TestGappedBuf:
         buf.delete(2500, 2501)
         assert buf.gap == 2500
         assert buf.numelems == 4998
-        assert buf.gapsize == buf.bufsize - buf.numelems 
-        
-        s = s[:2500]+s[2501:]
+        assert buf.gapsize == buf.bufsize - buf.numelems
+
+        s = s[:2500] + s[2501:]
         assert buf[:] == s
 
         # delete before gap
         buf.delete(0, 1)
         assert buf.gap == 0
         assert buf.numelems == 4997
-        assert buf.gapsize == buf.bufsize - buf.numelems 
-        
+        assert buf.gapsize == buf.bufsize - buf.numelems
+
         s = s[1:]
         assert buf[:] == s
 
@@ -89,17 +91,17 @@ class TestGappedBuf:
         buf.delete(1, 2)
         assert buf.gap == 1
         assert buf.numelems == 4996
-        assert buf.gapsize == buf.bufsize - buf.numelems 
-        
-        s = s[0:1]+s[2:]
+        assert buf.gapsize == buf.bufsize - buf.numelems
+
+        s = s[0:1] + s[2:]
         assert buf[:] == s
 
         # delete all
         buf.delete(0, buf.numelems)
         assert buf.gap == 0
         assert buf.numelems == 0
-        assert buf.gapsize == buf.bufsize - buf.numelems 
-        
+        assert buf.gapsize == buf.bufsize - buf.numelems
+
         assert buf[:] == ''
 
         with pytest.raises(ValueError):
@@ -107,7 +109,7 @@ class TestGappedBuf:
 
     def test_shrink(self):
         buf = _gappedbuf.GappedBuffer()
-        buf.insert(0, '1'*8192)
+        buf.insert(0, '1' * 8192)
 
         buf.delete(0, 8191)
         assert buf.bufsize == 4097
@@ -119,15 +121,15 @@ class TestGappedBuf:
     def test_getitem(self):
         buf = _gappedbuf.GappedBuffer()
         buf.insert(0, 'abc')
-        
+
         assert buf[0] == 'a'
         assert buf[1] == 'b'
         assert buf[2] == 'c'
-        
+
         assert buf[-3] == 'a'
         assert buf[-2] == 'b'
         assert buf[-1] == 'c'
-        
+
         with pytest.raises(IndexError):
             buf[1:0]
         with pytest.raises(IndexError):
@@ -142,28 +144,27 @@ class TestGappedBuf:
         assert buf[3] == 'a'
         assert buf[4] == 'b'
         assert buf[5] == 'c'
-        
+
     def _test_slice(self, s):
         buf = _gappedbuf.GappedBuffer()
-        buf.insert(0, s*2)
-        assert buf[:] == s*2
+        buf.insert(0, s * 2)
+        assert buf[:] == s * 2
 
         buf.insert(len(s), s)
-        assert buf.gap == len(s)*2
-        
-        assert buf[:] == s*3
+        assert buf.gap == len(s) * 2
+
+        assert buf[:] == s * 3
         assert buf[:3] == s[:3]
         assert buf[-3:] == s[-3:]
 
-        buf.delete(len(s)*3-1, len(buf))
+        buf.delete(len(s) * 3 - 1, len(buf))
 
-        assert len(buf) == len(s)*3-1
+        assert len(buf) == len(s) * 3 - 1
         assert buf.gap == len(buf)
 
-        assert buf[:] == (s*3)[:-1]
+        assert buf[:] == (s * 3)[:-1]
         assert buf[:3] == s[:3]
         assert buf[-3:] == s[-4:-1]
-
 
     def test_getslice(self):
         # test UCS1
@@ -182,7 +183,7 @@ class TestGappedBuf:
         buf[:] = 'abcdefg'
         with pytest.raises(IndexError):
             buf[7]
-            
+
     def test_setitem(self):
         buf = _gappedbuf.GappedBuffer()
         buf[:] = 'abcdefg'
@@ -190,7 +191,7 @@ class TestGappedBuf:
 
         buf[-1] = 'x'
         assert buf[:] == 'abcdefx'
-        
+
         buf[1] = 'x'
         assert buf[:] == 'axcdefx'
 
@@ -200,7 +201,7 @@ class TestGappedBuf:
             buf[0] = ''
         with pytest.raises(ValueError):
             buf[0] = '12'
-        
+
     def test_delitem(self):
         buf = _gappedbuf.GappedBuffer()
         buf[:] = 'abcdefg'
@@ -248,16 +249,16 @@ class TestGappedBuf:
 
         n = sys.getrefcount(ord('0'))
         for i in range(100000):
-            buf.getints(0, 17) 
+            buf.getints(0, 17)
 
         with pytest.raises(ValueError):
             buf.getints(100, 0)
 
     def test_insertint(self):
         buf = _gappedbuf.GappedBuffer()
-        buf.insertints(0, (0,1,2,3,4,5,6,7,8,9))
+        buf.insertints(0, (0, 1, 2, 3, 4, 5, 6, 7, 8, 9))
 
-        assert buf.getints(0, 10) == [0,1,2,3,4,5,6,7,8,9]
+        assert buf.getints(0, 10) == [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
 
         assert buf.bufsize == 4096
         assert buf.gap == 10
@@ -265,35 +266,36 @@ class TestGappedBuf:
         assert buf.numelems == 10
 
         with pytest.raises(ValueError):
-            buf.insertints(11, (0,1,2,3,4,5,6,7,8,9))
+            buf.insertints(11, (0, 1, 2, 3, 4, 5, 6, 7, 8, 9))
 
     def test_appendint(self):
         buf = _gappedbuf.GappedBuffer()
-        buf.appendints((0,1,2,3,4,5,6,7,8,9))
+        buf.appendints((0, 1, 2, 3, 4, 5, 6, 7, 8, 9))
 
-        assert buf.getints(0, 10) == [0,1,2,3,4,5,6,7,8,9]
+        assert buf.getints(0, 10) == [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
 
     def test_replaceints(self):
         buf = _gappedbuf.GappedBuffer()
-        buf.appendints((0,1,2,3,4,5,6,7,8,9))
-        buf.replaceints(1, 9, (0,1,2,3,4,5,6,7,8,9))
+        buf.appendints((0, 1, 2, 3, 4, 5, 6, 7, 8, 9))
+        buf.replaceints(1, 9, (0, 1, 2, 3, 4, 5, 6, 7, 8, 9))
 
-        assert buf.getints(0, 12) == [0,0,1,2,3,4,5,6,7,8,9,9]
+        assert buf.getints(0, 12) == [0, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 9]
 
     def test_setints(self):
         buf = _gappedbuf.GappedBuffer()
-        buf.appendints((0,1,2,3,4,5,6,7,8,9))
+        buf.appendints((0, 1, 2, 3, 4, 5, 6, 7, 8, 9))
         buf.setints(1, 9, 255)
 
-        assert buf.getints(0, 10) == [0,255,255,255,255,255,255,255,255,9]
+        assert buf.getints(0, 10) == [0, 255, 255,
+                                      255, 255, 255, 255, 255, 255, 9]
 
         with pytest.raises(ValueError):
             buf.setints(0, 11, 255)
 
     def test_findint(self):
         buf = _gappedbuf.GappedBuffer()
-        buf.appendints((0,1,2,3,4,5,6,7,8,9))
-        buf.insertints(0, (100,101,102,103,104,105,106,107,108,109))
+        buf.appendints((0, 1, 2, 3, 4, 5, 6, 7, 8, 9))
+        buf.insertints(0, (100, 101, 102, 103, 104, 105, 106, 107, 108, 109))
 
         assert buf.findint([100, 200], 0, 20, False) == 0
         assert buf.findint([200, 109], 0, 20, False) == 9
@@ -307,23 +309,22 @@ class TestGappedBuf:
     def test_findint_ne(self):
         buf = _gappedbuf.GappedBuffer()
 
-        buf.appendints((0,)*10+(1,))
+        buf.appendints((0,) * 10 + (1,))
         assert buf.findint([0], 0, 11, True) == 10
 
-        buf.insertints(0, (0,)*10)
+        buf.insertints(0, (0,) * 10)
         assert buf.findint([0], 0, 21, True) == 20
 
-        buf.insertints(0, (1,)*10)
+        buf.insertints(0, (1,) * 10)
         assert buf.findint([0], 0, 21, True) == 0
 
-        buf.insertints(0, (1,)*10)
+        buf.insertints(0, (1,) * 10)
         assert buf.findint([0, 1], 0, 21, True) == -1
-
 
     def test_rfindint(self):
         buf = _gappedbuf.GappedBuffer()
-        buf.appendints((0,1,2,3,4,5,6,7,8,9))
-        buf.insertints(0, (100,101,102,103,104,105,106,107,108,109))
+        buf.appendints((0, 1, 2, 3, 4, 5, 6, 7, 8, 9))
+        buf.insertints(0, (100, 101, 102, 103, 104, 105, 106, 107, 108, 109))
 
         assert buf.rfindint([100, 200], 0, 20, False) == 0
         assert buf.rfindint([200, 109], 0, 20, False) == 9
@@ -336,15 +337,14 @@ class TestGappedBuf:
     def test_rfindint_ne(self):
         buf = _gappedbuf.GappedBuffer()
 
-        buf.appendints((0,)*10+(1,))
+        buf.appendints((0,) * 10 + (1,))
         assert buf.rfindint([0, 2], 0, 11, True) == 10
 
-        buf.insertints(0, (0,)*10)
+        buf.insertints(0, (0,) * 10)
         assert buf.rfindint([2, 0], 0, 21, True) == 20
 
-        buf.insertints(0, (1,)*10)
-        assert buf.rfindint([0,2,3], 0, 21, True) == 9
+        buf.insertints(0, (1,) * 10)
+        assert buf.rfindint([0, 2, 3], 0, 21, True) == 9
 
-        buf.insertints(0, (1,)*10)
-        assert buf.rfindint([0,1], 0, 21, True) == -1
-
+        buf.insertints(0, (1,) * 10)
+        assert buf.rfindint([0, 1], 0, 21, True) == -1

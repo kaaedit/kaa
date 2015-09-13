@@ -13,6 +13,7 @@ from kaa import screen
 from kaa import addon
 from kaa import syntax_highlight
 
+
 class SearchOption:
     RE = doc_re
 
@@ -49,6 +50,7 @@ class SearchOption:
 SearchOption.LAST_SEARCH = SearchOption()
 
 DefaultTokenizer = syntax_highlight.Root()
+
 
 class ModeBase:
     (UNDO_INSERT,
@@ -111,7 +113,7 @@ class ModeBase:
         self._highlight_iter = None
 
         self.init_tokenizer()
-        
+
         self.stylemap = {}
         self.stylenamemap = {}
         self.highlight = highlight.Highlighter(self.tokenizers)
@@ -510,7 +512,7 @@ class ModeBase:
             self._highlight_done = range_start
 
         if not self._highlight_iter:
-            f = max(range_start, self._highlight_done-1)
+            f = max(range_start, self._highlight_done - 1)
             self._highlight_iter = syntax_highlight.begin_tokenizer(
                 self.document, self.tokenizer, f)
 
@@ -542,7 +544,8 @@ class ModeBase:
             self.document.style_updated(updatefrom, updateto)
             self._highlight_done = updateto
 
-        return not finished # returns False if finished to terminate idle loop.
+        # returns False if finished to terminate idle loop.
+        return not finished
 
     def _split_chars(self, begin, end):
         """split characters by character category."""

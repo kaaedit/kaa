@@ -19,7 +19,7 @@ IniTokenizer = Root(tokens=(
     ('comment', Span('comment', r';', '$')),
     ('section', Span('section', r'^\[', r'\]')),
     ('param-name', SingleToken('param-name', [r"^([a-zA-Z0-9_-])+"]),
-)))
+     )))
 
 INIMENU = [
     ['&Comment', None, 'code.region.linecomment'],

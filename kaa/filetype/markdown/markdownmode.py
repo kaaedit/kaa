@@ -9,7 +9,6 @@ from kaa.keyboard import *
 from kaa.syntax_highlight import *
 
 
-
 MarkdownThemes = {
     'basic': [
         Style('escape', 'default', 'default'),
@@ -24,10 +23,12 @@ MarkdownThemes = {
     ],
 }
 
+
 class LinkToken(Span):
     # [xxx](yyy "xzzzz")
     # [xxx]:
     # ![xxx]
+
     def __init__(self, stylename):
         super().__init__(stylename, r'!?\[', r'][:\(]?', escape=r'\\')
 
@@ -35,8 +36,8 @@ class LinkToken(Span):
         pos, terminates = yield from super().on_start(doc, match)
         if pos == doc.endpos():
             return pos, terminates
-        c = doc.gettext(pos-1, pos)
-        
+        c = doc.gettext(pos - 1, pos)
+
         if c == '(':
             # [xxx](yyy "xzzzz")
             pos = yield from _LinkTokenizer.run(doc, pos)
@@ -65,12 +66,14 @@ MarkdownTokenizer = Root(tokens=(
 
 
 _LinkTokenizer = Tokenizer(MarkdownTokenizer, None,
-    default_style='reference', 
-    tokens=(
-        ('desc', Span('reference', r'"', r'"', escape='\\')),
-        ('close', SingleToken('reference', [r"\)"], terminates=True)),
-))
-
+                           default_style='reference',
+                           tokens=(
+                               ('desc',
+                                Span('reference', r'"', r'"', escape='\\')),
+                               ('close',
+                                SingleToken(
+                                    'reference', [r"\)"], terminates=True)),
+                           ))
 
 
 MDMENU = [
@@ -99,7 +102,6 @@ class MarkdownMode(defaultmode.DefaultMode):
 
     def init_tokenizer(self):
         self.tokenizer = MarkdownTokenizer
-
 
     HEADER1 = r'^(?P<TITLE>.+)\n(?P<H1>[=-])(?P=H1)+$'
     HEADER2 = r'^(?P<H2>\#{1,6})(?P<TITLE2>.+)$'

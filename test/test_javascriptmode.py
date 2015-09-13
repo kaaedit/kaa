@@ -2,6 +2,7 @@ import kaa_testutils
 from kaa import highlight
 from kaa.filetype.javascript import javascriptmode
 
+
 class TestJavascriptHighlight(kaa_testutils._TestDocBase):
     tokenizers = [javascriptmode.build_tokenizer()]
 
@@ -9,7 +10,6 @@ class TestJavascriptHighlight(kaa_testutils._TestDocBase):
         hl = highlight.Highlighter(tokenizers=self.tokenizers)
         doc = self._getdoc('/abc/')
         hl.update_style(doc)
-
 
         assert [
             (0, 1, self.tokenizers[0].tokens.regex.span_start),
@@ -22,9 +22,8 @@ class TestJavascriptHighlight(kaa_testutils._TestDocBase):
         doc = self._getdoc('if a /abc/')
         hl.update_style(doc)
         styles = doc.styles.getints(0, 10)
-        assert styles == ([self.tokenizers[0].tokens.keywords.tokenid]*2 +
-                          [self.tokenizers[0].nulltoken]*3 +
+        assert styles == ([self.tokenizers[0].tokens.keywords.tokenid] * 2 +
+                          [self.tokenizers[0].nulltoken] * 3 +
                           [self.tokenizers[0].tokens.punctuation.tokenid] +
-                          [self.tokenizers[0].nulltoken]*3 +
+                          [self.tokenizers[0].nulltoken] * 3 +
                           [self.tokenizers[0].tokens.punctuation.tokenid])
-

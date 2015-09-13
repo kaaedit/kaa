@@ -8,6 +8,7 @@ from kaa import screen, document, cursor, context, editmode, fileio
 from kaa.filetype.default import defaultmode
 import kaa.cui.app
 
+
 class _DmyWnd(context.Context):
     closed = False
 
@@ -75,6 +76,7 @@ class DmyApp(kaa.cui.app.CuiApp):
     mainframe.rect = (0, 0, 80, 25)
     mainframe.getsize.return_value = (80, 25)
     messagebar = unittest.mock.Mock()
+
     def translate_key(self, mod, char):
         return (mod, char)
 
