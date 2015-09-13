@@ -23,9 +23,10 @@ def begin_tokenizer(doc, root, updated):
 
 class Token:
     styles = ()
-    def __init__(self, stylename):
+    def __init__(self, stylename, terminates=False):
         self._stylename = stylename
         self._style_ids = []
+        self.terminates = terminates
 
 
     def register_styles(self, *names):
@@ -63,14 +64,17 @@ class DefaultToken(Token):
         self.register_styles("styleid_default")
 
 class Tokenizer:
+    DEFAUT_TOKEN = DefaultToken
     re_starts = None
-    def __init__(self, parent, terminates, tokens=()):
+
+    def __init__(self, parent, terminates, *, default_style='default',
+            tokens=()):
         self.parent = parent
-        self._terminates = terminates
+        self.terminates = terminates
         self._token_list = []
         self.tokens = types.SimpleNamespace()
 
-        self.tokens.default = DefaultToken('default')
+        self.tokens.default = self.DEFAUT_TOKEN(default_style)
         self.tokens.default.set_tokenizer(self)
         self.styleid_default = self.tokens.default.styleid_default
 
@@ -101,9 +105,9 @@ class Tokenizer:
                 self.groupnames[name] = token
                 starts.append(r'(?P<{}>{})'.format(name, start))
 
-        if self._terminates:
+        if self.terminates:
             starts.insert(
-                0, r'(?P<{}>{})'.format('TERMINATE', self.terminates))
+                0, r'(?P<TERMINATE>{})'.format(self.terminates))
             self.groupnames['TERMINATE'] = None
 
         if starts:
@@ -156,12 +160,12 @@ class Tokenizer:
 class Root(Tokenizer):
     def __init__(self, tokens=()):
         self.styleid_map = {}
-        super().__init__(None, '', tokens)
+        super().__init__(None, '', tokens=tokens)
 
 
 class SingleToken(Token):
-    def __init__(self, stylename, tokens):
-        super().__init__(stylename)
+    def __init__(self, stylename, tokens, terminates=False):
+        super().__init__(stylename, terminates=terminates)
         self._tokens = tokens
 
     def prepare(self):
@@ -172,7 +176,7 @@ class SingleToken(Token):
 
     def on_start(self, doc, match):
         yield (match.start(), match.end(), self.styleid_token)
-        return match.end(), False
+        return match.end(), self.terminates
 
 
 class Keywords(SingleToken):
@@ -187,15 +191,14 @@ class Keywords(SingleToken):
 class Span(Token):
 
     def __init__(self, stylename, start, end, escape=None,
-                 capture_end=True, terminates=None):
+                 capture_end=True, terminates=False):
 
         self._start = start
         self._escape = escape
         self._end = end
         self._capture_end = capture_end
-        self._terminates = terminates
 
-        super().__init__(stylename)
+        super().__init__(stylename, terminates=terminates)
 
 
     def prepare(self):
@@ -203,9 +206,9 @@ class Span(Token):
             "styleid_span")
 
         end = self._end
-        if self._terminates:
+        if self.tokenizer.terminates:
             end = '(?P<TERMINATES>{})|({})'.format(
-                self._terminates, end)
+                self.tokenizer.terminates, end)
 
         if self._escape:
             end = '(?P<ESCAPE>{}.)|({})'.format(
@@ -233,17 +236,17 @@ class Span(Token):
             if pos != m.start():
                 yield (pos, m.start(), self.styleid_span)
 
-            if self._terminates and m.group('TERMINATES') is not None:
-                return m.start(), False
+            if self.tokenizer.terminates and m.group('TERMINATES') is not None:
+                return m.start(), True
 
             if self._capture_end:
                 yield (m.start(), m.end(), self.styleid_span)
-                return m.end(), False
+                return m.end(), self.terminates
             else:
-                return m.start(), False
+                return m.start(), self.terminates
         else:
             yield (pos, doc.endpos(), self.styleid_span)
-            return doc.endpos(), False
+            return doc.endpos(), self.terminates
 
 
 #class HTMLTag(Token):
