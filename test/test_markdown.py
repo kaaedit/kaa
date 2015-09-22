@@ -1,5 +1,5 @@
 import kaa_testutils
-from kaa.filetype.markdown.markdownmode import MarkdownTokenizer, _LinkTokenizer
+from kaa.filetype.markdown.markdownmode import MarkdownTokenizer
 
 
 class TestMarkdownHighlight(kaa_testutils._TestDocBase):
@@ -38,8 +38,8 @@ class TestMarkdownHighlight(kaa_testutils._TestDocBase):
             (0, 1, MarkdownTokenizer.tokens.link.styleid_span),
             (1, 5, MarkdownTokenizer.tokens.link.styleid_span),
             (5, 7, MarkdownTokenizer.tokens.link.styleid_span),
-            (7, 10, _LinkTokenizer.styleid_default),
-            (10, 11, _LinkTokenizer.tokens.close.styleid_token),
+            (7, 10, MarkdownTokenizer._LinkTokenizer.styleid_default),
+            (10, 11, MarkdownTokenizer._LinkTokenizer.tokens.close.styleid_token),
         ] == list(MarkdownTokenizer.run(doc, 0))
 
         doc = self._getdoc('[link](url "te)xt")')
@@ -47,11 +47,11 @@ class TestMarkdownHighlight(kaa_testutils._TestDocBase):
             (0, 1, MarkdownTokenizer.tokens.link.styleid_span),
             (1, 5, MarkdownTokenizer.tokens.link.styleid_span),
             (5, 7, MarkdownTokenizer.tokens.link.styleid_span),
-            (7, 11, _LinkTokenizer.styleid_default),
-            (11, 12, _LinkTokenizer.tokens.desc.styleid_span),
-            (12, 17, _LinkTokenizer.tokens.desc.styleid_span),
-            (17, 18, _LinkTokenizer.tokens.desc.styleid_span),
-            (18, 19, _LinkTokenizer.tokens.close.styleid_token)
+            (7, 11, MarkdownTokenizer._LinkTokenizer.styleid_default),
+            (11, 12, MarkdownTokenizer._LinkTokenizer.tokens.desc.styleid_span),
+            (12, 17, MarkdownTokenizer._LinkTokenizer.tokens.desc.styleid_span),
+            (17, 18, MarkdownTokenizer._LinkTokenizer.tokens.desc.styleid_span),
+            (18, 19, MarkdownTokenizer._LinkTokenizer.tokens.close.styleid_token)
         ] == list(MarkdownTokenizer.run(doc, 0))
 
         doc = self._getdoc('[link]:')
@@ -73,13 +73,12 @@ class TestMarkdownHighlight(kaa_testutils._TestDocBase):
         ] == list(MarkdownTokenizer.run(doc, 0))
 
         doc = self._getdoc('![link](url)')
-        print(list(MarkdownTokenizer.run(doc, 0)))
         assert [
             (0, 2, MarkdownTokenizer.tokens.link.styleid_span),
             (2, 6, MarkdownTokenizer.tokens.link.styleid_span),
             (6, 8, MarkdownTokenizer.tokens.link.styleid_span),
-            (8, 11, _LinkTokenizer.styleid_default),
-            (11, 12, _LinkTokenizer.tokens.close.styleid_token),
+            (8, 11, MarkdownTokenizer._LinkTokenizer.styleid_default),
+            (11, 12, MarkdownTokenizer._LinkTokenizer.tokens.close.styleid_token),
         ] == list(MarkdownTokenizer.run(doc, 0))
 
     def test_emphasis(self):

@@ -14,12 +14,14 @@ INIThemes = {
     ]
 }
 
+def ini_tokens():
+    return [
+        ('comment', Span('comment', r';', '$')),
+        ('section', Span('section', r'^\[', r'\]')),
+        ('param-name', SingleToken('param-name', [r"^([a-zA-Z0-9_-])+"])),
+     ]
 
-IniTokenizer = Root(tokens=(
-    ('comment', Span('comment', r';', '$')),
-    ('section', Span('section', r'^\[', r'\]')),
-    ('param-name', SingleToken('param-name', [r"^([a-zA-Z0-9_-])+"]),
-     )))
+IniTokenizer = Root(tokens=ini_tokens())
 
 INIMENU = [
     ['&Comment', None, 'code.region.linecomment'],

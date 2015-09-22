@@ -23,18 +23,21 @@ KEYWORDS = ['asm', 'auto', 'break', 'case', 'continue', 'const', 'char',
 
 CONSTANTS = ['NULL']
 
-CTokenizer = Root(tokens=(
-    ("directive",  SingleToken('directive', [r'\#\s*\w+'])),
-    ("keyword", Keywords('keyword', KEYWORDS)),
-    ("constant", Keywords('constant', CONSTANTS)),
-    ("number", SingleToken('number',
-                           [r'\b[0-9]+(\.[0-9]*)*\b', r'\b\.[0-9]+\b'])),
-    ("comment1", Span('comment', r'/\*', '\*/', escape='\\')),
-    ("comment2", Span('comment', r'//', '$', escape='\\')),
+def c_tokens():
+    return [
+        ("directive",  SingleToken('directive', [r'\#\s*\w+'])),
+        ("keyword", Keywords('keyword', KEYWORDS)),
+        ("constant", Keywords('constant', CONSTANTS)),
+        ("number", SingleToken('number',
+                               [r'\b[0-9]+(\.[0-9]*)*\b', r'\b\.[0-9]+\b'])),
+        ("comment1", Span('comment', r'/\*', '\*/', escape='\\')),
+        ("comment2", Span('comment', r'//', '$', escape='\\')),
 
-    ("string1", Span('string', '"', '"', escape='\\')),
-    ("string2", Span('string', "'", "'", escape='\\')),
-))
+        ("string1", Span('string', '"', '"', escape='\\')),
+        ("string2", Span('string', "'", "'", escape='\\')),
+    ]
+
+CTokenizer = Root(tokens=c_tokens())
 
 
 class CMode(defaultmode.DefaultMode):

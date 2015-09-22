@@ -40,32 +40,36 @@ class LinkToken(Span):
 
         if c == '(':
             # [xxx](yyy "xzzzz")
-            pos = yield from _LinkTokenizer.run(doc, pos)
+            pos = yield from self.tokenizer._LinkTokenizer.run(doc, pos)
 
         return pos, False
 
-MarkdownTokenizer = Root(tokens=(
-    ('escape', SingleToken('escape', [r'\\.'])),
-    ('hr', SingleToken('hr', [r'^(\-{3,}|_{3,}|\*{3,})$'])),
 
-    ('header1', SingleToken('header', [r'^.+\n(?P<H1>[-=])(?P=H1)+$'])),
-    ('header2', SingleToken('header', [r'^\#{1,6}.*$'])),
+def markdown_tokens():
+    return (
+        ('escape', SingleToken('escape', [r'\\.'])),
+        ('hr', SingleToken('hr', [r'^(\-{3,}|_{3,}|\*{3,})$'])),
 
-    ('strong1', Span('strong', r'\*\*(?!\s)', r'\*\*|$', escape='\\')),
-    ('strong2', Span('strong', r'__(?!\s)', r'__|$', escape='\\')),
+        ('header1', SingleToken('header', [r'^.+\n(?P<H1>[-=])(?P=H1)+$'])),
+        ('header2', SingleToken('header', [r'^\#{1,6}.*$'])),
 
-    ('emphasis1', Span('emphasis', r'\*(?!\s)', r'\*|$', escape='\\')),
-    ('emphasis2', Span('emphasis', r'_(?!\s)', r'_|$', escape='\\')),
+        ('strong1', Span('strong', r'\*\*(?!\s)', r'\*\*|$', escape='\\')),
+        ('strong2', Span('strong', r'__(?!\s)', r'__|$', escape='\\')),
 
-    ('code1', Span('literal', r'^```', r'^```\s*$', escape='\\')),
-    ('code2', Span('literal', r'^\ {4,}', r'$')),
-    ('code3', Span('literal', r'`(?!\s)', r'`|$', escape='\\')),
+        ('emphasis1', Span('emphasis', r'\*(?!\s)', r'\*|$', escape='\\')),
+        ('emphasis2', Span('emphasis', r'_(?!\s)', r'_|$', escape='\\')),
 
-    ('link', LinkToken('reference')),
-))
+        ('code1', Span('literal', r'^```', r'^```\s*$', escape='\\')),
+        ('code2', Span('literal', r'^\ {4,}', r'$')),
+        ('code3', Span('literal', r'`(?!\s)', r'`|$', escape='\\')),
+
+        ('link', LinkToken('reference')),
+    )
+
+MarkdownTokenizer = Root(tokens=markdown_tokens())
 
 
-_LinkTokenizer = Tokenizer(MarkdownTokenizer, None,
+MarkdownTokenizer._LinkTokenizer = Tokenizer(MarkdownTokenizer, None,
                            default_style='reference',
                            tokens=(
                                ('desc',

@@ -35,29 +35,31 @@ KEYWORDS = ['and', 'as', 'assert', 'break', 'class', 'continue', 'def',
 
 CONSTANTS = ['False', 'None', 'True']
 
+def python_tokens():
+    return (
+        ("keyword", Keywords('keyword', KEYWORDS)),
+        ("constant", Keywords('constant', CONSTANTS)),
+        ("decorator", SingleToken('directive', [r'@\w[\w.]*'])),
+        ("number", SingleToken('number',
+                               [r'\b[0-9]+(\.[0-9]*)*\b', r'\b\.[0-9]+\b'])),
+        ("comment", Span('comment', r'\#', '$', escape='\\')),
 
-PythonTokenizer = Root(tokens=(
-    ("keyword", Keywords('keyword', KEYWORDS)),
-    ("constant", Keywords('constant', CONSTANTS)),
-    ("decorator", SingleToken('directive', [r'@\w[\w.]*'])),
-    ("number", SingleToken('number',
-                           [r'\b[0-9]+(\.[0-9]*)*\b', r'\b\.[0-9]+\b'])),
-    ("comment", Span('comment', r'\#', '$', escape='\\')),
+        ("string31", Span('string', '[rR]?"""', '"""', escape='\\')),
+        ("string32", Span('string', "[rR]?'''", "'''", escape='\\')),
+        ("string11", Span('string', '[rR]?"', '"', escape='\\')),
+        ("string12", Span('string', "[rR]?'", "'", escape='\\')),
 
-    ("string31", Span('string', '[rR]?"""', '"""', escape='\\')),
-    ("string32", Span('string', "[rR]?'''", "'''", escape='\\')),
-    ("string11", Span('string', '[rR]?"', '"', escape='\\')),
-    ("string12", Span('string', "[rR]?'", "'", escape='\\')),
+        ('bytes31', Span('python-bytes',
+                         '([bB][rR]?|[rR]?[bB])"""', '"""', escape='\\')),
+        ('bytes32', Span('python-bytes',
+                         "([bB][rR]?|[rR]?[bB])'''", "'''", escape='\\')),
+        ('bytes11', Span('python-bytes',
+                         '([bB][rR]?|[rR]?[bB])"', '"', escape='\\')),
+        ('bytes12', Span('python-bytes',
+                         "([bB][rR]?|[rR]?[bB])'", "'", escape='\\')),
+    )
 
-    ('bytes31', Span('python-bytes',
-                     '([bB][rR]?|[rR]?[bB])"""', '"""', escape='\\')),
-    ('bytes32', Span('python-bytes',
-                     "([bB][rR]?|[rR]?[bB])'''", "'''", escape='\\')),
-    ('bytes11', Span('python-bytes',
-                     '([bB][rR]?|[rR]?[bB])"', '"', escape='\\')),
-    ('bytes12', Span('python-bytes',
-                     "([bB][rR]?|[rR]?[bB])'", "'", escape='\\')),
-))
+PythonTokenizer = Root(tokens=python_tokens())
 
 
 class PythonMode(defaultmode.DefaultMode):
