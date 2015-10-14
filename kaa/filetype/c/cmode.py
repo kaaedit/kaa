@@ -37,11 +37,13 @@ def c_tokens():
         ("string2", Span('string', "'", "'", escape='\\')),
     ]
 
-CTokenizer = Root(tokens=c_tokens())
+def make_tokenizer():
+    return Root(tokens=c_tokens())
 
 
 class CMode(defaultmode.DefaultMode):
     MODENAME = 'C'
+    tokenizer = make_tokenizer()
 
     def init_keybind(self):
         super().init_keybind()
@@ -51,5 +53,3 @@ class CMode(defaultmode.DefaultMode):
         super().init_themes()
         self.themes.append(CThemes)
 
-    def init_tokenizer(self):
-        self.tokenizer = CTokenizer

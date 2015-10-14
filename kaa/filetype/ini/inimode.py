@@ -21,7 +21,8 @@ def ini_tokens():
         ('param-name', SingleToken('param-name', [r"^([a-zA-Z0-9_-])+"])),
      ]
 
-IniTokenizer = Root(tokens=ini_tokens())
+def make_tokenizer():
+    return Root(tokens=ini_tokens())
 
 INIMENU = [
     ['&Comment', None, 'code.region.linecomment'],
@@ -44,6 +45,8 @@ class INIMode(defaultmode.DefaultMode):
 
     RE_SECTION = doc_re.compile(r'^\[(?P<SECTION>.+)\]$', doc_re.M)
 
+    tokenizer = make_tokenizer()
+
     def init_keybind(self):
         super().init_keybind()
         self.register_keys(self.keybind, [ini_keys])
@@ -55,9 +58,6 @@ class INIMode(defaultmode.DefaultMode):
     def init_menu(self):
         super().init_menu()
         self.menu['CODE'] = copy.deepcopy(INIMENU)
-
-    def init_tokenizer(self):
-        self.tokenizer = IniTokenizer
 
     def get_sections(self):
         pos = 0

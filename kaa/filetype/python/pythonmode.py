@@ -61,11 +61,16 @@ def python_tokens():
 
 PythonTokenizer = Root(tokens=python_tokens())
 
+def make_tokenizer():
+    return Root(tokens=python_tokens())
+
 
 class PythonMode(defaultmode.DefaultMode):
     MODENAME = 'Python'
     re_begin_block = doc_re.compile(r"[^#]*:\s*(#.*)?$")
     LINE_COMMENT = '#'
+
+    tokenizer = make_tokenizer()
 
     @classmethod
     def update_fileinfo(cls, fileinfo, document=None):
@@ -94,9 +99,6 @@ class PythonMode(defaultmode.DefaultMode):
     def init_themes(self):
         super().init_themes()
         self.themes.append(PythonThemes)
-
-    def init_tokenizer(self):
-        self.tokenizer = PythonTokenizer
 
     def on_set_document(self, document):
         super().on_set_document(document)

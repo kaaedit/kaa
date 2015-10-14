@@ -80,6 +80,8 @@ class ModeBase:
     _check_fileupdate = 0
     _last_autoindent = None
 
+    tokenizer = DefaultTokenizer
+
     @classmethod
     def update_fileinfo(cls, fileinfo, document=None):
         pass
@@ -111,8 +113,6 @@ class ModeBase:
 
         self._highlight_done = 0
         self._highlight_iter = None
-
-        self.init_tokenizer()
 
         self.stylemap = {}
         self.stylenamemap = {}
@@ -249,9 +249,6 @@ class ModeBase:
 
     def init_tokenizers(self):
         pass
-
-    def init_tokenizer(self):
-        self.tokenizer = DefaultTokenizer
 
     def register_commandobj(self, cmds):
         self.commands.update(cmds.get_commands())

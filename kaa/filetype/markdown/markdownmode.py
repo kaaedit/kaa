@@ -66,18 +66,19 @@ def markdown_tokens():
         ('link', LinkToken('reference')),
     )
 
-MarkdownTokenizer = Root(tokens=markdown_tokens())
 
-
-MarkdownTokenizer._LinkTokenizer = Tokenizer(MarkdownTokenizer, None,
-                           default_style='reference',
-                           tokens=(
-                               ('desc',
-                                Span('reference', r'"', r'"', escape='\\')),
-                               ('close',
-                                SingleToken(
-                                    'reference', [r"\)"], terminates=True)),
-                           ))
+def make_tokenizer():
+    ret = Root(tokens=markdown_tokens())
+    ret._LinkTokenizer = Tokenizer(ret, None,
+       default_style='reference',
+       tokens=(
+           ('desc',
+            Span('reference', r'"', r'"', escape='\\')),
+           ('close',
+            SingleToken(
+                'reference', [r"\)"], terminates=True)),
+       ))
+    return ret
 
 
 MDMENU = [
@@ -91,6 +92,7 @@ md_keys = {
 
 class MarkdownMode(defaultmode.DefaultMode):
     MODENAME = 'Markdown'
+    tokenizer = make_tokenizer()
 
     def init_keybind(self):
         super().init_keybind()
