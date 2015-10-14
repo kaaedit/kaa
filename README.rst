@@ -77,11 +77,11 @@ To run kaa, you need following component:
  
   After theses packages are installed, rebuild Python installation to take effect.
 
-* Kaa can use system clipboard. To use clipboard on Unix platform, `xsel` command should be installed. For Ubuntu Linux, following command installs `xsel` command.
+* Kaa can use system clipboard. To use clipboard on Unix platform, `xclip` command should be installed. For Ubuntu Linux, following command installs `xclip` command.
 
     .. code:: sh
 
-       $ sudo apt-get install xsel
+       $ sudo apt-get install xclip
 
 * UTF-8 locales
 
