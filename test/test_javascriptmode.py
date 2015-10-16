@@ -1,29 +1,18 @@
 import kaa_testutils
-from kaa import highlight
-from kaa.filetype.javascript import javascriptmode
+from kaa.filetype.javascript.javascriptmode import JavaScriptMode
 
 
 class TestJavascriptHighlight(kaa_testutils._TestDocBase):
-    tokenizers = [javascriptmode.build_tokenizer()]
+    DEFAULTMODECLASS = JavaScriptMode
 
     def test_regex(self):
-        hl = highlight.Highlighter(tokenizers=self.tokenizers)
         doc = self._getdoc('/abc/')
-        hl.update_style(doc)
-
-        assert [
-            (0, 1, self.tokenizers[0].tokens.regex.span_start),
-            (1, 4, self.tokenizers[0].tokens.regex.span_mid),
-            (4, 5, self.tokenizers[0].tokens.regex.span_end),
-        ] == list((f, t, style) for f, t, style in hl.highlight(doc, 0))
+        doc.mode.run_tokenizer(None)
+        assert doc.styles.getints(0, 5) == [JavaScriptMode.tokenizer.tokens.regex.styleid_span]*5
 
     def test_not_regex(self):
-        hl = highlight.Highlighter(tokenizers=self.tokenizers)
         doc = self._getdoc('if a /abc/')
-        hl.update_style(doc)
-        styles = doc.styles.getints(0, 10)
-        assert styles == ([self.tokenizers[0].tokens.keywords.tokenid] * 2 +
-                          [self.tokenizers[0].nulltoken] * 3 +
-                          [self.tokenizers[0].tokens.punctuation.tokenid] +
-                          [self.tokenizers[0].nulltoken] * 3 +
-                          [self.tokenizers[0].tokens.punctuation.tokenid])
+        doc.mode.run_tokenizer(None)
+
+        assert doc.styles.getints(0, 2) == [JavaScriptMode.tokenizer.tokens.keyword.styleid_token]*2
+        assert doc.styles.getints(2, 10) == [JavaScriptMode.tokenizer.styleid_default]*8

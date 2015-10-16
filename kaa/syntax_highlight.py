@@ -68,7 +68,7 @@ class DefaultToken(Token):
 
 
 class Tokenizer:
-    DEFAUT_TOKEN = DefaultToken
+    DEFAULT_TOKEN = DefaultToken
     re_starts = None
 
     def __init__(self, parent, terminates, *, default_style='default',
@@ -78,7 +78,7 @@ class Tokenizer:
         self._token_list = []
         self.tokens = types.SimpleNamespace()
 
-        self.tokens.default = self.DEFAUT_TOKEN(default_style)
+        self.tokens.default = self.DEFAULT_TOKEN(default_style)
         self.tokens.default.set_tokenizer(self)
         self.styleid_default = self.tokens.default.styleid_default
 
@@ -197,7 +197,7 @@ class Span(Token):
 
     def __init__(self, stylename, start, end, escape=None,
                  capture_end=True, terminates=None):
-
+        # todo: rename terminates to other name
         self._start = start
         self._escape = escape
         self._end = end

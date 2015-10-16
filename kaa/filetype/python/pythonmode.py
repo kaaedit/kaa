@@ -59,7 +59,6 @@ def python_tokens():
                          "([bB][rR]?|[rR]?[bB])'", "'", escape='\\')),
     )
 
-PythonTokenizer = Root(tokens=python_tokens())
 
 def make_tokenizer():
     return Root(tokens=python_tokens())
