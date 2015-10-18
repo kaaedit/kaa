@@ -41,16 +41,16 @@ class Regex(Span):
                 pos = top
                 continue
 
+            # check if prev token is keywords
+            if token in not_terms:
+                break
+
             s = doc.gettext(top, pos+1).strip()
 
             # skip white-space
             if not s:
                 pos = top
                 continue
-
-            # check if prev token is keywords
-            if token in not_terms:
-                return True
 
             # check if last token is term or closing parenthesis
             m = self.RE_ENDOFTERM.match(s[-1])
