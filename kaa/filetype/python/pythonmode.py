@@ -35,8 +35,10 @@ KEYWORDS = ['and', 'as', 'assert', 'break', 'class', 'continue', 'def',
 
 CONSTANTS = ['False', 'None', 'True']
 
-def python_tokens():
-    return (
+
+
+def make_tokenizer():
+    return Root(tokens=(
         ("keyword", Keywords('keyword', KEYWORDS)),
         ("constant", Keywords('constant', CONSTANTS)),
         ("decorator", SingleToken('directive', [r'@\w[\w.]*'])),
@@ -57,11 +59,7 @@ def python_tokens():
                          '([bB][rR]?|[rR]?[bB])"', '"', escape='\\')),
         ('bytes12', Span('python-bytes',
                          "([bB][rR]?|[rR]?[bB])'", "'", escape='\\')),
-    )
-
-
-def make_tokenizer():
-    return Root(tokens=python_tokens())
+    ))
 
 
 class PythonMode(defaultmode.DefaultMode):

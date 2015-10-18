@@ -23,8 +23,9 @@ KEYWORDS = ['asm', 'auto', 'break', 'case', 'continue', 'const', 'char',
 
 CONSTANTS = ['NULL']
 
-def c_tokens():
-    return [
+
+def make_tokenizer():
+    return Root(tokens=[
         ("directive",  SingleToken('directive', [r'\#\s*\w+'])),
         ("keyword", Keywords('keyword', KEYWORDS)),
         ("constant", Keywords('constant', CONSTANTS)),
@@ -35,10 +36,7 @@ def c_tokens():
 
         ("string1", Span('string', '"', '"', escape='\\')),
         ("string2", Span('string', "'", "'", escape='\\')),
-    ]
-
-def make_tokenizer():
-    return Root(tokens=c_tokens())
+    ])
 
 
 class CMode(defaultmode.DefaultMode):

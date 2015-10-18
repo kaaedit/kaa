@@ -45,8 +45,8 @@ class LinkToken(Span):
         return pos, False
 
 
-def markdown_tokens():
-    return (
+def make_tokenizer():
+    ret = Root(tokens=(
         ('escape', SingleToken('escape', [r'\\.'])),
         ('hr', SingleToken('hr', [r'^(\-{3,}|_{3,}|\*{3,})$'])),
 
@@ -64,11 +64,8 @@ def markdown_tokens():
         ('code3', Span('literal', r'`(?!\s)', r'`|$', escape='\\')),
 
         ('link', LinkToken('reference')),
-    )
+    ))
 
-
-def make_tokenizer():
-    ret = Root(tokens=markdown_tokens())
     ret._LinkTokenizer = Tokenizer(ret, None,
        default_style='reference',
        tokens=(

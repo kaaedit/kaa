@@ -162,9 +162,9 @@ class Tokenizer:
 
 class Root(Tokenizer):
 
-    def __init__(self, tokens=()):
+    def __init__(self, tokens=(), default_style='default'):
         self.styleid_map = {}
-        super().__init__(None, None, tokens=tokens)
+        super().__init__(None, None, tokens=tokens, default_style=default_style)
 
 
 class SingleToken(Token):
@@ -262,6 +262,11 @@ class Span(Token):
                 yield (pos, doc.endpos(), self.styleid_span)
             return doc.endpos(), self.terminates
 
+class Terminator(SingleToken):
+    def on_start(self, doc, match):
+        if 0:  # make this fuction iterator
+            yield ()
+        return match.start(), True
 
 # class HTMLTag(Token):
 #    def on_start(self, doc, m, endpos):
