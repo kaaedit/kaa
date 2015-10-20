@@ -38,7 +38,7 @@ CONSTANTS = ['False', 'None', 'True']
 
 
 def make_tokenizer():
-    return Root(tokens=(
+    return Tokenizer(tokens=(
         ("keyword", Keywords('keyword', KEYWORDS)),
         ("constant", Keywords('constant', CONSTANTS)),
         ("decorator", SingleToken('directive', [r'@\w[\w.]*'])),

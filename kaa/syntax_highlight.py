@@ -1,3 +1,4 @@
+import itertools
 import types
 from kaa import doc_re
 
@@ -9,6 +10,16 @@ def begin_tokenizer(doc, root, updated):
         token = root.get_token_at(doc, updated)
         pos = token.get_token_begin(doc, updated)
         if not isinstance(token, DefaultToken):
+            updated = pos - 1
+            continue
+
+        is_resumable = True
+        for parent in token.get_tokenizers():
+            if not parent.is_resumable:
+                is_resumable = False
+                break
+
+        if not is_resumable:
             updated = pos - 1
             continue
 
@@ -69,12 +80,19 @@ class DefaultToken(Token):
 
 class Tokenizer:
     DEFAULT_TOKEN = DefaultToken
+    IS_RESUMABLE = True
     re_starts = None
 
-    def __init__(self, parent, terminates, *, default_style='default',
-                 tokens=()):
+    def __init__(self, *, parent=None, default_style='default', terminates=None,
+        is_resumable=True, tokens=()):
+
         self.parent = parent
+        if not parent:
+            self.styleid_map = {} # this is root tokenizer
+
+
         self.terminates = terminates
+        self.is_resumable = is_resumable
         self._token_list = []
         self.tokens = types.SimpleNamespace()
 
@@ -160,11 +178,11 @@ class Tokenizer:
         return self.get_styleid_map()[styleid]
 
 
-class Root(Tokenizer):
-
-    def __init__(self, tokens=(), default_style='default'):
-        self.styleid_map = {}
-        super().__init__(None, None, tokens=tokens, default_style=default_style)
+#class Root(Tokenizer):
+#
+#    def __init__(self, tokens=(), default_style='default'):
+#        self.styleid_map = {}
+#        super().__init__(None, tokens=tokens, default_style=default_style, terminates=None)
 
 
 class SingleToken(Token):
@@ -196,13 +214,13 @@ class Keywords(SingleToken):
 class Span(Token):
 
     def __init__(self, stylename, start, end, escape=None,
-                 capture_end=True, terminates=None):
-        # todo: rename terminates to other name
+                 capture_end=True, terminates=None, terminate_tokens=None):
         self._start = start
         self._escape = escape
         self._end = end
         self._capture_end = capture_end
         self._terminates = terminates
+        self._terminate_tokens = terminate_tokens
 
         super().__init__(stylename, terminates=terminates)
 
@@ -215,20 +233,19 @@ class Span(Token):
             end = '(?P<TERMINATES>{})|({})'.format(
                 self.tokenizer.terminates, end)
 
-        if self._terminates:
+        if self._terminate_tokens:
             end = '(?P<TERMINATES2>{})|({})'.format(
-                self._terminates, end)
+                self._terminate_tokens, end)
 
         if self._escape:
             end = '(?P<ESCAPE>{}.)|({})'.format(
                 doc_re.escape(self._escape), end)
-        self._eee = end
         self._re_end = doc_re.compile(end, doc_re.X + doc_re.M + doc_re.S)
 
     def re_start(self):
         return self._start
 
-    def _is_end(self, doc, m):
+    def _is_span_end(self, doc, m):
         return True
 
     def on_start(self, doc, match):
@@ -239,7 +256,7 @@ class Span(Token):
             if self._escape and m.group('ESCAPE') is not None:
                 continue
 
-            if not self._is_end(doc, m):
+            if not self._is_span_end(doc, m):
                 continue
 
             if pos != m.start():
@@ -248,7 +265,7 @@ class Span(Token):
             if self.tokenizer.terminates and m.group('TERMINATES') is not None:
                 return m.start(), True
 
-            if self._terminates and m.group('TERMINATES2') is not None:
+            if self._terminate_tokens and m.group('TERMINATES2') is not None:
                 return m.start(), True
 
             if self._capture_end:

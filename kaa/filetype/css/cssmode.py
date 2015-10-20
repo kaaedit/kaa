@@ -33,34 +33,43 @@ class PropNameToken(SingleToken):
 
         return pos, self.terminates
 
-def make_tokenizer():
-    ret = Root(default_style='css-selector', tokens=[
-        ('comment1', Span('comment', r'/\*', '\*/', escape='\\')),
-        ('string1', Span('string', '"', '"', escape='\\')),
-        ('string2', Span('string', "'", "'", escape='\\')),
-        ('ruleset', RuleSetToken('css-selector', [r'[\{\}]'])),
-    ])
-
-    ret.PropTokenizer = Tokenizer(ret, None,
+def make_prop_tokenizer(root, terminates=None):
+    ret = Tokenizer(parent=root, terminates=terminates,
         tokens=(
             ('comment1', Span('comment', r'/\*', '\*/', escape='\\')),
             ('propname', PropNameToken('css-propname', [r'[^:\s]+:'])),
             ('terminate', Terminator('css-propvalue', [r'}'])),
     ))
 
-    ret.PropTokenizer.PropValueTokenizer = Tokenizer(ret.PropTokenizer, None,
+    ret.PropValueTokenizer = Tokenizer(parent=ret, terminates=terminates,
         tokens=(
             ('terminate', SingleToken('css-propvalue', [r';'], terminates=True)),
             ('comment1', Span('comment', r'/\*', '\*/', escape='\\')),
             ('string1', Span('string', '"', '"', escape='\\')),
             ('string2', Span('string', "'", "'", escape='\\')),
+            ("color", SingleToken('keyword', [r'\#[0-9a-zA-Z]+'])),
+            ("number", SingleToken('number',
+                               [r'\b[0-9]+(\.[0-9]*)*\b', r'\b\.[0-9]+\b'])),
     ))
 
     return ret
 
+def make_tokenizer(parent, terminates=None):
+    ret = Tokenizer(parent=parent, default_style='css-selector', 
+                    terminates=terminates, tokens=[
+        ('decl', SingleToken('directive', [r'@\w*'])),
+        ('comment1', Span('comment', r'/\*', '\*/', escape='\\')),
+        ('string1', Span('string', '"', '"', escape='\\')),
+        ('string2', Span('string', "'", "'", escape='\\')),
+        ('ruleset', RuleSetToken('css-selector', [r'[\{\}]'])),
+    ])
+
+    ret.PropTokenizer = make_prop_tokenizer(ret)
+    return ret
+
 class CSSMode(defaultmode.DefaultMode):
     MODENAME = 'CSS'
-    tokenizer = make_tokenizer()
+    tokenizer = make_tokenizer(None, None)
 
     @classmethod
     def update_fileinfo(cls, fileinfo, document=None):

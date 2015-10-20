@@ -56,7 +56,7 @@ class RstInline(Span):
         ret = yield from super().on_start(tokenizer, doc, pos, match)
         return ret
 
-    def _is_end(self, doc, m):
+    def _is_span_end(self, doc, m):
         pos = m.end()
         if pos < doc.endpos():
             return (doc.gettext(pos, pos + 1) in self.ENDS)

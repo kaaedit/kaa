@@ -49,7 +49,7 @@ class SearchOption:
 
 SearchOption.LAST_SEARCH = SearchOption()
 
-DefaultTokenizer = syntax_highlight.Root()
+DefaultTokenizer = syntax_highlight.Tokenizer()
 
 
 class ModeBase:

@@ -22,7 +22,7 @@ def ini_tokens():
      ]
 
 def make_tokenizer():
-    return Root(tokens=ini_tokens())
+    return Tokenizer(tokens=ini_tokens())
 
 INIMENU = [
     ['&Comment', None, 'code.region.linecomment'],

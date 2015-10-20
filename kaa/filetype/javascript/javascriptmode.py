@@ -89,7 +89,7 @@ def javascript_tokens():
 
 
 def make_tokenizer():
-    return Root(tokens=javascript_tokens())
+    return Tokenizer(tokens=javascript_tokens())
 
 
 class JavaScriptMode(defaultmode.DefaultMode):

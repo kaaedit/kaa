@@ -7,7 +7,7 @@ class TestHighlight(kaa_testutils._TestDocBase):
     def test_token(self):
         doc = self._getdoc(' abc def ghi ')
 
-        root = syntax_highlight.Root(tokens=[
+        root = syntax_highlight.Tokenizer(tokens=[
             ('keyword', syntax_highlight.Keywords('keyword', ['abc', 'ghi']))
         ])
 
@@ -25,12 +25,12 @@ class TestHighlight(kaa_testutils._TestDocBase):
     def test_span(self):
         doc = self._getdoc(' ab\\cc def ghi ')
 
-        root = syntax_highlight.Root(tokens=[
+        root = syntax_highlight.Tokenizer(tokens=[
             ('span1', syntax_highlight.Span('span', 'a', 'c',
                                             escape='\\')),
             ('span2', syntax_highlight.Span('span', 'd', 'f',
                                             capture_end=False)),
-            ('span3', syntax_highlight.Span('span', 'g', 'i', terminates='h')),
+            ('span3', syntax_highlight.Span('span', 'g', 'i', terminate_tokens='h')),
         ])
 
         tokenizer = syntax_highlight.begin_tokenizer(
@@ -52,7 +52,7 @@ class TestHighlight(kaa_testutils._TestDocBase):
     def test_resume(self):
         doc = self._getdoc('    abc')
 
-        root = syntax_highlight.Root(tokens=[
+        root = syntax_highlight.Tokenizer(tokens=[
             ('keyword', syntax_highlight.Keywords('keyword', ['abc', 'ghi']))])
 
         tokeniter = syntax_highlight.begin_tokenizer(
@@ -85,10 +85,10 @@ class TestHighlight_Nest(kaa_testutils._TestDocBase):
                 pos, terminates = yield from super().on_start(doc, match)
                 return (yield from sub.run(doc, pos)), False
 
-        root = syntax_highlight.Root(tokens=[
+        root = syntax_highlight.Tokenizer(tokens=[
             ('subkeyword', SubKeyword('keyword', ['abc']))])
 
-        sub = syntax_highlight.Tokenizer(root, terminates='x', tokens=[
+        sub = syntax_highlight.Tokenizer(parent=root, terminates='x', tokens=[
             ('keyword', syntax_highlight.Keywords('keyword', ['123']))])
 
         doc.styles.setints(0, 3, root.styleid_default)

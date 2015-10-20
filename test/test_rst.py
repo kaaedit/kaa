@@ -74,7 +74,9 @@ class TestRstHighlight(kaa_testutils._TestDocBase):
         doc = self._getdoc('*abc*abc')
         assert [
             (0, 1, self.tokens.emphasis.span_start),
-            (1, 8, self.tokens.emphasis.span_mid),
+            (1, 4, self.tokens.emphasis.span_mid),
+            (4, 5, self.tokens.emphasis.span_end),
+            (5, 8, self.tokenizers[0].nulltoken),
         ] == list((f, t, style) for f, t, style in hl.highlight(doc, 0))
 
     def test_header(self):

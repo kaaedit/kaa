@@ -46,7 +46,7 @@ class LinkToken(Span):
 
 
 def make_tokenizer():
-    ret = Root(tokens=(
+    ret = Tokenizer(tokens=(
         ('escape', SingleToken('escape', [r'\\.'])),
         ('hr', SingleToken('hr', [r'^(\-{3,}|_{3,}|\*{3,})$'])),
 
@@ -66,7 +66,7 @@ def make_tokenizer():
         ('link', LinkToken('reference')),
     ))
 
-    ret._LinkTokenizer = Tokenizer(ret, None,
+    ret._LinkTokenizer = Tokenizer(parent=ret,
        default_style='reference',
        tokens=(
            ('desc',

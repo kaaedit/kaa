@@ -1,3 +1,4 @@
+import re
 from collections import namedtuple
 from kaa.filetype.default import defaultmode
 from kaa import doc_re
@@ -9,10 +10,9 @@ from kaa.filetype.css import cssmode
 
 from kaa import encodingdef
 from kaa.filetype import filetypedef
-import re
+from kaa.syntax_highlight import *
 
-
-def iter_attr(b):
+def iter_b_attr(b):
     pos = 0
     prop = re.compile(br'(\w+)\s*=\s*', re.DOTALL)
     value = re.compile(b'\s*(("[^"]+")|(\'[^\']+\'))', re.DOTALL)
@@ -35,7 +35,7 @@ def get_encoding(b):
     # HTML5: <meta charset="UTF-8">
     m = re.search(br'<meta ', b, re.DOTALL)
     if m:
-        for name, value in iter_attr(b[m.end():]):
+        for name, value in iter_b_attr(b[m.end():]):
             if name == b'charset':
                 return str(value.strip(), 'utf-8')
 
@@ -43,7 +43,7 @@ def get_encoding(b):
     #    <meta http-equiv="Content-type" content="text/html;charset=UTF-8">
     m = re.search(br'<meta ', b, re.DOTALL)
     if m:
-        for name, value in iter_attr(b[m.end():]):
+        for name, value in iter_b_attr(b[m.end():]):
             if name == b'content':
                 m = re.search(br'charset=(.*)', value, re.DOTALL)
                 if m:
@@ -53,7 +53,7 @@ def get_encoding(b):
     # XHTML: <?xml version="1.0" encoding="UTF-8"?>
     m = re.search(br'<\?xml ', b, re.DOTALL)
     if m:
-        for name, value in iter_attr(b[m.end():]):
+        for name, value in iter_b_attr(b[m.end():]):
             if name == b'encoding':
                 return str(value.strip().strip(), 'utf-8')
 
@@ -277,8 +277,167 @@ def build_tokenizers():
             jstokenizer, csstokenizer]
 
 
+RE_ATTRNAME = doc_re.compile(
+    r'>|(?P<ATTRNAME>[-._:a-zA-Z0-9]+)(?P<EQUAL>\s*=)?\s*')
+RE_ATTRVALUE = doc_re.compile(r'\s*(?P<ATTRVALUE>({}))'.format(
+    '|'.join(['[-._:a-zA-Z0-9]+', '(?P<Q1>"[^"]*")', "(?P<Q2>'[^']*')"])))
+
+def iter_attrs(doc, pos):
+    while True:
+        m = RE_ATTRNAME.search(doc, pos)
+        if not m:
+            return pos
+        if m.group() == '>':
+            return m.start()
+
+        attrname = m.group('ATTRNAME')
+        pos = m.end()
+
+        # has attribute value?
+        if m.group('EQUAL'):
+            # yield values after '='
+            m = RE_ATTRVALUE.match(doc, pos)
+            if m:
+                pos = m.end()
+                attrvalue = m.group('ATTRVALUE')
+                if m.group('Q1') or m.group('Q2'):
+                    attrvalue = attrvalue[1:-1]
+                    yield attrname, attrvalue
+                    continue
+
+        yield attrname, None
+                
+class HTMLTag(SingleToken):
+    def on_start(self, doc, match):
+        pos, terminates = yield from super().on_start(doc, match)
+        if match.group('closetag'):
+            return pos, terminates
+
+        if pos < doc.endpos():
+            pos = yield from self.tokenizer.AttrTokenizer.run(doc, pos)
+            if pos < doc.endpos():
+                c = doc.gettext(pos, pos+1)
+                if c == '>':
+                    yield (pos, pos+1, self.styleid_token)
+                    pos += 1
+        return pos, terminates
+    
+
+class HTMLScriptTag(HTMLTag):
+    def on_start(self, doc, match):
+        pos, terminates = yield from super().on_start(doc, match)
+        if match.group('closetag'):
+            return pos, terminates
+
+        for name, value in iter_attrs(doc, match.start()):
+            if name.lower() == 'type':
+                if value and value.lower() != 'text/javascript':
+                    return pos, terminates
+
+        pos = yield from self.tokenizer.JSTokenizer.run(doc, pos)
+        return pos, terminates
+        
+class HTMLStyleTag(HTMLTag):
+    def on_start(self, doc, match):
+        pos, terminates = yield from super().on_start(doc, match)
+        if match.group('closetag'):
+            return pos, terminates
+
+        pos = yield from self.tokenizer.CSSTokenizer.run(doc, pos)
+
+        return pos, terminates
+        
+class HTMLAttr(SingleToken):
+    def prepare(self):
+        super().prepare()
+
+    def on_start(self, doc, match):
+        pos, terminates = yield from super().on_start(doc, match)
+        if not terminates and match.group(0)[-1].strip().endswith("="):
+            if pos >= doc.endpos():
+                return pos, terminates
+
+            c = doc.gettext(pos, pos+1)
+            attrname = match.group('attrname')
+            attrname = attrname.lower() if attrname else ''
+
+            if attrname.startswith('on'):
+                if c == "'":
+                    yield (pos, pos+1, self.styleid_token)
+                    pos = yield from self.tokenizer.AttrValueJSTokenizer1.run(doc, pos+1)
+                elif c == '"':
+                    yield (pos, pos+1, self.styleid_token)
+                    pos = yield from self.tokenizer.AttrValueJSTokenizer2.run(doc, pos+1)
+            elif attrname == 'style':
+                if c == "'":
+                    yield (pos, pos+1, self.styleid_token)
+                    pos = yield from self.tokenizer.AttrValueCSSTokenizer1.run(doc, pos+1)
+                elif c == '"':
+                    yield (pos, pos+1, self.styleid_token)
+                    pos = yield from self.tokenizer.AttrValueCSSTokenizer2.run(doc, pos+1)
+            else:
+                if c == "'":
+                    yield (pos, pos+1, self.styleid_token)
+                    pos = yield from self.tokenizer.AttrValueTokenizer1.run(doc, pos+1)
+                elif c == '"':
+                    yield (pos, pos+1, self.styleid_token)
+                    pos = yield from self.tokenizer.AttrValueTokenizer2.run(doc, pos+1)
+                else:
+                    pos = yield from self.tokenizer.AttrValueTokenizer3.run(doc, pos)
+
+        return pos, terminates
+
+
+def make_tokenizer():
+    ret = Tokenizer(tokens=[
+        ('html-entityrefs', SingleToken('keyword',
+                           [r'&\w+;', r'&\#x[0-9a-hA-H]+;', r'&\#[0-9]+;'])),
+        ('comment', Span('comment', r'<!--', r'--\s*>')),
+        ('xmlpi', Span('html-decl', r'<\?', r'\?>')),
+        ('xmldef', Span('html-decl', r'<!', r'>')),
+        ('styletag', HTMLStyleTag('html-tag', [r'<\s*style'])),
+        ('scripttag', HTMLScriptTag('html-tag', [r'<\s*script'])),
+        ('tag', HTMLTag('html-tag', [r'<(?P<closetag>/)?\s*\S+'])),
+    ])
+
+
+    ret.AttrTokenizer = Tokenizer(parent=ret, terminates='>', 
+        is_resumable=False, tokens=[
+            ('attr', HTMLAttr('html-attrname', [r'(?P<attrname>[^\s=>]+)\s*=?\s*'])),
+    ])
+
+    ret.AttrTokenizer.AttrValueTokenizer1 = Tokenizer(parent=ret.AttrTokenizer,
+        tokens=[('value', SingleToken('html-attrvalue', [r"[^']*'"], terminates=True))])
+
+    ret.AttrTokenizer.AttrValueTokenizer2 = Tokenizer(parent=ret.AttrTokenizer, 
+        tokens=[('value', SingleToken('html-attrvalue', [r'[^"]*"'], terminates=True))])
+
+    ret.AttrTokenizer.AttrValueTokenizer3 = Tokenizer(parent=ret.AttrTokenizer, 
+        tokens=[('value', SingleToken('html-attrvalue', [r'\w*'], terminates=True))])
+
+    ret.AttrTokenizer.AttrValueJSTokenizer1 = Tokenizer(parent=ret.AttrTokenizer,
+        tokens=javascriptmode.javascript_tokens(), terminates="'")
+
+    ret.AttrTokenizer.AttrValueJSTokenizer2 = Tokenizer(parent=ret.AttrTokenizer,
+        tokens=javascriptmode.javascript_tokens(), terminates='"')
+
+    ret.AttrTokenizer.AttrValueCSSTokenizer1 = cssmode.make_prop_tokenizer(ret.AttrTokenizer, "'")
+    ret.AttrTokenizer.AttrValueCSSTokenizer2 = cssmode.make_prop_tokenizer(ret.AttrTokenizer, '"')
+
+
+    ret.JSTokenizer = Tokenizer(parent=ret, 
+        tokens=javascriptmode.javascript_tokens(), terminates=r"</.*script[^>]*>")
+
+    ret.CSSTokenizer = cssmode.make_tokenizer(ret, terminates=r"</.*style[^>]*>")
+
+    return ret
+
+
+
 class HTMLMode(defaultmode.DefaultMode):
     MODENAME = 'HTML'
+
+    tokenizer = make_tokenizer()
 
     @classmethod
     def update_fileinfo(cls, fileinfo, document=None):
@@ -297,6 +456,3 @@ class HTMLMode(defaultmode.DefaultMode):
         self.themes.append(HTMLThemes)
         self.themes.append(cssmode.CSSThemes)
         self.themes.append(javascriptmode.JavaScriptThemes)
-
-    def init_tokenizers(self):
-        self.tokenizers = build_tokenizers()
