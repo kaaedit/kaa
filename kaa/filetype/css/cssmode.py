@@ -13,7 +13,7 @@ from kaa.syntax_highlight import *
 CSSThemes = {
     'basic': [
         Style('css-selector', 'magenta', 'default'),
-        Style('css-propname', 'blue', 'default', bold=True),
+        Style('css-propname', 'cyan', 'default', bold=True),
         Style('css-propvalue', 'green', 'default', bold=True),
     ],
 }
