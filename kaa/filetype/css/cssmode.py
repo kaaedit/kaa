@@ -64,7 +64,7 @@ def make_tokenizer(parent, terminates=None):
         ('ruleset', RuleSetToken('css-selector', [r'[\{\}]'])),
     ])
 
-    ret.PropTokenizer = make_prop_tokenizer(ret)
+    ret.PropTokenizer = make_prop_tokenizer(ret, terminates=terminates)
     return ret
 
 class CSSMode(defaultmode.DefaultMode):
