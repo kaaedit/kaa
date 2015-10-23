@@ -1,6 +1,7 @@
 from kaa.filetype.default import defaultmode
 from kaa.highlight import Tokenizer, Span
 from kaa.theme import Theme, Style
+from kaa.syntax_highlight import *
 
 DiffThemes = {
     'basic': [
@@ -26,12 +27,23 @@ def build_tokenizer():
     ])
 
 
+def make_tokenizer():
+    return Tokenizer(tokens=[
+        ('fromfile', Span('fromfile', r'^---', '$')),
+        ('tofile', Span('tofile', r'^\+\+\+', '$')),
+        ('hunk', Span('hunk', r'^@@', '@@')),
+        ('add', Span('add', r'^\+', '$')),
+        ('remove', Span('remove', r'^-', '$')),
+        ('header', Span('header', r'^\S+', '$')),
+    ])
+
+
+
 class DiffMode(defaultmode.DefaultMode):
     MODENAME = 'Diff'
+    tokenizer = make_tokenizer()
 
     def init_themes(self):
         super().init_themes()
         self.themes.append(DiffThemes)
 
-    def init_tokenizers(self):
-        self.tokenizers = [build_tokenizer()]
