@@ -1,3 +1,4 @@
+import itertools
 import unittest.mock
 from unittest.mock import patch
 
@@ -7,6 +8,7 @@ import kaa.options
 from kaa import screen, document, cursor, context, editmode, fileio
 from kaa.filetype.default import defaultmode
 import kaa.cui.app
+
 
 class _DmyWnd(context.Context):
     closed = False
@@ -75,6 +77,7 @@ class DmyApp(kaa.cui.app.CuiApp):
     mainframe.rect = (0, 0, 80, 25)
     mainframe.getsize.return_value = (80, 25)
     messagebar = unittest.mock.Mock()
+
     def translate_key(self, mod, char):
         return (mod, char)
 
@@ -93,7 +96,6 @@ config.hist_storage = unittest.mock.Mock()
 
 kaa.app = DmyApp(config)
 kaa.app.init_commands()
-
 
 
 class _TestDocBase:
@@ -139,3 +141,59 @@ class _TestScreenBase(_TestDocBase):
         wnd.cursor = cursor.Cursor(wnd)
 
         return wnd
+
+
+def _print_styleinfo(doc, f, t, tokens):
+    mapids = set()
+    maps = []
+    for token in tokens:
+        d = token.tokenizer.get_styleid_map()
+        if id(d) not in mapids:
+            mapids.add(id(d))
+            maps.extend(d.items())
+
+    maps = sorted(maps)
+    print('n\tvalue\texpected')
+
+    values = doc.styles.getints(f, t)
+    for n, (v, t) in enumerate(itertools.zip_longest(values, tokens)):
+        if v is not None:
+            token_candidates = [token.__class__.__name__ for i, token in maps if i == v]
+            val = '%s%s' % (v, token_candidates)
+        else:
+            val = ''
+
+        if t is not None:
+            token_ids = [i for i, token in maps if token is t]
+            exp = '%s(%s)' % (t.__class__.__name__, token_ids)
+        else:
+            exp = ''
+
+        print(n, '\t', val, '\t', exp)
+
+    print('---tokens---')
+    for n, token in maps:
+        print(n, token.__class__.__name__, '({})'.format(hex(id(token))))
+
+def check_style(doc, f, t, tokens):
+    expected = []
+    for token in tokens:
+        m = token.tokenizer.get_styleid_map()
+        ids = {id for id, obj in m.items() if obj is token}
+        expected.append(ids)
+
+
+    values = doc.styles.getints(f, t)
+    for n, (e, v) in enumerate(zip(expected, values)):
+        if v not in e:
+            _print_styleinfo(doc, f, t, tokens)
+            raise AssertionError(
+               'style_id not match at index {}. doc:{} expected:{}'.format(
+                   n, v, sorted(e)))
+
+    if len(values) != len(expected):
+        _print_styleinfo(doc, f, t, tokens)
+        raise AssertionError(
+               "style_id length doesn't match. {}/{}".format(
+                   len(values), len(tokens)))
+    

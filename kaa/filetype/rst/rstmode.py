@@ -3,10 +3,10 @@ import copy
 from collections import namedtuple
 from kaa.filetype.default import defaultmode
 from kaa import doc_re
-from kaa.highlight import Tokenizer, Token, Span, Keywords, EndSection, SingleToken
 from kaa.theme import Theme, Style
 from kaa.command import Commands, commandid, norec, norerun
 from kaa.keyboard import *
+from kaa.syntax_highlight import *
 
 RstThemes = {
     'basic': [
@@ -45,18 +45,19 @@ class RstInline(Span):
     STARTS = '\'"([{<' + WS + SEP_STARTS
     ENDS = '\'".,:;!?-)]}/\\>' + WS + SEP_ENDS
 
-    def on_start(self, tokenizer, doc, pos, match):
+    def on_start(self, doc, match):
+        pos = match.start()
         if ((pos and (doc.gettext(pos - 1, pos) not in self.STARTS)) or
                 (pos >= doc.endpos() - 1) or
                 (doc.gettext(pos + 1, pos + 2) in self.WS)):
 
-            yield pos, pos + 1, tokenizer.nulltoken
-            return pos + 1, None, False
+            yield pos, pos + 1, self.tokenizer.styleid_default
+            return pos + 1, self.terminates
 
-        ret = yield from super().on_start(tokenizer, doc, pos, match)
+        ret = yield from super().on_start(doc, match)
         return ret
 
-    def _is_end(self, doc, m):
+    def _is_span_end(self, doc, m):
         pos = m.end()
         if pos < doc.endpos():
             return (doc.gettext(pos, pos + 1) in self.ENDS)
@@ -65,78 +66,68 @@ class RstInline(Span):
 
 class TableToken(SingleToken):
 
-    def on_start(self, tokenizer, doc, pos, match):
+    def on_start(self, doc, match):
         in_table = False
+        pos = match.start()
         tol = doc.gettol(pos)
         if pos == tol:
             in_table = True
         else:
             # check if previous line is table
             if tol > 1:
-                laststyle = doc.getstyles(tol - 2, tol - 1)[0]
-                token = tokenizer.highlighter.get_token(laststyle)
+                token = self.tokenizer.get_token_at(doc, tol - 2)
                 if isinstance(token, TableToken):
                     in_table = True
         if in_table:
-            ret = yield from super().on_start(tokenizer, doc, pos, match)
+            ret = yield from super().on_start(doc, match)
             return ret
         else:
-            yield pos, pos + 1, tokenizer.nulltoken
-            return pos + 1, None, False
+            yield pos, pos + 1, self.tokenizer.styleid_default
+            return pos + 1, self.terminates
 
 
 RST_HEADERS = r'=\-`:\'"~^_*+#<>'
 
+def make_tokenizer():
+    return Tokenizer(tokens=[
+        # escape
+        ('escape', SingleToken('default', [r'\\.'])),
 
-def build_tokenizer():
-    RSTTOKENS = namedtuple('rsttokens',
-                           ['escape', 'header1', 'header2',
-                            'directive', 'block', 'tableborder',
-                            'tablerow',
-                            'strong', 'emphasis',
-                            'literal', 'interpreted', 'reference',
-                            'role',
-                            'target', 'substitution', 'citation',
-                            ])
+        # header token
+        ('header1', SingleToken('header',
+                    [r'^(?P<H>[{}])(?P=H)+\n.+\n(?P=H)+$'.format(RST_HEADERS)])),
+        ('header2', SingleToken('header',
+                    [r'^.+\n(?P<H2>[{}])(?P=H2)+$'.format(RST_HEADERS)])),
 
-    return Tokenizer(
-        RSTTOKENS(
-            # escape
-            SingleToken('escape', 'default', [r'\\.']),
+        # block
+        ('directive', Span('directive', r'\.\.\s+\S+::', '^\S',
+             escape='\\', capture_end=False)),
+        ('block', SingleToken('block', [r'::[\ \t]*$'])),
 
-            # header token
-            SingleToken('header1', 'header',
-                        [r'^(?P<H>[{}])(?P=H)+\n.+\n(?P=H)+$'.format(RST_HEADERS)]),
-            SingleToken('header2', 'header',
-                        [r'^.+\n(?P<H2>[{}])(?P=H2)+$'.format(RST_HEADERS)]),
+        # table
+        ('table_border',TableToken('table', [r'\+[+\-=]+(\s+|$)'])),
+        ('table_row', TableToken('table', [r'\|(\s+|$)'])),
 
-            # block
-            Span('directive', 'directive', r'\.\.\s+\S+::', '^\S',
-                 escape='\\', capture_end=False),
-            SingleToken('block', 'block', [r'::[\ \t]*$']),
+        # inline token
+        ('strong', RstInline('strong',
+                  r'\*\*', r'\*\*', escape='\\')),
+        ('emphasis', RstInline('emphasis',
+                  r'\*', r'\*', escape='\\')),
+        ('literal', RstInline('literal', r'``', r'``', escape='')),
+        ('interpreted', RstInline('reference', r'`', r'`_?_?',
+                  escape='\\')),
+        ('reference', SingleToken('reference',
+                    [r'\b[a-zA-Z0-9]+__?\b'])),
+        ('role', RstInline('role', r':[a-zA-Z0-9]+:`', r'`',
+                  escape='\\')),
+        ('target', RstInline('reference',
+                  r'_`\w', r'`', escape='\\')),
+        ('substitution', SingleToken('substitution', [r'\|\w+\|'])),
+        ('citation', SingleToken('reference', [r'\[\w+\]_\b'])),
+    ])
 
-            # table
-            TableToken('rst-table-border', 'table', [r'\+[+\-=]+(\s+|$)']),
-            TableToken('rst-table-row', 'table', [r'\|(\s+|$)']),
 
-            # inline token
-            RstInline('rst-strong', 'strong',
-                      r'\*\*', r'\*\*', escape='\\'),
-            RstInline('rst-emphasis', 'emphasis',
-                      r'\*', r'\*', escape='\\'),
-            RstInline('rst-literal', 'literal', r'``', r'``', escape=''),
-            RstInline('rst-interpreted', 'reference', r'`', r'`_?_?',
-                      escape='\\'),
-            SingleToken('rst-reference', 'reference',
-                        [r'\b[a-zA-Z0-9]+__?\b']),
-            RstInline('rst-role', 'role', r':[a-zA-Z0-9]+:`', r'`',
-                      escape='\\'),
-            RstInline('rst-target', 'reference',
-                      r'_`\w', r'`', escape='\\'),
-            SingleToken('rst-substitution', 'substitution', [r'\|\w+\|']),
-            SingleToken('rst-citation', 'reference', [r'\[\w+\]_\b']),
 
-        ))
 
 
 RSTMENU = [
@@ -147,9 +138,9 @@ rst_keys = {
     (ctrl, 't'): 'toc.showlist',
 }
 
-
 class RstMode(defaultmode.DefaultMode):
     MODENAME = 'Rst'
+    tokenizer = make_tokenizer()
 
     def init_keybind(self):
         super().init_keybind()
@@ -163,8 +154,6 @@ class RstMode(defaultmode.DefaultMode):
         super().init_themes()
         self.themes.append(RstThemes)
 
-    def init_tokenizers(self):
-        self.tokenizers = [build_tokenizer()]
 
     HEADER1 = r'''^(?P<H>[{}])(?P=H)+\n
                   (?P<TITLE>.+)\n

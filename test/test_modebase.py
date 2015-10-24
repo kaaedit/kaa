@@ -42,7 +42,6 @@ class TestDefaultMode(kaa_testutils._TestScreenBase):
         assert mode.get_word_at(12) == (12, 15, 'L_HIRAGANA')
         assert mode.get_word_at(15) == (15, 18, 'L_WORDCHAR')
 
-
     def test_search_next(self):
         w = self._getwnd('abcdefgabcdefg/efg/EFG')
 
@@ -133,7 +132,7 @@ a
         with patch.object(wnd.cursor, 'pos', new=6):
             wnd.document.mode.on_auto_indent(wnd)
         assert wnd.document.gettext(0, wnd.document.endpos()
-            ) == '\n    a\n    \n'
+                                    ) == '\n    a\n    \n'
 
         script = '''
     a
@@ -142,6 +141,4 @@ a
         with patch.object(wnd.cursor, 'pos', new=5):
             wnd.document.mode.on_auto_indent(wnd)
         assert wnd.document.gettext(0, wnd.document.endpos()
-            ) == '\n\n    a\n'
-
-
+                                    ) == '\n\n    a\n'

@@ -7,10 +7,10 @@ from kaa import doc_re
 import kaa
 from kaa import keyboard, editmode
 import kaa.log
-from kaa import highlight
 from kaa import theme
 from kaa import screen
 from kaa import addon
+from kaa import syntax_highlight
 
 
 class SearchOption:
@@ -48,6 +48,8 @@ class SearchOption:
 
 SearchOption.LAST_SEARCH = SearchOption()
 
+DefaultTokenizer = syntax_highlight.Tokenizer()
+
 
 class ModeBase:
     (UNDO_INSERT,
@@ -77,6 +79,8 @@ class ModeBase:
     _check_fileupdate = 0
     _last_autoindent = None
 
+    tokenizer = DefaultTokenizer
+
     @classmethod
     def update_fileinfo(cls, fileinfo, document=None):
         pass
@@ -105,9 +109,12 @@ class ModeBase:
 
         self.tokenizers = []
         self.init_tokenizers()
+
+        self._highlight_done = 0
+        self._highlight_iter = None
+
         self.stylemap = {}
         self.stylenamemap = {}
-        self.highlight = highlight.Highlighter(self.tokenizers)
 
         self.setup()
 
@@ -126,26 +133,25 @@ class ModeBase:
         self.commands = None
 
         self.is_availables = None
-        self.highlight.close()
-        self.highlight = None
         self.tokenizers = None
+        self.tokenizer = None
         self.stylemap = None
+        self._highlight_done = 0
+        self._highlight_iter = None
 
     def _build_style_map(self):
         self.stylemap[0] = self.theme.get_style('default')
-        for tokenid in self.highlight.tokenids:
-            assert tokenid not in self.stylemap
-            token = self.highlight.get_token(tokenid)
+        for styleid, token in self.tokenizer.styleid_map.items():
             if token:
-                stylename = token.get_stylename(tokenid)
+                stylename = token.get_stylename(styleid)
                 style = self.theme.get_style(stylename)
 
-                self.stylemap[tokenid] = style
-                self.stylenamemap[style.name] = tokenid
+                self.stylemap[styleid] = style
+                self.stylenamemap[style.name] = styleid
             else:
                 style = self.theme.get_style('default')
-                self.stylemap[tokenid] = style
-                self.stylenamemap[style.name] = tokenid
+                self.stylemap[styleid] = style
+                self.stylenamemap[style.name] = styleid
 
     def on_set_document(self, document):
         self.document = document
@@ -156,8 +162,9 @@ class ModeBase:
 
     def on_document_updated(self, pos, inslen, dellen):
         self._last_autoindent = None
-        if self.highlight:
-            self.highlight.updated(self.document, pos, inslen, dellen)
+        if pos <= self._highlight_done:
+            self._highlight_done = pos
+            self._highlight_iter = None
 
     def on_file_saved(self, fileinfo):
         pass
@@ -324,9 +331,9 @@ class ModeBase:
 
         if kaa.app.macro.is_recording():
             kaa.app.macro.record_string(s, overwrite)
-        if self.highlight:
-            # run highlighter a bit to display changes immediately.
-            self.highlight.update_style(self.document, batch=50)
+
+        # run highlighter a bit to display changes immediately.
+        self.run_tokenizer(batch=50)
 
     def on_commands(self, wnd, commandids, n_repeat=1):
         wnd.set_command_repeat(n_repeat)
@@ -474,7 +481,7 @@ class ModeBase:
         if self.closed:
             return
 
-        ret = self.run_highlight()
+        ret = self.run_tokenizer()
         return ret
 
     def get_line_overlays(self):
@@ -487,6 +494,51 @@ class ModeBase:
             return self.highlight.update_style(
                 self.document,
                 batch=self.HIGHLIGHTBATCH)
+
+    def _get_highlight_range(self):
+        return (0, self.document.endpos())
+
+    def run_tokenizer(self, batch=HIGHLIGHTBATCH):
+        range_start, range_end = self._get_highlight_range()
+
+        if self._highlight_done < range_start:
+            self._highlight_done = range_start
+
+        if not self._highlight_iter:
+            f = max(range_start, self._highlight_done - 1)
+            self._highlight_iter = syntax_highlight.begin_tokenizer(
+                self.document, self.tokenizer, f)
+
+        updatefrom = self.document.endpos()
+        updateto = range_start
+        updated = False
+        finished = False
+
+        for n, (f, t, style) in enumerate(self._highlight_iter):
+            f = max(range_start, f)
+            t = min(range_end, t)
+            if f < t:
+                self.document.styles.setints(f, t, style)
+
+            updated = True
+            updatefrom = min(f, updatefrom)
+            updateto = max(t, updateto)
+
+            if batch and (n > batch):
+                break
+
+            if t >= range_end:
+                finished = True
+                break
+        else:
+            finished = True
+
+        if self.document.endpos() == 0 or updated and (updatefrom != updateto):
+            self.document.style_updated(updatefrom, updateto)
+            self._highlight_done = updateto
+
+        # returns False if finished to terminate idle loop.
+        return not finished
 
     def _split_chars(self, begin, end):
         """split characters by character category."""

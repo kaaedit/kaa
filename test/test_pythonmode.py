@@ -1,6 +1,5 @@
 from unittest.mock import patch
 import kaa_testutils
-from kaa import highlight
 from kaa.filetype.python import pythonmode
 
 
@@ -34,7 +33,7 @@ abc:
         with patch.object(wnd.cursor, 'pos', new=5):
             wnd.document.mode.on_auto_indent(wnd)
         assert wnd.document.gettext(0, wnd.document.endpos()
-            ) == '\nabc:\n    \n'
+                                    ) == '\nabc:\n    \n'
 
         # test un-closed parenthesis
         script = '''
@@ -44,7 +43,7 @@ abc(
         with patch.object(wnd.cursor, 'pos', new=5):
             wnd.document.mode.on_auto_indent(wnd)
         assert wnd.document.gettext(0, wnd.document.endpos()
-            ) == '\nabc(\n    \n'
+                                    ) == '\nabc(\n    \n'
 
         # test balanced parenthesis
         script = '''
@@ -54,8 +53,7 @@ abc()
         with patch.object(wnd.cursor, 'pos', new=6):
             wnd.document.mode.on_auto_indent(wnd)
         assert wnd.document.gettext(0, wnd.document.endpos()
-            ) == '\nabc()\n\n'
-
+                                    ) == '\nabc()\n\n'
 
         # test closed parenthesis
         script = '''
@@ -67,7 +65,7 @@ abc()
         with patch.object(wnd.cursor, 'pos', new=15):
             wnd.document.mode.on_auto_indent(wnd)
         assert wnd.document.gettext(0, wnd.document.endpos()
-            ) == '\n  abc\n    abc)\n    \n'
+                                    ) == '\n  abc\n    abc)\n    \n'
 
         # test closed parenthesis, but no dedent required
         script = '''
@@ -78,7 +76,7 @@ abc()
         with patch.object(wnd.cursor, 'pos', new=10):
             wnd.document.mode.on_auto_indent(wnd)
         assert wnd.document.gettext(0, wnd.document.endpos()
-            ) == '\n  abc\n  )\n  \n'
+                                    ) == '\n  abc\n  )\n  \n'
 
         # test comment
         script = '''
@@ -88,7 +86,7 @@ abc#(
         with patch.object(wnd.cursor, 'pos', new=6):
             wnd.document.mode.on_auto_indent(wnd)
         assert wnd.document.gettext(0, wnd.document.endpos()
-            ) == '\nabc#(\n\n'
+                                    ) == '\nabc#(\n\n'
 
         # test string
         script = '''
@@ -98,7 +96,7 @@ abc"(
         with patch.object(wnd.cursor, 'pos', new=6):
             wnd.document.mode.on_auto_indent(wnd)
         assert wnd.document.gettext(0, wnd.document.endpos()
-            ) == '\nabc"(\n\n'
+                                    ) == '\nabc"(\n\n'
 
         # test string closed
         script = '''
@@ -108,4 +106,4 @@ abc"""-"""(
         with patch.object(wnd.cursor, 'pos', new=12):
             wnd.document.mode.on_auto_indent(wnd)
         assert wnd.document.gettext(0, wnd.document.endpos()
-            ) == '\nabc"""-"""(\n    \n'
+                                    ) == '\nabc"""-"""(\n    \n'

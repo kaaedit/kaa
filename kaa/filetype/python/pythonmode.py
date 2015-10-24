@@ -2,12 +2,12 @@ import io
 import keyword
 import copy
 from kaa.filetype.default import defaultmode, theme
-from kaa.highlight import Tokenizer, Keywords, Span, SingleToken
 from kaa.theme import Theme, Style
 from kaa import doc_re
 from kaa.command import Commands, commandid, norec, norerun
 from kaa.keyboard import *
 from kaa.ui.pythondebug import port
+from kaa.syntax_highlight import *
 
 PythonThemes = {
     'basic': [
@@ -36,10 +36,38 @@ KEYWORDS = ['and', 'as', 'assert', 'break', 'class', 'continue', 'def',
 CONSTANTS = ['False', 'None', 'True']
 
 
+
+def make_tokenizer():
+    return Tokenizer(tokens=(
+        ("keyword", Keywords('keyword', KEYWORDS)),
+        ("constant", Keywords('constant', CONSTANTS)),
+        ("decorator", SingleToken('directive', [r'@\w[\w.]*'])),
+        ("number", SingleToken('number',
+                               [r'\b[0-9]+(\.[0-9]*)*\b', r'\b\.[0-9]+\b'])),
+        ("comment", Span('comment', r'\#', '$', escape='\\')),
+
+        ("string31", Span('string', '[rR]?"""', '"""', escape='\\')),
+        ("string32", Span('string', "[rR]?'''", "'''", escape='\\')),
+        ("string11", Span('string', '[rR]?"', '"', escape='\\')),
+        ("string12", Span('string', "[rR]?'", "'", escape='\\')),
+
+        ('bytes31', Span('python-bytes',
+                         '([bB][rR]?|[rR]?[bB])"""', '"""', escape='\\')),
+        ('bytes32', Span('python-bytes',
+                         "([bB][rR]?|[rR]?[bB])'''", "'''", escape='\\')),
+        ('bytes11', Span('python-bytes',
+                         '([bB][rR]?|[rR]?[bB])"', '"', escape='\\')),
+        ('bytes12', Span('python-bytes',
+                         "([bB][rR]?|[rR]?[bB])'", "'", escape='\\')),
+    ))
+
+
 class PythonMode(defaultmode.DefaultMode):
     MODENAME = 'Python'
     re_begin_block = doc_re.compile(r"[^#]*:\s*(#.*)?$")
     LINE_COMMENT = '#'
+
+    tokenizer = make_tokenizer()
 
     @classmethod
     def update_fileinfo(cls, fileinfo, document=None):
@@ -68,30 +96,6 @@ class PythonMode(defaultmode.DefaultMode):
     def init_themes(self):
         super().init_themes()
         self.themes.append(PythonThemes)
-
-    def init_tokenizers(self):
-        self.tokenizers = [Tokenizer([
-            Keywords('python-statement', 'keyword', KEYWORDS),
-            Keywords('python-constant', 'constant', CONSTANTS),
-            SingleToken('python-decorator', 'directive',
-                        [r'@\w[\w.]*']),
-            SingleToken('python-numeric', 'number',
-                        [r'\b[0-9]+(\.[0-9]*)*\b', r'\b\.[0-9]+\b']),
-            Span('python-comment', 'comment', r'\#', '$', escape='\\'),
-            Span('python-string31', 'string', '[rR]?"""', '"""', escape='\\'),
-            Span('python-string32', 'string', "[rR]?'''", "'''", escape='\\'),
-            Span('python-string11', 'string', '[rR]?"', '"', escape='\\'),
-            Span('python-string12', 'string', "[rR]?'", "'", escape='\\'),
-
-            Span('python-bytes31', 'python-bytes',
-                 '([bB][rR]?|[rR]?[bB])"""', '"', escape='\\'),
-            Span('python-bytes32', 'python-bytes',
-                 "([bB][rR]?|[rR]?[bB])'''", "'''", escape='\\'),
-            Span('python-bytes11', 'python-bytes',
-                 '([bB][rR]?|[rR]?[bB])"', '"', escape='\\'),
-            Span('python-bytes12', 'python-bytes',
-                 "([bB][rR]?|[rR]?[bB])'", "'", escape='\\'),
-        ])]
 
     def on_set_document(self, document):
         super().on_set_document(document)

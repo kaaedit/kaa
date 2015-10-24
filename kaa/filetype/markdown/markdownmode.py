@@ -2,13 +2,15 @@ import copy
 from collections import namedtuple
 from kaa.filetype.default import defaultmode
 from kaa import doc_re
-from kaa.highlight import Tokenizer, Token, Span, Keywords, EndSection, SingleToken
 from kaa.theme import Theme, Style
 from kaa.command import Commands, commandid, norec, norerun
 from kaa.keyboard import *
+from kaa.syntax_highlight import *
+
 
 MarkdownThemes = {
     'basic': [
+        Style('escape', 'default', 'default'),
         Style('header', 'Blue', None),
         Style('hr', 'Green', None),
         Style('strong', 'Magenta', None),
@@ -21,124 +23,58 @@ MarkdownThemes = {
 }
 
 
-class LinkToken(Token):
-    RE_END = doc_re.compile('^\S', doc_re.M + doc_re.X)
+class LinkToken(Span):
+    # [xxx](yyy "xzzzz")
+    # [xxx]:
+    # ![xxx]
 
-    def re_start(self):
-        return r'\['
+    def __init__(self, stylename):
+        super().__init__(stylename, r'!?\[', r'][:\(]?', escape=r'\\')
 
-    def prepare(self, tokenizer):
-        super().prepare(tokenizer)
+    def on_start(self, doc, match):
+        pos, terminates = yield from super().on_start(doc, match)
+        if pos == doc.endpos():
+            return pos, terminates
+        c = doc.gettext(pos - 1, pos)
 
-        self.text = self.assign_tokenid(tokenizer, self.stylename)
-        self.url = self.assign_tokenid(tokenizer, self.stylename)
-        self.link = self.assign_tokenid(tokenizer, self.stylename)
+        if c == '(':
+            # [xxx](yyy "xzzzz")
+            pos = yield from self.tokenizer._LinkTokenizer.run(doc, pos)
 
-    def get_close(self, doc, pos, chars):
-        r = doc_re.compile(r'\\.|' + '|'.join('\\' + c for c in chars))
-        while True:
-            m = r.search(doc, pos)
-            if not m:
-                return '', doc.endpos()
-
-            h = m.group()
-            if h[0] == '\\':
-                pos = m.end()
-            else:
-                return h, m.end()
-
-    def on_start(self, tokenizer, doc, pos, match):
-        f = match.start()
-        c, t = self.get_close(doc, match.end(), ']')
-        if t != doc.endpos():
-            next = doc.gettext(t, t + 1)
-            if next == ':':
-                yield (f, t + 1, self.text)
-                return t + 1, None, False
-            elif next == ' ':
-                t += 1
-        yield (f, t, self.text)
-
-        m = doc_re.compile(r'\s*(\[|\()').match(doc, t)
-        if not m:
-            return t, None, False
-
-        c = m.group(1)
-        if c == '[':
-            c, end = self.get_close(doc, m.end(), ']')
-            yield t, end, self.link
-        else:
-            c, end = self.get_close(doc, m.end(), '")')
-            if c == '"':
-                c, end = self.get_close(doc, end, '"')
-                c, end = self.get_close(doc, end, ')')
-            yield t, end, self.url
-
-        return end, None, False
+        return pos, False
 
 
-class ImageToken(LinkToken):
+def make_tokenizer():
+    ret = Tokenizer(tokens=(
+        ('escape', SingleToken('escape', [r'\\.'])),
+        ('hr', SingleToken('hr', [r'^(\-{3,}|_{3,}|\*{3,})$'])),
 
-    def re_start(self):
-        return r'!\['
+        ('header1', SingleToken('header', [r'^.+\n(?P<H1>[-=])(?P=H1)+$'])),
+        ('header2', SingleToken('header', [r'^\#{1,6}.*$'])),
 
+        ('strong1', Span('strong', r'\*\*(?!\s)', r'\*\*|$', escape='\\')),
+        ('strong2', Span('strong', r'__(?!\s)', r'__|$', escape='\\')),
 
-class MDInline(Span):
-    WS = ' \t\r\n'
+        ('emphasis1', Span('emphasis', r'\*(?!\s)', r'\*|$', escape='\\')),
+        ('emphasis2', Span('emphasis', r'_(?!\s)', r'_|$', escape='\\')),
 
-    def on_start(self, tokenizer, doc, pos, match):
-        if ((pos >= doc.endpos() - 1) or
-                (doc.gettext(pos + 1, pos + 2) in self.WS)):
+        ('code1', Span('literal', r'^```', r'^```\s*$', escape='\\')),
+        ('code2', Span('literal', r'^\ {4,}', r'$')),
+        ('code3', Span('literal', r'`(?!\s)', r'`|$', escape='\\')),
 
-            yield pos, pos + 1, tokenizer.nulltoken
-            return pos + 1, None, False
-
-        ret = yield from super().on_start(tokenizer, doc, pos, match)
-        return ret
-
-
-HEADERS = r'=-'
-
-
-def build_tokenizer():
-    MARKDOWNTOKENS = namedtuple('markdowntokens',
-                                ['escape', 'header1', 'header2',
-                                 'hr', 'link', 'image',
-                                 'strong1', 'strong2',
-                                 'emphasis1', 'emphasis2',
-                                 'code1', 'code2', 'code3'])
-
-    return Tokenizer(MARKDOWNTOKENS(
-        # escape
-        SingleToken('md-escape', 'default', [r'\\.']),
-
-        # header
-        SingleToken('md-header1', 'header',
-                    [r'^.+\n(?P<H1>[{}])(?P=H1)+$'.format(HEADERS)]),
-        SingleToken('md-header2', 'header', [r'^\#{1,6}.*$']),
-
-        # hr
-        SingleToken('md-hr', 'hr', [r'^(\-{3,}|_{3,}|\*{3,})$']),
-
-        # link
-        LinkToken('md-link', 'reference'),
-
-        # image
-        ImageToken('md-image', 'reference'),
-
-        # strong
-        MDInline('md-strong1', 'strong', r'\*\*', r'\*\*|$', escape='\\'),
-        MDInline('md-strong2', 'strong', r'__', r'__|$', escape='\\'),
-
-        # emphasis
-        MDInline('md-emphasis1', 'emphasis', r'\*', r'\*|$', escape='\\'),
-        MDInline('md-emphasis2', 'emphasis', r'_', r'_|$', escape='\\'),
-
-        # code
-        Span('md-code1', 'literal', r'^```', r'^```\s*$', escape='\\'),
-        MDInline('md-code2', 'literal', r'`', r'`', escape='\\'),
-        Span('md-code3', 'literal', r'^\ {4,}', r'$', escape='\\'),
+        ('link', LinkToken('reference')),
     ))
+
+    ret._LinkTokenizer = Tokenizer(parent=ret,
+       default_style='reference',
+       tokens=(
+           ('desc',
+            Span('reference', r'"', r'"', escape='\\')),
+           ('close',
+            SingleToken(
+                'reference', [r"\)"], terminates=True)),
+       ))
+    return ret
 
 
 MDMENU = [
@@ -152,6 +88,7 @@ md_keys = {
 
 class MarkdownMode(defaultmode.DefaultMode):
     MODENAME = 'Markdown'
+    tokenizer = make_tokenizer()
 
     def init_keybind(self):
         super().init_keybind()
@@ -165,10 +102,10 @@ class MarkdownMode(defaultmode.DefaultMode):
         super().init_themes()
         self.themes.append(MarkdownThemes)
 
-    def init_tokenizers(self):
-        self.tokenizers = [build_tokenizer()]
+    def init_tokenizer(self):
+        self.tokenizer = MarkdownTokenizer
 
-    HEADER1 = r'^(?P<TITLE>.+)\n(?P<H1>[{}])(?P=H1)+$'.format(HEADERS)
+    HEADER1 = r'^(?P<TITLE>.+)\n(?P<H1>[=-])(?P=H1)+$'
     HEADER2 = r'^(?P<H2>\#{1,6})(?P<TITLE2>.+)$'
 
     RE_HEADER = doc_re.compile(

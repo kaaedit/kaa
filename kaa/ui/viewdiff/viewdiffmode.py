@@ -19,6 +19,8 @@ class ViewDiffMode(dialogmode.DialogMode):
         keybind.macro_command_keys,
     ]
 
+    tokenizer = diffmode.make_tokenizer()
+
     def init_keybind(self):
         super().init_keybind()
 
@@ -27,9 +29,6 @@ class ViewDiffMode(dialogmode.DialogMode):
     def init_themes(self):
         super().init_themes()
         self.themes.append(diffmode.DiffThemes)
-
-    def init_tokenizers(self):
-        self.tokenizers = [diffmode.build_tokenizer()]
 
     def is_cursor_visible(self):
         return 1   # hide cursor

@@ -2,7 +2,6 @@ from unittest.mock import patch
 
 import kaa
 from kaa.ui.dialog import dialogmode
-from kaa import highlight
 from kaa.theme import Theme, Style
 
 import kaa_testutils

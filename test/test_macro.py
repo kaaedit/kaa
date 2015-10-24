@@ -36,7 +36,8 @@ class TestMacro(kaa_testutils._TestScreenBase):
             pass
 
         macro.record(1, g)
-        assert macro.get_commands() == [(kaa.macro.rec_command, 1, 'command1', (), {})]
+        assert macro.get_commands() == [
+            (kaa.macro.rec_command, 1, 'command1', (), {})]
 
     def test_run(self):
         wnd = self._getwnd("abc\ndef\n")
