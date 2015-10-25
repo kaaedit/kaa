@@ -75,7 +75,6 @@ class ModeBase:
 
     closed = False
     theme = None
-    highlight = None
     _check_fileupdate = 0
     _last_autoindent = None
 
@@ -487,16 +486,10 @@ class ModeBase:
     def get_line_overlays(self):
         return {}
 
-    HIGHLIGHTBATCH = 300
-
-    def run_highlight(self):
-        if self.highlight:
-            return self.highlight.update_style(
-                self.document,
-                batch=self.HIGHLIGHTBATCH)
-
     def _get_highlight_range(self):
         return (0, self.document.endpos())
+
+    HIGHLIGHTBATCH = 300
 
     def run_tokenizer(self, batch=HIGHLIGHTBATCH):
         range_start, range_end = self._get_highlight_range()

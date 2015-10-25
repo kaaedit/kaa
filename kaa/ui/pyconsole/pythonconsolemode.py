@@ -76,10 +76,6 @@ class PythonConsoleMode(pythonmode.PythonMode):
         super().init_themes()
         self.themes.append(PythonConsoleThemes)
 
-    def setup(self):
-        super().setup()
-        self.highlight.set_mark('current_script')
-
     def on_set_document(self, document):
         super().on_set_document(document)
         self.interp = KaaInterpreter(document=document)
@@ -97,6 +93,9 @@ class PythonConsoleMode(pythonmode.PythonMode):
 
         f, t = self.document.marks['current_script']
         wnd.cursor.setpos(f)
+
+    def _get_highlight_range(self):
+        return self.document.marks['current_script']
 
     @commandid('pythonconsole.clear')
     @norec
