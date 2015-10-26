@@ -1,3 +1,5 @@
+import os
+import signal
 import gc
 import time
 import socket
@@ -6,6 +8,10 @@ import sys
 import select
 import curses
 import threading
+import struct
+import fcntl
+import termios
+
 import kaa
 import kaa.log
 from . import keydef, color, dialog
@@ -37,6 +43,10 @@ class CuiApp:
 
         self.commands = {}
         self.is_availables = {}
+
+        self.sigwinch_rfd, self.sigwinch_wfd = os.pipe()
+        signal.signal(signal.SIGWINCH, 
+            lambda *args:os.write(self.sigwinch_wfd, b'0'))
 
     def register_commandobj(self, cmds):
         self.commands.update(cmds.get_commands())
@@ -84,6 +94,8 @@ class CuiApp:
         self.messagebar.set_message(self.DEFAULT_MENU_MESSAGE)
 
     def on_shutdown(self):
+        os.close(self.sigwinch_rfd)
+        os.close(self.sigwinch_wfd)
         self.config.close()
 
     def get_current_theme(self):
@@ -273,9 +285,6 @@ class CuiApp:
             m = getattr(d, 'mode', w)
             panels[idx] = m
 
-        _trace('>>>>>>>>>>>>>>>>>>>>>>')
-        _trace(panels)
-
     def run(self):
 #        def f(t, i):
 #            _trace(t, i)
@@ -301,7 +310,7 @@ class CuiApp:
 
                 try:
                     rlist, _, _ = select.select(
-                        [sys.stdin] + rd, [], [],
+                        [sys.stdin, self.sigwinch_rfd] + rd, [], [],
                         0 if nonblocking else self._next_scheduled_task())
 
                 except InterruptedError:
@@ -312,7 +321,20 @@ class CuiApp:
                     self._run_scheduled_task()
                     self.set_idlejob()  # Reschedule idle procs
 
-                ready = [r for r in rlist if r is not sys.stdin]
+                if self.sigwinch_rfd in rlist:
+                    os.read(self.sigwinch_rfd, 1)
+
+                    # sigh. pep-0475 prevents us to handling SIGWINCH.
+                    # force curses to resize window.
+                    import struct, fcntl, termios
+                    v = fcntl.ioctl(0, termios.TIOCGWINSZ, 
+                            struct.pack('HHHH', 0, 0, 0, 0))
+                    lines, cols, _, _ = struct.unpack('HHHH', v)
+                    curses.resizeterm(lines, cols)
+                    self.mainframe.on_console_resized()
+            
+                ready = [r for r in rlist if r not in 
+                            (sys.stdin, self.sigwinch_rfd)]
                 if ready:
                     nonblocking = True
                     for r in ready:
