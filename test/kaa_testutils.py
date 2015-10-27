@@ -173,7 +173,7 @@ def _print_styleinfo(doc, f, t, tokens):
 
     print('---tokens---')
     for n, token in maps:
-        print(n, token.__class__.__name__, '({})'.format(hex(id(token))))
+        print(n, token.__class__.__name__, token.re_start(), '({})'.format(hex(id(token))))
 
 def check_style(doc, f, t, tokens):
     expected = []

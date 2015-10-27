@@ -97,7 +97,7 @@ class TestHTMLHighlight(kaa_testutils._TestDocBase):
     CSSTokenizer = TOKENIZER.CSSTokenizer
     CSSPropTokenizer = CSSTokenizer.PropTokenizer
     CSSPropValueTokenizer = CSSPropTokenizer.PropValueTokenizer
-    def test_jselem(self):
+    def test_csselem(self):
         doc = self._getdoc("<style>a{b:c}</style>")
         doc.mode.run_tokenizer(None)
         kaa_testutils.check_style(doc, 0, 21, 
@@ -105,7 +105,8 @@ class TestHTMLHighlight(kaa_testutils._TestDocBase):
             [self.CSSTokenizer.tokens.default] * 1 +
             [self.CSSTokenizer.tokens.ruleset] * 1 +
             [self.CSSPropTokenizer.tokens.propname] * 2	 +
-            [self.CSSPropValueTokenizer.tokens.default] * 2 +
+            [self.CSSPropValueTokenizer.tokens.default] * 1 +
+            [self.CSSPropTokenizer.tokens.terminate] * 1 +
             [self.TOKENIZER.tokens.tag] * 8 )
 
 

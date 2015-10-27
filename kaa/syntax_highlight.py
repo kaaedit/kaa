@@ -77,6 +77,8 @@ class DefaultToken(Token):
     def prepare(self):
         self.register_styles("styleid_default")
 
+    def re_start(self):
+        return ''
 
 class Tokenizer:
     DEFAULT_TOKEN = DefaultToken

@@ -11,11 +11,19 @@ from kaa.syntax_highlight import *
 
 CSSThemes = {
     'basic': [
+        Style('media-selector', 'yellow', 'default'),
         Style('css-selector', 'magenta', 'default'),
         Style('css-propname', 'cyan', 'default', bold=True),
         Style('css-propvalue', 'green', 'default', bold=True),
     ],
 }
+
+class MediaToken(SingleToken):
+    def on_start(self, doc, match):
+        pos, terminates = yield from super().on_start(doc, match)
+        pos = yield from self.tokenizer.MediaCSSTokenizer.run(doc, pos)
+
+        return pos, False
 
 class RuleSetToken(SingleToken):
     def on_start(self, doc, match):
@@ -37,11 +45,12 @@ def make_prop_tokenizer(root, terminates=None):
         tokens=(
             ('comment1', Span('comment', r'/\*', '\*/', escape='\\')),
             ('propname', PropNameToken('css-propname', [r'[^:\s]+:'])),
-            ('terminate', Terminator('css-propvalue', [r'}'])),
+            ('terminate', SingleToken('css-selector', [r'}'], terminates=True)),
     ))
 
     ret.PropValueTokenizer = Tokenizer(parent=ret, terminates=terminates,
         tokens=(
+            ('close', Terminator('css-selector', [r'\}'])),
             ('terminate', SingleToken('css-propvalue', [r';'], terminates=True)),
             ('comment1', Span('comment', r'/\*', '\*/', escape='\\')),
             ('string1', Span('string', '"', '"', escape='\\')),
@@ -53,17 +62,31 @@ def make_prop_tokenizer(root, terminates=None):
 
     return ret
 
-def make_tokenizer(parent, terminates=None):
-    ret = Tokenizer(parent=parent, default_style='css-selector', 
-                    terminates=terminates, tokens=[
-        ('decl', SingleToken('directive', [r'@\w*'])),
+
+def get_css_tokens():
+    return [
         ('comment1', Span('comment', r'/\*', '\*/', escape='\\')),
         ('string1', Span('string', '"', '"', escape='\\')),
         ('string2', Span('string', "'", "'", escape='\\')),
-        ('ruleset', RuleSetToken('css-selector', [r'[\{\}]'])),
-    ])
+        ('ruleset', RuleSetToken('css-selector', [r'\{'])),
+    ]
+
+def make_tokenizer(parent, terminates=None):
+    ret = Tokenizer(parent=parent, default_style='css-selector', 
+                    terminates=terminates, 
+                    tokens=[
+                        ('media', MediaToken('media-selector', [r'@media[^{]+\{'])),
+                        ('decl', SingleToken('directive', [r'@\w*'])),
+                        ('terminate', SingleToken('media-selector', [r'}'])),
+                        ]
+                        +get_css_tokens())
 
     ret.PropTokenizer = make_prop_tokenizer(ret, terminates=terminates)
+    ret.MediaCSSTokenizer = Tokenizer(parent=ret, default_style='css-selector', 
+                    tokens=get_css_tokens()+[('terminate', SingleToken('media-selector', [r'}']))])
+
+    ret.MediaCSSTokenizer.PropTokenizer = make_prop_tokenizer(ret.MediaCSSTokenizer, 
+        terminates=terminates)
     return ret
 
 class CSSMode(defaultmode.DefaultMode):
