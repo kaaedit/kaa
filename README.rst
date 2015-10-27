@@ -909,16 +909,27 @@ Version history
 =================
 
 
-0.44.0 - 2015.6.7
+0.45.0 - 2015.10.27
 --------------------
+
+- Handle terminal resize in Python 3.5.
+
+- Reworked syntax highligh.
+
+- [CSS mode] Highlight @media rules.
+
+
+Past versions
+--------------
+
+
+0.44.0 - 2015.6.7
+++++++++++++++++++++++
 
 - New file mode: INI file. [`PR #125 Contributed by hirokiky <https://github.com/kaaedit/kaa/pull/125>`_]
 
 - New file mode: JSON file. [`PR #126 Contributed by hirokiky <https://github.com/kaaedit/kaa/pull/126>`_]
 
-
-Past versions
---------------
 
 0.43.0 - 2015.5.10
 ++++++++++++++++++++++
