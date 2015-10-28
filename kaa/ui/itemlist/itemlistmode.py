@@ -12,9 +12,11 @@ itemlist_keys = {
     left: 'itemlist.prev',
     (ctrl, 'p'): 'itemlist.prev',
     (ctrl, 'b'): 'itemlist.prev',
+    (shift, tab): 'itemlist.prev',
     right: 'itemlist.next',
     (ctrl, 'n'): 'itemlist.next',
     (ctrl, 'f'): 'itemlist.next',
+    tab: 'itemlist.next',
     '\r': 'itemlist.selected',
     '\n': 'itemlist.selected',
 }

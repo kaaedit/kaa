@@ -87,8 +87,10 @@ FilterListInputDlgThemes = {
 filterlistinputdlg_keys = {
     down: 'filterlistdlg.next',
     (ctrl, 'n'): 'filterlistdlg.next',
+    tab: 'filterlistdlg.next',
     up: 'filterlistdlg.prev',
     (ctrl, 'p'): 'filterlistdlg.prev',
+    (shift, tab): 'filterlistdlg.prev',
     '\r': 'filterlistdlg.select',
     '\n': 'filterlistdlg.select',
 }
