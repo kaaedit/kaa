@@ -537,7 +537,11 @@ class ModeBase:
         """split characters by character category."""
 
         s = self.document.gettext(begin, end)
-        for key, chars in itertools.groupby(s, unicodedata.category):
+
+        def get_category(c):
+            return unicodedata.category(c)[0]
+
+        for key, chars in itertools.groupby(s, get_category):
             chars = ''.join(chars)
             end = begin + len(chars)
             yield begin, end, chars, key
@@ -551,6 +555,17 @@ class ModeBase:
 
     RE_SPLITWORD = doc_re.compile('|'.join((
         RE_WORDCHAR, RE_WHITESPACE, RE_LF, RE_HIRAGANA, RE_KATAKANA)))
+
+# http://unicodebook.readthedocs.org/en/latest/unicode.html
+#Unicode 6.0 has 7 character categories, and each category has subcategories:
+#
+#Letter (L): lowercase (Ll), modifier (Lm), titlecase (Lt), uppercase (Lu), other (Lo)
+#Mark (M): spacing combining (Mc), enclosing (Me), non-spacing (Mn)
+#Number (N): decimal digit (Nd), letter (Nl), other (No)
+#Punctuation (P): connector (Pc), dash (Pd), initial quote (Pi), final quote (Pf), open (Ps), close (Pe), other (Po)
+#Symbol (S): currency (Sc), modifier (Sk), math (Sm), other (So)
+#Separator (Z): line (Zl), paragraph (Zp), space (Zs)
+#Other (C): control (Cc), format (Cf), not assigned (Cn), private use (Co), surrogate (Cs)
 
     def split_word(self, begin, all=False):
         """yield word in the document until line ends"""
