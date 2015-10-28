@@ -69,11 +69,11 @@ class TestRstHighlight(kaa_testutils._TestDocBase):
             [self.TOKENIZER.tokens.header1] * 9)
 
     def test_block(self):
-        doc = self._getdoc('abc:: \n')
+        doc = self._getdoc('abc:: \na')
         doc.mode.run_tokenizer(None)
-        kaa_testutils.check_style(doc, 0, 7, 
+        kaa_testutils.check_style(doc, 0, 8, 
             [self.TOKENIZER.tokens.default] * 3 +
-            [self.TOKENIZER.tokens.block] * 3 +
+            [self.TOKENIZER.tokens.block] * 4 +
             [self.TOKENIZER.tokens.default])
 
     def test_directive(self):

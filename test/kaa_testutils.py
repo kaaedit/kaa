@@ -146,11 +146,19 @@ class _TestScreenBase(_TestDocBase):
 def _print_styleinfo(doc, f, t, tokens):
     mapids = set()
     maps = []
+    token_names = {}
     for token in tokens:
         d = token.tokenizer.get_styleid_map()
         if id(d) not in mapids:
             mapids.add(id(d))
             maps.extend(d.items())
+
+    tokenizers = {token.tokenizer for styleid, token in maps}
+    tokennames = {}
+    for tokenizer in tokenizers:
+        for name in dir(tokenizer.tokens):
+            if not name.startswith('__'):
+                tokennames[getattr(tokenizer.tokens, name)] = name 
 
     maps = sorted(maps)
     print('n\tvalue\texpected')
@@ -158,22 +166,24 @@ def _print_styleinfo(doc, f, t, tokens):
     values = doc.styles.getints(f, t)
     for n, (v, t) in enumerate(itertools.zip_longest(values, tokens)):
         if v is not None:
-            token_candidates = [token.__class__.__name__ for i, token in maps if i == v]
+            token_candidates = [tokennames.get(token) for i, token in maps if i == v]
             val = '%s%s' % (v, token_candidates)
         else:
             val = ''
 
         if t is not None:
             token_ids = [i for i, token in maps if token is t]
-            exp = '%s(%s)' % (t.__class__.__name__, token_ids)
+            token_names = [tokennames.get(token) for i, token in maps if token is t]
+            exp = '%s(%s)' % (token_ids, token_names)
         else:
             exp = ''
 
-        print(n, '\t', val, '\t', exp)
+        flag = '>' if v not in token_ids  else ' '
+        print(flag, n, '\t', val, '\t', exp)
 
     print('---tokens---')
     for n, token in maps:
-        print(n, token.__class__.__name__, token.re_start(), '({})'.format(hex(id(token))))
+        print(n, tokennames.get(token), '{}'.format(token))
 
 def check_style(doc, f, t, tokens):
     expected = []
