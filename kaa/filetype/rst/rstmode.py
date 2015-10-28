@@ -102,7 +102,7 @@ def make_tokenizer():
         # block
         ('directive', Span('directive', r'\.\.\s+\S+::', '^\S',
              escape='\\', capture_end=False)),
-        ('block', SingleToken('block', [r'::[\ \t]*$'])),
+        ('block', Span('block', r'::', '^\S', capture_end=False)),
 
         # table
         ('table_border',TableToken('table', [r'\+[+\-=]+(\s+|$)'])),
