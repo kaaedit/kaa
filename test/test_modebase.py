@@ -15,10 +15,10 @@ class TestDefaultMode(kaa_testutils._TestScreenBase):
             (4, 8, '   \t', 'Z_WHITESPACE'),
             (8, 11, 'abc', 'L_WORDCHAR'),
             (11, 12, ' ', 'Z_WHITESPACE'),
-            (12, 16, '::::', 'Po'),
+            (12, 16, '::::', 'P'),
             (16, 21, 'あいうえお', 'L_HIRAGANA'),
             (21, 26, 'カキクケコ', 'L_KATAKANA'),
-            (26, 28, '[[', 'Ps'),) == tuple(mode.split_word(0))
+            (26, 28, '[[', 'P'),) == tuple(mode.split_word(0))
 
         mode = self._getmode()
         doc = self._getdoc('\n\n')

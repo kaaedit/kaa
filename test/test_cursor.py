@@ -64,9 +64,6 @@ class TestCursor(kaa_testutils._TestScreenBase):
         cursor.setpos(0)
 
         cursor.right(word=True)
-        assert cursor.pos == 3
-
-        cursor.right(word=True)
         assert cursor.pos == 4
 
         cursor.right(word=True)
@@ -93,9 +90,6 @@ class TestCursor(kaa_testutils._TestScreenBase):
 
         cursor.left(word=True)
         assert cursor.pos == 4
-
-        cursor.left(word=True)
-        assert cursor.pos == 3
 
         cursor.left(word=True)
         assert cursor.pos == 0
