@@ -380,8 +380,9 @@ class ModeBase:
             for panel in panels:
                 if panel in frame_panels:
                     if panel is not frame_panels[0]:
-                        _trace('Invalid frame order: %s' % (commandids,))
+                        _trace('Invalid frame order: %s%s' % (self, commandids,))
                 break
+
         f()
 
     def on_esc_pressed(self, wnd, event):
