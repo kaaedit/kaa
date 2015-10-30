@@ -94,7 +94,7 @@ class FilenameIndexMode(defaultmode.DefaultMode):
                 newline = kaa.app.config.DEFAULT_NEWLINE
 
             doc = kaa.app.storage.openfile(
-                filename, encoding=enc, nohist=True, newline=newline)
+                filename, encoding=enc, newline=newline)
 
         buddy = wnd.splitter.get_buddy()
         if not buddy:

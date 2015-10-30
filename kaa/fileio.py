@@ -124,8 +124,6 @@ class FileStorage:
 
     def openfile(self, filename, encoding=None, newline=None, nohist=False,
                  filemustexists=False):
-        if not nohist:
-            self._save_hist(filename)
 
         fileinfo = self.get_fileinfo(filename, encoding, newline)
         modecls = select_mode(fileinfo.fullpathname)
@@ -139,6 +137,9 @@ class FileStorage:
             if fileinfo.nlchars is not None:
                 src = src.replace(fileinfo.nlchars, '\n')
             buf.insert(0, src)
+
+            if not nohist:
+                self._save_hist(filename)
 
         doc = document.Document(buf)
         doc.fileinfo = fileinfo
