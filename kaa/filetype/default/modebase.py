@@ -363,6 +363,27 @@ class ModeBase:
         finally:
             wnd.set_command_repeat(1)
 
+        def f():
+            import kaa.cui.frame
+            frames = kaa.cui.frame.MainFrame.childframes
+            frame_panels = [f._panel for f in frames]
+
+            import curses.panel
+            panels = [curses.panel.top_panel()]
+            while True:
+                panel = panels[-1].below()
+                if panel:
+                    panels.append(panel)
+                else:
+                    break
+
+            for panel in panels:
+                if panel in frame_panels:
+                    if panel is not frame_panels[0]:
+                        _trace('Invalid frame order: %s' % (commandids,))
+                break
+        f()
+
     def on_esc_pressed(self, wnd, event):
         pass
 
