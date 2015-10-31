@@ -70,6 +70,11 @@ class FileCommands(Commands):
             editor = kaa.app.show_doc(doc)
             self.restore_file_loc(editor)
 
+
+        if not filename:
+            if wnd.document.fileinfo:
+                filename = wnd.document.fileinfo.dirname
+
         from kaa.ui.selectfile import selectfile
         selectfile.show_fileopen(filename, cb)
 
@@ -435,8 +440,12 @@ class FileCommands(Commands):
     @norerun
     def file_open_to(self, wnd):
         def openfile(cb):
+            if wnd.document.fileinfo:
+                filename = wnd.document.fileinfo.dirname
+            else:
+                filename = ''
             from kaa.ui.selectfile import selectfile
-            selectfile.show_fileopen('', cb)
+            selectfile.show_fileopen(filename, cb)
 
         self._open_file_to_wnd(wnd, openfile)
 
