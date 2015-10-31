@@ -15,22 +15,30 @@ class TestCSSHighlight(kaa_testutils._TestDocBase):
             [tokenizer.tokens.ruleset] * 1 +
             [tokenizer.PropTokenizer.tokens.propname] * 4 +
             [tokenizer.PropTokenizer.PropValueTokenizer.tokens.default] * 3 +
-            [tokenizer.PropTokenizer.PropValueTokenizer.tokens.terminate] * 1 +
-            [tokenizer.PropTokenizer.tokens.terminate] * 1
+            [tokenizer.PropTokenizer.PropValueTokenizer.tokens.terminate_value] * 1 +
+            [tokenizer.PropTokenizer.tokens.terminate_name] * 1
         )
 
     def test_media(self):
-        doc = self._getdoc('@media a{b{c:d}}')
+        doc = self._getdoc('@media a{b{c:d}}@media e{f{g:h}}')
         doc.mode.run_tokenizer(None)
 
         tokenizer = cssmode.CSSMode.tokenizer
         doc.mode.run_tokenizer(None)
-        kaa_testutils.check_style(doc, 0, 16, 
+        kaa_testutils.check_style(doc, 0, 32, 
             [tokenizer.tokens.media] * 9 +
             [tokenizer.MediaCSSTokenizer.tokens.default] * 1 +
             [tokenizer.MediaCSSTokenizer.tokens.ruleset] * 1 +
             [tokenizer.MediaCSSTokenizer.PropTokenizer.tokens.propname] * 2 +
             [tokenizer.MediaCSSTokenizer.PropTokenizer.PropValueTokenizer.tokens.default] * 1 +
-            [tokenizer.MediaCSSTokenizer.PropTokenizer.tokens.terminate] * 1 +
-            [tokenizer.MediaCSSTokenizer.tokens.terminate] * 1
+            [tokenizer.MediaCSSTokenizer.PropTokenizer.tokens.terminate_name] * 1 +
+            [tokenizer.MediaCSSTokenizer.tokens.terminate_media] * 1 +
+
+            [tokenizer.tokens.media] * 9 +
+            [tokenizer.MediaCSSTokenizer.tokens.default] * 1 +
+            [tokenizer.MediaCSSTokenizer.tokens.ruleset] * 1 +
+            [tokenizer.MediaCSSTokenizer.PropTokenizer.tokens.propname] * 2 +
+            [tokenizer.MediaCSSTokenizer.PropTokenizer.PropValueTokenizer.tokens.default] * 1 +
+            [tokenizer.MediaCSSTokenizer.PropTokenizer.tokens.terminate_name] * 1 +
+            [tokenizer.MediaCSSTokenizer.tokens.terminate_media] * 1
             )

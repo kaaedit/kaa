@@ -45,13 +45,13 @@ def make_prop_tokenizer(root, terminates=None):
         tokens=(
             ('comment1', Span('comment', r'/\*', '\*/', escape='\\')),
             ('propname', PropNameToken('css-propname', [r'[^:\s]+:'])),
-            ('terminate', SingleToken('css-selector', [r'}'], terminates=True)),
+            ('terminate_name', SingleToken('css-selector', [r'}'], terminates=True)),
     ))
 
     ret.PropValueTokenizer = Tokenizer(parent=ret, terminates=terminates,
         tokens=(
             ('close', Terminator('css-selector', [r'\}'])),
-            ('terminate', SingleToken('css-propvalue', [r';'], terminates=True)),
+            ('terminate_value', SingleToken('css-propvalue', [r';'], terminates=True)),
             ('comment1', Span('comment', r'/\*', '\*/', escape='\\')),
             ('string1', Span('string', '"', '"', escape='\\')),
             ('string2', Span('string', "'", "'", escape='\\')),
@@ -75,15 +75,15 @@ def make_tokenizer(parent, terminates=None):
     ret = Tokenizer(parent=parent, default_style='css-selector', 
                     terminates=terminates, 
                     tokens=[
-                        ('media', MediaToken('media-selector', [r'@media[^{]+\{'])),
+                        ('media', MediaToken('media-selector', [r'@media[^{]*\{?'])),
                         ('decl', SingleToken('directive', [r'@\w*'])),
-                        ('terminate', SingleToken('media-selector', [r'}'])),
                         ]
                         +get_css_tokens())
 
     ret.PropTokenizer = make_prop_tokenizer(ret, terminates=terminates)
     ret.MediaCSSTokenizer = Tokenizer(parent=ret, default_style='css-selector', 
-                    tokens=get_css_tokens()+[('terminate', SingleToken('media-selector', [r'}']))])
+            tokens=get_css_tokens() +
+                [('terminate_media', SingleToken('media-selector', [r'}'], terminates=True))])
 
     ret.MediaCSSTokenizer.PropTokenizer = make_prop_tokenizer(ret.MediaCSSTokenizer, 
         terminates=terminates)

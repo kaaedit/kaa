@@ -72,13 +72,14 @@ class Regex(Span):
 
 def javascript_tokens():
     return (
+        ("comment1", Span('comment', r'/\*', '\*/', escape='\\')),
+        ("comment2", Span('comment', r'//', '$', escape='\\')),
+
         ("keyword", Keywords('keyword', KEYWORDS)),
         ("number", SingleToken('number',
                                [r'\b[0-9]+(\.[0-9]*)*\b', r'\b\.[0-9]+\b'])),
         ("regex", Regex('string', r'/', r'/\w*', escape='\\')),
         
-        ("comment1", Span('comment', r'/\*', '\*/', escape='\\')),
-        ("comment2", Span('comment', r'//', '$', escape='\\')),
 
         ("string1", Span('string', '"', '"', escape='\\')),
         ("string2", Span('string', "'", "'", escape='\\')),

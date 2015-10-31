@@ -164,7 +164,8 @@ def _print_styleinfo(doc, f, t, tokens):
     print('n\tvalue\texpected')
 
     values = doc.styles.getints(f, t)
-    for n, (v, t) in enumerate(itertools.zip_longest(values, tokens)):
+    s = doc.gettext(f, t)
+    for n, (c, v, t) in enumerate(itertools.zip_longest(s, values, tokens)):
         if v is not None:
             token_candidates = [tokennames.get(token) for i, token in maps if i == v]
             val = '%s%s' % (v, token_candidates)
@@ -179,7 +180,7 @@ def _print_styleinfo(doc, f, t, tokens):
             exp = ''
 
         flag = '>' if v not in token_ids  else ' '
-        print(flag, n, '\t', val, '\t', exp)
+        print(flag, n, c, '\t', val, '\t', exp)
 
     print('---tokens---')
     for n, token in maps:

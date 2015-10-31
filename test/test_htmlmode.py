@@ -106,7 +106,7 @@ class TestHTMLHighlight(kaa_testutils._TestDocBase):
             [self.CSSTokenizer.tokens.ruleset] * 1 +
             [self.CSSPropTokenizer.tokens.propname] * 2	 +
             [self.CSSPropValueTokenizer.tokens.default] * 1 +
-            [self.CSSPropTokenizer.tokens.terminate] * 1 +
+            [self.CSSPropTokenizer.tokens.terminate_name] * 1 +
             [self.TOKENIZER.tokens.tag] * 8 )
 
 
