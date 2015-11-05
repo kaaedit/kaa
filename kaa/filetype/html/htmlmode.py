@@ -101,9 +101,6 @@ def iter_attrs(doc, pos):
 class HTMLTag(SingleToken):
     def on_start(self, doc, match):
         pos, terminates = yield from super().on_start(doc, match)
-        if match.group('closetag'):
-            return pos, terminates
-
         if pos < doc.endpos():
             pos = yield from self.tokenizer.AttrTokenizer.run(doc, pos)
             if pos < doc.endpos():
@@ -117,8 +114,6 @@ class HTMLTag(SingleToken):
 class HTMLScriptTag(HTMLTag):
     def on_start(self, doc, match):
         pos, terminates = yield from super().on_start(doc, match)
-        if match.group('closetag'):
-            return pos, terminates
 
         for name, value in iter_attrs(doc, match.start()):
             if name.lower() == 'type':
@@ -131,8 +126,6 @@ class HTMLScriptTag(HTMLTag):
 class HTMLStyleTag(HTMLTag):
     def on_start(self, doc, match):
         pos, terminates = yield from super().on_start(doc, match)
-        if match.group('closetag'):
-            return pos, terminates
 
         pos = yield from self.tokenizer.CSSTokenizer.run(doc, pos)
 
@@ -188,7 +181,8 @@ def make_tokenizer():
         ('xmldef', Span('html-decl', r'<!', r'>')),
         ('styletag', HTMLStyleTag('html-tag', [r'<\s*style'])),
         ('scripttag', HTMLScriptTag('html-tag', [r'<\s*script'])),
-        ('tag', HTMLTag('html-tag', [r'<(?P<closetag>/)?\s*\S+'])),
+        ('closetag', SingleToken('html-tag', [r'</\s*[^>]+>'])),
+        ('tag', HTMLTag('html-tag', [r'<\s*[^>\s]'])),    
     ])
 
 
