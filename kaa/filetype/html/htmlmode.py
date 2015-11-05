@@ -182,7 +182,7 @@ def make_tokenizer():
         ('styletag', HTMLStyleTag('html-tag', [r'<\s*style'])),
         ('scripttag', HTMLScriptTag('html-tag', [r'<\s*script'])),
         ('closetag', SingleToken('html-tag', [r'</\s*[^>]+>'])),
-        ('tag', HTMLTag('html-tag', [r'<\s*[^>\s]'])),    
+        ('tag', HTMLTag('html-tag', [r'<\s*[^>\s]*'])),    
     ])
 
 
