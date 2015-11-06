@@ -132,8 +132,13 @@ class HTMLStyleTag(HTMLTag):
         return pos, terminates
         
 class HTMLAttr(SingleToken):
+    def __init__(self, stylename, value_stylename, tokens, terminates=False):
+        super().__init__(stylename, tokens, terminates=terminates)
+        self._value_stylename = value_stylename
+
     def prepare(self):
         super().prepare()
+        self.register_styles([(self._value_stylename, "styleid_value")])
 
     def on_start(self, doc, match):
         pos, terminates = yield from super().on_start(doc, match)
@@ -145,26 +150,34 @@ class HTMLAttr(SingleToken):
             attrname = match.group('attrname')
             attrname = attrname.lower() if attrname else ''
 
+            if c in {"'", '"'}:
+                yield (pos, pos+1, self.styleid_value)
+
             if attrname.startswith('on'):
                 if c == "'":
-                    yield (pos, pos+1, self.styleid_token)
                     pos = yield from self.tokenizer.AttrValueJSTokenizer1.run(doc, pos+1)
                 elif c == '"':
-                    yield (pos, pos+1, self.styleid_token)
                     pos = yield from self.tokenizer.AttrValueJSTokenizer2.run(doc, pos+1)
+
+                if pos < doc.endpos():
+                    if doc.gettext(pos, pos+1) == c:
+                        yield (pos, pos+1, self.styleid_value)
+                        pos += 1
+
             elif attrname == 'style':
                 if c == "'":
-                    yield (pos, pos+1, self.styleid_token)
                     pos = yield from self.tokenizer.AttrValueCSSTokenizer1.run(doc, pos+1)
                 elif c == '"':
-                    yield (pos, pos+1, self.styleid_token)
                     pos = yield from self.tokenizer.AttrValueCSSTokenizer2.run(doc, pos+1)
+
+                if pos < doc.endpos():
+                    if doc.gettext(pos, pos+1) == c:
+                        yield (pos, pos+1, self.styleid_value)
+                        pos += 1
             else:
                 if c == "'":
-                    yield (pos, pos+1, self.styleid_token)
                     pos = yield from self.tokenizer.AttrValueTokenizer1.run(doc, pos+1)
                 elif c == '"':
-                    yield (pos, pos+1, self.styleid_token)
                     pos = yield from self.tokenizer.AttrValueTokenizer2.run(doc, pos+1)
                 else:
                     pos = yield from self.tokenizer.AttrValueTokenizer3.run(doc, pos)
@@ -185,10 +198,9 @@ def make_tokenizer():
         ('tag', HTMLTag('html-tag', [r'<\s*[^>\s]*'])),    
     ])
 
-
     ret.AttrTokenizer = Tokenizer(parent=ret, terminates='>', 
         is_resumable=False, tokens=[
-            ('attr', HTMLAttr('html-attrname', [r'(?P<attrname>[^\s=>]+)\s*=?\s*'])),
+            ('attr', HTMLAttr('html-attrname', 'html-attrvalue', [r'(?P<attrname>[^\s=>]+)\s*=?\s*'])),
     ])
 
     ret.AttrTokenizer.AttrValueTokenizer1 = Tokenizer(parent=ret.AttrTokenizer,

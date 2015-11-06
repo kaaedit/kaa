@@ -36,18 +36,20 @@ def begin_tokenizer(doc, root, updated):
 class Token:
     styles = ()
 
-    def __init__(self, stylename, terminates=False):
-        self._stylename = stylename
+    def __init__(self, terminates=False):
+#        self._stylename = stylename
         self._style_ids = []
+        self._styleid_names = {}
         self.terminates = terminates
 
-    def register_styles(self, *names):
+    def register_styles(self, styles):
         l = self.tokenizer.get_styleid_map()
-        for name in names:
+        for stylename, styleidname in styles:
             styleid = len(l)
-            l[styleid] = self
             self._style_ids.append(styleid)
-            setattr(self, name, styleid)
+            l[styleid] = self
+            self._styleid_names[styleid] = stylename
+            setattr(self, styleidname, styleid)
 
     def get_tokenizers(self):
         ret = []
@@ -57,7 +59,7 @@ class Token:
             tokenizer = tokenizer.parent
 
     def get_stylename(self, styleid):
-        return self._stylename
+        return self._styleid_names[styleid]
 
     def get_token_begin(self, doc, pos):
         p = doc.styles.rfindint(self._style_ids, 0, pos,
@@ -74,8 +76,12 @@ class Token:
 
 class DefaultToken(Token):
 
+    def __init__(self, stylename, terminates=False):
+        super().__init__(terminates=terminates)
+        self._stylename = stylename
+
     def prepare(self):
-        self.register_styles("styleid_default")
+        self.register_styles([(self._stylename, "styleid_default")])
 
     def re_start(self):
         return ''
@@ -190,11 +196,12 @@ class Tokenizer:
 class SingleToken(Token):
 
     def __init__(self, stylename, tokens, terminates=False):
-        super().__init__(stylename, terminates=terminates)
+        super().__init__(terminates=terminates)
+        self._stylename = stylename
         self._tokens = tokens
 
     def prepare(self):
-        self.register_styles("styleid_token")
+        self.register_styles([(self._stylename, "styleid_token")])
 
     def re_start(self):
         return r'({})'.format('|'.join(self._tokens))
@@ -217,6 +224,8 @@ class Span(Token):
 
     def __init__(self, stylename, start, end, escape=None,
                  capture_end=True, terminates=None, terminate_tokens=None):
+
+        self._stylename = stylename
         self._start = start
         self._escape = escape
         self._end = end
@@ -224,11 +233,10 @@ class Span(Token):
         self._terminates = terminates
         self._terminate_tokens = terminate_tokens
 
-        super().__init__(stylename, terminates=terminates)
+        super().__init__(terminates=terminates)
 
     def prepare(self):
-        self.register_styles(
-            "styleid_span")
+        self.register_styles([(self._stylename, "styleid_span")])
 
         end = self._end
         if self.tokenizer.terminates:
