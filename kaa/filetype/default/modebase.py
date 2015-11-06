@@ -383,7 +383,7 @@ class ModeBase:
                         _trace('Invalid frame order: %s%s' % (self, commandids,))
                 break
 
-        f()
+#        f()
 
     def on_esc_pressed(self, wnd, event):
         pass
