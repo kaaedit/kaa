@@ -1,4 +1,3 @@
-
 import sys
 import subprocess
 import shutil
@@ -102,6 +101,9 @@ class X11Clipboard(NativeClipboard):
     @classmethod
     def check(cls):
         if not shutil.which(X11Clipboard.CLIPCOMMAND):
+            return False
+
+        if not 'DISPLAY' in os.environ:
             return False
 
         return True
