@@ -714,6 +714,7 @@ class ModeBase:
     def calc_next_indent(self, pos):
         return None
 
+    MAX_AUTO_INDENT = 30
     def on_auto_indent(self, wnd):
         pos = wnd.cursor.pos
         f, t = self.get_indent_range(pos)
@@ -733,7 +734,8 @@ class ModeBase:
         if indentcol is None:
             indent = self.document.gettext(f, min(pos, t))
         else:
-            indent = self.build_indent_str(indentcol)
+            indent = self.build_indent_str(
+                min(self.MAX_AUTO_INDENT, indentcol))
 
         self.insert_string(wnd, pos, '\n' + indent, update_cursor=False)
         self.delete_ws(wnd, pos + len(indent) + 1)
