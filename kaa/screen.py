@@ -524,6 +524,7 @@ class Screen:
                         self.updated_pos -= deleted
 
         self.updated_pos = min(self.updated_pos, self.document.endpos())
+        self.pos = min(self.pos, self.document.endpos())
 
     def style_updated(self):
         self._style_updated = True
