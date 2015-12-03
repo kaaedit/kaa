@@ -135,6 +135,8 @@ class MainFrame(Window, kaa.context.ContextRoot):
     def on_console_resized(self):
         """Resize wnds"""
         self.height, self.width = self._cwnd.getmaxyx()
+        self.messagebar.set_rect(
+            0, self.height - self.MESSAGEBAR_HEIGHT, self.width, self.height)
 
         if self.inputline and not self.inputline.closed:
             w, h = self.inputline.getsize()
@@ -148,8 +150,6 @@ class MainFrame(Window, kaa.context.ContextRoot):
         for popup in self.popups:
             popup.on_console_resized()
 
-        self.messagebar.set_rect(
-            0, self.height - self.MESSAGEBAR_HEIGHT, self.width, self.height)
 
     def _get_temporary_frame(self):
         # if kaa has only one frame and the frame has temporary document,

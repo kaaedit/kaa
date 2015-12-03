@@ -112,6 +112,8 @@ class DialogMode(modebase.ModeBase):
         wnd.screen.setsize(w, wnd.screen.height)
 
         height = self.calc_height(wnd)
+
+        
         if not self.border:
             height = min(height, wnd.mainframe.messagebar.rect[1])
             top = wnd.mainframe.messagebar.rect[1] - height
@@ -123,8 +125,7 @@ class DialogMode(modebase.ModeBase):
                 wnd.mainframe.messagebar.rect[1] - border_width * 2)
             top = wnd.mainframe.messagebar.rect[1] - height - border_width
             return (
-                border_width, top, wnd.mainframe.width -
-                border_width, top + height
+                border_width, top, wnd.mainframe.width - border_width, top + height
             )
 
     def resize_inputs(self, wnd, inputs):
