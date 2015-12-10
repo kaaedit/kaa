@@ -107,7 +107,8 @@ class WordCompleteInputMode(filterlist.FilterListInputDlgMode):
         wnd = self.document.wnds[0]
 
         curword = ''
-        word = self.target.document.mode.get_word_at(self.orgpos)
+        p = max(0, self.orgpos-1)
+        word = self.target.document.mode.get_word_at(p)
         if word:
             f, t, cg = word
             t = max(f, min(t, self.orgpos))

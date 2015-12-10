@@ -909,6 +909,16 @@ Version history
 =================
 
 
+0.47.0 - 2015.12.10
+--------------------
+
+- Range of word in word completion is fixed.
+
+- Use X11 clipboard only if environment variable ``DISPLAY`` is provided.
+
+- Fix bug if diaog size is greater than screen size.
+
+
 0.46.0 - 2015.11.06
 --------------------
 
