@@ -5,6 +5,20 @@ from kaa.filetype.css import cssmode
 class TestCSSHighlight(kaa_testutils._TestDocBase):
     DEFAULTMODECLASS = cssmode.CSSMode
 
+    def test_propvalue(self):
+        doc = self._getdoc('sel{abc:.1;}')
+        doc.mode.run_tokenizer(None)
+        tokenizer = cssmode.CSSMode.tokenizer
+
+        kaa_testutils.check_style(doc, 0, 12, 
+            [tokenizer.tokens.default] * 3 +
+            [tokenizer.tokens.ruleset] * 1 +
+            [tokenizer.PropTokenizer.tokens.propname] * 4 +
+            [tokenizer.PropTokenizer.PropValueTokenizer.tokens.number] * 2 +
+            [tokenizer.PropTokenizer.PropValueTokenizer.tokens.terminate_value] * 1 +
+            [tokenizer.PropTokenizer.tokens.terminate_name] * 1
+        )
+
     def test_no_media(self):
         doc = self._getdoc('sel{abc:def;}')
         doc.mode.run_tokenizer(None)

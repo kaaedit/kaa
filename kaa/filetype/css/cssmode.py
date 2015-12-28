@@ -57,7 +57,7 @@ def make_prop_tokenizer(root, terminates=None):
             ('string2', Span('string', "'", "'", escape='\\')),
             ("color", SingleToken('keyword', [r'\#[0-9a-zA-Z]+'])),
             ("number", SingleToken('number',
-                               [r'\b[0-9]+(\.[0-9]*)*\b', r'\b\.[0-9]+\b'])),
+                               [r'[+-]?\b[0-9]+(\.[0-9]*)*\b', r'[+-]?\.[0-9]+\b'])),
     ))
 
     return ret
