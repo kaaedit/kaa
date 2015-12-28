@@ -98,59 +98,65 @@ class Window(kaa.context.Context):
                 if y < h and x < w and y >= 0 and x >= 0:
                     self._cwnd.move(y, x)
 
+    _keys = []
+    _input_lasterror = ''
+    _input_skipped = 0
+
+    @classmethod
+    def read_console(cls, cwnd, nonblocking):
+        if nonblocking:
+            cwnd.timeout(0)
+        else:
+            cwnd.timeout(-1)
+
+        curses.panel.update_panels()
+        curses.doupdate()
+
+        last = None
+        try:
+            while True:
+                c = cwnd.get_wch()
+
+                cls._input_lasterror = ''
+                cls._input_skipped = 0
+
+                if c == curses.KEY_MOUSE:
+                    mouseid, x, y, z, bstate = curses.getmouse()
+                    cls._keys.append(keydef.MouseEvent(mouseid, x, y, z, bstate))
+                else:
+                    cls._keys.extend(keydef.KeyEvent(k, True)
+                            for k in keydef.convert_registered_key(c))
+                    last = cls._keys[-1]
+
+                cwnd.timeout(0)
+
+        except curses.error as e:
+            if repr(e.args) != cls._input_lasterror:
+                if e.args[0] != 'no input':
+                    log.debug('Error in get_wch()', exc_info=True)
+                cls._input_lasterror= repr(e.args)
+            else:
+                cls._input_skipped += 1
+                if cls._input_skipped  % 500 == 0:
+                    log.debug(
+                        'Too much input-error skips!: {} times'.format(cls._input_skipped))
+
+        # last key event has no trailing character input(i.e. this is not key sequqnce like function keys).
+        if last:
+            last.has_trailing_char = False
+
     def do_input(self, nonblocking):
         """Get an input from curses"""
 
         self._panel.top()
 
-        if nonblocking:
-            self._cwnd.timeout(0)
-        else:
-            self._cwnd.timeout(-1)
-#            self._cwnd.timeout(self.WAITINPUTFOR)
+        self.read_console(self._cwnd, nonblocking)
 
-        no_trailing_char = False  # true if esc key pressed
-        try:
-            curses.panel.update_panels()
-            curses.doupdate()
+        ret = []
+        if self._keys:
+            ret.append(self._keys.pop(0))
+        return ret
 
-            c = self._cwnd.get_wch()
-            if c == '\x1b':
-                self._cwnd.timeout(0)
-                try:
-                    c2 = self._cwnd.get_wch()
-                    # has trailing character.
-                    curses.unget_wch(c2)
-                except curses.error:
-                    # no trailing character.
-                    no_trailing_char = True
-
-        except curses.error as e:
-            if repr(e.args) != self._lasterror:
-                if e.args[0] != 'no input':
-                    log.debug('Error in get_wch()', exc_info=True)
-                self._lasterror = repr(e.args)
-            else:
-                self._skipped += 1
-                if self._skipped % 500 == 0:
-                    log.debug(
-                        'Too much input-error skips!: {} times'.format(self._skipped))
-            return []
-
-        self._lasterror = ''
-        self._skipped = 0
-
-        if c == curses.KEY_MOUSE:
-            mouseid, x, y, z, bstate = curses.getmouse()
-            keys = [keydef.MouseEvent(self, mouseid, x, y, z, bstate)]
-        else:
-            keys = [keydef.KeyEvent(self, k, no_trailing_char)
-                    for k in keydef.convert_registered_key(c)]
-
-#        for k in keys:
-#            _trace('{!r}'.format(k))
-
-        return keys
 
     def add_str(self, letters, attr):
         try:

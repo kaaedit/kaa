@@ -38,25 +38,22 @@ class KeyEvent:
     """ Stores information of keyboard input event.
 
     Attributes:
-        wnd -- Windows object of the event
         key -- key code returned by curses.
     """
     KEY_TRANSLATE = {
         curses.KEY_BACKSPACE: '\x7f'
     }
 
-    def __init__(self, wnd, key, no_trailing_char):
+    def __init__(self, key, has_trailing_char):
         """
 
         Auguments:
-            wnd -- Windows object of the event
             key -- key code returned by curses.
 
         """
 
-        self.wnd = wnd
         self.key = self.KEY_TRANSLATE.get(key, key)
-        self.no_trailing_char = no_trailing_char
+        self.has_trailing_char = has_trailing_char
 
     def __repr__(self):
         c = self.key if isinstance(self.key, int) else ord(self.key)
@@ -72,7 +69,6 @@ class MouseEvent:
     """ Stores information of mouse input event.
 
     Attributes:
-        wnd -- Windows object of the event
         x, y -- Event coordinates
         code -- Type of event
         shift -- True if shift key was pressed
@@ -80,8 +76,7 @@ class MouseEvent:
         alt -- True if alt key was pressed
     """
 
-    def __init__(self, wnd, mouseid, x, y, z, bstate):
-        self.wnd = wnd
+    def __init__(self, mouseid, x, y, z, bstate):
         self.mouseid = mouseid
         self.x = x
         self.y = y

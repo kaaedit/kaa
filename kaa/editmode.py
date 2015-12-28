@@ -42,7 +42,7 @@ class EditMode:
         if not event:
             return
 
-        if event.key == '\x1b' and event.no_trailing_char:
+        if event.key == '\x1b' and not event.has_trailing_char:
             return self.on_esc_pressed(wnd, event)
         else:
             return self.on_key_pressed(wnd, event)
