@@ -6,16 +6,18 @@ class TestCSSHighlight(kaa_testutils._TestDocBase):
     DEFAULTMODECLASS = cssmode.CSSMode
 
     def test_propvalue(self):
-        doc = self._getdoc('sel{abc:.1;}')
+        doc = self._getdoc('sel{abc:.1em;def:ghi}')
         doc.mode.run_tokenizer(None)
         tokenizer = cssmode.CSSMode.tokenizer
 
-        kaa_testutils.check_style(doc, 0, 12, 
+        kaa_testutils.check_style(doc, 0, 21, 
             [tokenizer.tokens.default] * 3 +
             [tokenizer.tokens.ruleset] * 1 +
             [tokenizer.PropTokenizer.tokens.propname] * 4 +
-            [tokenizer.PropTokenizer.PropValueTokenizer.tokens.number] * 2 +
+            [tokenizer.PropTokenizer.PropValueTokenizer.tokens.number] * 4 +
             [tokenizer.PropTokenizer.PropValueTokenizer.tokens.terminate_value] * 1 +
+            [tokenizer.PropTokenizer.tokens.propname] * 4 +
+            [tokenizer.PropTokenizer.PropValueTokenizer.tokens.string] * 3 +
             [tokenizer.PropTokenizer.tokens.terminate_name] * 1
         )
 
@@ -28,7 +30,7 @@ class TestCSSHighlight(kaa_testutils._TestDocBase):
             [tokenizer.tokens.default] * 3 +
             [tokenizer.tokens.ruleset] * 1 +
             [tokenizer.PropTokenizer.tokens.propname] * 4 +
-            [tokenizer.PropTokenizer.PropValueTokenizer.tokens.default] * 3 +
+            [tokenizer.PropTokenizer.PropValueTokenizer.tokens.string] * 3 +
             [tokenizer.PropTokenizer.PropValueTokenizer.tokens.terminate_value] * 1 +
             [tokenizer.PropTokenizer.tokens.terminate_name] * 1
         )
@@ -44,7 +46,7 @@ class TestCSSHighlight(kaa_testutils._TestDocBase):
             [tokenizer.MediaCSSTokenizer.tokens.default] * 1 +
             [tokenizer.MediaCSSTokenizer.tokens.ruleset] * 1 +
             [tokenizer.MediaCSSTokenizer.PropTokenizer.tokens.propname] * 2 +
-            [tokenizer.MediaCSSTokenizer.PropTokenizer.PropValueTokenizer.tokens.default] * 1 +
+            [tokenizer.MediaCSSTokenizer.PropTokenizer.PropValueTokenizer.tokens.string] * 1 +
             [tokenizer.MediaCSSTokenizer.PropTokenizer.tokens.terminate_name] * 1 +
             [tokenizer.MediaCSSTokenizer.tokens.terminate_media] * 1 +
 
@@ -52,7 +54,7 @@ class TestCSSHighlight(kaa_testutils._TestDocBase):
             [tokenizer.MediaCSSTokenizer.tokens.default] * 1 +
             [tokenizer.MediaCSSTokenizer.tokens.ruleset] * 1 +
             [tokenizer.MediaCSSTokenizer.PropTokenizer.tokens.propname] * 2 +
-            [tokenizer.MediaCSSTokenizer.PropTokenizer.PropValueTokenizer.tokens.default] * 1 +
+            [tokenizer.MediaCSSTokenizer.PropTokenizer.PropValueTokenizer.tokens.string] * 1 +
             [tokenizer.MediaCSSTokenizer.PropTokenizer.tokens.terminate_name] * 1 +
             [tokenizer.MediaCSSTokenizer.tokens.terminate_media] * 1
             )

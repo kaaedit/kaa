@@ -53,11 +53,12 @@ def make_prop_tokenizer(root, terminates=None):
             ('close', Terminator('css-selector', [r'\}'])),
             ('terminate_value', SingleToken('css-propvalue', [r';'], terminates=True)),
             ('comment1', Span('comment', r'/\*', '\*/', escape='\\')),
+            ('string', SingleToken('string', [r'[a-zA-Z_]\w*'])),
             ('string1', Span('string', '"', '"', escape='\\')),
             ('string2', Span('string', "'", "'", escape='\\')),
             ("color", SingleToken('keyword', [r'\#[0-9a-zA-Z]+'])),
             ("number", SingleToken('number',
-                               [r'[+-]?\b[0-9]+(\.[0-9]*)*\b', r'[+-]?\.[0-9]+\b'])),
+                               [r'[+-]?[0-9]+(\.[0-9]*)*([a-z]*)', r'[+-]?\.[0-9]([a-z]*)'])),
     ))
 
     return ret
