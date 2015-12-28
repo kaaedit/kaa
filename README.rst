@@ -909,6 +909,16 @@ Version history
 =================
 
 
+0.48.0 - 2015.12.28
+--------------------
+
+- Pasting long text to Python console was failed.
+
+- [CSS] Highlight real number without preceding digits.
+
+- Fix bug if diaog size is greater than screen size.
+
+
 0.47.0 - 2015.12.10
 --------------------
 
