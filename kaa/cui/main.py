@@ -84,7 +84,7 @@ def _check_newversion():
         return
 
     kaa.app.config.save_value('time_check_version', now)
-    threading.Thread(target=_download_version_no).start()
+    threading.Thread(target=_download_version_no).start() # todo: should not rum in thread
 
 
 def main(stdscr):
@@ -149,7 +149,7 @@ def main(stdscr):
             else:
                 sys.exit('Unknown command: {}'.format(opt.command))
 
-        kaa.app.call_later(10, _check_newversion)
+#        kaa.app.call_later(10, _check_newversion)
         kaa.app.run()
         mainframe.destroy()
         kaa.app.on_shutdown()
