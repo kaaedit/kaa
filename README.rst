@@ -746,10 +746,10 @@ Customization
 Kaa executes a Python script file at `~/.kaa/__kaa__.py` on start up. You can write Python script to customize kaa as you like.
 
 
-Change color palette
+Change default color palette
 ----------------------------------
 
-Change default color palette to ``light``.
+To change default color palette, you can modify kaa.app.DEFAULT_PALETTE.
 
 .. code:: python
 
@@ -757,15 +757,23 @@ Change default color palette to ``light``.
    kaa.app.DEFAULT_PALETTE = 'light'  # Use `light' palette. Default is `dark'
 
 
+Customize editor mode
+-------------------------------
+
+Each file type has file editor mode. `kaa.filetype.default import defaultmode` is base class of all text file modes. You can change attributes of filetype classes.
+
 Show line numbers
-----------------------------------
++++++++++++++++++++++++++++
+
+To show line number in editor screen, you can update `SHOW_LINENO` attribute of file mode classes.
 
 .. code:: python
 
    from kaa.filetype.default import defaultmode
    defaultmode.DefaultMode.SHOW_LINENO = True
 
-`defaultmode.DefaultMode` is base class of all text file types. Line number is displayed if `Defaultmode.SHOW_LINENO` is True. If you want to show line number of particular file types, you can update SHOW_LINENO attribute of each file type classes.
+
+To show line number in HTML mode, you should change attribute of htmlmode.HTMLMode class.
 
 .. code:: python
 
@@ -773,69 +781,112 @@ Show line numbers
    from kaa.filetype.html import htmlmode
    htmlmode.HTMLMode.SHOW_LINENO = True
 
-Customize keybind
-----------------------------------
 
-Function `kaa.addon.keybind()` registers custom keybind.
+File type customization hook
+-------------------------------
+
+Each mode object calls setup function to customize. `kaa.addon.setup()` decorator registers setup function.
 
 .. code:: python
 
-    keybind(filemode='kaa.filetype.default.defaultmode.DefaultMode', 
-        editmode='input', keymap = {})
+    setup(filemode='kaa.filetype.default.defaultmode.DefaultMode')
 
-`filemode` is a name of mode class to install keybind. `editmode` is a name of editmode which should be one of `insert`, `command`, `visual` or `visualline`. `keymap` is a dictionary of keybind and command name.
+
+Setup function is called when mode object is created. In the setup function, you can customize various aspect of file type object.
+
+
+Customize keybind
+++++++++++++++++++++++++++
+
+`mode.add_keybinds()` method registers custom key bind.
+
+.. code:: python
+
+    add_keybinds(self, editmode='input', keys=None):
+
+
+
+`editmode` is a name of editmode which should be one of `input`, `command`, `visual` or `visualline`. `keymap` is a dictionary of keybind and command name.
+
 
 Following example assign `Control+x 2` key to split window as Emacs.
 
 .. code:: python
 
-    # sample to register custom keybind.
     from kaa.addon import *
-    keybind(keymap={
-        ((ctrl, 'x'), '2'): 
-            'editor.splithorz'   # Assign C-x 2 to split window.
-    })
+
+    @setup('kaa.filetype.default.defaultmode.DefaultMode')
+    def my_keybind(mode):
+        mode.add_keybinds(keys={
+            ((ctrl, 'x'), '2'): 'editor.splithorz'   # Assign C-x 2 to split window.
+        })
 
 Create custom command
-----------------------------------
++++++++++++++++++++++++++++++++
 
-Functions with `@kaa.addon.command` decorator are registered as kaa command.
-
-.. code:: python
-
-    command(commandid, 
-        filemode='kaa.filetype.default.defaultmode.DefaultMode'):
-
-`commandid` is identifier of command in string. `filemode` is a name if mode class to register command.
+`kaa.command.commandid()` decorator declare a function as kaa's editor command.
 
 .. code:: python
 
+    commandid(commandid)
+
+`commandid` is a unique command name in string.
+
+Command functions can be registered to mode objects.
+
+To register commands to mode, use `add_command()` method.
+
+.. code:: python
+
+    add_command(command)
+
+`command` is a command function.
+
+.. code:: python
+
+    from kaa.addon import *
+    
     # sample command to insert text at the top of file.
-    @command('test.command')
+    @commandid('test.command')
     def testcommand(wnd):
         wnd.cursor.setpos(0)
         wnd.document.mode.put_string(wnd, 'sample text\n')
 
+    @setup('kaa.filetype.default.defaultmode.DefaultMode')
+    def command_sample(mode):
+
+        # register command to the mode
+        mode.add_command(testcommand)
+
+        # add key bind th execute 'test.command'
+        mode.add_keybinds(keys={
+            (alt, '1'): 'test.command'   # Assign alt-1 to test.command
+        })
+
+
 Change color theme
--------------------------
+++++++++++++++++++++++++++++++
 
-Function `kaa.addon.theme_def()` could be used to customize color theme.
-
-.. code:: python
-
-    theme_def(filemode='kaa.filetype.default.defaultmode.DefaultMode', 
-                  theme=None)
-
-`filemode` is a name if mode class to register theme. `theme` is a dictionary of theme name and list of styles. Currently, the only valid theme name is `basic`.
+Function `mode.add_theme()` could be used to customize color theme.
 
 .. code:: python
 
-    # update default foreground color to red.
-    theme_def(theme={
+    def add_theme(theme)
+
+`theme` is a dictionary of theme name and list of styles. Currently, the only valid theme name is `basic`.
+
+.. code:: python
+
+    @setup('kaa.filetype.default.defaultmode.DefaultMode')
+    def theme_sample(mode):
+
+        # update foreground color of comments to red.
+        mode.add_theme({
         'basic': [
            Style('default', 'red', None),
         ]
-    })
+    }
+
 
 Hacking
 ==========

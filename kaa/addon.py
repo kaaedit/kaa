@@ -6,6 +6,15 @@ import kaa.command
 from kaa.command import norec, norerun, commandid
 import kaa.config
 
+def setup(filemode='kaa.filetype.default.defaultmode.DefaultMode'):
+    assert isinstance(filemode, str)
+    
+    def _f(f):
+        add_class_addon(filemode, 'setup', f)
+        return f
+    return _f
+
+
 # Dict to register mode class addon.
 # Mode class fetches addon functions form this dict.
 _class_addons = {}

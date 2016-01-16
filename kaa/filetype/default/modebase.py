@@ -103,8 +103,6 @@ class ModeBase:
         self.themes = []
         self.init_themes()
         self.init_addon_themes()
-        self._build_theme()
-        kaa.app.translate_theme(self.theme)
 
         self.tokenizers = []
         self.init_tokenizers()
@@ -116,7 +114,22 @@ class ModeBase:
         self.stylenamemap = {}
 
         self.setup()
+        self.setup_addon()
 
+        self._build_theme()
+        kaa.app.translate_theme(self.theme)
+
+    def setup_addon(self):
+        names = []
+        for cls in self.__class__.__mro__:
+            modulename = cls.__module__
+            name = '.'.join((modulename, cls.__name__))
+            names.insert(0, name)
+
+        for name in names:
+            for f in addon.get_addon(name, 'setup'):
+                f(self)
+        
     def setup(self):
         pass
 
@@ -194,6 +207,18 @@ class ModeBase:
         name = '.'.join((modulename, self.__class__.__name__))
         return name
 
+    def add_keybinds(self, editmode='input', keys=None):
+        if not keys:
+            return
+        if editmode == 'input':
+            self.keybind.add_keybind(keys)
+        elif editmode == 'command':
+            self.keybind_vi_commandmode.add_keybind(keys)
+        elif editmode == 'visual':
+            self.keybind_vi_visualmode.add_keybind(keys)
+        elif editmode == 'visualline':
+            self.keybind_vi_visuallinewisemode.add_keybind(keys)
+
     def init_addon_keys(self):
         name = self.get_class_name()
         keydef = addon.get_addon(name, 'keybind')
@@ -242,8 +267,17 @@ class ModeBase:
         themes = addon.get_addon(name, 'style')
         self.themes.extend(themes)
 
+    def add_theme(self, theme):
+        self.themes.append(theme)
+
     def init_tokenizers(self):
         pass
+
+    def add_command(self, f, command_id=None):
+        if command_id is not None:
+            f.COMMAND_ID = command_id
+
+        self.commands[f.COMMAND_ID] = f
 
     def register_commandobj(self, cmds):
         self.commands.update(cmds.get_commands())
