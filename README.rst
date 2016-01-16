@@ -517,6 +517,8 @@ Other
 +--------------------+------------------------------------------------+
 | Control+u Alt+!    | Execute command and insert the output.         |
 +--------------------+------------------------------------------------+
+| Alt+z              | Suspend kaa and back to shell.                 |
++--------------------+------------------------------------------------+
 
 
 
@@ -960,11 +962,14 @@ Version history
 =================
 
 
-0.49.0 - 2015.
+0.49.0 - 2016.1.16
 --------------------
 
 - [CSS] Improve syntax highlight.
 
+- Deprecate old addon functions. Use kaa.addon.setup() instead.
+
+- Add suspend command to send kaa to the background. Bound to `alt-Z` key by default.
 
 0.48.0 - 2015.12.28
 --------------------
@@ -1010,7 +1015,7 @@ Version history
 Copyright 
 =========================
 
-Copyright (c) 2013 - 2015 Atsuo Ishimoto
+Copyright (c) 2013 - 2016 Atsuo Ishimoto
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal

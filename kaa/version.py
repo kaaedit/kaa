@@ -1,12 +1,12 @@
 import sys
 import os
-KAA_VERSION = (0, 48, 0)
+KAA_VERSION = (0, 49, 0)
 
 
 def version_info():
     return '''\
 Kaa {major}.{minor}.{micro}
-Copyright (c) 2013 - 2015 Atsuo Ishimoto.
+Copyright (c) 2013 - 2016 Atsuo Ishimoto.
 All Rights Reserved.
 
 Python version: {python_version}
