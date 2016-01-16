@@ -2,6 +2,8 @@ import sys
 import os
 import curses
 import subprocess
+import signal
+import time
 import kaa
 from kaa import document
 from kaa.command import Commands, commandid, is_enable, norec, norerun
@@ -177,3 +179,11 @@ class ToolCommands(Commands):
         mode.build_document()
 
         kaa.app.show_dialog(doc)
+
+    @commandid('tools.suspend')
+    @norec
+    @norerun
+    def suspend(self, wnd):
+        with kaa.app.restore_teminal():
+            os.kill(os.getpid(), signal.SIGSTOP)
+            time.sleep(0.01)  # sleep to ensure signal derivered

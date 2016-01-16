@@ -11,6 +11,7 @@ import threading
 import struct
 import fcntl
 import termios
+import contextlib
 
 import kaa
 import kaa.log
@@ -263,6 +264,16 @@ class CuiApp:
         except curses.error:
             # curses.curs_set() occasionally fails if $TERM=xterm-color
             pass
+
+    @contextlib.contextmanager
+    def restore_teminal(self):
+        curses.def_prog_mode()
+        curses.endwin()
+        try:
+            yield
+        finally:
+            curses.reset_prog_mode()
+            self.mainframe.refresh()
 
     def add_input_reader(self, reader):
         self._input_readers.append(reader)

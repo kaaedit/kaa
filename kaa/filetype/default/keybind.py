@@ -8,6 +8,7 @@ app_keys = {
     f9: 'app.global.prev',
     f10: 'app.global.next',
     (alt, 'w'): 'menu.window',
+    (alt, 'z'): 'tools.suspend',
 }
 
 # default cursor commands
