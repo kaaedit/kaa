@@ -44,6 +44,57 @@ class LinkToken(Span):
         return pos, False
 
 
+def is_list_block(doc, pos, tokenizer):
+    '''Returns True if pos is in list block'''
+
+    pos = doc.gettol(pos)
+    while pos:
+        pos -= 1
+        tol = doc.gettol(pos)
+        s = doc.gettext(tol, pos).rstrip()
+        if not s:
+            # skip blank line
+            continue
+        token = tokenizer.get_token_at(doc, tol)
+        if token is tokenizer.tokens.list:
+            return True
+
+        if s[0] not in ['\t ']:  # check previous line if indended.
+            break
+        pos = tol
+
+
+class List(SingleToken):
+    def on_start(self, doc, match):
+        if match.group('list_indent'):
+            # has indent
+            f, t = match.span()
+            if not is_list_block(doc, f, self.tokenizer):
+                t = doc.geteol(f)
+                yield (f, t, self.tokenizer.tokens.code1.styleid_span)
+                return t, self.terminates
+
+        ret = yield from super().on_start(doc, match)
+        return ret
+
+
+class PreBlock(Span):
+    def on_start(self, doc, match):
+        # skip if line is nested list block
+        #
+        # 1. abcdefg
+        #     2. hijklmn
+
+        if is_list_block(doc, match.start(), self.tokenizer):
+            f, t = match.span(1)
+            yield (f, t, self.tokenizer.styleid_default)
+            return t, self.terminates
+
+        ret = yield from super().on_start(doc, match)
+        return ret
+
+
+
 def make_tokenizer():
     ret = Tokenizer(tokens=(
         ('escape', SingleToken('escape', [r'\\.'])),
@@ -58,8 +109,9 @@ def make_tokenizer():
         ('emphasis1', Span('emphasis', r'\*(?!\s)', r'\*|$', escape='\\')),
         ('emphasis2', Span('emphasis', r'_(?!\s)', r'_|$', escape='\\')),
 
-        ('code1', Span('literal', r'^```', r'^```\s*$', escape='\\')),
-        ('code2', Span('literal', r'^\ {4,}', r'$')),
+        ('list', List('default', [r'^(?P<list_indent>\s*)(\*\ |\d+\.\ )'])),
+        ('code1', PreBlock('literal', r'^(\ {4,})', r'$')),
+        ('code2', Span('literal', r'^```', r'^```\s*$', escape='\\')),
         ('code3', Span('literal', r'`(?!\s)', r'`|$', escape='\\')),
 
         ('link', LinkToken('reference')),
