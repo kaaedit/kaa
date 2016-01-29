@@ -152,7 +152,7 @@ class DialogMode(modebase.ModeBase):
 
         return rc_input, positions
 
-    def on_start(self, wnd):
+    def on_dialog_start(self, wnd):
         pass
 
     def run_autoshrink(self):

@@ -1,5 +1,8 @@
 from kaa.keyboard import *
 
+# Todo: Splitting key bind table does not make sense.
+# Put them together.
+
 # application commands
 app_keys = {
     (alt, 'm'): 'app.mainmenu',

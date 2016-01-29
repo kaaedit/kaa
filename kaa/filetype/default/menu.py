@@ -6,6 +6,7 @@ MENUS = {
      ['[&Code]', 'CODE', None],
      ['[&Macro]', 'MACRO', None],
      ['[&Tools]', 'TOOLS', None],
+     ['[&Git]', 'GIT', None],
      ['[&Window]', 'WINDOW', None]],
 
     'FILE':
@@ -57,6 +58,10 @@ MENUS = {
      ['&Python console', None, 'python.console'],
      ['Python &Debugger', None, 'python.debugger.run'],
      ['Python debugger s&erver', None, 'python.debugger.server'],
+     ],
+
+    'GIT':
+    [['&Status', None, 'git.status'],
      ],
 
     'WINDOW':

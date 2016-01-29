@@ -310,6 +310,7 @@ class Document:
 
     def append(self, s, style=None):
         self.insert(self.endpos(), s, style)
+        return self.endpos()
 
     def delete(self, begin, end):
         self.buf.delete(begin, end)

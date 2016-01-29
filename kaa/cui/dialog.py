@@ -112,7 +112,7 @@ class DialogWnd(_dialogwnd):
 
     def start(self):
         self.activate()
-        self.input.document.mode.on_start(self.input)
+        self.input.document.mode.on_dialog_start(self.input)
 
     def add_doc(self, label, pos, doc):
         input = editor.TextEditorWindow(parent=self)

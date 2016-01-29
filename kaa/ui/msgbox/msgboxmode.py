@@ -34,10 +34,7 @@ class MsgBoxMode(dialogmode.DialogMode):
 
         wnd.CURSOR_TO_MIDDLE_ON_SCROLL = False
 
-    def on_str(self, wnd, s, overwrite=False):
-        pass
-
-    def on_start(self, wnd):
+    def on_dialog_start(self, wnd):
         wnd.cursor.setpos(self.document.endpos() - 1)
 
     def on_str(self, wnd, s, overwrite=False):

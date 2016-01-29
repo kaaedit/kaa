@@ -54,7 +54,7 @@ class CuiApp:
         self.is_availables.update(cmds.get_commands_is_enable())
 
     def init_commands(self):
-        from kaa.commands import appcommand, toolcommand, filecommand
+        from kaa.commands import appcommand, toolcommand, filecommand, gitcommand
 
         self.app_commands = appcommand.ApplicationCommands()
         self.register_commandobj(self.app_commands)
@@ -64,6 +64,7 @@ class CuiApp:
 
         self.register_commandobj(toolcommand.ToolCommands())
         self.register_commandobj(appcommand.MacroCommands())
+        self.register_commandobj(gitcommand.GitCommands())
 
         for name in dir(self):
             attr = getattr(self, name)
