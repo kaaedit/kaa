@@ -1,4 +1,4 @@
-import os, pathlib, bisect
+import os, pathlib, bisect, sys, threading, socket
 from git import Repo
 from pathlib import Path
 import kaa
@@ -8,7 +8,7 @@ from kaa.filetype.default import defaultmode
 from kaa import document
 from kaa.filetype.default import keybind
 from kaa.command import norec, norerun, commandid
-
+from kaa.ui.git import commitdlgmode
 GitTheme = {
     'basic': [
         Style('git-header', 'Cyan', None),
@@ -30,6 +30,7 @@ status_keys = {
     ' ': 'git.status.press',
 
     'r': 'git.status.refresh',
+    'c': 'git.commit',
     'a': 'git.add',
     'u': 'git.unstage',
 }
@@ -144,6 +145,67 @@ class GitStatusMode(defaultmode.DefaultMode):
 
         self._refresh(wnd)
 
+    @commandid('git.commit')
+    def git_commit(self, wnd):
+
+        fname = 'pppp'
+        if os.path.exists(fname):
+            os.unlink(fname)
+
+        exe = sys.executable
+        git_edit = '{exe} -m kaa.ui.git.git_editor '.format(exe=sys.executable)
+        self._repo.git.update_environment(KAA_SOCKNAME=fname, GIT_EDITOR=git_edit)
+
+
+        git_result = None
+        def f():
+            nonlocal git_result
+            try:
+                git_result = self._repo.git.commit(with_extended_output=True)
+            except Exception as e:
+                git_result = e
+
+            s = socket.socket(socket.AF_UNIX, socket.SOCK_STREAM)
+            try:
+                s.connect(fname)
+                s.send(b'close')
+                s.close()
+            except FileNotFoundError:
+                pass
+
+        s = socket.socket(socket.AF_UNIX, socket.SOCK_STREAM)
+        try:
+            s.bind(fname)
+            s.listen()
+
+            t = threading.Thread(target=f, daemon=True)
+            t.start()
+
+            conn, addr = s.accept()
+            if git_result:
+                kaa.app.messagebar.set_message(' '.join(str(git_result).split('\n')))
+
+            recv = conn.recv(4096)
+            if recv == b'ok\n':
+                filename = os.path.join(self._repo.git_dir, 'COMMIT_EDITMSG')
+                doc = kaa.app.storage.openfile(filename, nohist=True, filemustexists=True)
+                s = doc.gettext(0, doc.endpos())
+                doc.close()
+
+                doc = commitdlgmode.CommitDialogMode.build(s)
+                # todo: bad interface
+                doc.mode.commitmsg = filename
+                doc.mode.conn = conn
+                doc.mode.status_refresh = lambda :self.status_refresh(wnd)
+                doc.mode.wait_for = t
+                kaa.app.show_dialog(doc)
+        finally:
+            if os.path.exists(fname):
+                os.unlink(fname)
+
+        self._refresh(wnd)
+
+
     def _add_diff(self, d, style, mark_prefix):
         if d.new_file:
             f = self.document.append('new file:    ', style)
@@ -233,7 +295,6 @@ class GitStatusMode(defaultmode.DefaultMode):
                     break
             wnd.cursor.setpos(f)
 
-
     def show_status(self, repo):
         self._repo = repo
         self._refresh(None)
@@ -256,3 +317,4 @@ def show_git_status(d):
     mode.show_status(repo)
     kaa.app.show_doc(doc)
 
+    kaa.app.messagebar.set_message('r:refresh a:add u:unstage')

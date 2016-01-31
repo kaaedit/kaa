@@ -123,10 +123,10 @@ class FileStorage:
         return doc
 
     def openfile(self, filename, encoding=None, newline=None, nohist=False,
-                 filemustexists=False):
+                 filemustexists=False, modecls=None):
 
         fileinfo = self.get_fileinfo(filename, encoding, newline)
-        modecls = select_mode(fileinfo.fullpathname)
+        modecls = modecls if modecls else select_mode(fileinfo.fullpathname)
         modecls.update_fileinfo(fileinfo)
 
         textio = self.get_textio(fileinfo, filemustexists)

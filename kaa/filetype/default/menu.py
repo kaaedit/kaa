@@ -62,6 +62,7 @@ MENUS = {
 
     'GIT':
     [['&Status', None, 'git.status'],
+     ['&Commit', None, 'git.commit'],
      ],
 
     'WINDOW':

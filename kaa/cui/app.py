@@ -381,6 +381,6 @@ class CuiApp:
 
             except Exception as e:
                 kaa.log.error('Unhandled exception', exc_info=True)
-                kaa.app.messagebar.set_message(str(e))
+                kaa.app.messagebar.set_message(' '.join(str(e).split('\n')))
 
                 nonblocking = True
