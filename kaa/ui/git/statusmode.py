@@ -9,6 +9,8 @@ from kaa import document
 from kaa.filetype.default import keybind
 from kaa.command import norec, norerun, commandid
 from kaa.ui.git import commitdlgmode
+from kaa.ui.viewdiff import viewdiffmode
+
 GitTheme = {
     'basic': [
         Style('git-header', 'Cyan', None),
@@ -27,12 +29,15 @@ status_keys = {
     (shift, tab): 'git.status.prev',
     left: 'git.status.prev',
     up: 'git.status.prev',
-    ' ': 'git.status.press',
 
+    ' ': 'git.status.press',
+    '\r': 'git.status.open',
+    '\n': 'git.status.open',
     'r': 'git.status.refresh',
     'c': 'git.commit',
     'a': 'git.add',
     'u': 'git.unstage',
+    'd': 'git.status.diff',
 }
 
 
@@ -54,6 +59,10 @@ class GitStatusMode(defaultmode.DefaultMode):
     def init_themes(self):
         super().init_themes()
         self.themes.append(GitTheme)
+
+    def on_str(self, wnd, s, overwrite=False):
+        # does nothing
+        pass
 
     def on_esc_pressed(self, wnd, event):
         is_available, command = self.get_command('file.close')
@@ -99,6 +108,46 @@ class GitStatusMode(defaultmode.DefaultMode):
         if ret:
             if ret[2].startswith(('s_', 'n_', 'u_')):
                 return ret
+
+    @commandid('git.status.open')
+    def open_file(self, wnd):
+        mark = self._get_file_mark(wnd.cursor.pos)
+        if not mark:
+            return
+        f, t, name = mark
+        self._repo.git.reset('HEAD', [name[2:]])
+
+        is_available, command = self.get_command('file.close')
+        command(wnd)
+
+        is_available, command = self.get_command('file.open')
+        command(None,
+            filename=os.path.join(self._repo.working_dir, name[2:]))
+
+    def _show_diff(self, s):
+        doc = document.Document()
+        doc.append(s)
+        mode = viewdiffmode.ViewDiffMode()
+        doc.setmode(mode)
+
+        kaa.app.show_dialog(doc)
+
+
+    @commandid('git.status.diff')
+    def diff_file(self, wnd):
+        mark = self._get_file_mark(wnd.cursor.pos)
+        if not mark:
+            return
+        f, t, name = mark
+        _trace(name)
+        if name[:2] == 'n_':
+            d = self._repo.git.diff(name[2:])
+            self._show_diff(d)
+        elif name[:2] == 's_':
+            d = self._repo.git.diff('--cached', name[2:])
+            self._show_diff(d)
+
+
 
     @commandid('git.status.next')
     def file_next(self, wnd):
@@ -233,7 +282,8 @@ class GitStatusMode(defaultmode.DefaultMode):
 
     def _refresh(self, wnd):
         if wnd:
-            curpos = wnd.cursor.pos
+            lineno = self.document.buf.lineno.lineno(wnd.cursor.pos)
+
         # clear
         self.document.marks.clear()
         self.document.delete(0, self.document.endpos())
@@ -290,8 +340,10 @@ class GitStatusMode(defaultmode.DefaultMode):
             self.document.marks.locked = False
 
         if wnd:
+            pos = self.document.get_lineno_pos(lineno)
+            tol = wnd.document.gettol(pos)
             for f, t, name in self._get_marks():
-                if curpos <= f:
+                if tol <= f:
                     break
             wnd.cursor.setpos(f)
 
@@ -317,4 +369,4 @@ def show_git_status(d):
     mode.show_status(repo)
     kaa.app.show_doc(doc)
 
-    kaa.app.messagebar.set_message('r:refresh a:add u:unstage')
+    kaa.app.messagebar.set_message('r:refresh a:add u:unstage d:diff c:commit')

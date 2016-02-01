@@ -20,7 +20,7 @@ class ViewDiffMode(dialogmode.DialogMode):
     ]
 
     tokenizer = diffmode.make_tokenizer()
-
+    callback=None
     def init_keybind(self):
         super().init_keybind()
 
@@ -39,10 +39,11 @@ class ViewDiffMode(dialogmode.DialogMode):
 
     def on_esc_pressed(self, wnd, event):
         popup = wnd.get_label('popup')
-        popup.destroy()
-        kaa.app.messagebar.set_message("")
-        if self.callback:
-            self.callback()
+        if popup:
+            popup.destroy()
+            kaa.app.messagebar.set_message("")
+            if self.callback:
+                self.callback()
 
 
 def view_diff(curdoc, callback=None):

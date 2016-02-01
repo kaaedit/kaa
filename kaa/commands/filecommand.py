@@ -72,7 +72,7 @@ class FileCommands(Commands):
 
 
         if not filename:
-            if wnd.document.fileinfo:
+            if wnd and wnd.document.fileinfo:
                 filename = wnd.document.fileinfo.dirname
 
         from kaa.ui.selectfile import selectfile
