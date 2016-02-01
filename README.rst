@@ -962,6 +962,13 @@ Version history
 =================
 
 
+0.50.0 - 2016.2.2
+--------------------
+
+- Add git support.
+
+- [Markdown] Recognize nested lists.
+
 0.49.0 - 2016.1.16
 --------------------
 

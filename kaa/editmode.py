@@ -93,9 +93,10 @@ class EditMode:
                 ret.append(s)
         return ret
 
-    def _show_pending_keys(self, s, commands, candidates):
+    def _show_pending_keys(self, wnd, s, commands, candidates):
         if s or commands or not candidates or not self.pending_keys:
-            kaa.app.messagebar.set_message('')
+            msg = wnd.document.mode.DEFAULT_MENU_MESSAGE or kaa.app.DEFAULT_MENU_MESSAGE
+            kaa.app.messagebar.set_message(msg)
         else:
             cur = self._keys_to_str(self.pending_keys)
             curlen = len(cur)
@@ -118,7 +119,7 @@ class EditMode:
         s, commands, candidate = wnd.document.mode.on_keypressed(
             wnd, event, s, commands, candidate)
 
-        self._show_pending_keys(s, commands, candidate)
+        self._show_pending_keys(wnd, s, commands, candidate)
         try:
             if s:
                 self.on_non_command_str(wnd, event, s)

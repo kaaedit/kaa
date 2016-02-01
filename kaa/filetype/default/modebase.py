@@ -80,6 +80,7 @@ class ModeBase:
 
     tokenizer = DefaultTokenizer
 
+    DEFAULT_MENU_MESSAGE = ''
     @classmethod
     def update_fileinfo(cls, fileinfo, document=None):
         pass

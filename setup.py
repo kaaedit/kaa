@@ -3,8 +3,8 @@ import sys
 from setuptools import setup, find_packages, Extension
 
 
-if sys.version_info[:2] < (3, 3):
-    raise RuntimeError('''Kaa requires Python 3.3 or later, with ncursesw support. 
+if sys.version_info[:2] < (3, 4):
+    raise RuntimeError('''Kaa requires Python 3.4 or later, with ncursesw support. 
 Please see https://pypi.python.org/pypi/kaaedit/#setup to install.
 ''')
 
@@ -30,7 +30,7 @@ def read(fname):
 setup(
     cmdclass=cmdclass,
     name="kaaedit",
-    version="0.49.0",
+    version="0.500",
     description='kaa - console text editor.',
     url='https://github.com/kaaedit/kaa',
     author='Atsuo Ishimoto',

@@ -46,6 +46,7 @@ class GitStatusMode(defaultmode.DefaultMode):
     DOCUMENT_MODE = False
     USE_UNDO = False
     DELAY_STR = False
+    DEFAULT_MENU_MESSAGE = 'r:refresh a:add u:unstage d:diff c:commit'
 
     KEY_BINDS = [
         keybind.app_keys,
@@ -347,6 +348,8 @@ class GitStatusMode(defaultmode.DefaultMode):
                     break
             wnd.cursor.setpos(f)
 
+        kaa.app.messagebar.set_message(self.DEFAULT_MENU_MESSAGE)
+
     def show_status(self, repo):
         self._repo = repo
         self._refresh(None)
@@ -369,4 +372,3 @@ def show_git_status(d):
     mode.show_status(repo)
     kaa.app.show_doc(doc)
 
-    kaa.app.messagebar.set_message('r:refresh a:add u:unstage d:diff c:commit')

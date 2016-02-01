@@ -95,7 +95,8 @@ class DefaultMode(modebase.ModeBase):
     def on_keypressed(self, wnd, event, s, commands, candidate):
         if not commands and not candidate:
             if not s or s[0] < ' ':
-                kaa.app.messagebar.set_message(kaa.app.DEFAULT_MENU_MESSAGE)
+                msg = self.DEFAULT_MENU_MESSAGE or kaa.app.DEFAULT_MENU_MESSAGE
+                kaa.app.messagebar.set_message(msg)
 
         return super().on_keypressed(wnd, event, s, commands, candidate)
 
