@@ -240,9 +240,16 @@ class Selection:
         self._rectangular = False
         self._linewise = False
 
-        self._set_mark(pos)
         if pos is not None:
+            cursor_start = self._get_cursor_start()
+            if cursor_start is not None:
+                self._set_mark(cursor_start)
+            else:
+                self._set_mark(pos)
             self._set_cursor_start(None)
+        else:
+            self._set_mark(pos)
+
         if cur != self.get_selrange():
             self.screen.style_updated()
             return True
