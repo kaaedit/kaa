@@ -11,6 +11,8 @@ class CommitDialogMode(multilinemode.MultilineMode):
 
     CAPTION = 'Hit alt+Enter to commit'
 
+    callback = None
+
     @command.commandid('multiline.done')
     @command.norec
     @command.norerun
@@ -27,5 +29,5 @@ class CommitDialogMode(multilinemode.MultilineMode):
         self.conn.send(b'done')
         self.conn.close()
         self.conn = None
-        self.wait_for.join()
-        self.status_refresh()
+        if self.callback:
+            self.callback()

@@ -10,6 +10,7 @@ from kaa.filetype.default import keybind
 from kaa.command import norec, norerun, commandid
 from kaa.ui.git import commitdlgmode
 from kaa.ui.viewdiff import viewdiffmode
+from kaa.ui.msgbox import msgboxmode
 
 GitTheme = {
     'basic': [
@@ -140,14 +141,12 @@ class GitStatusMode(defaultmode.DefaultMode):
         if not mark:
             return
         f, t, name = mark
-        _trace(name)
         if name[:2] == 'n_':
             d = self._repo.git.diff(name[2:])
             self._show_diff(d)
         elif name[:2] == 's_':
             d = self._repo.git.diff('--cached', name[2:])
             self._show_diff(d)
-
 
 
     @commandid('git.status.next')
@@ -206,7 +205,6 @@ class GitStatusMode(defaultmode.DefaultMode):
         git_edit = '{exe} -m kaa.ui.git.git_editor '.format(exe=sys.executable)
         self._repo.git.update_environment(KAA_SOCKNAME=fname, GIT_EDITOR=git_edit)
 
-
         git_result = None
         def f():
             nonlocal git_result
@@ -215,10 +213,10 @@ class GitStatusMode(defaultmode.DefaultMode):
             except Exception as e:
                 git_result = e
 
+            
             s = socket.socket(socket.AF_UNIX, socket.SOCK_STREAM)
             try:
                 s.connect(fname)
-                s.send(b'close')
                 s.close()
             except FileNotFoundError:
                 pass
@@ -235,6 +233,16 @@ class GitStatusMode(defaultmode.DefaultMode):
             if git_result:
                 kaa.app.messagebar.set_message(' '.join(str(git_result).split('\n')))
 
+            def callback_commit():
+                t.join()
+                if git_result:
+                    msg = str(git_result)
+                    msgboxmode.MsgBoxMode.show_msgbox(
+                        msg, ['&Ok'], None, ['\r', '\n'],
+                        border=True)
+                else:
+                    self.status_refresh(wnd)
+                
             recv = conn.recv(4096)
             if recv == b'ok\n':
                 filename = os.path.join(self._repo.git_dir, 'COMMIT_EDITMSG')
@@ -246,9 +254,12 @@ class GitStatusMode(defaultmode.DefaultMode):
                 # todo: bad interface
                 doc.mode.commitmsg = filename
                 doc.mode.conn = conn
-                doc.mode.status_refresh = lambda :self.status_refresh(wnd)
-                doc.mode.wait_for = t
+
+                doc.mode.callback = callback_commit
                 kaa.app.show_dialog(doc)
+            else:
+                callback_commit()
+
         finally:
             if os.path.exists(fname):
                 os.unlink(fname)
