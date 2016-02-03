@@ -209,7 +209,8 @@ class GitStatusMode(defaultmode.DefaultMode):
         def f():
             nonlocal git_result
             try:
-                git_result = self._repo.git.commit(with_extended_output=True)
+                code, msg1, msg2 = git_result = self._repo.git.commit(with_extended_output=True)
+                git_result = msg1 + msg2  # todo: check gitpython to know what they are...
             except Exception as e:
                 git_result = e
 
