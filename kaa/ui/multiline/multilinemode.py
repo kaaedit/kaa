@@ -17,6 +17,8 @@ class MultilineMode(dialogmode.DialogMode):
     USE_UNDO = True
     auto_indent = False
 
+    callback = None
+
     KEY_BINDS = [
         keybind.cursor_keys,
         keybind.edit_command_keys,
@@ -44,13 +46,22 @@ class MultilineMode(dialogmode.DialogMode):
         popup.destroy()
         kaa.app.messagebar.set_message("Canceled")
 
+        if self.callback:
+            self.callback(None)
+
     @command.commandid('multiline.done')
     @command.norec
     @command.norerun
     def multiline_done(self, wnd):
+        if self.callback:
+            f, t = self.document.marks['multiline']
+            s = self.document.gettext(f, t)
+
         popup = wnd.get_label('popup')
         popup.destroy()
 
+        if self.callback:
+            self.callback(s)
 
     CAPTION = 'Paste text here. Hit alt+Enter when finished:'
     @classmethod

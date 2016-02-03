@@ -238,7 +238,7 @@ class GitStatusMode(defaultmode.DefaultMode):
                 if git_result:
                     msg = str(git_result)
                     msgboxmode.MsgBoxMode.show_msgbox(
-                        msg, ['&Ok'], None, ['\r', '\n'],
+                        msg, ['&Ok'], lambda c: self.status_refresh(wnd), ['\r', '\n'],
                         border=True)
                 else:
                     self.status_refresh(wnd)
@@ -255,7 +255,7 @@ class GitStatusMode(defaultmode.DefaultMode):
                 doc.mode.commitmsg = filename
                 doc.mode.conn = conn
 
-                doc.mode.callback = callback_commit
+                doc.mode.commit_callback = callback_commit
                 kaa.app.show_dialog(doc)
             else:
                 callback_commit()
@@ -263,8 +263,6 @@ class GitStatusMode(defaultmode.DefaultMode):
         finally:
             if os.path.exists(fname):
                 os.unlink(fname)
-
-        self._refresh(wnd)
 
 
     def _add_diff(self, d, style, mark_prefix):

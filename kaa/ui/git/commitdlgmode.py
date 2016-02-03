@@ -11,23 +11,12 @@ class CommitDialogMode(multilinemode.MultilineMode):
 
     CAPTION = 'Hit alt+Enter to commit'
 
-    callback = None
-
-    @command.commandid('multiline.done')
-    @command.norec
-    @command.norerun
-    def paste_lines(self, wnd):
-        f, t = self.document.marks['multiline']
-        s = self.document.gettext(f, t)
-        open(self.commitmsg, 'w', encoding=locale.getpreferredencoding()).write(s)
-        kaa.app.messagebar.set_message("Committed")
-
-        self.multiline_done(wnd)
-
-    def close(self):
-        super().close()
+    commit_callback = None
+    def callback(self, s):
         self.conn.send(b'done')
         self.conn.close()
         self.conn = None
-        if self.callback:
-            self.callback()
+        if s is not None:
+            open(self.commitmsg, 'w', encoding=locale.getpreferredencoding()).write(s)
+
+        self.commit_callback()
