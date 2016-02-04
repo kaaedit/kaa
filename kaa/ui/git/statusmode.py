@@ -311,11 +311,12 @@ class GitStatusMode(defaultmode.DefaultMode):
             
             # add staged files
             self.document.append('Changes to be committed:\n\n', style_header)
-            d = self._repo.head.commit.diff()
-            for c in d:
-                self.document.append(indent)
-                self._add_diff(c, style_staged, 's_')
-                self.document.append('\n')
+            if self._repo.head.is_valid():
+                d = self._repo.head.commit.diff()
+                for c in d:
+                    self.document.append(indent)
+                    self._add_diff(c, style_staged, 's_')
+                    self.document.append('\n')
 
             # add not staged files
             self.document.append('\nChanges not staged for commit:\n\n', style_header)
