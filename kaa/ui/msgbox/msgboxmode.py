@@ -1,3 +1,4 @@
+import unicodedata
 import re
 import kaa
 from kaa import document
@@ -38,8 +39,8 @@ class MsgBoxMode(dialogmode.DialogMode):
         wnd.cursor.setpos(self.document.endpos() - 1)
 
     def on_str(self, wnd, s, overwrite=False):
+        s = unicodedata.normalize('NFKC', s).lower()
         for c in s:
-            c = c.lower()
             if c in self.shortcuts:
                 self.on_shortcut(wnd, c)
                 return
