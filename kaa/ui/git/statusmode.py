@@ -116,11 +116,11 @@ class GitStatusMode(defaultmode.DefaultMode):
         mark = self._get_file_mark(wnd.cursor.pos)
         if not mark:
             return
-        f, t, name = mark
-        self._repo.git.reset('HEAD', [name[2:]])
 
         is_available, command = self.get_command('file.close')
         command(wnd)
+
+        f, t, name = mark
 
         is_available, command = self.get_command('file.open')
         command(None,
@@ -190,7 +190,11 @@ class GitStatusMode(defaultmode.DefaultMode):
         if not mark:
             return
         f, t, name = mark
-        self._repo.git.reset('HEAD', [name[2:]])
+
+        if self._repo.head.is_valid():
+            self._repo.git.reset('HEAD', [name[2:]])
+        else:
+            self._repo.git.rm('--cached', [name[2:]])
 
         self._refresh(wnd)
 
@@ -266,12 +270,15 @@ class GitStatusMode(defaultmode.DefaultMode):
                 os.unlink(fname)
 
 
+    def _add_new_file(self, style, name, mark_prefix):
+        f = self.document.append('new file:    ', style)
+        t = self.document.append(name, style)
+        self.document.marks[mark_prefix+name] = (f, t)
+
     def _add_diff(self, d, style, mark_prefix):
         if d.new_file:
-            f = self.document.append('new file:    ', style)
-            t = self.document.append(d.b_path, style)
-            self.document.marks[mark_prefix+d.b_path] = (f, t)
-            
+            self._add_new_file(style, d.b_path, mark_prefix)
+
         elif d.deleted_file:
             f = self.document.append('deleted:     ', style)
             t = self.document.append(d.b_path, style)
@@ -327,6 +334,14 @@ class GitStatusMode(defaultmode.DefaultMode):
                     self.document.append(indent)
                     self._add_diff(c, style_staged, 's_')
                     self.document.append('\n')
+            else:
+                files = [name for name, state in self._repo.index.entries]
+                files.sort()
+                for file in files:
+                    self.document.append(indent)
+                    self._add_new_file(style_staged, file, 's_')
+                    self.document.append('\n')
+
 
             # add not staged files
             self.document.append('\nChanges not staged for commit:\n\n', style_header)
