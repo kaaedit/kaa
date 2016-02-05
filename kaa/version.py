@@ -1,6 +1,6 @@
 import sys
 import os
-KAA_VERSION = (0, 50, 0)
+KAA_VERSION = (0, 51, 0)
 
 
 def version_info():
