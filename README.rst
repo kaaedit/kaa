@@ -961,6 +961,13 @@ Links
 Version history
 =================
 
+0.52.0 - 2016.2.6
+--------------------
+
+- Display result of git commit command.
+
+- Stage/unstage in no-commit repogitory now works.
+
 
 0.51.0 - 2016.2.4
 --------------------
@@ -969,7 +976,7 @@ Version history
 
 - Stop Emacs-style set-mark command to clear ongoing-selection.
 
-- Normalize Short-key of menu items. You can use double-width-F letter to open File menu.
+- Normalize Short-key of menu items. Now you can use double-width-F letter to open File menu.
 
 
 0.50.0 - 2016.2.2
