@@ -1,4 +1,4 @@
-import os, pathlib, bisect, sys, threading, socket
+import os, pathlib, bisect, sys, threading, socket, tempfile
 from git import Repo
 from pathlib import Path
 import kaa
@@ -148,7 +148,6 @@ class GitStatusMode(defaultmode.DefaultMode):
             d = self._repo.git.diff('--cached', name[2:])
             self._show_diff(d)
 
-
     @commandid('git.status.next')
     def file_next(self, wnd):
         for mark in self._get_next_mark(wnd.cursor.pos):
@@ -201,7 +200,7 @@ class GitStatusMode(defaultmode.DefaultMode):
     @commandid('git.commit')
     def git_commit(self, wnd):
 
-        fname = 'pppp'
+        fname = tempfile.mktemp()
         if os.path.exists(fname):
             os.unlink(fname)
 
@@ -222,6 +221,7 @@ class GitStatusMode(defaultmode.DefaultMode):
             s = socket.socket(socket.AF_UNIX, socket.SOCK_STREAM)
             try:
                 s.connect(fname)
+                s.send(b'finished\n')
                 s.close()
             except FileNotFoundError:
                 pass
