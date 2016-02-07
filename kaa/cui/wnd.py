@@ -185,14 +185,14 @@ class Window(kaa.context.Context):
         try:
             self._cwnd = curses.newwin(b - t, r - l, t, l)
             self.rect = (l, t, r, b)
-        except curses.error as e:
+        except curses.error:
             log.debug('error on resizing window: {} {}'.format(self,
                                                                (l, t, r, b), exc_info=True))
             # shrink window to avoid segfault in curses
             self._cwnd = curses.newwin(1, 1, 0, 0)
             self.rect = (0, 0, 1, 1)
 
-         # surprisingly enough, the following assert fails sometime.
+        # surprisingly enough, the following assert fails sometime.
 #        t, l = self._cwnd.getbegyx()
 #        h, w = self._cwnd.getmaxyx()
 #        assert (l, t, l+w, t+h) == self.rect

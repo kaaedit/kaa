@@ -23,7 +23,7 @@ CONSTANTS = ['NULL']
 
 def make_tokenizer():
     return Tokenizer(tokens=[
-        ("directive",  SingleToken('directive', [r'\#\s*\w+'])),
+        ("directive", SingleToken('directive', [r'\#\s*\w+'])),
         ("keyword", Keywords('keyword', KEYWORDS)),
         ("constant", Keywords('constant', CONSTANTS)),
         ("number", SingleToken('number',

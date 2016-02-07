@@ -260,7 +260,7 @@ class Selection:
         self.screen.style_updated()
 
     def set_rectangle_mark(self, pos):
-        ret = self.set_mark(pos)
+        self.set_mark(pos)
         self._rectangular = True
         self._linewise = False
 

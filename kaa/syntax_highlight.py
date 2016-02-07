@@ -51,7 +51,6 @@ class Token:
             setattr(self, styleidname, styleid)
 
     def get_tokenizers(self):
-        ret = []
         tokenizer = self.tokenizer
         while tokenizer:
             yield tokenizer

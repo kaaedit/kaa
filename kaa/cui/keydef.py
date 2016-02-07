@@ -312,7 +312,6 @@ def init(conf):
                 print('OK: ', name, keycode, reg_code, seq, file=result)
             except Exception:
                 print('NG: ', name, keycode, reg_code, seq, file=result)
-                err = True
                 continue
 
             REGISTERD_SEQUENCE[reg_code] = ['\x1b', keycode]
@@ -326,7 +325,6 @@ def init(conf):
                 print('OK: ', keycode, reg_code, seq, file=result)
             except Exception:
                 print('NG: ', keycode, reg_code, seq, file=result)
-                err = True
                 continue
 
             REGISTERD_SEQUENCE[reg_code] = keycode

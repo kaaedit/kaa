@@ -4,7 +4,6 @@ import kaa
 from kaa import document
 from kaa.ui.dialog import dialogmode
 from kaa.theme import Style
-from kaa.ui.dialog import dialogmode
 
 MsgBoxThemes = {
     'basic': [

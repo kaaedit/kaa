@@ -33,7 +33,7 @@ class MenuMode(msgboxmode.MsgBoxMode):
     def _selected(self, c):
         if not c:
             if self.parentitems:
-                doc = MenuMode.show_menu(
+                MenuMode.show_menu(
                     self.target, self.parentitems[-1], self.parentitems[:-1])
             return
 

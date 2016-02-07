@@ -70,7 +70,6 @@ class ApplicationCommands(Commands):
     @norec
     @norerun
     def show_framelist(self, wnd):
-        docs = []
         frames = list(kaa.app.get_frames())
         titles = list(frame.get_title().replace('&', '&&') for frame in frames)
 
@@ -122,7 +121,7 @@ class ApplicationCommands(Commands):
     def editor_nextwindow(self, wnd):
         splitter = wnd.parent.splitter
         if splitter:
-            wnds = [wnd for s, wnd in splitter.walk() if wnd]
+            wnds = [w for s, w in splitter.walk() if w]
             try:
                 n = wnds.index(wnd) + 1
             except ValueError:
@@ -137,7 +136,7 @@ class ApplicationCommands(Commands):
     def editor_prevwindow(self, wnd):
         splitter = wnd.parent.splitter
         if splitter:
-            wnds = [wnd for s, wnd in splitter.walk() if wnd]
+            wnds = [w for s, w in splitter.walk() if w]
             try:
                 n = wnds.index(wnd) - 1
             except ValueError:

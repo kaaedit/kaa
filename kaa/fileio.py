@@ -6,7 +6,6 @@ import kaa.log
 from kaa import document, encodingdef
 from kaa.filetype.default import defaultmode
 from kaa import consts
-from kaa import encodingdef
 
 
 class FileStorage:

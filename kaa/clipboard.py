@@ -1,3 +1,4 @@
+import os
 import sys
 import subprocess
 import shutil
@@ -68,7 +69,7 @@ class NativeClipboard(Clipboard):
         super().set(s)
         try:
             self._set_native_clipboard(s)
-        except Exception as e:
+        except Exception:
             kaa.log.error('Error to paste', exc_info=True)
 
 
@@ -103,7 +104,7 @@ class X11Clipboard(NativeClipboard):
         if not shutil.which(X11Clipboard.CLIPCOMMAND):
             return False
 
-        if not 'DISPLAY' in os.environ:
+        if 'DISPLAY' not in os.environ:
             return False
 
         return True

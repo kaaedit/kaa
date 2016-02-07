@@ -224,14 +224,14 @@ class ModeBase:
     def init_addon_keys(self):
         name = self.get_class_name()
         keydef = addon.get_addon(name, 'keybind')
-        for editmode, keys in keydef:
-            if editmode == 'input':
+        for edit_mode, keys in keydef:
+            if edit_mode == 'input':
                 self.keybind.add_keybind(keys)
-            elif editmode == 'command':
+            elif edit_mode == 'command':
                 self.keybind_vi_commandmode.add_keybind(keys)
-            elif editmode == 'visual':
+            elif edit_mode == 'visual':
                 self.keybind_vi_visualmode.add_keybind(keys)
-            elif editmode == 'visualline':
+            elif edit_mode == 'visualline':
                 self.keybind_vi_visuallinewisemode.add_keybind(keys)
 
     def init_commands(self):

@@ -208,7 +208,6 @@ class GitStatusMode(defaultmode.DefaultMode):
         if os.path.exists(fname):
             os.unlink(fname)
 
-        exe = sys.executable
         git_edit = '{exe} -m kaa.ui.git.git_editor '.format(exe=sys.executable)
         self._repo.git.update_environment(
             KAA_SOCKNAME=fname, GIT_EDITOR=git_edit)

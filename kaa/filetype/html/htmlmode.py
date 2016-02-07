@@ -209,20 +209,25 @@ def make_tokenizer():
                                                         [r'(?P<attrname>[^\s=>]+)\s*=?\s*'])),
                                   ])
 
-    ret.AttrTokenizer.AttrValueTokenizer1 = Tokenizer(parent=ret.AttrTokenizer,
-                                                      tokens=[('value', SingleToken('html-attrvalue', [r"[^']*'"], terminates=True))])
+    ret.AttrTokenizer.AttrValueTokenizer1 = Tokenizer(
+        parent=ret.AttrTokenizer,
+        tokens=[('value', SingleToken('html-attrvalue', [r"[^']*'"], terminates=True))])
 
-    ret.AttrTokenizer.AttrValueTokenizer2 = Tokenizer(parent=ret.AttrTokenizer,
-                                                      tokens=[('value', SingleToken('html-attrvalue', [r'[^"]*"'], terminates=True))])
+    ret.AttrTokenizer.AttrValueTokenizer2 = Tokenizer(
+        parent=ret.AttrTokenizer,
+        tokens=[('value', SingleToken('html-attrvalue', [r'[^"]*"'], terminates=True))])
 
-    ret.AttrTokenizer.AttrValueTokenizer3 = Tokenizer(parent=ret.AttrTokenizer,
-                                                      tokens=[('value', SingleToken('html-attrvalue', [r'\w*'], terminates=True))])
+    ret.AttrTokenizer.AttrValueTokenizer3 = Tokenizer(
+        parent=ret.AttrTokenizer,
+        tokens=[('value', SingleToken('html-attrvalue', [r'\w*'], terminates=True))])
 
-    ret.AttrTokenizer.AttrValueJSTokenizer1 = Tokenizer(parent=ret.AttrTokenizer,
-                                                        tokens=javascriptmode.javascript_tokens(), terminates="'")
+    ret.AttrTokenizer.AttrValueJSTokenizer1 = Tokenizer(
+        parent=ret.AttrTokenizer,
+        tokens=javascriptmode.javascript_tokens(), terminates="'")
 
-    ret.AttrTokenizer.AttrValueJSTokenizer2 = Tokenizer(parent=ret.AttrTokenizer,
-                                                        tokens=javascriptmode.javascript_tokens(), terminates='"')
+    ret.AttrTokenizer.AttrValueJSTokenizer2 = Tokenizer(
+        parent=ret.AttrTokenizer,
+        tokens=javascriptmode.javascript_tokens(), terminates='"')
 
     ret.AttrTokenizer.AttrValueCSSTokenizer1 = cssmode.make_prop_tokenizer(
         ret.AttrTokenizer, "'")

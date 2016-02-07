@@ -390,7 +390,7 @@ class ReplaceDlgMode(SearchDlgMode):
             else:
                 pass
 
-        msgdoc = msgboxmode.MsgBoxMode.show_msgbox(
+        msgboxmode.MsgBoxMode.show_msgbox(
             'Replace text?', ['&Yes', '&No', '&All', '&Cancel'], cb,
             border=True)
 
@@ -401,7 +401,7 @@ class ReplaceDlgMode(SearchDlgMode):
                 on_y(wnd)
 
         pos = 'top' if is_top else 'bottom'
-        msgdoc = msgboxmode.MsgBoxMode.show_msgbox(
+        msgboxmode.MsgBoxMode.show_msgbox(
             'Search failed. Resume from {pos} again?'.format(pos=pos),
             ['&Resume', '&Cancel'], cb)
 
@@ -532,7 +532,6 @@ class ReplaceDlgMode(SearchDlgMode):
         if not self.option.text:
             return
         self.lastsearch = None
-        newstr = self.get_replace_str()
 
         pos = 0
         n = 0

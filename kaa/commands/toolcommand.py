@@ -40,10 +40,10 @@ class ToolCommands(Commands):
         n_repeat, commandids = kaa.app.lastcommands
         wnd.set_command_repeat(n_repeat)
         try:
-            for commandid in commandids:
-                is_available, command = mode.get_command(commandid)
+            for cmdid in commandids:
+                is_available, command = mode.get_command(cmdid)
                 if not command:
-                    msg = 'command {!r} is not registered.'.format(commandid)
+                    msg = 'command {!r} is not registered.'.format(cmdid)
                     kaa.app.messagebar.set_message(msg)
                     kaa.log.error(msg)
                     return

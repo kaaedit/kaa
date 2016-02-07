@@ -290,7 +290,7 @@ class Debugger:
         elif type == 'pid':
             self.kaadbg_pid = value
         elif type == 'frame':
-            event = value['event']
+            # event = value['event']
             frame = value['frame']
             self.current_frames = frame
             self.show_callstack()

@@ -211,7 +211,6 @@ class TextEditorWindow(Window):
         h, w = self._cwnd.getmaxyx()
 
         rows = list(self.screen.get_visible_rows())
-        cur_sel = self.screen.selection.get_selrange()
 
         lineno_width = 0
         lineno = self.document.buf.lineno.lineno(self.screen.pos)

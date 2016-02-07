@@ -70,8 +70,9 @@ def make_prop_tokenizer(root, terminates=None):
                                                'string', "'", "'", escape='\\')),
                                            ("color", SingleToken(
                                                'keyword', [r'\#[0-9a-zA-Z]+'])),
-                                           ("number", SingleToken('number',
-                                                                  [r'[+-]?[0-9]+(\.[0-9]*)*([a-z]*)', r'[+-]?\.[0-9]([a-z]*)'])),
+                                           ("number",
+                                              SingleToken('number',
+                                                          [r'[+-]?[0-9]+(\.[0-9]*)*([a-z]*)', r'[+-]?\.[0-9]([a-z]*)'])),
                                        ))
 
     return ret
@@ -97,9 +98,10 @@ def make_tokenizer(parent, terminates=None):
                     + get_css_tokens())
 
     ret.PropTokenizer = make_prop_tokenizer(ret, terminates=terminates)
-    ret.MediaCSSTokenizer = Tokenizer(parent=ret, default_style='css-selector',
-                                      tokens=get_css_tokens() +
-                                      [('terminate_media', SingleToken('media-selector', [r'}'], terminates=True))])
+    ret.MediaCSSTokenizer = Tokenizer(
+        parent=ret, default_style='css-selector',
+        tokens=get_css_tokens() +
+        [('terminate_media', SingleToken('media-selector', [r'}'], terminates=True))])
 
     ret.MediaCSSTokenizer.PropTokenizer = make_prop_tokenizer(ret.MediaCSSTokenizer,
                                                               terminates=terminates)

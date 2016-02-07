@@ -7,7 +7,6 @@ from kaa.theme import Overlay
 from kaa.theme import Style
 from kaa.command import commandid, norec, norerun
 from kaa.keyboard import *
-from kaa.commands import (appcommand, filecommand)
 from kaa.ui.selectlist import selectlist
 import kaa.ui.pythondebug.port
 from kaa.ui.inputline import inputlinemode

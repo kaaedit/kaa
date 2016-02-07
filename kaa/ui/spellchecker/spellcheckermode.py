@@ -6,7 +6,6 @@ from kaa.ui.selectlist import filterlist
 from kaa.keyboard import *
 from kaa import doc_re
 from kaa.ui.wordcomplete import wordcompletemode
-from kaa.ui.selectlist import filterlist
 
 
 class SpellCheckerWordInputMode(wordcompletemode.WordCompleteInputMode):

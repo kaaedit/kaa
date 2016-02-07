@@ -11,7 +11,7 @@ def ignore_errors(f):
         except Exception:
             try:
                 kaa.log.exception('')
-            except Exception as e:
+            except Exception:
                 # Ignore error completely...
                 pass
 

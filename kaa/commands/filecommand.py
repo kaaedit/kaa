@@ -142,7 +142,6 @@ class FileCommands(Commands):
 
         from kaa.ui.selectfile import selectfile
 
-        filename = document.get_filename()
         if document.fileinfo:
             newline = document.fileinfo.newline
             encoding = document.fileinfo.encoding

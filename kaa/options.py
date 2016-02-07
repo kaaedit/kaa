@@ -11,7 +11,8 @@ def build_parser():
                         default=False, help='skip loading initialization script')
 
     parser.add_argument('--init-script', dest='init_script',
-                        help='execute file as initialization script instead of default initialization file')
+                        help='execute file as initialization script'
+                        'instead of default initialization file')
 
     parser.add_argument('--palette', dest='palette', default=None,
                         help='color palette. available values: dark, light.')
@@ -20,7 +21,8 @@ def build_parser():
                         help='specify terminal type')
 
     parser.add_argument('--command', '-x', dest='command', default='',
-                        help='spefify kaa command id to execute on start up. e.g: kaa -x python.console / kaa -x tools.grep')
+                        help='spefify kaa command id to execute on start up.'
+                        'e.g: kaa -x python.console / kaa -x tools.grep')
 
     parser.add_argument('file', nargs='*', default=[])
 

@@ -56,8 +56,6 @@ def _stime(header='--------------'):
     """
     _trace(_get_caller(3), header)
 
-    f = time.clock()
-
     class ll:
 
         def __init__(self):

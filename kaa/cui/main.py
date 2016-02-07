@@ -88,6 +88,8 @@ def _check_newversion():
     # todo: should not rum in thread
     threading.Thread(target=_download_version_no).start()
 
+opt = None
+
 
 def main(stdscr):
     conf = config.Config(opt)

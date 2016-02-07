@@ -387,7 +387,6 @@ class SelectionCommands(Commands):
     @norerun
     @norec
     def expand_sel(self, wnd):
-        mode = wnd.document.mode
         keys = wnd.editmode.last_command_keys
         L = len(keys)
 
@@ -827,7 +826,6 @@ class CodeCommands(Commands):
             wnd.screen.selection.set_range(tol, eol)
 
             with wnd.document.undo_group():
-                mode = wnd.document.mode
                 while tol < wnd.screen.selection.get_selrange()[1]:
                     wnd.document.mode.insert_string(
                         wnd, tol, wnd.document.mode.LINE_COMMENT,
@@ -858,7 +856,6 @@ class CodeCommands(Commands):
             wnd.screen.selection.set_range(tol, eol)
 
             with wnd.document.undo_group():
-                mode = wnd.document.mode
                 while tol < wnd.screen.selection.get_selrange()[1]:
                     m = self._is_comment_line(wnd, tol)
                     if m:

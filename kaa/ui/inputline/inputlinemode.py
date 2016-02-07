@@ -77,7 +77,6 @@ class InputlineMode(dialogmode.DialogMode):
         return s
 
     def set_input_ext(self, wnd, s):
-        cur = self.get_input_text()
         f, t = self.document.marks['inputtext']
         self.document.replace(f, t, s, self.get_styleid('default'))
         f, t = self.document.marks['inputtext']
