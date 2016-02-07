@@ -40,7 +40,6 @@ class MultilineMode(dialogmode.DialogMode):
 
         wnd.cursor.setpos(self.document.marks['multiline'][0])
 
-
     def on_esc_pressed(self, wnd, event):
         popup = wnd.get_label('popup')
         popup.destroy()
@@ -64,6 +63,7 @@ class MultilineMode(dialogmode.DialogMode):
             self.callback(s)
 
     CAPTION = 'Paste text here. Hit alt+Enter when finished:'
+
     @classmethod
     def build(cls, init_text=''):
         doc = document.Document()
@@ -72,7 +72,7 @@ class MultilineMode(dialogmode.DialogMode):
 
         with dialogmode.FormBuilder(doc) as f:
             # caption
-            f.append_text('caption',cls.CAPTION)
+            f.append_text('caption', cls.CAPTION)
             f.append_text('default', '\n')
             f.append_text('default', init_text, mark_pair='multiline')
 

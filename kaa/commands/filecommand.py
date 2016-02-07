@@ -70,7 +70,6 @@ class FileCommands(Commands):
             editor = kaa.app.show_doc(doc)
             self.restore_file_loc(editor)
 
-
         if not filename:
             if wnd and wnd.document.fileinfo:
                 filename = wnd.document.fileinfo.dirname

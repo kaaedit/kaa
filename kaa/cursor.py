@@ -112,7 +112,7 @@ class Cursor:
             if f == pos:  # first word
                 # get next word
                 continue
-            if cg[0] == 'Z': # skip white space
+            if cg[0] == 'Z':  # skip white space
                 continue
             nextpos = f
             break
@@ -129,7 +129,7 @@ class Cursor:
                 #  This word is at after cursor pos
                 if pos <= f:
                     break
-                if cg[0] == 'Z': # skip white space
+                if cg[0] == 'Z':  # skip white space
                     continue
                 prevpos = f
 

@@ -432,7 +432,7 @@ class Screen:
         # never be a part of physical line.
         self.rows = []
         self.portfrom = 0   # self.rows[self.portfrom:self.portto]
-                            # returns rows displayed on the screen.
+        # returns rows displayed on the screen.
         self.portto = 0
         self.pos = 0        # Position of top-left corner
         self.updated_pos = None
@@ -543,7 +543,7 @@ class Screen:
 
         if self.updated_pos is not None:
             self.locate(self.updated_pos,
-                              top=True, refresh=True)
+                        top=True, refresh=True)
         self.updated_pos = None
 
         if self._style_updated:

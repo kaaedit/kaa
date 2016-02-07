@@ -10,6 +10,7 @@ from kaa import encodingdef
 from kaa.filetype import filetypedef
 from kaa.syntax_highlight import *
 
+
 def iter_b_attr(b):
     pos = 0
     prop = re.compile(br'(\w+)\s*=\s*', re.DOTALL)
@@ -66,12 +67,11 @@ HTMLThemes = {
 }
 
 
-
-
 RE_ATTRNAME = doc_re.compile(
     r'>|(?P<ATTRNAME>[-._:a-zA-Z0-9]+)(?P<EQUAL>\s*=)?\s*')
 RE_ATTRVALUE = doc_re.compile(r'\s*(?P<ATTRVALUE>({}))'.format(
     '|'.join(['[-._:a-zA-Z0-9]+', '(?P<Q1>"[^"]*")', "(?P<Q2>'[^']*')"])))
+
 
 def iter_attrs(doc, pos):
     while True:
@@ -97,21 +97,24 @@ def iter_attrs(doc, pos):
                     continue
 
         yield attrname, None
-                
+
+
 class HTMLTag(SingleToken):
+
     def on_start(self, doc, match):
         pos, terminates = yield from super().on_start(doc, match)
         if pos < doc.endpos():
             pos = yield from self.tokenizer.AttrTokenizer.run(doc, pos)
             if pos < doc.endpos():
-                c = doc.gettext(pos, pos+1)
+                c = doc.gettext(pos, pos + 1)
                 if c == '>':
-                    yield (pos, pos+1, self.styleid_token)
+                    yield (pos, pos + 1, self.styleid_token)
                     pos += 1
         return pos, terminates
-    
+
 
 class HTMLScriptTag(HTMLTag):
+
     def on_start(self, doc, match):
         pos, terminates = yield from super().on_start(doc, match)
 
@@ -122,16 +125,20 @@ class HTMLScriptTag(HTMLTag):
 
         pos = yield from self.tokenizer.JSTokenizer.run(doc, pos)
         return pos, terminates
-        
+
+
 class HTMLStyleTag(HTMLTag):
+
     def on_start(self, doc, match):
         pos, terminates = yield from super().on_start(doc, match)
 
         pos = yield from self.tokenizer.CSSTokenizer.run(doc, pos)
 
         return pos, terminates
-        
+
+
 class HTMLAttr(SingleToken):
+
     def __init__(self, stylename, value_stylename, tokens, terminates=False):
         super().__init__(stylename, tokens, terminates=terminates)
         self._value_stylename = value_stylename
@@ -146,39 +153,39 @@ class HTMLAttr(SingleToken):
             if pos >= doc.endpos():
                 return pos, terminates
 
-            c = doc.gettext(pos, pos+1)
+            c = doc.gettext(pos, pos + 1)
             attrname = match.group('attrname')
             attrname = attrname.lower() if attrname else ''
 
             if c in {"'", '"'}:
-                yield (pos, pos+1, self.styleid_value)
+                yield (pos, pos + 1, self.styleid_value)
 
             if attrname.startswith('on'):
                 if c == "'":
-                    pos = yield from self.tokenizer.AttrValueJSTokenizer1.run(doc, pos+1)
+                    pos = yield from self.tokenizer.AttrValueJSTokenizer1.run(doc, pos + 1)
                 elif c == '"':
-                    pos = yield from self.tokenizer.AttrValueJSTokenizer2.run(doc, pos+1)
+                    pos = yield from self.tokenizer.AttrValueJSTokenizer2.run(doc, pos + 1)
 
                 if pos < doc.endpos():
-                    if doc.gettext(pos, pos+1) == c:
-                        yield (pos, pos+1, self.styleid_value)
+                    if doc.gettext(pos, pos + 1) == c:
+                        yield (pos, pos + 1, self.styleid_value)
                         pos += 1
 
             elif attrname == 'style':
                 if c == "'":
-                    pos = yield from self.tokenizer.AttrValueCSSTokenizer1.run(doc, pos+1)
+                    pos = yield from self.tokenizer.AttrValueCSSTokenizer1.run(doc, pos + 1)
                 elif c == '"':
-                    pos = yield from self.tokenizer.AttrValueCSSTokenizer2.run(doc, pos+1)
+                    pos = yield from self.tokenizer.AttrValueCSSTokenizer2.run(doc, pos + 1)
 
                 if pos < doc.endpos():
-                    if doc.gettext(pos, pos+1) == c:
-                        yield (pos, pos+1, self.styleid_value)
+                    if doc.gettext(pos, pos + 1) == c:
+                        yield (pos, pos + 1, self.styleid_value)
                         pos += 1
             else:
                 if c == "'":
-                    pos = yield from self.tokenizer.AttrValueTokenizer1.run(doc, pos+1)
+                    pos = yield from self.tokenizer.AttrValueTokenizer1.run(doc, pos + 1)
                 elif c == '"':
-                    pos = yield from self.tokenizer.AttrValueTokenizer2.run(doc, pos+1)
+                    pos = yield from self.tokenizer.AttrValueTokenizer2.run(doc, pos + 1)
                 else:
                     pos = yield from self.tokenizer.AttrValueTokenizer3.run(doc, pos)
 
@@ -188,47 +195,49 @@ class HTMLAttr(SingleToken):
 def make_tokenizer():
     ret = Tokenizer(tokens=[
         ('html-entityrefs', SingleToken('keyword',
-                           [r'&\w+;', r'&\#x[0-9a-hA-H]+;', r'&\#[0-9]+;'])),
+                                        [r'&\w+;', r'&\#x[0-9a-hA-H]+;', r'&\#[0-9]+;'])),
         ('comment', Span('comment', r'<!--', r'--\s*>')),
         ('xmlpi', Span('html-decl', r'<\?', r'\?>')),
         ('xmldef', Span('html-decl', r'<!', r'>')),
         ('styletag', HTMLStyleTag('html-tag', [r'<\s*style'])),
         ('scripttag', HTMLScriptTag('html-tag', [r'<\s*script'])),
         ('closetag', SingleToken('html-tag', [r'</\s*[^>]+>'])),
-        ('tag', HTMLTag('html-tag', [r'<\s*[^>\s]*'])),    
+        ('tag', HTMLTag('html-tag', [r'<\s*[^>\s]*'])),
     ])
 
-    ret.AttrTokenizer = Tokenizer(parent=ret, terminates='>', 
-        is_resumable=False, tokens=[
-            ('attr', HTMLAttr('html-attrname', 'html-attrvalue', [r'(?P<attrname>[^\s=>]+)\s*=?\s*'])),
-    ])
+    ret.AttrTokenizer = Tokenizer(parent=ret, terminates='>',
+                                  is_resumable=False, tokens=[
+                                      ('attr', HTMLAttr('html-attrname', 'html-attrvalue',
+                                                        [r'(?P<attrname>[^\s=>]+)\s*=?\s*'])),
+                                  ])
 
     ret.AttrTokenizer.AttrValueTokenizer1 = Tokenizer(parent=ret.AttrTokenizer,
-        tokens=[('value', SingleToken('html-attrvalue', [r"[^']*'"], terminates=True))])
+                                                      tokens=[('value', SingleToken('html-attrvalue', [r"[^']*'"], terminates=True))])
 
-    ret.AttrTokenizer.AttrValueTokenizer2 = Tokenizer(parent=ret.AttrTokenizer, 
-        tokens=[('value', SingleToken('html-attrvalue', [r'[^"]*"'], terminates=True))])
+    ret.AttrTokenizer.AttrValueTokenizer2 = Tokenizer(parent=ret.AttrTokenizer,
+                                                      tokens=[('value', SingleToken('html-attrvalue', [r'[^"]*"'], terminates=True))])
 
-    ret.AttrTokenizer.AttrValueTokenizer3 = Tokenizer(parent=ret.AttrTokenizer, 
-        tokens=[('value', SingleToken('html-attrvalue', [r'\w*'], terminates=True))])
+    ret.AttrTokenizer.AttrValueTokenizer3 = Tokenizer(parent=ret.AttrTokenizer,
+                                                      tokens=[('value', SingleToken('html-attrvalue', [r'\w*'], terminates=True))])
 
     ret.AttrTokenizer.AttrValueJSTokenizer1 = Tokenizer(parent=ret.AttrTokenizer,
-        tokens=javascriptmode.javascript_tokens(), terminates="'")
+                                                        tokens=javascriptmode.javascript_tokens(), terminates="'")
 
     ret.AttrTokenizer.AttrValueJSTokenizer2 = Tokenizer(parent=ret.AttrTokenizer,
-        tokens=javascriptmode.javascript_tokens(), terminates='"')
+                                                        tokens=javascriptmode.javascript_tokens(), terminates='"')
 
-    ret.AttrTokenizer.AttrValueCSSTokenizer1 = cssmode.make_prop_tokenizer(ret.AttrTokenizer, "'")
-    ret.AttrTokenizer.AttrValueCSSTokenizer2 = cssmode.make_prop_tokenizer(ret.AttrTokenizer, '"')
+    ret.AttrTokenizer.AttrValueCSSTokenizer1 = cssmode.make_prop_tokenizer(
+        ret.AttrTokenizer, "'")
+    ret.AttrTokenizer.AttrValueCSSTokenizer2 = cssmode.make_prop_tokenizer(
+        ret.AttrTokenizer, '"')
 
+    ret.JSTokenizer = Tokenizer(parent=ret,
+                                tokens=javascriptmode.javascript_tokens(), terminates=r"</.*script[^>]*>")
 
-    ret.JSTokenizer = Tokenizer(parent=ret, 
-        tokens=javascriptmode.javascript_tokens(), terminates=r"</.*script[^>]*>")
-
-    ret.CSSTokenizer = cssmode.make_tokenizer(ret, terminates=r"</.*style[^>]*>")
+    ret.CSSTokenizer = cssmode.make_tokenizer(
+        ret, terminates=r"</.*style[^>]*>")
 
     return ret
-
 
 
 class HTMLMode(defaultmode.DefaultMode):

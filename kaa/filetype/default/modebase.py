@@ -81,6 +81,7 @@ class ModeBase:
     tokenizer = DefaultTokenizer
 
     DEFAULT_MENU_MESSAGE = ''
+
     @classmethod
     def update_fileinfo(cls, fileinfo, document=None):
         pass
@@ -130,7 +131,7 @@ class ModeBase:
         for name in names:
             for f in addon.get_addon(name, 'setup'):
                 f(self)
-        
+
     def setup(self):
         pass
 
@@ -415,7 +416,8 @@ class ModeBase:
             for panel in panels:
                 if panel in frame_panels:
                     if panel is not frame_panels[0]:
-                        _trace('Invalid frame order: %s%s' % (self, commandids,))
+                        _trace('Invalid frame order: %s%s' %
+                               (self, commandids,))
                 break
 
         f()
@@ -614,15 +616,16 @@ class ModeBase:
         RE_WORDCHAR, RE_WHITESPACE, RE_LF, RE_HIRAGANA, RE_KATAKANA)))
 
 # http://unicodebook.readthedocs.org/en/latest/unicode.html
-#Unicode 6.0 has 7 character categories, and each category has subcategories:
+# Unicode 6.0 has 7 character categories, and each category has subcategories:
 #
-#Letter (L): lowercase (Ll), modifier (Lm), titlecase (Lt), uppercase (Lu), other (Lo)
-#Mark (M): spacing combining (Mc), enclosing (Me), non-spacing (Mn)
-#Number (N): decimal digit (Nd), letter (Nl), other (No)
-#Punctuation (P): connector (Pc), dash (Pd), initial quote (Pi), final quote (Pf), open (Ps), close (Pe), other (Po)
-#Symbol (S): currency (Sc), modifier (Sk), math (Sm), other (So)
-#Separator (Z): line (Zl), paragraph (Zp), space (Zs)
-#Other (C): control (Cc), format (Cf), not assigned (Cn), private use (Co), surrogate (Cs)
+# Letter (L): lowercase (Ll), modifier (Lm), titlecase (Lt), uppercase (Lu), other (Lo)
+# Mark (M): spacing combining (Mc), enclosing (Me), non-spacing (Mn)
+# Number (N): decimal digit (Nd), letter (Nl), other (No)
+# Punctuation (P): connector (Pc), dash (Pd), initial quote (Pi), final quote (Pf), open (Ps), close (Pe), other (Po)
+# Symbol (S): currency (Sc), modifier (Sk), math (Sm), other (So)
+# Separator (Z): line (Zl), paragraph (Zp), space (Zs)
+# Other (C): control (Cc), format (Cf), not assigned (Cn), private use
+# (Co), surrogate (Cs)
 
     def split_word(self, begin, all=False):
         """yield word in the document until line ends"""
@@ -750,6 +753,7 @@ class ModeBase:
         return None
 
     MAX_AUTO_INDENT = 30
+
     def on_auto_indent(self, wnd):
         pos = wnd.cursor.pos
         f, t = self.get_indent_range(pos)

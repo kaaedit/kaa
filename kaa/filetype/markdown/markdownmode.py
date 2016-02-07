@@ -65,6 +65,7 @@ def is_list_block(doc, pos, tokenizer):
 
 
 class List(SingleToken):
+
     def on_start(self, doc, match):
         if match.group('list_indent'):
             # has indent
@@ -79,6 +80,7 @@ class List(SingleToken):
 
 
 class PreBlock(Span):
+
     def on_start(self, doc, match):
         # skip if line is nested list block
         #
@@ -92,7 +94,6 @@ class PreBlock(Span):
 
         ret = yield from super().on_start(doc, match)
         return ret
-
 
 
 def make_tokenizer():
@@ -118,14 +119,14 @@ def make_tokenizer():
     ))
 
     ret._LinkTokenizer = Tokenizer(parent=ret,
-       default_style='reference',
-       tokens=(
-           ('desc',
-            Span('reference', r'"', r'"', escape='\\')),
-           ('close',
-            SingleToken(
-                'reference', [r"\)"], terminates=True)),
-       ))
+                                   default_style='reference',
+                                   tokens=(
+                                       ('desc',
+                                        Span('reference', r'"', r'"', escape='\\')),
+                                       ('close',
+                                        SingleToken(
+                                            'reference', [r"\)"], terminates=True)),
+                                   ))
     return ret
 
 

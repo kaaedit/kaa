@@ -37,7 +37,7 @@ class Token:
     styles = ()
 
     def __init__(self, terminates=False):
-#        self._stylename = stylename
+        #        self._stylename = stylename
         self._style_ids = []
         self._styleid_names = {}
         self.terminates = terminates
@@ -86,18 +86,18 @@ class DefaultToken(Token):
     def re_start(self):
         return ''
 
+
 class Tokenizer:
     DEFAULT_TOKEN = DefaultToken
     IS_RESUMABLE = True
     re_starts = None
 
     def __init__(self, *, parent=None, default_style='default', terminates=None,
-        is_resumable=True, tokens=()):
+                 is_resumable=True, tokens=()):
 
         self.parent = parent
         if not parent:
-            self.styleid_map = {} # this is root tokenizer
-
+            self.styleid_map = {}  # this is root tokenizer
 
         self.terminates = terminates
         self.is_resumable = is_resumable
@@ -186,7 +186,7 @@ class Tokenizer:
         return self.get_styleid_map()[styleid]
 
 
-#class Root(Tokenizer):
+# class Root(Tokenizer):
 #
 #    def __init__(self, tokens=(), default_style='default'):
 #        self.styleid_map = {}
@@ -289,7 +289,9 @@ class Span(Token):
                 yield (pos, doc.endpos(), self.styleid_span)
             return doc.endpos(), self.terminates
 
+
 class Terminator(SingleToken):
+
     def on_start(self, doc, match):
         if 0:  # make this fuction iterator
             yield ()

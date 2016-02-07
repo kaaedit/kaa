@@ -1,4 +1,10 @@
-import os, pathlib, bisect, sys, threading, socket, tempfile
+import os
+import pathlib
+import bisect
+import sys
+import threading
+import socket
+import tempfile
 from git import Repo
 from pathlib import Path
 import kaa
@@ -73,9 +79,9 @@ class GitStatusMode(defaultmode.DefaultMode):
     def on_add_window(self, wnd):
         super().on_add_window(wnd)
         self.file_next(wnd)
-        
+
     def _get_marks(self):
-        return sorted(((v[0], v[1], k) for k, v in self.document.marks.items()), key=lambda o:o[1])
+        return sorted(((v[0], v[1], k) for k, v in self.document.marks.items()), key=lambda o: o[1])
 
     def _get_next_mark(self, pos):
         marks = self._get_marks()
@@ -88,16 +94,16 @@ class GitStatusMode(defaultmode.DefaultMode):
         idx = 0
         for idx in range(0, start):
             yield marks[idx]
-    
+
     def _get_prev_mark(self, pos):
         marks = self._get_marks()
         starts = [v[0] for v in marks]
         start = idx = bisect.bisect_left(starts, pos)
 
-        for idx in range(start-1, -1, -1):
+        for idx in range(start - 1, -1, -1):
             yield marks[idx]
 
-        for idx in range(len(marks)-1, start-1, -1):
+        for idx in range(len(marks) - 1, start - 1, -1):
             yield marks[idx]
 
     def _get_mark(self, pos):
@@ -124,7 +130,7 @@ class GitStatusMode(defaultmode.DefaultMode):
 
         is_available, command = self.get_command('file.open')
         command(None,
-            filename=os.path.join(self._repo.working_dir, name[2:]))
+                filename=os.path.join(self._repo.working_dir, name[2:]))
 
     def _show_diff(self, s):
         doc = document.Document()
@@ -133,7 +139,6 @@ class GitStatusMode(defaultmode.DefaultMode):
         doc.setmode(mode)
 
         kaa.app.show_dialog(doc)
-
 
     @commandid('git.status.diff')
     def diff_file(self, wnd):
@@ -171,7 +176,7 @@ class GitStatusMode(defaultmode.DefaultMode):
 
     @commandid('git.status.refresh')
     def status_refresh(self, wnd):
-            self._refresh(wnd)
+        self._refresh(wnd)
 
     @commandid('git.add')
     def git_add(self, wnd):
@@ -206,18 +211,21 @@ class GitStatusMode(defaultmode.DefaultMode):
 
         exe = sys.executable
         git_edit = '{exe} -m kaa.ui.git.git_editor '.format(exe=sys.executable)
-        self._repo.git.update_environment(KAA_SOCKNAME=fname, GIT_EDITOR=git_edit)
+        self._repo.git.update_environment(
+            KAA_SOCKNAME=fname, GIT_EDITOR=git_edit)
 
         git_result = None
+
         def f():
             nonlocal git_result
             try:
-                code, msg1, msg2 = git_result = self._repo.git.commit(with_extended_output=True)
-                git_result = msg1 + msg2  # todo: check gitpython to know what they are...
+                code, msg1, msg2 = git_result = self._repo.git.commit(
+                    with_extended_output=True)
+                # todo: check gitpython to know what they are...
+                git_result = msg1 + msg2
             except Exception as e:
                 git_result = e
 
-            
             s = socket.socket(socket.AF_UNIX, socket.SOCK_STREAM)
             try:
                 s.connect(fname)
@@ -236,22 +244,25 @@ class GitStatusMode(defaultmode.DefaultMode):
 
             conn, addr = s.accept()
             if git_result:
-                kaa.app.messagebar.set_message(' '.join(str(git_result).split('\n')))
+                kaa.app.messagebar.set_message(
+                    ' '.join(str(git_result).split('\n')))
 
             def callback_commit():
                 t.join()
                 if git_result:
                     msg = str(git_result)
                     msgboxmode.MsgBoxMode.show_msgbox(
-                        msg, ['&Ok'], lambda c: self.status_refresh(wnd), ['\r', '\n'],
+                        msg, ['&Ok'], lambda c: self.status_refresh(wnd), [
+                            '\r', '\n'],
                         border=True)
                 else:
                     self.status_refresh(wnd)
-                
+
             recv = conn.recv(4096)
             if recv == b'ok\n':
                 filename = os.path.join(self._repo.git_dir, 'COMMIT_EDITMSG')
-                doc = kaa.app.storage.openfile(filename, nohist=True, filemustexists=True)
+                doc = kaa.app.storage.openfile(
+                    filename, nohist=True, filemustexists=True)
                 s = doc.gettext(0, doc.endpos())
                 doc.close()
 
@@ -269,11 +280,10 @@ class GitStatusMode(defaultmode.DefaultMode):
             if os.path.exists(fname):
                 os.unlink(fname)
 
-
     def _add_new_file(self, style, name, mark_prefix):
         f = self.document.append('new file:    ', style)
         t = self.document.append(name, style)
-        self.document.marks[mark_prefix+name] = (f, t)
+        self.document.marks[mark_prefix + name] = (f, t)
 
     def _add_diff(self, d, style, mark_prefix):
         if d.new_file:
@@ -282,21 +292,21 @@ class GitStatusMode(defaultmode.DefaultMode):
         elif d.deleted_file:
             f = self.document.append('deleted:     ', style)
             t = self.document.append(d.b_path, style)
-            self.document.marks[mark_prefix+d.b_path] = (f, t)
+            self.document.marks[mark_prefix + d.b_path] = (f, t)
 
         elif d.renamed:
             f = self.document.append('renamed:     ', style)
             t = self.document.append(d.rename_from, style)
-            self.document.marks[mark_prefix+d.rename_from] = (f, t)
+            self.document.marks[mark_prefix + d.rename_from] = (f, t)
 
             f = self.document.append(' -> ', style)
             t = self.document.append(d.rename_to, style)
-            self.document.marks[mark_prefix+d.rename_to] = (f, t)
+            self.document.marks[mark_prefix + d.rename_to] = (f, t)
 
         else:
             f = self.document.append('modified:    ', style)
             t = self.document.append(d.b_path, style)
-            self.document.marks[mark_prefix+d.b_path] = (f, t)
+            self.document.marks[mark_prefix + d.b_path] = (f, t)
 
     def _refresh(self, wnd):
         if wnd:
@@ -305,7 +315,7 @@ class GitStatusMode(defaultmode.DefaultMode):
         # clear
         self.document.marks.clear()
         self.document.delete(0, self.document.endpos())
-        
+
         self._untracked_files = list(self._repo.untracked_files)
 
         self.document.set_title('<git status>')
@@ -315,17 +325,18 @@ class GitStatusMode(defaultmode.DefaultMode):
         indent = '    '
         try:
             style_header = self.get_styleid('git-header')
-            style_button= self.get_styleid('git-button')
+            style_button = self.get_styleid('git-button')
             style_staged = self.get_styleid('git-staged')
             style_not_staged = self.get_styleid('git-not-staged')
             style_untracked = self.get_styleid('git-untracked')
 
-            f = self.document.append('On branch {repo.active_branch.name}\n'.format(repo=self._repo), style_header)
+            f = self.document.append(
+                'On branch {repo.active_branch.name}\n'.format(repo=self._repo), style_header)
             t = self.document.append('<< Refresh >>', style_button)
             self.document.marks['b_refresh'] = (f, t)
 
             self.document.append('\n\n')
-            
+
             # add staged files
             self.document.append('Changes to be committed:\n\n', style_header)
             if self._repo.head.is_valid():
@@ -342,9 +353,9 @@ class GitStatusMode(defaultmode.DefaultMode):
                     self._add_new_file(style_staged, file, 's_')
                     self.document.append('\n')
 
-
             # add not staged files
-            self.document.append('\nChanges not staged for commit:\n\n', style_header)
+            self.document.append(
+                '\nChanges not staged for commit:\n\n', style_header)
 
             d = self._repo.index.diff(None)
             for c in d:
@@ -360,7 +371,7 @@ class GitStatusMode(defaultmode.DefaultMode):
                 self.document.append(f, style_untracked)
                 posto = self.document.endpos()
 
-                self.document.marks['u_'+f] = (posfrom, posto)
+                self.document.marks['u_' + f] = (posfrom, posto)
                 self.document.append('\n')
 
         finally:
@@ -380,6 +391,7 @@ class GitStatusMode(defaultmode.DefaultMode):
         self._repo = repo
         self._refresh(None)
 
+
 def show_git_status(d):
     cur = Path(d).absolute()
     while not cur.joinpath('.git').is_dir():
@@ -397,4 +409,3 @@ def show_git_status(d):
 
     mode.show_status(repo)
     kaa.app.show_doc(doc)
-

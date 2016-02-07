@@ -88,6 +88,7 @@ class TableToken(SingleToken):
 
 RST_HEADERS = r'=\-`:\'"~^_*+#<>'
 
+
 def make_tokenizer():
     return Tokenizer(tokens=[
         # escape
@@ -95,39 +96,36 @@ def make_tokenizer():
 
         # header token
         ('header1', SingleToken('header',
-                    [r'^(?P<H>[{}])(?P=H)+\n.+\n(?P=H)+$'.format(RST_HEADERS)])),
+                                [r'^(?P<H>[{}])(?P=H)+\n.+\n(?P=H)+$'.format(RST_HEADERS)])),
         ('header2', SingleToken('header',
-                    [r'^.+\n(?P<H2>[{}])(?P=H2)+$'.format(RST_HEADERS)])),
+                                [r'^.+\n(?P<H2>[{}])(?P=H2)+$'.format(RST_HEADERS)])),
 
         # block
         ('directive', Span('directive', r'\.\.\s+\S+::', '^\S',
-             escape='\\', capture_end=False)),
+                           escape='\\', capture_end=False)),
         ('block', Span('block', r'::', '^\S', capture_end=False)),
 
         # table
-        ('table_border',TableToken('table', [r'\+[+\-=]+(\s+|$)'])),
+        ('table_border', TableToken('table', [r'\+[+\-=]+(\s+|$)'])),
         ('table_row', TableToken('table', [r'\|(\s+|$)'])),
 
         # inline token
         ('strong', RstInline('strong',
-                  r'\*\*', r'\*\*', escape='\\')),
+                             r'\*\*', r'\*\*', escape='\\')),
         ('emphasis', RstInline('emphasis',
-                  r'\*', r'\*', escape='\\')),
+                               r'\*', r'\*', escape='\\')),
         ('literal', RstInline('literal', r'``', r'``', escape='')),
         ('interpreted', RstInline('reference', r'`', r'`_?_?',
-                  escape='\\')),
+                                  escape='\\')),
         ('reference', SingleToken('reference',
-                    [r'\b[a-zA-Z0-9]+__?\b'])),
+                                  [r'\b[a-zA-Z0-9]+__?\b'])),
         ('role', RstInline('role', r':[a-zA-Z0-9]+:`', r'`',
-                  escape='\\')),
+                           escape='\\')),
         ('target', RstInline('reference',
-                  r'_`\w', r'`', escape='\\')),
+                             r'_`\w', r'`', escape='\\')),
         ('substitution', SingleToken('substitution', [r'\|\w+\|'])),
         ('citation', SingleToken('reference', [r'\[\w+\]_\b'])),
     ])
-
-
-
 
 
 RSTMENU = [
@@ -137,6 +135,7 @@ RSTMENU = [
 rst_keys = {
     (ctrl, 't'): 'toc.showlist',
 }
+
 
 class RstMode(defaultmode.DefaultMode):
     MODENAME = 'Rst'
@@ -153,7 +152,6 @@ class RstMode(defaultmode.DefaultMode):
     def init_themes(self):
         super().init_themes()
         self.themes.append(RstThemes)
-
 
     HEADER1 = r'''^(?P<H>[{}])(?P=H)+\n
                   (?P<TITLE>.+)\n

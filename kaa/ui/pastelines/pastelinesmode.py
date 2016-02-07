@@ -6,10 +6,10 @@ from kaa.filetype.default import keybind
 from kaa.commands import editorcommand
 from kaa.keyboard import *
 
+
 class PasteLinesMode(multilinemode.MultilineMode):
 
     auto_indent = False
-
 
     def close(self):
         super().close()

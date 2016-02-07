@@ -84,7 +84,8 @@ def _check_newversion():
         return
 
     kaa.app.config.save_value('time_check_version', now)
-    threading.Thread(target=_download_version_no).start() # todo: should not rum in thread
+    # todo: should not rum in thread
+    threading.Thread(target=_download_version_no).start()
 
 
 def main(stdscr):

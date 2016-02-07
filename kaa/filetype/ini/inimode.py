@@ -14,12 +14,14 @@ INIThemes = {
     ]
 }
 
+
 def ini_tokens():
     return [
         ('comment', Span('comment', r';', '$')),
         ('section', Span('section', r'^\[', r'\]')),
         ('param-name', SingleToken('param-name', [r"^([a-zA-Z0-9_-])+"])),
-     ]
+    ]
+
 
 def make_tokenizer():
     return Tokenizer(tokens=ini_tokens())

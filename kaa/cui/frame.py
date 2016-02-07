@@ -150,7 +150,6 @@ class MainFrame(Window, kaa.context.ContextRoot):
         for popup in self.popups:
             popup.on_console_resized()
 
-
     def _get_temporary_frame(self):
         # if kaa has only one frame and the frame has temporary document,
         # then dispose the document and reuse the frame.
@@ -213,9 +212,9 @@ class MainFrame(Window, kaa.context.ContextRoot):
 
     def run_refresh(self):
         if self.need_refresh:
-#            if self.need_redraw:
-#                for child in self.walk_children():
-#                    child._cwnd.touchwin()
+            #            if self.need_redraw:
+            #                for child in self.walk_children():
+            #                    child._cwnd.touchwin()
 
             curses.panel.update_panels()
             curses.doupdate()

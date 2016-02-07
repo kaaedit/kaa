@@ -7,11 +7,13 @@ from kaa.filetype.default import keybind
 from kaa.commands import editorcommand
 from kaa.keyboard import *
 
+
 class CommitDialogMode(multilinemode.MultilineMode):
 
     CAPTION = 'Hit alt+Enter to commit'
 
     commit_callback = None
+
     def callback(self, s):
         self.conn.send(b'done')
         self.conn.close()

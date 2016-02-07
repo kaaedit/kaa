@@ -113,7 +113,6 @@ class DialogMode(modebase.ModeBase):
 
         height = self.calc_height(wnd)
 
-        
         if not self.border:
             height = min(height, wnd.mainframe.messagebar.rect[1])
             top = wnd.mainframe.messagebar.rect[1] - height

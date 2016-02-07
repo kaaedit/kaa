@@ -46,8 +46,8 @@ class CuiApp:
         self.is_availables = {}
 
         self.sigwinch_rfd, self.sigwinch_wfd = os.pipe()
-        signal.signal(signal.SIGWINCH, 
-            lambda *args:os.write(self.sigwinch_wfd, b'0'))
+        signal.signal(signal.SIGWINCH,
+                      lambda *args: os.write(self.sigwinch_wfd, b'0'))
 
     def register_commandobj(self, cmds):
         self.commands.update(cmds.get_commands())
@@ -298,9 +298,9 @@ class CuiApp:
             panels[idx] = m
 
     def run(self):
-#        def f(t, i):
-#            _trace(t, i)
-#        gc.callbacks.append(f)
+        #        def f(t, i):
+        #            _trace(t, i)
+        #        gc.callbacks.append(f)
         gc.set_threshold(2000, 10, 10)
 
         nonblocking = True
@@ -338,15 +338,17 @@ class CuiApp:
 
                     # sigh. pep-0475 prevents us to handling SIGWINCH.
                     # force curses to resize window.
-                    import struct, fcntl, termios
-                    v = fcntl.ioctl(0, termios.TIOCGWINSZ, 
-                            struct.pack('HHHH', 0, 0, 0, 0))
+                    import struct
+                    import fcntl
+                    import termios
+                    v = fcntl.ioctl(0, termios.TIOCGWINSZ,
+                                    struct.pack('HHHH', 0, 0, 0, 0))
                     lines, cols, _, _ = struct.unpack('HHHH', v)
                     curses.resizeterm(lines, cols)
                     self.mainframe.on_console_resized()
-            
-                ready = [r for r in rlist if r not in 
-                            (sys.stdin, self.sigwinch_rfd)]
+
+                ready = [r for r in rlist if r not in
+                         (sys.stdin, self.sigwinch_rfd)]
                 if ready:
                     nonblocking = True
                     for r in ready:

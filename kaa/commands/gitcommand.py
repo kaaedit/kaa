@@ -15,4 +15,3 @@ class GitCommands(Commands):
         else:
             dirname = os.getcwd()
         statusmode.show_git_status(dirname)
-

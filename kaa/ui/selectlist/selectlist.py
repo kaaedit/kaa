@@ -54,7 +54,7 @@ class SelectItemList(dialogmode.DialogMode):
 
     def update_doc(self, items):
         self.items = list(collections.OrderedDict((i, 1)
-                          for i in items).keys())
+                                                  for i in items).keys())
 
         self.cursel = None
 

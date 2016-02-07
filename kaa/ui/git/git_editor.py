@@ -1,4 +1,5 @@
-import os, socket
+import os
+import socket
 sockname = os.environ['KAA_SOCKNAME']
 
 s = socket.socket(socket.AF_UNIX, socket.SOCK_STREAM)

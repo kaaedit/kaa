@@ -113,8 +113,8 @@ class MouseEvent:
         name = hex(name) if isinstance(name, int) else name
 
         mods = "".join((('M-' if self.alt else ''),
-                       ('^' if self.ctrl else ''),
-                       ('SHIFT+' if self.shift else '')))
+                        ('^' if self.ctrl else ''),
+                        ('SHIFT+' if self.shift else '')))
 
         return '<mouse: ({},{}) - {}{} {}>'.format(
             self.x, self.y, mods, name, super().__repr__())

@@ -5,12 +5,14 @@ JSONThemes = {
     'basic': []
 }
 
+
 def make_tokenizer():
     return Tokenizer(tokens=[
         ('numeric', SingleToken('number',
-                    [r'\b[0-9]+(\.[0-9]*)*\b', r'\b\.[0-9]+\b'])),
+                                [r'\b[0-9]+(\.[0-9]*)*\b', r'\b\.[0-9]+\b'])),
         ('string', Span('string', '"', '"', escape='\\'),)
     ])
+
 
 class JSONMode(defaultmode.DefaultMode):
     MODENAME = 'JSON'
@@ -19,4 +21,3 @@ class JSONMode(defaultmode.DefaultMode):
     def init_themes(self):
         super().init_themes()
         self.themes.append(JSONThemes)
-

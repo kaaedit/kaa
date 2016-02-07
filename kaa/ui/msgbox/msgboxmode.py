@@ -95,8 +95,7 @@ class MsgBoxMode(dialogmode.DialogMode):
 
                 f.append_text('button',
                               option,
-                              on_shortcut=
-                              lambda wnd, key=shortcut: mode.on_shortcut(
+                              on_shortcut=lambda wnd, key=shortcut: mode.on_shortcut(
                                   wnd, key),
                               shortcut_style='button.shortcut')
 

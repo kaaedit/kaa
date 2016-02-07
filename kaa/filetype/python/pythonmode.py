@@ -36,7 +36,6 @@ KEYWORDS = ['and', 'as', 'assert', 'break', 'class', 'continue', 'def',
 CONSTANTS = ['False', 'None', 'True']
 
 
-
 def make_tokenizer():
     return Tokenizer(tokens=(
         ("keyword", Keywords('keyword', KEYWORDS)),

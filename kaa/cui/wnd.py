@@ -122,10 +122,11 @@ class Window(kaa.context.Context):
 
                 if c == curses.KEY_MOUSE:
                     mouseid, x, y, z, bstate = curses.getmouse()
-                    cls._keys.append(keydef.MouseEvent(mouseid, x, y, z, bstate))
+                    cls._keys.append(keydef.MouseEvent(
+                        mouseid, x, y, z, bstate))
                 else:
                     cls._keys.extend(keydef.KeyEvent(k, True)
-                            for k in keydef.convert_registered_key(c))
+                                     for k in keydef.convert_registered_key(c))
                     last = cls._keys[-1]
 
                 cwnd.timeout(0)
@@ -134,14 +135,15 @@ class Window(kaa.context.Context):
             if repr(e.args) != cls._input_lasterror:
                 if e.args[0] != 'no input':
                     log.debug('Error in get_wch()', exc_info=True)
-                cls._input_lasterror= repr(e.args)
+                cls._input_lasterror = repr(e.args)
             else:
                 cls._input_skipped += 1
-                if cls._input_skipped  % 500 == 0:
+                if cls._input_skipped % 500 == 0:
                     log.debug(
                         'Too much input-error skips!: {} times'.format(cls._input_skipped))
 
-        # last key event has no trailing character input(i.e. this is not key sequqnce like function keys).
+        # last key event has no trailing character input(i.e. this is not key
+        # sequqnce like function keys).
         if last:
             last.has_trailing_char = False
 
@@ -157,15 +159,14 @@ class Window(kaa.context.Context):
             ret.append(self._keys.pop(0))
         return ret
 
-
     def add_str(self, letters, attr):
         try:
             self._cwnd.addstr(letters, attr)
         except curses.error:
             # exception is raised if a characters are written
             # over right border.
-#            logstr = letters if (len(letters) < 10) else (letters[:10]+'...')
-#            log.debug('Error to write str:{!r}'.format(logstr), exc_info=True)
+            #            logstr = letters if (len(letters) < 10) else (letters[:10]+'...')
+            #            log.debug('Error to write str:{!r}'.format(logstr), exc_info=True)
             pass
 
     def bring_top(self):

@@ -20,7 +20,8 @@ class ViewDiffMode(dialogmode.DialogMode):
     ]
 
     tokenizer = diffmode.make_tokenizer()
-    callback=None
+    callback = None
+
     def init_keybind(self):
         super().init_keybind()
 

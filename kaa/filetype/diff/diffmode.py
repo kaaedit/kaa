@@ -33,4 +33,3 @@ class DiffMode(defaultmode.DefaultMode):
     def init_themes(self):
         super().init_themes()
         self.themes.append(DiffThemes)
-
