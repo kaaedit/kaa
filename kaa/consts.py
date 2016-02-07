@@ -1,4 +1,3 @@
-import os
 
 KAA_DIR = '~/.kaa/'
 KAA_SCRIPT = '__kaa__.py'

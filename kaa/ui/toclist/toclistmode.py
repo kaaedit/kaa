@@ -1,5 +1,4 @@
 import kaa
-from kaa import document
 from kaa.ui.dialog import dialogmode
 from kaa.ui.selectlist import filterlist, selectlist
 from kaa.command import commandid, norec, norerun

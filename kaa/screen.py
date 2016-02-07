@@ -1,4 +1,3 @@
-import itertools
 import re
 import math
 from unicodedata import east_asian_width

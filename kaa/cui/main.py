@@ -7,10 +7,11 @@ import types
 import signal
 import kaa.tools
 import kaa.log
-from kaa import options, version, consts, config
+from kaa import config
+from kaa import options
+from kaa import version
 from kaa.cui import app, keydef
 
-from kaa import document
 from kaa import fileio
 
 CURSES_MOUSEINTERVAL = 200

@@ -1,10 +1,5 @@
 import locale
-import kaa
-from kaa import document, command
 from kaa.ui.multiline import multilinemode
-from kaa.theme import Theme, Style
-from kaa.filetype.default import keybind
-from kaa.commands import editorcommand
 from kaa.keyboard import *
 
 

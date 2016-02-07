@@ -3,10 +3,11 @@ import kaa
 from kaa import doc_re
 from kaa import document
 from kaa.keyboard import *
-from kaa.theme import Theme, Style
-from kaa.filetype.default import modebase, keybind, defaultmode
-from kaa.command import commandid, Commands, norec, norerun
-from kaa.commands import editorcommand
+from kaa.theme import Style
+from kaa.filetype.default import defaultmode
+from kaa.command import commandid
+from kaa.command import norec
+from kaa.command import norerun
 
 FilenameIndexThemes = {
     'basic': [

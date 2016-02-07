@@ -1,7 +1,6 @@
 import kaa
 from kaa import document
 from kaa.ui.filenameindex import filenameindexmode
-from kaa import doc_re
 
 
 def show(commandline, s):

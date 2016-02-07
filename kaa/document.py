@@ -1,6 +1,5 @@
 import contextlib
 import weakref
-import re
 import gappedbuf
 
 

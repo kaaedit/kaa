@@ -1,6 +1,6 @@
 import kaa
 from kaa.filetype.default import modebase
-from kaa.theme import Theme, Style
+from kaa.theme import Style
 
 MessageBarThemes = {
     'basic': [

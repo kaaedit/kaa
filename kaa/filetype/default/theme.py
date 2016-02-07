@@ -1,4 +1,5 @@
-from kaa.theme import Theme, Style, Overlay
+from kaa.theme import Overlay
+from kaa.theme import Style
 
 DefaultThemes = {
     'basic': [

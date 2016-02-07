@@ -1,7 +1,6 @@
 import os
 import unicodedata
 import sys
-import locale
 import kaa
 import kaa.log
 from kaa import document, encodingdef

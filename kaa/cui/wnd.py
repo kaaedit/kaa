@@ -5,7 +5,6 @@ import collections
 from kaa import log
 from kaa.cui import keydef
 import kaa.context
-from kaa import editmode
 
 
 class Window(kaa.context.Context):
@@ -224,11 +223,9 @@ class Window(kaa.context.Context):
 
     def on_setrect(self, l, t, r, b):
         """Window resized"""
-        pass
 
     def on_focus(self):
         """Got focus"""
-        pass
 
     def on_killfocus(self):
         pass

@@ -1,13 +1,12 @@
 import kaa
 from kaa.keyboard import *
 from kaa.ui.dialog import dialogmode
-from kaa.theme import Theme, Style
 from kaa.filetype.default import modebase, keybind
 from kaa.ui.msgbox import msgboxmode
-from kaa.command import commandid, Commands, norec, norerun
-from kaa.commands import editorcommand
+from kaa.command import commandid
+from kaa.command import norec
+from kaa.command import norerun
 from kaa.ui.selectlist import filterlist
-from kaa import doc_re
 from gappedbuf.sre_constants import error as gre_error
 
 SearchThemes = {

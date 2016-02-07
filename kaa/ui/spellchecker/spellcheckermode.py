@@ -1,10 +1,8 @@
-import re
 import enchant
 import kaa
 from kaa import document
 from kaa.ui.dialog import dialogmode
 from kaa.ui.selectlist import filterlist
-from kaa.command import commandid, norec, norerun
 from kaa.keyboard import *
 from kaa import doc_re
 from kaa.ui.wordcomplete import wordcompletemode

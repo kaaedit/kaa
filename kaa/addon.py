@@ -1,9 +1,7 @@
 """ Utility functions for kaa customization."""
 
 from kaa.keyboard import *
-from kaa.theme import Style
 import kaa.command
-from kaa.command import norec, norerun, commandid
 import kaa.config
 
 

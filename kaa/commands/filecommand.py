@@ -2,7 +2,10 @@ import os
 import kaa
 import kaa.log
 import kaa.utils
-from kaa.command import Commands, commandid, is_enable, norec, norerun
+from kaa.command import Commands
+from kaa.command import commandid
+from kaa.command import norec
+from kaa.command import norerun
 
 
 class FileCommands(Commands):
@@ -428,7 +431,6 @@ class FileCommands(Commands):
     @norerun
     def file_new_to(self, wnd):
         def openfile(cb):
-            from kaa import fileio
             doc = kaa.app.storage.newfile()
             wnd.show_doc(doc)
 

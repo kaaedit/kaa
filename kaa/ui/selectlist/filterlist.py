@@ -4,11 +4,9 @@ from kaa import document
 from kaa.ui.dialog import dialogmode
 from kaa.ui.selectlist import selectlist
 
-from kaa.theme import Theme, Style
 
 from kaa.command import commandid, norec, norerun
 from kaa.keyboard import *
-from kaa.commands import editorcommand
 import kaa.filetype.default.keybind
 
 

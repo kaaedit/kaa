@@ -1,4 +1,3 @@
-import itertools
 import types
 from kaa import doc_re
 

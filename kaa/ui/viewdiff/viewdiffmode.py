@@ -4,7 +4,6 @@ from kaa import document
 from kaa.filetype.diff import diffmode
 from kaa.filetype.default import keybind
 from kaa.ui.dialog import dialogmode
-from kaa.commands import editorcommand
 
 
 class ViewDiffMode(dialogmode.DialogMode):

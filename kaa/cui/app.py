@@ -2,21 +2,19 @@ import os
 import signal
 import gc
 import time
-import socket
-import pickle
 import sys
 import select
 import curses
 import threading
-import struct
-import fcntl
-import termios
 import contextlib
 
 import kaa
 import kaa.log
 from . import keydef, color, dialog
-from kaa import config, keyboard, document, macro, clipboard
+from kaa import clipboard
+from kaa import document
+from kaa import keyboard
+from kaa import macro
 
 from kaa.exceptions import KaaError
 

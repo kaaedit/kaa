@@ -1,7 +1,8 @@
-from kaa.command import Commands, commandid, norec, norerun
+from kaa.command import commandid
+from kaa.command import norec
+from kaa.command import norerun
 from kaa import document
 from kaa.ui.dialog import dialogmode
-from kaa.theme import Theme, Style
 from kaa.keyboard import *
 
 MoveSeparatorThemes = {

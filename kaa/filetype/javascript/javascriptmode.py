@@ -1,8 +1,5 @@
 import re
-from collections import namedtuple
-import kaa
 from kaa.filetype.default import defaultmode
-from kaa.theme import Theme, Style
 from kaa.syntax_highlight import *
 
 JavaScriptThemes = {

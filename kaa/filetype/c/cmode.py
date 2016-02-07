@@ -1,7 +1,4 @@
-from collections import namedtuple
-from kaa.filetype.default import defaultmode, theme
-from kaa.theme import Theme, Style
-from kaa.command import Commands, commandid, norec, norerun
+from kaa.filetype.default import defaultmode
 from kaa.keyboard import *
 from kaa.syntax_highlight import *
 

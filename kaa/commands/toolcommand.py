@@ -1,4 +1,3 @@
-import sys
 import os
 import curses
 import subprocess
@@ -6,7 +5,10 @@ import signal
 import time
 import kaa
 from kaa import document
-from kaa.command import Commands, commandid, is_enable, norec, norerun
+from kaa.command import Commands
+from kaa.command import commandid
+from kaa.command import norec
+from kaa.command import norerun
 
 
 class ToolCommands(Commands):
@@ -158,7 +160,7 @@ class ToolCommands(Commands):
     @norerun
     def spellchecker(self, wnd):
         try:
-            import enchant
+            pass
         except ImportError:
             kaa.app.messagebar.set_message(
                 'PyEnchant module is not installed.')

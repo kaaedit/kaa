@@ -2,7 +2,6 @@ import curses
 import collections
 import kaa
 from kaa import document
-from kaa.cui.color import ColorName
 from kaa.ui.statusbar import statusbarmode
 from kaa.cui import editor
 

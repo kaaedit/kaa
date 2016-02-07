@@ -1,10 +1,11 @@
 import io
-import keyword
 import copy
-from kaa.filetype.default import defaultmode, theme
-from kaa.theme import Theme, Style
+from kaa.filetype.default import defaultmode
+from kaa.theme import Style
 from kaa import doc_re
-from kaa.command import Commands, commandid, norec, norerun
+from kaa.command import commandid
+from kaa.command import norec
+from kaa.command import norerun
 from kaa.keyboard import *
 from kaa.ui.pythondebug import port
 from kaa.syntax_highlight import *

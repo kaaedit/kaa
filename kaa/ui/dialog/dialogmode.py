@@ -1,8 +1,7 @@
 import re
-import string
 from kaa import cursor, keyboard
 from kaa.filetype.default import modebase
-from kaa.theme import Theme, Style
+from kaa.theme import Style
 from kaa.exceptions import KaaError
 
 DialogThemes = {

@@ -1,7 +1,6 @@
 import logging
 import logging.handlers
 import os
-import kaa
 
 
 def init(logdir):

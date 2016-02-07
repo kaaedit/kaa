@@ -1,9 +1,7 @@
 import kaa
 from kaa import document, command
 from kaa.ui.dialog import dialogmode
-from kaa.theme import Theme, Style
 from kaa.filetype.default import keybind
-from kaa.commands import editorcommand
 from kaa.keyboard import *
 
 multiline_keys = {

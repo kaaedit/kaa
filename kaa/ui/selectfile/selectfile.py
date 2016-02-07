@@ -1,6 +1,4 @@
 import os
-import collections
-import fnmatch
 import kaa
 from kaa import document, encodingdef, utils, consts
 from kaa.ui.dialog import dialogmode
@@ -9,11 +7,11 @@ from kaa.ui.itemlist import itemlistmode
 from kaa.ui.inputline import inputlinemode
 from kaa.ui.msgbox import msgboxmode
 
-from kaa.theme import Theme, Style
 
-from kaa.command import Commands, commandid, norec, norerun
+from kaa.command import commandid
+from kaa.command import norec
+from kaa.command import norerun
 from kaa.keyboard import *
-from kaa.commands import editorcommand
 import kaa.filetype.default.keybind
 
 

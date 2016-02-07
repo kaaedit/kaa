@@ -1,5 +1,4 @@
 import os
-import pathlib
 import bisect
 import sys
 import threading
@@ -13,7 +12,7 @@ from kaa.theme import Style
 from kaa.filetype.default import defaultmode
 from kaa import document
 from kaa.filetype.default import keybind
-from kaa.command import norec, norerun, commandid
+from kaa.command import commandid
 from kaa.ui.git import commitdlgmode
 from kaa.ui.viewdiff import viewdiffmode
 from kaa.ui.msgbox import msgboxmode

@@ -5,7 +5,6 @@ from kaa.cui.wnd import Window
 import kaa
 import kaa.log
 from kaa import screen, cursor
-from kaa.cui.color import ColorName
 
 
 class TextEditorWindow(Window):

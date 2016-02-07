@@ -1,12 +1,9 @@
 import curses
-import itertools
 
 import kaa
 import kaa.context
 from kaa.cui.wnd import Window
 from kaa.cui import splitter, editor
-from kaa.ui.messagebar import messagebarmode
-from kaa import document
 
 
 class ChildFrame(Window, kaa.context.ContextRoot):

@@ -1,5 +1,5 @@
 from kaa.filetype.default import defaultmode
-from kaa.theme import Theme, Style
+from kaa.theme import Style
 from kaa.syntax_highlight import *
 
 DiffThemes = {

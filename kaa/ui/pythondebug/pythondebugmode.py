@@ -2,9 +2,9 @@ import os
 import signal
 import kaa
 from kaa import document
-from kaa.filetype.default import defaultmode
 from kaa.ui.dialog import dialogmode
-from kaa.theme import Theme, Style, Overlay
+from kaa.theme import Overlay
+from kaa.theme import Style
 from kaa.command import commandid, norec, norerun
 from kaa.keyboard import *
 from kaa.commands import (appcommand, filecommand)

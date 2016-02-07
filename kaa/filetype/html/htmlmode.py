@@ -1,13 +1,11 @@
 import re
-from collections import namedtuple
 from kaa.filetype.default import defaultmode
 from kaa import doc_re
-from kaa.theme import Theme, Style
+from kaa.theme import Style
 from kaa.filetype.javascript import javascriptmode
 from kaa.filetype.css import cssmode
 
 from kaa import encodingdef
-from kaa.filetype import filetypedef
 from kaa.syntax_highlight import *
 
 

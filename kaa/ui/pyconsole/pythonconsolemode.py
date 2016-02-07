@@ -1,17 +1,16 @@
 import curses
 import code
 import sys
-import traceback
 import time
 from contextlib import contextmanager
 import kaa
 from kaa import document
 from kaa.keyboard import *
-from kaa.filetype.default import defaultmode
 from kaa.filetype.python import pythonmode
-from kaa.command import commandid, Commands, norec, norerun
-from kaa.theme import Theme, Style
-from kaa.ui.dialog import dialogmode
+from kaa.command import commandid
+from kaa.command import norec
+from kaa.command import norerun
+from kaa.theme import Style
 
 pythonconsole_keys = {
     ('\r'): 'pythonconsole.newline',

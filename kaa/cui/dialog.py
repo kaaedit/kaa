@@ -1,4 +1,3 @@
-import curses
 import kaa
 from . import wnd, editor
 

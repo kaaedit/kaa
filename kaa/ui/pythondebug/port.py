@@ -1,6 +1,5 @@
 import os
 import subprocess
-import collections
 import socket
 import json
 import kaa

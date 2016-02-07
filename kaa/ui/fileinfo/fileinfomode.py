@@ -1,7 +1,7 @@
 import os
 import kaa
 from kaa import document
-from kaa.theme import Theme, Style
+from kaa.theme import Style
 from kaa.ui.dialog import dialogmode
 from kaa.filetype.default import keybind
 from kaa.ui.itemlist import itemlistmode

@@ -1,10 +1,11 @@
 import unicodedata
 import copy
-from collections import namedtuple
 from kaa.filetype.default import defaultmode
 from kaa import doc_re
-from kaa.theme import Theme, Style
-from kaa.command import Commands, commandid, norec, norerun
+from kaa.theme import Style
+from kaa.command import commandid
+from kaa.command import norec
+from kaa.command import norerun
 from kaa.keyboard import *
 from kaa.syntax_highlight import *
 
