@@ -107,11 +107,10 @@ class WordCompleteInputMode(filterlist.FilterListInputDlgMode):
         wnd = self.document.wnds[0]
 
         curword = ''
-        p = max(0, self.orgpos - 1)
-        word = self.target.document.mode.get_word_at(p)
+#        p = max(0, self.orgpos - 1)
+        word = self.target.document.mode.get_word_at(self.orgpos)
         if word:
             f, t, cg = word
-            t = max(f, min(t, self.orgpos))
             if f < t and cg[0] in 'LMN':  # Letter, Mark, Number
                 self.wordpos = (f, t)
 

@@ -650,15 +650,14 @@ class ModeBase:
         prev = None
         for f, t, s, cg in self.split_word(tol):
             if pos == t:
-                if cg != 'Z_WHITESPACE':
+                if cg not in {'Z_WHITESPACE', '_LF'}:
                     prev = (f, t, cg)
             elif pos < t:
-                if cg != 'Z_WHITESPACE':
+                if cg not in {'Z_WHITESPACE', '_LF'}:
                     return (f, t, cg)
                 else:
-                    if f == pos:
-                        return prev
-                    return None
+                    return prev
+
         return prev
 
     def get_word_list(self):
