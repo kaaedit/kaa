@@ -6,9 +6,7 @@ from kaa.filetype.default import defaultmode, modebase
 class TestDefaultMode(kaa_testutils._TestScreenBase):
 
     def test_getwords(self):
-        mode = self._getmode()
         doc = self._getdoc('0123   \tabc ::::あいうえおカキクケコ[[')
-        doc.setmode(mode)
 
         assert (
             (0, 4, '0123', 'L_WORDCHAR'),
@@ -18,29 +16,29 @@ class TestDefaultMode(kaa_testutils._TestScreenBase):
             (12, 16, '::::', 'P'),
             (16, 21, 'あいうえお', 'L_HIRAGANA'),
             (21, 26, 'カキクケコ', 'L_KATAKANA'),
-            (26, 28, '[[', 'P'),) == tuple(mode.split_word(0))
+            (26, 28, '[[', 'P'),) == tuple(doc.mode.split_word(0))
 
-        mode = self._getmode()
         doc = self._getdoc('\n\n')
-        doc.setmode(mode)
 
         assert (
             (0, 1, '\n', '_LF'),
-        ) == tuple(mode.split_word(0))
+        ) == tuple(doc.mode.split_word(0))
 
     def test_getwordat(self):
-        mode = self._getmode()
-        doc = self._getdoc('abc 0123 abcあいうdef')
-        doc.setmode(mode)
+                           #0123456789012 3 4 56789012
+        doc = self._getdoc('abc 0123 abcあいうdef  ')
 
-        assert mode.get_word_at(0) == (0, 3, 'L_WORDCHAR')
-        assert mode.get_word_at(3) == (0, 3, 'L_WORDCHAR')
-        assert mode.get_word_at(4) == (4, 8, 'L_WORDCHAR')
-        assert mode.get_word_at(8) == (4, 8, 'L_WORDCHAR')
-        assert mode.get_word_at(9) == (9, 12, 'L_WORDCHAR')
-        assert mode.get_word_at(11) == (9, 12, 'L_WORDCHAR')
-        assert mode.get_word_at(12) == (12, 15, 'L_HIRAGANA')
-        assert mode.get_word_at(15) == (15, 18, 'L_WORDCHAR')
+        assert doc.mode.get_word_at(0) == (0, 3, 'L_WORDCHAR')
+        assert doc.mode.get_word_at(3) == (0, 3, 'L_WORDCHAR')
+        assert doc.mode.get_word_at(4) == (4, 8, 'L_WORDCHAR')
+        assert doc.mode.get_word_at(8) == (4, 8, 'L_WORDCHAR')
+        assert doc.mode.get_word_at(9) == (9, 12, 'L_WORDCHAR')
+        assert doc.mode.get_word_at(11) == (9, 12, 'L_WORDCHAR')
+        assert doc.mode.get_word_at(12) == (12, 15, 'L_HIRAGANA')
+        assert doc.mode.get_word_at(15) == (15, 18, 'L_WORDCHAR')
+        assert doc.mode.get_word_at(17) == (15, 18, 'L_WORDCHAR')
+        assert doc.mode.get_word_at(18) == (15, 18, 'L_WORDCHAR')
+        assert doc.mode.get_word_at(19) is None
 
     def test_search_next(self):
         w = self._getwnd('abcdefgabcdefg/efg/EFG')

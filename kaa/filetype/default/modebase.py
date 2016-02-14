@@ -647,17 +647,19 @@ class ModeBase:
 
     def get_word_at(self, pos):
         tol = self.document.gettol(pos)
-        ret = None
+        prev = None
         for f, t, s, cg in self.split_word(tol):
-            if t <= pos:
+            if pos == t:
                 if cg != 'Z_WHITESPACE':
-                    ret = (f, t, cg)
-            else:
-                if cg not in {'_LF', 'Z_WHITESPACE'}:
-                    ret = (f, t, cg)
-                break
-
-        return ret
+                    prev = (f, t, cg)
+            elif pos < t:
+                if cg != 'Z_WHITESPACE':
+                    return (f, t, cg)
+                else:
+                    if f == pos:
+                        return prev
+                    return None
+        return prev
 
     def get_word_list(self):
         words = collections.OrderedDict()

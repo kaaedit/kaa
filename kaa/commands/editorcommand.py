@@ -382,6 +382,7 @@ class SelectionCommands(Commands):
             t = wnd.cursor.adjust_nextpos(wnd.cursor.pos, t)
 
             wnd.screen.selection.set_range(f, t)
+            wnd.cursor.setpos(t)
 
     @commandid('selection.expand-sel')
     @norerun
