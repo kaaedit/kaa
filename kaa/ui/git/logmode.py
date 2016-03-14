@@ -5,7 +5,6 @@ import threading
 import socket
 import tempfile
 from git import Repo
-from git import BaseIndexEntry
 from pathlib import Path
 import kaa
 from kaa.keyboard import *
@@ -17,6 +16,7 @@ from kaa.command import commandid
 from kaa.ui.git import commitdlgmode
 from kaa.ui.viewdiff import viewdiffmode
 from kaa.ui.msgbox import msgboxmode
+from . import repo
 
 GitTheme = {
     'basic': [
@@ -279,56 +279,33 @@ class GitStatusMode(defaultmode.DefaultMode):
             if os.path.exists(fname):
                 os.unlink(fname)
 
-    def _add_new_file(self, indent, style, name, mark_prefix):
-        mark = mark_prefix + name
-        if mark in self.document.marks:
-            return
-
-        f = self.document.append(indent+'new file:    ', style)
+    def _add_new_file(self, style, name, mark_prefix):
+        f = self.document.append('new file:    ', style)
         t = self.document.append(name, style)
-        self.document.marks[mark] = (f, t)
-        return True
+        self.document.marks[mark_prefix + name] = (f, t)
 
-    def _add_diff(self, indent, d, style, mark_prefix):
+    def _add_diff(self, d, style, mark_prefix):
         if d.new_file:
-            return self._add_new_file(indent, style, d.b_path, mark_prefix)
+            self._add_new_file(style, d.b_path, mark_prefix)
 
         elif d.deleted_file:
-            mark = mark_prefix + d.b_path
-            if mark in self.document.marks:
-                return
-
-            f = self.document.append(indent + 'deleted:     ', style)
-            t = self.document.append(d.b_path, style)
-            self.document.marks[mark] = (f, t)
-
-        elif d.renamed:
-            mark_from = mark_prefix + d.rename_from
-            if mark_from in self.document.marks:
-                return
-
-            mark_to = mark_prefix + d.rename_to
-            if mark_to in self.document.marks:
-                return
-
-            f = self.document.append(indent + 'renamed:     ', style)
-            t = self.document.append(d.rename_from, style)
-            self.document.marks[mark_from] = (f, t)
-
-            f = self.document.append(' -> ', style)
-            t = self.document.append(d.rename_to, style)
-            self.document.marks[mark_to] = (f, t)
-
-        else:
-            mark = mark_prefix + d.b_path
-            if mark in self.document.marks:
-                return
-
-            f = self.document.append(indent + 'modified:    ', style)
+            f = self.document.append('deleted:     ', style)
             t = self.document.append(d.b_path, style)
             self.document.marks[mark_prefix + d.b_path] = (f, t)
 
-        return True
+        elif d.renamed:
+            f = self.document.append('renamed:     ', style)
+            t = self.document.append(d.rename_from, style)
+            self.document.marks[mark_prefix + d.rename_from] = (f, t)
+
+            f = self.document.append(' -> ', style)
+            t = self.document.append(d.rename_to, style)
+            self.document.marks[mark_prefix + d.rename_to] = (f, t)
+
+        else:
+            f = self.document.append('modified:    ', style)
+            t = self.document.append(d.b_path, style)
+            self.document.marks[mark_prefix + d.b_path] = (f, t)
 
     def _refresh(self, wnd):
         if wnd:
@@ -352,54 +329,28 @@ class GitStatusMode(defaultmode.DefaultMode):
             style_not_staged = self.get_styleid('git-not-staged')
             style_untracked = self.get_styleid('git-untracked')
 
-            try:
-                branch = 'On branch {repo.active_branch.name}'.format(repo=self._repo)
-            except TypeError:
-                branch = '(no branch)'
-
-            f = self.document.append(branch+'\n\n', style_header)
+            f = self.document.append(
+                'On branch {repo.active_branch.name}\n'.format(repo=self._repo), style_header)
             t = self.document.append('<< Refresh >>', style_button)
             self.document.marks['b_refresh'] = (f, t)
 
             self.document.append('\n\n')
 
-            # unmerged
-            unmerged = {}
-            if self._repo.head.is_valid():
-                d = self._repo.index.unmerged_blobs()
-                for path, blobs in d.items():
-                    stagemask = 0
-                    for stage, blob in blobs:
-                        stagemask |= (1 << (stage-1))   # see man git-merge, wt-status.c: unmerged_mask()
-
-                    unmerged[path] = stagemask
-
-            
             # add staged files
-            unmerged_diffs = []
             self.document.append('Changes to be committed:\n\n', style_header)
             if self._repo.head.is_valid():
                 d = self._repo.head.commit.diff()
                 for c in d:
-                    if c.b_path in unmerged:
-                        unmerged_diffs.append(c)
-                        continue
-
-                    if self._add_diff(indent, c, style_staged, 's_'):
-                        self.document.append('\n')
+                    self.document.append(indent)
+                    self._add_diff(c, style_staged, 's_')
+                    self.document.append('\n')
             else:
                 files = [name for name, state in self._repo.index.entries]
                 files.sort()
                 for file in files:
-                    if self._add_new_file(indent, style_staged, file, 's_'):
-                        self.document.append('\n')
-
-            # add unmerged files
-            if unmerged_diffs:
-                self.document.append('\nUnmerged paths:\n\n', style_header)
-                for c in unmerged_diffs:
-                    if self._add_diff(indent, c, style_staged, 'n_'):
-                        self.document.append('\n')
+                    self.document.append(indent)
+                    self._add_new_file(style_staged, file, 's_')
+                    self.document.append('\n')
 
             # add not staged files
             self.document.append(
@@ -407,8 +358,9 @@ class GitStatusMode(defaultmode.DefaultMode):
 
             d = self._repo.index.diff(None)
             for c in d:
-                if self._add_diff(indent, c, style_not_staged, 'n_'):
-                    self.document.append('\n')
+                self.document.append(indent)
+                self._add_diff(c, style_not_staged, 'n_')
+                self.document.append('\n')
 
             # add untracked files
             self.document.append('\n\nUntracked fies:\n\n', style_header)
@@ -439,17 +391,8 @@ class GitStatusMode(defaultmode.DefaultMode):
         self._refresh(None)
 
 
-def show_git_status(d):
-    cur = Path(d).absolute()
-    while not cur.joinpath('.git').is_dir():
-        p = cur.parent
-        if p == cur:
-            raise RuntimeError('Not a git repogitory')
-        cur = p
-
-    repo_dir = str(cur)
-    repo = Repo(repo_dir)
-
+def show_git_log(d):
+    repo = repo
     doc = document.Document()
     mode = GitStatusMode()
     doc.setmode(mode)
