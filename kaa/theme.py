@@ -37,7 +37,7 @@ class Theme:
 class Style:
 
     def __init__(self, name, fgcolor, bgcolor, underline=False,
-                 bold=False, nowrap=False, rjust=False):
+                 bold=False, nowrap=False, rjust=False, fillrow=False):
         self.name = name
         self.fgcolor = fgcolor
         self.bgcolor = bgcolor
@@ -45,8 +45,10 @@ class Style:
         self.bold = bold
         self.nowrap = nowrap
         self.rjust = rjust
+        self.fillrow = fillrow
 
     def copy(self):
+        # ???
         return self.__class__(
             self.name,
             self.fgcolor,
@@ -55,9 +57,11 @@ class Style:
             self.bold,
             self.nowrap,
             self.rjust,
+            self.fillrow,
         )
 
     def set_default_attr(self, default):
+        # ???
         if self.fgcolor is None:
             self.fgcolor = default.fgcolor
         if self.bgcolor is None:
@@ -70,6 +74,8 @@ class Style:
             self.nowrap = default.nowrap
         if self.rjust is None:
             self.rjust = default.rjust
+        if self.fillrow is None:
+            self.fillrow = default.fillrow
 
 
 class Overlay(Style):

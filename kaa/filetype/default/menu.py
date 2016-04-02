@@ -62,7 +62,7 @@ MENUS = {
 
     'GIT':
     [['&Status', None, 'git.status'],
-#     ['&Log', None, 'git.log'],
+     ['&Log', None, 'git.log'],
      ],
 
     'WINDOW':

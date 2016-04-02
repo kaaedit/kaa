@@ -17,8 +17,9 @@ from kaa.command import commandid
 from kaa.ui.git import commitdlgmode
 from kaa.ui.viewdiff import viewdiffmode
 from kaa.ui.msgbox import msgboxmode
+from . import gitrepo
 
-GitTheme = {
+GitStatusTheme = {
     'basic': [
         Style('git-header', 'Cyan', None),
         Style('git-button', 'Orange', 'Base02'),
@@ -52,7 +53,6 @@ class GitStatusMode(defaultmode.DefaultMode):
     # todo: rename key/command names
     DOCUMENT_MODE = False
     USE_UNDO = False
-    DELAY_STR = False
     DEFAULT_MENU_MESSAGE = 'r:refresh a:add u:unstage d:diff c:commit'
 
     KEY_BINDS = [
@@ -66,7 +66,7 @@ class GitStatusMode(defaultmode.DefaultMode):
 
     def init_themes(self):
         super().init_themes()
-        self.themes.append(GitTheme)
+        self.themes.append(GitStatusTheme)
 
     def on_str(self, wnd, s, overwrite=False):
         # does nothing
@@ -337,10 +337,9 @@ class GitStatusMode(defaultmode.DefaultMode):
         # clear
         self.document.marks.clear()
         self.document.delete(0, self.document.endpos())
-
-        self._untracked_files = list(self._repo.untracked_files)
-
         self.document.set_title('<git status>')
+
+        untracked_files = list(self._repo.untracked_files)
 
         # todo: define lock_mark() method
         self.document.marks.locked = True
@@ -412,7 +411,7 @@ class GitStatusMode(defaultmode.DefaultMode):
 
             # add untracked files
             self.document.append('\n\nUntracked fies:\n\n', style_header)
-            for f in self._untracked_files:
+            for f in untracked_files:
                 self.document.append(indent)
                 posfrom = self.document.endpos()
                 self.document.append(f, style_untracked)
@@ -440,15 +439,7 @@ class GitStatusMode(defaultmode.DefaultMode):
 
 
 def show_git_status(d):
-    cur = Path(d).absolute()
-    while not cur.joinpath('.git').is_dir():
-        p = cur.parent
-        if p == cur:
-            raise RuntimeError('Not a git repogitory')
-        cur = p
-
-    repo_dir = str(cur)
-    repo = Repo(repo_dir)
+    repo = gitrepo.open_repo(d)
 
     doc = document.Document()
     mode = GitStatusMode()

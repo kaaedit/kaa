@@ -247,11 +247,17 @@ class TextEditorWindow(Window):
             if n > h:
                 break
 
-            spos = 0
-
             if tol != row.tol:
                 tol = row.tol
                 eol = self.document.geteol(tol)
+
+            # check fillrow
+            fill_row_attr = None
+            if tol < eol:
+                token_id = self.document.styles.getints(tol, tol+1)[0]
+                tol_style = self.document.mode.get_style(token_id)
+                if tol_style.fillrow:
+                    fill_row_attr = tol_style.cui_colorattr
 
             line_overlay = None
             if row is cursorrow and (
@@ -268,12 +274,13 @@ class TextEditorWindow(Window):
             # clear row
             self._cwnd.move(n, 0)
             self._cwnd.clrtoeol()
-            if not line_overlay:
-                erase_attr = defaultcolor
-            else:
+
+            erase_attr = defaultcolor
+            if line_overlay:
                 style = theme.get_style('default')
                 erase_attr = style.cui_overlays.get(line_overlay, defaultcolor)
-
+            elif fill_row_attr:
+                erase_attr = fill_row_attr
             self._cwnd.chgat(n, 0, -1, erase_attr)
 
             if not self.visible:
@@ -290,12 +297,15 @@ class TextEditorWindow(Window):
                     self.add_str(' ' * (lineno_width - 1), lineno_color)
 
                 self.add_str(' ', defaultcolor)
+
             # increment line no
             lineno += 1
 
             # move cursor to top of row
             self._cwnd.move(n, row.wrapindent + lineno_width)
+
             rjust = False
+            spos = 0
 
             for (attr, attr_rjust), group in itertools.groupby(
                     self._getcharattrs(row, rectangular, selfrom, selto,
@@ -306,7 +316,7 @@ class TextEditorWindow(Window):
 
                     rest = sum(row.cols[spos:])
                     cy, cx = self._cwnd.getyx()
-                    self._cwnd.move(cy, w - rest)
+                    self._cwnd.move(cy, max(0, w - rest))
 
                 slen = len(tuple(group))
                 letters = ''.join(row.chars[spos:spos + slen]).rstrip('\n')

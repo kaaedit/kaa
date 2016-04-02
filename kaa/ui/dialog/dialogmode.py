@@ -189,7 +189,7 @@ class FormBuilder:
         return self
 
     def __exit__(self, type, value, traceback):
-        if self.document.mode.suspend_autoshrink:
+        if getattr(self.document.mode, 'suspend_autoshrink', False):
             self.document.mode.suspend_autoshrink = False
             self.document.mode.run_autoshrink()
 

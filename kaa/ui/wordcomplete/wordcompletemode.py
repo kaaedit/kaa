@@ -109,7 +109,10 @@ class WordCompleteInputMode(filterlist.FilterListInputDlgMode):
         curword = ''
         word = self.target.document.mode.get_word_at(self.orgpos)
         if word:
-            if self.orgpos != 0 and self.orgpos == f and (cg[0] not in 'LMN'):
+            f, t, cg = word
+            if f < t and cg[0] in 'LMN':  # Letter, Mark, Number
+                self.wordpos = (f, t)
+            elif self.orgpos != 0 and self.orgpos == f and (cg[0] not in 'LMN'):
                 # cursor is at top of non-word char.
                 # check if we are at end of word.
                 prev = self.target.document.mode.get_word_at(self.orgpos-1)
@@ -118,6 +121,12 @@ class WordCompleteInputMode(filterlist.FilterListInputDlgMode):
                     if pt == self.orgpos and (pcg[0] in 'LMN'):
                         # select previous word
                         f, t, cg = pf, pt, pcg
+
+
+            curword = self.target.document.gettext(f, t)
+            if curword:
+                self.target.screen.selection.set_range(f, t)
+                self.set_query(wnd, curword)
 
         # build word list
         # word at cursor position should not appear in the list.
