@@ -961,6 +961,18 @@ Links
 Version history
 =================
 
+0.53.0 - 2016.8.8
+--------------------
+
+- Display git log.
+
+- Display unmerged diffs in git status screen.
+
+- Fix clipboard error in Linux.
+
+- Autocomplete around puctuation now works better.
+
+
 0.52.0 - 2016.2.6
 --------------------
 
