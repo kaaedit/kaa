@@ -205,6 +205,17 @@ def _search(dir, option, doc):
 
 def grep(option, target):
 
+# todo: reuse grep pane in same frame
+#        buddy = wnd.splitter.get_buddy()
+#        if not buddy:
+#            buddy = wnd.splitter.split(vert=False, doc=doc)
+#            self._locate_doc(buddy.wnd, doc, lineno)
+#        else:
+#            if buddy.wnd and buddy.wnd.document is doc:
+#                self._locate_doc(buddy.wnd, doc, lineno)
+#                return
+#
+
     if not target:
         doc = document.Document()
         mode = GrepMode()

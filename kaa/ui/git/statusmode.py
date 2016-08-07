@@ -31,12 +31,12 @@ GitStatusTheme = {
 
 
 status_keys = {
-    tab: 'git.status.next',
     right: 'git.status.next',
     down: 'git.status.next',
-    (shift, tab): 'git.status.prev',
     left: 'git.status.prev',
     up: 'git.status.prev',
+    pagedown: 'cursor.pagedown',
+    pageup: 'cursor.pageup',
 
     ' ': 'git.status.press',
     '\r': 'git.status.open',

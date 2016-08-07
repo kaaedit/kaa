@@ -93,7 +93,7 @@ class FileCommands(Commands):
     def file_viewdiff(self, wnd, callback=None):
         if wnd.document.fileinfo and wnd.document.fileinfo.fullpathname:
             from kaa.ui.viewdiff import viewdiffmode
-            viewdiffmode.view_diff(wnd.document, callback=None)
+            viewdiffmode.view_doc_diff(wnd.document, callback=None)
 
     @commandid('file.save')
     @norec
@@ -164,7 +164,7 @@ class FileCommands(Commands):
 
                 if document.fileinfo and document.fileinfo.fullpathname:
                     from kaa.ui.viewdiff import viewdiffmode
-                    viewdiffmode.view_diff(document, callback=cb)
+                    viewdiffmode.view_doc_diff(document, callback=cb)
                 else:
                     cb()
 
@@ -387,7 +387,7 @@ class FileCommands(Commands):
 
                 if document.fileinfo and document.fileinfo.fullpathname:
                     from kaa.ui.viewdiff import viewdiffmode
-                    viewdiffmode.view_diff(
+                    viewdiffmode.view_doc_diff(
                         document, callback=cb)
                 else:
                     cb()

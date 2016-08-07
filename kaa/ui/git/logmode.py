@@ -10,6 +10,7 @@ from kaa.ui.git import commitdlgmode
 from kaa.ui.viewdiff import viewdiffmode
 from kaa.ui.msgbox import msgboxmode
 from kaa.ui.dialog import dialogmode
+from kaa.ui.viewdiff import viewdiffmode
 
 from . import gitrepo
 
@@ -48,14 +49,14 @@ log_keys = {
 #    left: 'git.status.prev',
 #    up: 'git.status.prev',
 
+    pagedown: 'cursor.pagedown',
+    pageup: 'cursor.pageup',
+
     ' ': 'git.status.press',
-    '\r': 'git.status.open',
-    '\n': 'git.status.open',
-    'r': 'git.status.refresh',
-    'c': 'git.commit',
-    'a': 'git.add',
-    'u': 'git.unstage',
-    'd': 'git.status.diff',
+    '\r': 'git.log.diff',
+    '\n': 'git.log.diff',
+    (alt, 'v'): 'git.log.prevpage',
+    (alt, 't'): 'git.log.nextpage',
 }
 
 
@@ -69,6 +70,10 @@ class GitLogMode(defaultmode.DefaultMode):
         keybind.app_keys,
         keybind.search_command_keys,
     ]
+
+    _page_from = 0
+    max_count = 100
+    _commits = ()
 
     def init_keybind(self):
         self.register_keys(self.keybind, self.KEY_BINDS)
@@ -87,30 +92,57 @@ class GitLogMode(defaultmode.DefaultMode):
         is_available, command = self.get_command('file.close')
         command(wnd)
 
-    def show_log(self, repo):
-        self._repo = repo
-        self.document.set_title('<git log>')
+    def _set_log(self):
+        self.document.delete(0, self.document.endpos())
 
         with dialogmode.FormBuilder(self.document) as f:
             f.append_text('git-log-header', 'git log')
-            f.append_text('right-button', '[&Prev1000]',
+            f.append_text('right-button', '[Pre&v 100]',
                           shortcut_style='right-button.shortcut')
-            f.append_text('right-button', '[&Next 1000]',
+            f.append_text('right-button', '[Nex&t 100]',
                           shortcut_style='right-button.shortcut')
-            f.append_text('right-button', '[&Grep]',
-                          shortcut_style='right-button.shortcut')
-            f.append_text('right-button', '[Pa&th]',
-                          shortcut_style='right-button.shortcut')
+#            f.append_text('right-button', '[&Grep]',
+#                          shortcut_style='right-button.shortcut')
+#            f.append_text('right-button', '[Pa&th]',
+#                          shortcut_style='right-button.shortcut')
             f.append_text('git-log-header', '\n')
 
         default = self.get_styleid('default')
-        for x in repo.iter_commits(max_count=1000):
+        self._commits = list(self._repo.iter_commits(max_count=self.max_count, skip=self._page_from))
+
+        for x in self._commits:
             s = datetime.datetime.fromtimestamp(
                 x.committed_date, TZ).strftime('%Y/%m/%d %H:%M:%S')
             self.document.append(s+' ', default)
             self.document.append('{:12s} '.format(x.author.name[:12]), default)
+            msgs = filter(lambda l:l, (l.strip() for l in x.message.split('\n')))
             self.document.append(x.message.split('\n')[0]+'\n', default)
 
+    def show_log(self, repo):
+        self._repo = repo
+        self.document.set_title('<git log>')
+        self._set_log()
+
+    @commandid('git.log.diff')
+    def open_file(self, wnd):
+        lineno = self.document.buf.lineno.lineno(wnd.cursor.pos)
+        if lineno == 1:
+            return
+        commit = self._commits[lineno-2]
+        d = self._repo.git.log('-1', '-c',  '--patch', commit.hexsha, pretty='format:')
+
+        viewdiffmode.show_diff(d)
+
+    @commandid('git.log.nextpage')
+    def nextpage(self, wnd):
+        self._page_from += len(self._commits)
+        self._set_log()
+
+    @commandid('git.log.prevpage')
+    def prevpage(self, wnd):
+        self._page_from -= self.max_count
+        self._page_from = max(self._page_from, 0)
+        self._set_log()
 
 def show_git_log(d):
     repo = gitrepo.open_repo(d)

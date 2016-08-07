@@ -46,7 +46,7 @@ class ViewDiffMode(dialogmode.DialogMode):
                 self.callback()
 
 
-def view_diff(curdoc, callback=None):
+def view_doc_diff(curdoc, callback=None):
     orig = kaa.app.storage.openfile(
         curdoc.fileinfo.fullpathname,
         curdoc.fileinfo.encoding,
@@ -65,6 +65,16 @@ def view_diff(curdoc, callback=None):
 
     mode = ViewDiffMode()
     mode.callback = callback
+    doc.setmode(mode)
+
+    kaa.app.show_dialog(doc)
+
+
+def show_diff(diff):
+    doc = document.Document()
+    doc.insert(0, diff)
+
+    mode = ViewDiffMode()
     doc.setmode(mode)
 
     kaa.app.show_dialog(doc)
