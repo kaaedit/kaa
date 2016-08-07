@@ -100,33 +100,33 @@ class WordCompleteInputMode(filterlist.FilterListInputDlgMode):
         self.target.screen.selection.clear()
         super().on_esc_pressed(wnd, event)
 
-    def start(self, list):
-        self.orgpos = self.target.cursor.pos
-
-        self.wordpos = (self.orgpos, self.orgpos)
-        wnd = self.document.wnds[0]
-
-        curword = ''
-        word = self.target.document.mode.get_word_at(self.orgpos)
+    def _get_target_word(self, orgpos):
+        word = self.target.document.mode.get_word_at(orgpos)
         if word:
             f, t, cg = word
             if f < t and cg[0] in 'LMN':  # Letter, Mark, Number
-                self.wordpos = (f, t)
-            elif self.orgpos != 0 and self.orgpos == f and (cg[0] not in 'LMN'):
+                return (f, t)
+            elif orgpos != 0 and orgpos == f and (cg[0] not in 'LMN'):
                 # cursor is at top of non-word char.
                 # check if we are at end of word.
-                prev = self.target.document.mode.get_word_at(self.orgpos-1)
+                prev = self.target.document.mode.get_word_at(orgpos-1)
                 if prev:
                     pf, pt, pcg = prev
-                    if pt == self.orgpos and (pcg[0] in 'LMN'):
+                    if pt == orgpos and (pcg[0] in 'LMN'):
                         # select previous word
-                        f, t, cg = pf, pt, pcg
+                        return (pf, pt)
+        return (orgpos, orgpos)
 
+    def start(self, list):
+        self.orgpos = self.target.cursor.pos
 
-            curword = self.target.document.gettext(f, t)
-            if curword:
-                self.target.screen.selection.set_range(f, t)
-                self.set_query(wnd, curword)
+        self.wordpos = self._get_target_word(self.orgpos)
+        wnd = self.document.wnds[0]
+
+        curword = self.target.document.gettext(*self.wordpos)
+        if curword:
+            self.target.screen.selection.set_range(*self.wordpos)
+            self.set_query(wnd, curword)
 
         # build word list
         # word at cursor position should not appear in the list.
