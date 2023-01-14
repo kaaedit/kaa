@@ -27,6 +27,11 @@ def read(fname):
     return open(
         os.path.join(os.path.dirname(__file__), fname)).read()
 
+bdist_wheel = {}
+
+if sys.platform == 'linux':
+    bdist_wheel['plat_name'] = 'manylinux2014_x86_64'
+
 setup(
     cmdclass=cmdclass,
     name="kaaedit",
@@ -48,6 +53,7 @@ setup(
         'kaadbg >= 0.3.0'],
     packages=find_packages(),
     ext_modules=[ext],
+    options={'bdist_wheel': bdist_wheel},
     entry_points={
         'console_scripts': [
             'kaa = kaa.cui.main:run',
