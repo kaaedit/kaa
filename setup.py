@@ -35,7 +35,7 @@ if sys.platform == 'linux':
 setup(
     cmdclass=cmdclass,
     name="kaaedit",
-    version="0.54.0",
+    version="0.54.1",
     description='kaa - console text editor.',
     url='https://github.com/kaaedit/kaa',
     author='Atsuo Ishimoto',
