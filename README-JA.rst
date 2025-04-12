@@ -72,7 +72,7 @@ MS-WindowsのCygwinは、現在のところサポートしていません。今�
 
 * Pythonをパッケージ管理システムからインストールするのではなく、独自にビルドして利用する場合、ビルドする前に、ワイド文字をサポートした ncurses ライブラリをインストールしておく必要があります。Debian/Ubuntuでは、 ::
 
-    $ sudo apt-get install libcursesw5 libncurses5-dev libncursesw5-dev 
+    $ sudo apt-get install libncurses-dev
 
   で必要なファイルをインストールできます。インストール後に、Pythonを再ビルドしてください。
 

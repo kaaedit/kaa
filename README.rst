@@ -73,7 +73,7 @@ To run kaa, you need following component:
 
 * If your Python installation is not system-supplied package but built by yourself, please ensure you have installed ncurses library with wide character support before you built Python. Consult documentation of your platform for details. For recent Debian/Ubuntu, you can install required libraries by ::
 
-    $ sudo apt-get install libncursesw5 libncurses5-dev libncursesw5-dev 
+    $ sudo apt-get install libncurses-dev
  
   After theses packages are installed, rebuild Python installation to take effect.
 
